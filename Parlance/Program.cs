@@ -1,3 +1,6 @@
+using Microsoft.AspNetCore.Authorization;
+using Parlance.Authorization.HasToken;
+using Parlance.Authorization.LanguageEditor;
 using Parlance.Projects;
 using Parlance.VersionControl.Services;
 using Parlance.Vicr123Accounts;
@@ -12,6 +15,14 @@ builder.Services.AddVicr123Accounts();
 
 builder.Services.AddSingleton<IVersionControlService, VersionControlService>();
 builder.Services.AddSingleton<IProjectService, ProjectService>();
+builder.Services.AddSingleton<IAuthorizationHandler, LanguageEditorHandler>();
+builder.Services.AddSingleton<IAuthorizationHandler, HasTokenHandler>();
+
+builder.Services.AddAuthorizationCore(options =>
+{
+    options.AddPolicy("HasToken", policy => policy.Requirements.Add(new HasTokenRequirement()));
+    options.AddPolicy("LanguageEditor", policy => policy.Requirements.Add(new LanguageEditorRequirement()));
+});
 
 var app = builder.Build();
 
@@ -28,10 +39,11 @@ if (!app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
+app.UseAuthorization();
 
 app.MapControllerRoute(
-    name: "default",
-    pattern: "{controller}/{action=Index}/{id?}");
+    "default",
+    "{controller}/{action=Index}/{id?}");
 
 app.MapFallbackToFile("index.html");
 

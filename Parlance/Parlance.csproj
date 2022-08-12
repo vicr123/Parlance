@@ -29,8 +29,8 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Parlance.VersionControl\Parlance.VersionControl.csproj" />
-      <ProjectReference Include="..\Parlance.Vicr123Accounts\Parlance.Vicr123Accounts.csproj" />
+        <ProjectReference Include="..\Parlance.VersionControl\Parlance.VersionControl.csproj" />
+        <ProjectReference Include="..\Parlance.Vicr123Accounts\Parlance.Vicr123Accounts.csproj" />
     </ItemGroup>
 
     <Target Name="DebugEnsureNodeEnv" BeforeTargets="Build" Condition=" '$(Configuration)' == 'Debug' And !Exists('$(SpaRoot)node_modules') ">

@@ -1,0 +1,75 @@
+.ModalBackground {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    position: fixed;
+
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+
+    background-color: rgba(0, 0, 0, 0.7);
+}
+
+.ModalContainer {
+    background-color: var(--background-color);
+    border: 1px solid var(--border-color);
+    flex-basis: 600px;
+}
+
+.ModalHeading {
+    margin: 0;
+    font-size: 20pt;
+    font-weight: normal;
+    padding: 10px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.ModalText {
+    padding: 20px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.ModalButtonContainer {
+    display: flex;
+}
+
+.ModalButton {
+    flex-grow: 1;
+    flex-basis: 1px;
+    text-align: center;
+    padding: 15px;
+
+    cursor: default;
+}
+
+.ModalButton:hover {
+    background-color: var(--hover-color);
+}
+
+.ModalButton:active {
+    background-color: var(--active-color);
+}
+
+.ModalButton:not(:last-child) {
+    border-right: 1px solid var(--border-color);
+}
+
+.ModalProgressSpinner {
+    display: flex;
+    flex-grow: 1;
+
+    align-items: center;
+    justify-content: center;
+}
+
+@media (max-width: 600px) {
+    .ModalContainer {
+        align-self: flex-end;
+        border-left: none;
+        border-right: none;
+        border-bottom: none;
+    }
+}

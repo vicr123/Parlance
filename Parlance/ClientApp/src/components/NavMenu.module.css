@@ -1,0 +1,19 @@
+﻿.navbarWrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    border-bottom: 1px solid var(--border-color);
+}
+
+.navbarInner {
+    width: 100vw;
+    max-width: var(--content-width);
+    padding-left: 9px;
+    /*padding-right: 9px;*/
+
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+}

@@ -1,0 +1,12 @@
+.button {
+    padding: 15px;
+    cursor: default;
+}
+
+.button:hover {
+    background-color: var(--hover-color);
+}
+
+.button:active {
+    background-color: var(--active-color);
+}

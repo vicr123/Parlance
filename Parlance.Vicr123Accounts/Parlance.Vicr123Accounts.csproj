@@ -7,18 +7,42 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <Folder Include="Authentication" />
-      <Folder Include="DBus" />
+        <Folder Include="DBus"/>
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="Tmds.DBus" Version="0.11.0" />
+        <PackageReference Include="Microsoft.AspNet.Identity.Core" Version="2.2.3"/>
+        <PackageReference Include="Tmds.DBus" Version="0.11.0"/>
     </ItemGroup>
 
     <ItemGroup>
-      <Reference Include="Microsoft.Extensions.DependencyInjection.Abstractions">
-        <HintPath>..\..\..\..\.nuget\packages\microsoft.aspnetcore.app.ref\6.0.6\ref\net6.0\Microsoft.Extensions.DependencyInjection.Abstractions.dll</HintPath>
-      </Reference>
+        <Reference Include="Microsoft.AspNetCore.Authentication">
+            <HintPath>..\..\..\..\.nuget\packages\microsoft.aspnetcore.app.ref\6.0.6\ref\net6.0\Microsoft.AspNetCore.Authentication.dll</HintPath>
+        </Reference>
+        <Reference Include="Microsoft.AspNetCore.Authentication.Abstractions">
+            <HintPath>..\..\..\..\.nuget\packages\microsoft.aspnetcore.app.ref\6.0.6\ref\net6.0\Microsoft.AspNetCore.Authentication.Abstractions.dll</HintPath>
+        </Reference>
+        <Reference Include="Microsoft.AspNetCore.Authorization">
+            <HintPath>..\..\..\..\.nuget\packages\microsoft.aspnetcore.app.ref\6.0.6\ref\net6.0\Microsoft.AspNetCore.Authorization.dll</HintPath>
+        </Reference>
+        <Reference Include="Microsoft.AspNetCore.Http.Abstractions">
+            <HintPath>..\..\..\..\.nuget\packages\microsoft.aspnetcore.app.ref\6.0.6\ref\net6.0\Microsoft.AspNetCore.Http.Abstractions.dll</HintPath>
+        </Reference>
+        <Reference Include="Microsoft.AspNetCore.Http.Features">
+            <HintPath>..\..\..\..\..\..\usr\share\dotnet\shared\Microsoft.AspNetCore.App\6.0.6\Microsoft.AspNetCore.Http.Features.dll</HintPath>
+        </Reference>
+        <Reference Include="Microsoft.Extensions.DependencyInjection.Abstractions">
+            <HintPath>..\..\..\..\.nuget\packages\microsoft.aspnetcore.app.ref\6.0.6\ref\net6.0\Microsoft.Extensions.DependencyInjection.Abstractions.dll</HintPath>
+        </Reference>
+        <Reference Include="Microsoft.Extensions.Logging.Abstractions">
+            <HintPath>..\..\..\..\.nuget\packages\microsoft.aspnetcore.app.ref\6.0.6\ref\net6.0\Microsoft.Extensions.Logging.Abstractions.dll</HintPath>
+        </Reference>
+        <Reference Include="Microsoft.Extensions.Options">
+            <HintPath>..\..\..\..\.nuget\packages\microsoft.aspnetcore.app.ref\6.0.6\ref\net6.0\Microsoft.Extensions.Options.dll</HintPath>
+        </Reference>
+        <Reference Include="Microsoft.Extensions.Primitives">
+            <HintPath>..\..\..\..\..\..\usr\share\dotnet\shared\Microsoft.AspNetCore.App\6.0.6\Microsoft.Extensions.Primitives.dll</HintPath>
+        </Reference>
     </ItemGroup>
 
 </Project>

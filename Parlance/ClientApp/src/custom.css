@@ -1,14 +1,54 @@
 /* Provide sufficient contrast against white background */
+
+:root {
+    color-scheme: light dark;
+
+    --foreground-color: white;
+    --background-color: rgb(40, 40, 40);
+
+    --active-color: #0064c8;
+    --border-color: #505050;
+    --footer-color: rgba(0,100,200,0.3);
+    --hover-color: #144678;
+
+    --content-width: 900px;
+}
+
+@media (prefers-color-scheme: light) {
+    root {
+        --foreground-color: black;
+        --background-color: white;
+
+        --active-color: #00c8ff;
+        --border-color: #b4b4b4;
+        --footer-color: rgba(0,100,200,0.3);
+        --hover-color: #64c8ff;
+    }
+}
+
+
+body {
+    background-color: var(--background-color);
+    color: var(--foreground-color);
+}
+
 a {
-  color: #0366d6;
+    color: #0366d6;
 }
 
 code {
-  color: #E01A76;
+    color: #E01A76;
 }
 
 .btn-primary {
-  color: #fff;
-  background-color: #1b6ec2;
-  border-color: #1861ac;
+    color: #fff;
+    background-color: #1b6ec2;
+    border-color: #1861ac;
+}
+
+input[type=text], input[type=password] {
+    background-color: var(--background-color);
+    color: var(--foreground-color);
+    border: 1px solid var(--border-color);
+    padding: 3px;
 }
