@@ -8,8 +8,8 @@ public class Vicr123AccountsService : IVicr123AccountsService
     private readonly string _applicationName = "Parlance";
 
     private readonly string _serviceName = "com.vicr123.accounts";
-    private Connection _connection;
-    private IManager _manager;
+    private Connection _connection = null!;
+    private IManager _manager = null!;
 
     public Vicr123AccountsService()
     {

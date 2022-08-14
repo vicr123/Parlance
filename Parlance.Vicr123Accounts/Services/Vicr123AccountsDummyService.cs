@@ -3,7 +3,7 @@ namespace Parlance.Vicr123Accounts.Services;
 // For when vicr123-accounts is not available on the platform (Windows, macOS)
 public class Vicr123AccountsDummyService : IVicr123AccountsService
 {
-    private ulong _currentUserId = 0;
+    private ulong _currentUserId;
     private readonly Dictionary<string, ulong> _users = new();
     private readonly Dictionary<string, string> _tokens = new();
 
@@ -28,7 +28,7 @@ public class Vicr123AccountsDummyService : IVicr123AccountsService
             Email = $"{user.Key}@parlancetest",
             Id = user.Value,
             Username = user.Key
-        }).FirstOrDefault(user => user.Id == id));
+        }).First(user => user.Id == id));
     }
 
     public async Task<User> UserByUsername(string username)

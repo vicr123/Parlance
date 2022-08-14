@@ -5,6 +5,8 @@ using Parlance.Vicr123Accounts.Authentication;
 using Parlance.Vicr123Accounts.Services;
 using Tmds.DBus;
 
+// ReSharper disable AutoPropertyCanBeMadeGetOnly.Global
+
 namespace Parlance.Controllers;
 
 [ApiController]
@@ -32,8 +34,8 @@ public class UserController : Controller
 
     public class UserTokenRequestData
     {
-        public string Username { get; set; }
-        public string Password { get; set; }
+        public string Username { get; set; } = null!;
+        public string Password { get; set; } = null!;
         public string? OtpToken { get; set; }
         public string? NewPassword { get; set; }
     }
@@ -75,7 +77,7 @@ public class UserController : Controller
 
     public class PasswordResetMethodsRequestData
     {
-        public string Username { get; set; }
+        public string Username { get; init; } = null!;
     }
     
     [HttpPost]
@@ -103,9 +105,9 @@ public class UserController : Controller
 
     public class PerformResetRequestData
     {
-        public string Username { get; set; }
-        public string Type { get; set; }
-        public IDictionary<string, object> Challenge { get; set; }
+        public string Username { get; set; } = null!;
+        public string Type { get; set; } = null!;
+        public IDictionary<string, object> Challenge { get; set; } = null!;
     }
     
     [HttpPost]
@@ -123,7 +125,7 @@ public class UserController : Controller
                         JsonValueKind.Undefined => "undefined",
                         JsonValueKind.Object => "TODO",
                         JsonValueKind.Array => "TODO",
-                        JsonValueKind.String => json.GetString(),
+                        JsonValueKind.String => json.GetString() ?? "null",
                         JsonValueKind.Number => json.GetDecimal(),
                         JsonValueKind.True => true,
                         JsonValueKind.False => false,
