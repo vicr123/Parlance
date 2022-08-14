@@ -4,8 +4,8 @@ namespace Parlance.Vicr123Accounts.Services;
 
 public class ProvisionTokenParameters
 {
-    public string Username { get; init; }
-    public string Password { get; init; }
+    public string Username { get; init; } = null!;
+    public string Password { get; init; } = null!;
     public string? OtpToken { get; init; }
     public string? NewPassword { get; init; }
 }
@@ -25,8 +25,8 @@ public interface IPasswordResetMethod
 
 public class EmailPasswordResetMethod : IPasswordResetMethod
 {
-    public string Domain { get; set; }
-    public string User { get; set; }
+    public string Domain { get; init; } = null!;
+    public string User { get; init; } = null!;
 }
 
 public class SomeOther : IPasswordResetMethod

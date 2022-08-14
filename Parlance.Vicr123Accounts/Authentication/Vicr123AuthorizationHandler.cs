@@ -28,7 +28,7 @@ public class Vicr123AuthorizationHandler : IAuthorizationHandler
         if (context.Resource is HttpContext httpContext)
         {
             var authHeader =
-                httpContext.Request.Headers.Authorization.FirstOrDefault(header => header.StartsWith("Bearer "));
+                httpContext.Request.Headers["Authorization"].FirstOrDefault(header => header.StartsWith("Bearer "));
             if (authHeader is null)
             {
                 context.Fail();

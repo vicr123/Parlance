@@ -5,7 +5,7 @@ public class Vicr123AccountsDummyService : IVicr123AccountsService
 {
     private ulong _currentUserId = 0;
     private readonly Dictionary<string, ulong> _users = new();
-    private Dictionary<string, string> _tokens = new();
+    private readonly Dictionary<string, string> _tokens = new();
 
     public Task<string> ProvisionTokenAsync(ProvisionTokenParameters parameters)
     {
