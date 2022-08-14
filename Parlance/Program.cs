@@ -11,7 +11,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllersWithViews();
 builder.Services.AddSwaggerGen();
-builder.Services.AddVicr123Accounts();
+builder.Services.AddVicr123Accounts(builder.Configuration);
 
 builder.Services.AddSingleton<IVersionControlService, VersionControlService>();
 builder.Services.AddSingleton<IProjectService, ProjectService>();

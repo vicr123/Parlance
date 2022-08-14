@@ -62,8 +62,7 @@ public class Vicr123AccountsService : IVicr123AccountsService
                 "email" => new EmailPasswordResetMethod() { Domain = method.Item2["domain"].ToString()!, User = method.Item2["user"].ToString()! },
                 _ => null
             }))
-            .Where(prMethod => prMethod is not null)
-            .ToList()!;
+            .Where(prMethod => prMethod is not null)!;
     }
 
     public async Task PerformPasswordReset(User user, string type, IDictionary<string, object> challenge)
