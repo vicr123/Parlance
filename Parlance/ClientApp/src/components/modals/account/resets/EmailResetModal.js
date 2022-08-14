@@ -2,8 +2,9 @@ import React from "react";
 import Modal from "../../../Modal";
 import PasswordResetModal from "./PasswordResetModal";
 import UserManager from "../../../../helpers/UserManager";
+import {withTranslation} from "react-i18next";
 
-export default class EmailResetModal extends React.Component {
+export default withTranslation()(class EmailResetModal extends React.Component {
     constructor(props) {
         super(props);
 
@@ -19,22 +20,22 @@ export default class EmailResetModal extends React.Component {
     }
 
     render(props) {
-        return <Modal heading={"Recovery"} buttons={[
+        return <Modal heading={this.props.t('PASSWORD_RECOVERY_TITLE')} buttons={[
             {
-                text: "Back",
+                text: this.props.t("BACK"),
                 onClick: () => Modal.mount(<PasswordResetModal resetMethods={this.props.resetMethods} />)
             },
             {
-                text: "Reset Password",
+                text: this.props.t('RESET_PASSWORD'),
                 onClick: () => UserManager.performPasswordReset("email", {
                     email: this.state.email
                 })
             }
         ]}>
             <div style={{display: "flex", flexDirection: "column"}}>
-                Enter the full email address
+                {this.props.t('PASSWORD_RECOVERY_EMAIL_PROMPT_1')}
                 <input type={"text"} placeholder={`${this.props.method.user}∙∙∙@${this.props.method.domain}∙∙∙`} value={this.state.email} onChange={this.emailTextChanged.bind(this)} />
             </div>
         </Modal>
     }
-}
+})

@@ -6,6 +6,7 @@ import LoginOtpModal from "../components/modals/account/LoginOtpModal";
 import EventEmitter from "eventemitter3";
 import LoginPasswordResetModal from "../components/modals/account/LoginPasswordResetModal";
 import PasswordResetModal from "../components/modals/account/resets/PasswordResetModal";
+import i18n from "./i18n";
 
 class UserManager extends EventEmitter {
     #loginSessionDetails;
@@ -54,12 +55,17 @@ class UserManager extends EventEmitter {
         } catch (e) {
             let json = await e.json();
             
+            if (this.#loginSessionDetails.newPassword) {
+                this.#loginSessionDetails.password = this.#loginSessionDetails.newPassword;
+                delete this.#loginSessionDetails.newPassword;
+            }
+            
             switch (json.status) {
                 case "DisabledAccount":
-                    Modal.mount(<Modal heading={"Your account is disabled"} buttons={[
+                    Modal.mount(<Modal heading={i18n.t('ACCOUNT_DISABLED_TITLE')} buttons={[
                         Modal.OkButton
                     ]}>
-                        Your account has been disabled.
+                        {i18n.t('ACCOUNT_DISABLED_PROMPT')}
                     </Modal>);
                     return;
                 case "OtpRequired":
@@ -69,14 +75,14 @@ class UserManager extends EventEmitter {
                     Modal.mount(<LoginPasswordResetModal />);
                     return;
                 case "PasswordResetRequestRequired":
-                    Modal.mount(<Modal heading={"Reset Password"} buttons={[
+                    Modal.mount(<Modal heading={i18n.t('RESET_PASSWORD')} buttons={[
                         Modal.CancelButton,
                         {
-                            text: "Reset Password",
+                            text: i18n.t('RESET_PASSWORD'),
                             onClick: () => this.triggerPasswordReset()
                         }
                     ]}>
-                        You need to reset your password.
+                        {i18n.t('RESET_PASSWORD_PROMPT')}
                     </Modal>);
                     return;
                 default:
@@ -93,13 +99,13 @@ class UserManager extends EventEmitter {
             });
             Modal.mount(<PasswordResetModal resetMethods={response} />)
         } catch (e) {
-            Modal.mount(<Modal heading={"Recovery"} buttons={[
+            Modal.mount(<Modal heading={i18n.t('PASSWORD_RECOVERY_TITLE')} buttons={[
                 {
-                    text: "OK",
+                    text: i18n.t('OK'),
                     onClick: () => Modal.mount(<LoginPasswordModal />)
                 }
             ]}>
-                Sorry, your password can't be reset.
+                {i18n.t('PASSWORD_RECOVERY_ERROR_PROMPT')}
             </Modal>)
         }
     }
@@ -112,17 +118,17 @@ class UserManager extends EventEmitter {
                 type,
                 challenge
             });
-            Modal.mount(<Modal heading={"Recovery"} buttons={[
+            Modal.mount(<Modal heading={i18n.t('PASSWORD_RECOVERY_TITLE')} buttons={[
                 {
-                    text: "OK",
+                    text: i18n.t('OK'),
                     onClick: () => Modal.mount(<LoginPasswordModal />)
                 }
             ]}>
-                If the data you entered was correct, information has been sent to you about how to reset your password.
+                {i18n.t('PASSWORD_RECOVERY_SUCCESS_PROMPT')}
             </Modal>)
         } catch (e) {
             Modal.unmount(<Modal heading={"Recovery"} buttons={[Modal.OkButton]}>
-                Sorry, there was a problem resetting your password.
+                {i18n.t('PASSWORD_RECOVERY_ERROR_PROMPT_2')}
             </Modal>)
         }
     }

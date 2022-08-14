@@ -2,8 +2,9 @@ import Modal from "../../Modal";
 import React from "react";
 import LoginPasswordModal from "./LoginPasswordModal";
 import UserManager from "../../../helpers/UserManager";
+import {withTranslation} from "react-i18next";
 
-export default class LoginUsernameModal extends React.Component {
+export default withTranslation()(class LoginUsernameModal extends React.Component {
     constructor(props) {
         super(props);
         
@@ -19,13 +20,13 @@ export default class LoginUsernameModal extends React.Component {
     }
     
     render(props) {
-        return <Modal heading={"Log In"} buttons={[
+        return <Modal heading={this.props.t("LOG_IN")} buttons={[
             Modal.CancelButton,
             {
-                text: "Create Account"
+                text: this.props.t('CREATE_ACCOUNT')
             },
             {
-                text: "Next",
+                text: this.props.t('NEXT'),
                 onClick: () => {
                     UserManager.setLoginDetail("username", this.state.username);
                     Modal.mount(<LoginPasswordModal />)
@@ -33,9 +34,9 @@ export default class LoginUsernameModal extends React.Component {
             }
         ]}>
             <div style={{display: "flex", flexDirection: "column"}}>
-                Use your vicr123 account to log in
-                <input type={"text"} placeholder={"Username"} value={this.state.username} onChange={this.usernameTextChanged.bind(this)} />
+                {this.props.t('LOG_IN_PROMPT')}
+                <input type={"text"} placeholder={this.props.t('USERNAME')} value={this.state.username} onChange={this.usernameTextChanged.bind(this)} />
             </div>
         </Modal>
     }
-}
+})

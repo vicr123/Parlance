@@ -39,7 +39,12 @@
 .ModalButton {
     flex-grow: 1;
     flex-basis: 1px;
+    
+    display: flex;
     text-align: center;
+    justify-content: center;
+    align-content: center;
+    
     padding: 15px;
 
     cursor: default;

@@ -1,6 +1,8 @@
 import React from 'react';
 import Styles from './Modal.module.css';
 import {createRoot} from "react-dom/client";
+import {withTranslation} from "react-i18next";
+import i18n from "../helpers/i18n";
 
 let root;
 
@@ -47,30 +49,38 @@ class Modal extends React.Component {
         }
         return null;
     }
-
-    static mount(modal) {
-        if (root) Modal.unmount();
-        root = createRoot(document.getElementById('modalContainer'));
-        root.render(
-            <React.StrictMode>
-                {modal}
-            </React.StrictMode>);
-    }
-
-    static unmount() {
-        root.unmount();
-        root = null;
-    }
 }
 
-Modal.CancelButton = {
-    text: "Cancel",
-    onClick: () => Modal.unmount()
-};
-Modal.OkButton = {
-    text: "OK",
-    onClick: () => Modal.unmount()
-};
+let ExportProperty = withTranslation()(Modal);
+
+let setStandardButtons = () => {
+    ExportProperty.CancelButton = {
+        text: i18n.t('CANCEL'),
+        onClick: () => ExportProperty.unmount()
+    };
+    ExportProperty.OkButton = {
+        text: i18n.t('OK'),
+        onClick: () => ExportProperty.unmount()
+    };
+}
+
+i18n.on("initialized", setStandardButtons);
+i18n.on("languageChanged", setStandardButtons);
+i18n.on("loaded", setStandardButtons);
+setStandardButtons();
+
+ExportProperty.mount = (modal) => {
+    if (root) ExportProperty.unmount();
+    root = createRoot(document.getElementById('modalContainer'));
+    root.render(
+        <React.StrictMode>
+            {modal}
+        </React.StrictMode>);
+}
+ExportProperty.unmount = () => {
+    root.unmount();
+    root = null;
+}
 
 class ModalProgressSpinner extends React.Component {
     render() {
@@ -80,6 +90,6 @@ class ModalProgressSpinner extends React.Component {
     }
 }
 
-Modal.ModalProgressSpinner = ModalProgressSpinner;
+ExportProperty.ModalProgressSpinner = ModalProgressSpinner;
 
-export default Modal;
+export default ExportProperty;

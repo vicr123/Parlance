@@ -1,20 +1,23 @@
 import Modal from "../../Modal";
 import UserManager from "../../../helpers/UserManager";
+import {useTranslation} from "react-i18next";
 
 export default function(props) {
-    return <Modal heading={"User Management"} buttons={[
+    let {t} = useTranslation();
+    
+    return <Modal heading={t('USER_MANAGEMENT')} buttons={[
         {
-            text: "Close",
+            text: t('CLOSE'),
             onClick: () => Modal.unmount()
         },
         {
-            text: "Log Out",
+            text: t('LOG_OUT'),
             onClick: () => {
                 UserManager.logout();
                 Modal.unmount();
             }
         }
     ]}>
-        Hi, {UserManager.currentUser.username}!
+        {t('USER_MANAGEMENT_PROMPT', {username: UserManager.currentUser.username})}
     </Modal>
 }

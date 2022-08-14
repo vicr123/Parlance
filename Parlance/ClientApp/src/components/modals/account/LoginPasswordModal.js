@@ -2,8 +2,9 @@ import Modal from "../../Modal";
 import React from "react";
 import LoginUsernameModal from "./LoginUsernameModal";
 import UserManager from "../../../helpers/UserManager";
+import {withTranslation} from "react-i18next";
 
-export default class LoginPasswordModal extends React.Component {
+export default withTranslation()(class LoginPasswordModal extends React.Component {
     constructor(props) {
         super(props);
 
@@ -19,17 +20,17 @@ export default class LoginPasswordModal extends React.Component {
     }
 
     render(props) {
-        return <Modal heading={`Hello, ${UserManager.loginDetail("username")}`} buttons={[
+        return <Modal heading={this.props.t("LOG_IN_PASSWORD_TITLE", {username: UserManager.loginDetail("username")})} buttons={[
             {
-                text: "Back",
+                text: this.props.t('BACK'),
                 onClick: () => Modal.mount(<LoginUsernameModal />)
             },
             {
-                text: "Forgot Password",
+                text: this.props.t('FORGOT_PASSWORD'),
                 onClick: () => UserManager.triggerPasswordReset()
             },
             {
-                text: "Next",
+                text: this.props.t('NEXT'),
                 onClick: () => {
                     UserManager.setLoginDetail("password", this.state.password);
                     UserManager.attemptLogin();
@@ -37,9 +38,9 @@ export default class LoginPasswordModal extends React.Component {
             }
         ]}>
             <div style={{display: "flex", flexDirection: "column"}}>
-                Enter your password
-                <input type={"password"} placeholder={"Password"} value={this.state.password} onChange={this.passwordTextChanged.bind(this)} />
+                {this.props.t('LOG_IN_PASSWORD_PROMPT')}
+                <input type={"password"} placeholder={this.props.t('PASSWORD')} value={this.state.password} onChange={this.passwordTextChanged.bind(this)} />
             </div>
         </Modal>
     }
-}
+})

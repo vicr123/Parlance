@@ -5,8 +5,9 @@ import Modal from "./Modal";
 import LoginUsernameModal from "./modals/account/LoginUsernameModal";
 import UserManager from "../helpers/UserManager";
 import UserModal from "./modals/account/UserModal";
+import {withTranslation} from "react-i18next";
 
-export class NavMenu extends Component {
+export default withTranslation()(class NavMenu extends Component {
     static displayName = NavMenu.name;
 
     constructor(props) {
@@ -27,7 +28,7 @@ export class NavMenu extends Component {
     
     async updateUserDetails() {
         this.setState({
-            currentUser: UserManager.currentUser?.username || "Log In"
+            currentUser: UserManager.currentUser?.username || this.props.t("LOG_IN")
         });
     }
 
@@ -62,4 +63,4 @@ export class NavMenu extends Component {
             </header>
         );
     }
-}
+})

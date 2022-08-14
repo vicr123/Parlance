@@ -2,8 +2,9 @@ import Modal from "../../Modal";
 import React from "react";
 import LoginUsernameModal from "./LoginUsernameModal";
 import UserManager from "../../../helpers/UserManager";
+import {withTranslation} from "react-i18next";
 
-export default class LoginPasswordResetModal extends React.Component {
+export default withTranslation()(class LoginPasswordResetModal extends React.Component {
     constructor(props) {
         super(props);
 
@@ -26,13 +27,13 @@ export default class LoginPasswordResetModal extends React.Component {
     }
 
     render(props) {
-        return <Modal heading={`Reset Password`} buttons={[
+        return <Modal heading={this.props.t('RESET_PASSWORD')} buttons={[
             {
-                text: "Cancel",
+                text: this.props.t('CANCEL'),
                 onClick: () => Modal.mount(<LoginUsernameModal />)
             },
             {
-                text: "OK",
+                text: this.props.t('OK'),
                 onClick: () => {
                     if (this.state.password !== this.state.confirmPassword) {
                         return;
@@ -44,11 +45,11 @@ export default class LoginPasswordResetModal extends React.Component {
             }
         ]}>
             <div style={{display: "flex", flexDirection: "column"}}>
-                You need to set a password for your account.
-                Make it a good password and save it for this account. You don't want to be reusing this password
-                <input type={"password"} placeholder={"Password"} value={this.state.password} onChange={this.passwordTextChanged.bind(this)} />
-                <input type={"password"} placeholder={"Confirm Password"} value={this.state.confirmPassword} onChange={this.confirmPasswordTextChanged.bind(this)} />
+                {this.props.t('LOG_IN_PASSWORD_RESET_PROMPT_1')}
+                {this.props.t('LOG_IN_PASSWORD_RESET_PROMPT_2')}
+                <input type={"password"} placeholder={this.props.t('PASSWORD')} value={this.state.password} onChange={this.passwordTextChanged.bind(this)} />
+                <input type={"password"} placeholder={this.props.t('CONFIRM_PASSWORD')} value={this.state.confirmPassword} onChange={this.confirmPasswordTextChanged.bind(this)} />
             </div>
         </Modal>
     }
-}
+});
