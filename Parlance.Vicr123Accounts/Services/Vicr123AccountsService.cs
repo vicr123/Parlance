@@ -51,6 +51,28 @@ public class Vicr123AccountsService : IVicr123AccountsService
         return await UserByObjectPath(objectPath);
     }
 
+    public async Task<IEnumerable<IPasswordResetMethod>> PasswordResetMethods(User user)
+    {
+        var objectPath = await _manager.UserByIdAsync(user.Id);
+        var passwordResetProxy = _connection.CreateProxy<IPasswordReset>(_serviceName, objectPath);
+        var methods = await passwordResetProxy.ResetMethodsAsync();
+
+        return methods.Select(method => (IPasswordResetMethod?) (method.Item1 switch
+            {
+                "email" => new EmailPasswordResetMethod() { Domain = method.Item2["domain"].ToString()!, User = method.Item2["user"].ToString()! },
+                _ => null
+            }))
+            .Where(prMethod => prMethod is not null)
+            .ToList()!;
+    }
+
+    public async Task PerformPasswordReset(User user, string type, IDictionary<string, object> challenge)
+    {
+        var objectPath = await _manager.UserByIdAsync(user.Id);
+        var passwordResetProxy = _connection.CreateProxy<IPasswordReset>(_serviceName, objectPath);
+        await passwordResetProxy.ResetPasswordAsync(type, challenge);
+    }
+
     public async Task InitAsync()
     {
         _connection = new Connection("unix:path=/var/vicr123-accounts/vicr123-accounts-bus");

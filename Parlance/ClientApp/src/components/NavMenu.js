@@ -14,8 +14,21 @@ export class NavMenu extends Component {
 
         this.toggleNavbar = this.toggleNavbar.bind(this);
         this.state = {
-            collapsed: true
+            collapsed: true,
+            currentUser: "..."
         };
+        
+        UserManager.on("currentUserChanged", this.updateUserDetails.bind(this));
+    }
+    
+    async componentDidMount() {
+        await this.updateUserDetails();
+    }
+    
+    async updateUserDetails() {
+        this.setState({
+            currentUser: UserManager.currentUser?.username || "Log In"
+        });
     }
 
     toggleNavbar() {
@@ -42,7 +55,7 @@ export class NavMenu extends Component {
                             Parlance
                         </div>
                         <div>
-                            <Button onClick={this.manageAccount.bind(this)}>Log In</Button>
+                            <Button onClick={this.manageAccount.bind(this)}>{this.state.currentUser}</Button>
                         </div>
                     </div>
                 </div>

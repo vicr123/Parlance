@@ -15,6 +15,6 @@ export default function(props) {
             }
         }
     ]}>
-        Hi, user!
+        Hi, {UserManager.currentUser.username}!
     </Modal>
 }

@@ -25,6 +25,10 @@ export default class LoginPasswordModal extends React.Component {
                 onClick: () => Modal.mount(<LoginUsernameModal />)
             },
             {
+                text: "Forgot Password",
+                onClick: () => UserManager.triggerPasswordReset()
+            },
+            {
                 text: "Next",
                 onClick: () => {
                     UserManager.setLoginDetail("password", this.state.password);

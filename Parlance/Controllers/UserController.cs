@@ -1,3 +1,4 @@
+using System.Text.Json;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Parlance.Vicr123Accounts.Authentication;
@@ -27,6 +28,14 @@ public class UserController : Controller
         {
             user.Username, user.Email
         });
+    }
+
+    public class UserTokenRequestData
+    {
+        public string Username { get; set; }
+        public string Password { get; set; }
+        public string? OtpToken { get; set; }
+        public string? NewPassword { get; set; }
     }
 
     [HttpPost]
@@ -64,11 +73,66 @@ public class UserController : Controller
         }
     }
 
-    public class UserTokenRequestData
+    public class PasswordResetMethodsRequestData
     {
         public string Username { get; set; }
-        public string Password { get; set; }
-        public string? OtpToken { get; set; }
-        public string? NewPassword { get; set; }
+    }
+    
+    [HttpPost]
+    [Route("reset/methods")]
+    public async Task<IActionResult> GetPasswordResetMethods([FromBody] PasswordResetMethodsRequestData data)
+    {
+        var user = await _accountsService.UserByUsername(data.Username);
+        return Json(
+            (await _accountsService.PasswordResetMethods(user)).Select(method =>
+            {
+                if (method is EmailPasswordResetMethod emailMethod)
+                {
+                    return new
+                    {
+                        Type = "email",
+                        emailMethod.Domain,
+                        emailMethod.User
+                    };
+                }
+
+                return null;
+            }).Where(method => method is not null)
+        );
+    }
+
+    public class PerformResetRequestData
+    {
+        public string Username { get; set; }
+        public string Type { get; set; }
+        public IDictionary<string, object> Challenge { get; set; }
+    }
+    
+    [HttpPost]
+    [Route("reset")]
+    public async Task<IActionResult> PerformReset([FromBody] PerformResetRequestData data)
+    {
+        var user = await _accountsService.UserByUsername(data.Username);
+        await _accountsService.PerformPasswordReset(user, data.Type, data.Challenge.ToDictionary(item => item.Key,
+            item =>
+            {
+                if (item.Value is JsonElement json)
+                {
+                    return json.ValueKind switch
+                    {
+                        JsonValueKind.Undefined => "undefined",
+                        JsonValueKind.Object => "TODO",
+                        JsonValueKind.Array => "TODO",
+                        JsonValueKind.String => json.GetString(),
+                        JsonValueKind.Number => json.GetDecimal(),
+                        JsonValueKind.True => true,
+                        JsonValueKind.False => false,
+                        JsonValueKind.Null => "null",
+                        _ => throw new ArgumentOutOfRangeException()
+                    };
+                }
+                return item.Value;
+            }));
+        return NoContent();
     }
 }
