@@ -20,6 +20,7 @@ public static class Vicr123AccountsExtensions
             services.AddSingleton<IVicr123AccountsService, Vicr123AccountsService>();
         }
         services.AddSingleton<IAuthorizationHandler, Vicr123AuthorizationHandler>();
+        services.Configure<Vicr123AccountsOptions>(configuration.GetSection("Vicr123Accounts"));
 
         return services;
     }

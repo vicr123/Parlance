@@ -1,18 +1,21 @@
 using accounts.DBus;
+using Microsoft.Extensions.Options;
 using Tmds.DBus;
 
 namespace Parlance.Vicr123Accounts.Services;
 
 public class Vicr123AccountsService : IVicr123AccountsService
 {
+    private readonly IOptions<Vicr123AccountsOptions> _accountOptions;
     private readonly string _applicationName = "Parlance";
 
     private readonly string _serviceName = "com.vicr123.accounts";
     private Connection _connection = null!;
     private IManager _manager = null!;
 
-    public Vicr123AccountsService()
+    public Vicr123AccountsService(IOptions<Vicr123AccountsOptions> accountOptions)
     {
+        _accountOptions = accountOptions;
         InitAsync().Wait();
     }
 
@@ -74,7 +77,7 @@ public class Vicr123AccountsService : IVicr123AccountsService
 
     public async Task InitAsync()
     {
-        _connection = new Connection("unix:path=/var/vicr123-accounts/vicr123-accounts-bus");
+        _connection = new Connection(_accountOptions.Value.DbusConnectionPath);
         await _connection.ConnectAsync();
 
         _manager = _connection.CreateProxy<IManager>(_serviceName, "/com/vicr123/accounts");
