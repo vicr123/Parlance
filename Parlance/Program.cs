@@ -1,6 +1,9 @@
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.EntityFrameworkCore;
+using Parlance;
 using Parlance.Authorization.HasToken;
 using Parlance.Authorization.LanguageEditor;
+using Parlance.Database;
 using Parlance.Projects;
 using Parlance.VersionControl.Services;
 using Parlance.Vicr123Accounts;
@@ -17,6 +20,13 @@ builder.Services.AddSingleton<IVersionControlService, VersionControlService>();
 builder.Services.AddSingleton<IProjectService, ProjectService>();
 builder.Services.AddSingleton<IAuthorizationHandler, LanguageEditorHandler>();
 builder.Services.AddSingleton<IAuthorizationHandler, HasTokenHandler>();
+
+builder.Services.Configure<ParlanceOptions>(builder.Configuration.GetSection("Parlance"));
+
+builder.Services.AddDbContext<ParlanceContext>(options =>
+{
+    options.UseNpgsql(builder.Configuration.GetSection("Parlance")["DatabaseConnectionString"]);
+});
 
 builder.Services.AddAuthorizationCore(options =>
 {
@@ -46,5 +56,11 @@ app.MapControllerRoute(
     "{controller}/{action=Index}/{id?}");
 
 app.MapFallbackToFile("index.html");
+
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    await services.GetRequiredService<ParlanceContext>().Initialize();
+}
 
 app.Run();
