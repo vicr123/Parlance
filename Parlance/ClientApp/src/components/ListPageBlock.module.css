@@ -1,0 +1,7 @@
+.listPageBlock {
+    padding: 9px;
+    max-width: 600px;
+    
+    display: flex;
+    flex-direction: column;
+}

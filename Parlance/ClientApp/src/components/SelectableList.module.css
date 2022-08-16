@@ -1,0 +1,18 @@
+.listContainer {
+    border-top: 1px solid var(--border-color);
+}
+
+.listItem {
+    border-bottom: 1px solid var(--border-color);
+    padding: 9px;
+    
+    cursor: default;
+}
+
+.listItem:hover {
+    background-color: var(--hover-color);
+}
+
+.listItem:active {
+    background-color: var(--active-color);
+}

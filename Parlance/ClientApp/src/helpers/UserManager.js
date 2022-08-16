@@ -145,6 +145,10 @@ class UserManager extends EventEmitter {
     get currentUser() {
         return this.#currentUser;
     }
+    
+    get currentUserIsSuperuser() {
+        return this.#currentUser.superuser;
+    }
 }
 
 let mgr = new UserManager();

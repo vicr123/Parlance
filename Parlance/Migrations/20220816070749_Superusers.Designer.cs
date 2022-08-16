@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Parlance.Database;
@@ -11,9 +12,10 @@ using Parlance.Database;
 namespace Parlance.Migrations
 {
     [DbContext(typeof(ParlanceContext))]
-    partial class ParlanceContextModelSnapshot : ModelSnapshot
+    [Migration("20220816070749_Superusers")]
+    partial class Superusers
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

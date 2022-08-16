@@ -1,4 +1,9 @@
-/* Provide sufficient contrast against white background */
+@font-face {
+    font-family: 'Contemporary';
+    font-style: normal;
+    font-weight: 400;
+    src: local('Contemporary'), local('Contemporary-Regular'), url('https://vicr123.com/typeface/Contemporary-Regular.ttf');
+}
 
 :root {
     color-scheme: light dark;
@@ -30,6 +35,9 @@
 body {
     background-color: var(--background-color);
     color: var(--foreground-color);
+
+    font-family: 'Contemporary', sans-serif;
+    font-size: 12pt;
 }
 
 a {

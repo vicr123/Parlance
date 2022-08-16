@@ -10,3 +10,7 @@
     padding-left: 9px;
     padding-right: 9px;
 }
+
+.bottomBorder {
+    border-bottom: 1px solid var(--border-color);
+}

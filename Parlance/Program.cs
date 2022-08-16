@@ -1,10 +1,11 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Parlance;
-using Parlance.Authorization.HasToken;
 using Parlance.Authorization.LanguageEditor;
+using Parlance.Authorization.Superuser;
 using Parlance.Database;
 using Parlance.Projects;
+using Parlance.Services;
 using Parlance.VersionControl.Services;
 using Parlance.Vicr123Accounts;
 
@@ -18,8 +19,7 @@ builder.Services.AddVicr123Accounts(builder.Configuration);
 
 builder.Services.AddSingleton<IVersionControlService, VersionControlService>();
 builder.Services.AddSingleton<IProjectService, ProjectService>();
-builder.Services.AddSingleton<IAuthorizationHandler, LanguageEditorHandler>();
-builder.Services.AddSingleton<IAuthorizationHandler, HasTokenHandler>();
+builder.Services.AddScoped<ISuperuserService, SuperuserService>();
 
 builder.Services.Configure<ParlanceOptions>(builder.Configuration.GetSection("Parlance"));
 
@@ -28,10 +28,13 @@ builder.Services.AddDbContext<ParlanceContext>(options =>
     options.UseNpgsql(builder.Configuration.GetSection("Parlance")["DatabaseConnectionString"]);
 });
 
+builder.Services.AddScoped<IAuthorizationHandler, LanguageEditorHandler>();
+builder.Services.AddScoped<IAuthorizationHandler, SuperuserHandler>();
+
 builder.Services.AddAuthorizationCore(options =>
 {
-    options.AddPolicy("HasToken", policy => policy.Requirements.Add(new HasTokenRequirement()));
     options.AddPolicy("LanguageEditor", policy => policy.Requirements.Add(new LanguageEditorRequirement()));
+    options.AddPolicy("Superuser", policy => policy.Requirements.Add(new SuperuserRequirement()));
 });
 
 var app = builder.Build();
@@ -49,6 +52,8 @@ if (!app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
+
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllerRoute(

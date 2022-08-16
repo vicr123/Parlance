@@ -1,66 +1,49 @@
-import React, {Component} from 'react';
+import React, {Component, useEffect, useState} from 'react';
 import Styles from './NavMenu.module.css';
 import Button from "./Button";
 import Modal from "./Modal";
 import LoginUsernameModal from "./modals/account/LoginUsernameModal";
 import UserManager from "../helpers/UserManager";
 import UserModal from "./modals/account/UserModal";
-import {withTranslation} from "react-i18next";
+import {useTranslation} from "react-i18next";
+import {useNavigate} from "react-router-dom";
 
-export default withTranslation()(class NavMenu extends Component {
-    static displayName = NavMenu.name;
+export default function(props) {
+    const [currentUser, setCurrentUser] = useState();
+    const {t} = useTranslation();
+    const navigate = useNavigate();
 
-    constructor(props) {
-        super(props);
-
-        this.toggleNavbar = this.toggleNavbar.bind(this);
-        this.state = {
-            collapsed: true,
-            currentUser: "..."
-        };
-        
-        UserManager.on("currentUserChanged", this.updateUserDetails.bind(this));
-    }
+    UserManager.on("currentUserChanged", () => {
+        setCurrentUser(UserManager.currentUser?.username || t("LOG_IN"))
+    });
+    useEffect(() => {
+        setCurrentUser(UserManager.currentUser?.username || t("LOG_IN"))
+    });
     
-    async componentDidMount() {
-        await this.updateUserDetails();
-    }
-    
-    async updateUserDetails() {
-        this.setState({
-            currentUser: UserManager.currentUser?.username || this.props.t("LOG_IN")
-        });
-    }
-
-    toggleNavbar() {
-        this.setState({
-            collapsed: !this.state.collapsed
-        });
-    }
-    
-    manageAccount() {
+    const manageAccount = () => {
         if (UserManager.isLoggedIn) {
             Modal.mount(<UserModal />)
         } else {
             UserManager.clearLoginDetails();
             Modal.mount(<LoginUsernameModal />)
         }
-    }
+    };
+    const goHome = () => {
+        navigate("/");
+    };
 
-    render() {
-        return (
-            <header>
-                <div className={Styles.navbarWrapper}>
-                    <div className={Styles.navbarInner}>
-                        <div>
-                            Parlance
-                        </div>
-                        <div>
-                            <Button onClick={this.manageAccount.bind(this)}>{this.state.currentUser}</Button>
-                        </div>
+    return (
+        <header>
+            <div className={Styles.navbarWrapper}>
+                <div className={Styles.navbarInner}>
+                    <div>
+                        <Button onClick={goHome}>Parlance</Button>
+                    </div>
+                    <div>
+                        <Button onClick={manageAccount}>{currentUser}</Button>
                     </div>
                 </div>
-            </header>
-        );
-    }
-})
+            </div>
+        </header>
+    );
+}

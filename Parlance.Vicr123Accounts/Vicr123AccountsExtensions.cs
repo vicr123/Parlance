@@ -19,8 +19,12 @@ public static class Vicr123AccountsExtensions
         {
             services.AddSingleton<IVicr123AccountsService, Vicr123AccountsService>();
         }
-        services.AddSingleton<IAuthorizationHandler, Vicr123AuthorizationHandler>();
+        // services.AddSingleton<IAuthorizationHandler, Vicr123AuthorizationHandler>();
         services.Configure<Vicr123AccountsOptions>(configuration.GetSection("Vicr123Accounts"));
+        services.AddAuthentication(o =>
+        {
+            o.DefaultScheme = Vicr123AuthenticationHandler.AuthenticationScheme;
+        }).AddScheme<Vicr123AuthenticationOptions, Vicr123AuthenticationHandler>(Vicr123AuthenticationHandler.AuthenticationScheme, o => {});
 
         return services;
     }

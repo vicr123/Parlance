@@ -11,11 +11,13 @@ public class ParlanceContext : DbContext
 
     public DbSet<SshKey> SshKeys { get; set; } = null!;
     public DbSet<SshTrustedServer> SshTrustedServers { get; set; } = null!;
+    public DbSet<Superuser> Superusers { get; set; } = null!;
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<SshKey>().ToTable("SshKeys");
         modelBuilder.Entity<SshTrustedServer>().ToTable("SshTrustedServers");
+        modelBuilder.Entity<Superuser>().ToTable("Superusers");
     }
 }
 

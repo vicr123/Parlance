@@ -1,0 +1,15 @@
+.level1 {
+    font-size: 30pt;
+    font-weight: bold;
+}
+
+.level2 {
+    font-size: 15pt;
+    font-weight: normal;
+}
+
+.level3 {
+    font-size: 12pt;
+    font-weight: bold;
+    text-transform: uppercase;
+}

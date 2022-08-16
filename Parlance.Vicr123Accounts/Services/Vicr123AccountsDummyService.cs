@@ -43,16 +43,16 @@ public class Vicr123AccountsDummyService : IVicr123AccountsService
 
     public Task<User> CreateUser(string username, string password, string email)
     {
-        throw new NotImplementedException();
+        throw new NotSupportedException();
     }
 
     public Task<IEnumerable<IPasswordResetMethod>> PasswordResetMethods(User user)
     {
-        throw new NotImplementedException();
+        throw new NotSupportedException();
     }
 
     public Task PerformPasswordReset(User user, string type, IDictionary<string, object> challenge)
     {
-        throw new NotImplementedException();
+        throw new NotSupportedException();
     }
 }

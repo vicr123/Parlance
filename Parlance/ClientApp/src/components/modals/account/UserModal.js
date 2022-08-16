@@ -1,9 +1,21 @@
 import Modal from "../../Modal";
 import UserManager from "../../../helpers/UserManager";
 import {useTranslation} from "react-i18next";
+import ModalList from "../../ModalList";
+import {useNavigate} from "react-router-dom";
 
 export default function(props) {
-    let {t} = useTranslation();
+    const {t} = useTranslation();
+    
+    let bottomButtons = [];
+    if (UserManager.currentUserIsSuperuser) {
+        bottomButtons.push({
+            text: t('PARLANCE_ADMINISTRATION'),
+            onClick: () => {
+                document.location = "/admin";
+            }
+        })
+    }
     
     return <Modal heading={t('USER_MANAGEMENT')} buttons={[
         {
@@ -19,5 +31,8 @@ export default function(props) {
         }
     ]}>
         {t('USER_MANAGEMENT_PROMPT', {username: UserManager.currentUser.username})}
+        <ModalList>
+            {bottomButtons}
+        </ModalList>
     </Modal>
 }

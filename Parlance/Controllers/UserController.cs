@@ -1,10 +1,13 @@
 using System.Text.Json;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Parlance.Database;
+using Parlance.Services;
 using Parlance.Vicr123Accounts.Authentication;
 using Parlance.Vicr123Accounts.Services;
 using Tmds.DBus;
 
+// ReSharper disable UnusedAutoPropertyAccessor.Global
 // ReSharper disable AutoPropertyCanBeMadeGetOnly.Global
 
 namespace Parlance.Controllers;
@@ -14,21 +17,26 @@ namespace Parlance.Controllers;
 public class UserController : Controller
 {
     private readonly IVicr123AccountsService _accountsService;
+    private readonly ISuperuserService _superuserService;
 
-    public UserController(IVicr123AccountsService accountsService)
+    public UserController(IVicr123AccountsService accountsService, ISuperuserService superuserService)
     {
         _accountsService = accountsService;
+        _superuserService = superuserService;
     }
 
-    [Authorize(Policy = "HasToken")]
+    [Authorize]
     public async Task<IActionResult> GetUser()
     {
         var userId = ulong.Parse(HttpContext.User.Claims.First(claim => claim.Type == Claims.UserId).Value);
         var user = await _accountsService.UserById(userId);
 
+        var superuser = await _superuserService.IsSuperuser(user.Username);
+
         return Json(new
         {
-            user.Username, user.Email
+            user.Username, user.Email,
+            Superuser = superuser
         });
     }
 
@@ -77,7 +85,7 @@ public class UserController : Controller
 
     public class PasswordResetMethodsRequestData
     {
-        public string Username { get; init; } = null!;
+        public string Username { get; set; } = null!;
     }
     
     [HttpPost]
