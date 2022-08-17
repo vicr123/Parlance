@@ -45,4 +45,6 @@ public interface IVicr123AccountsService
     public Task<bool> VerifyUserPassword(User user, string password);
     public Task<User> UpdateUser(User user);
     public Task UpdateUserPassword(User user, string newPassword);
+    public Task ResendVerificationEmail(User user);
+    public Task<bool> VerifyEmail(User user, string verificationCode);
 }

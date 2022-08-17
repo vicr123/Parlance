@@ -8,6 +8,7 @@ import PageHeading from "../../components/PageHeading";
 import UsernameChange from "./UsernameChange";
 import EmailChange from "./EmailChange";
 import PasswordChange from "./PasswordChange";
+import VerifyEmail from "./VerifyEmail";
 
 export default function(props) {
     const [ignored, forceUpdate] = useReducer(x => x + 1, 0);
@@ -54,6 +55,7 @@ export default function(props) {
             <Route element={<UsernameChange />} path={"/username"} />
             <Route element={<EmailChange />} path={"/email"} />
             <Route element={<PasswordChange />} path={"/password"} />
+            <Route element={<VerifyEmail />} path={"/verify"} />
         </Routes>
     </div>
 }

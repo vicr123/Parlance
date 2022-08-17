@@ -48,6 +48,8 @@
   "PARLANCE_ADMINISTRATION_DESCRIPTION": "Configure the Parlance server",
   "PASSWORD": "Password",
   "PASSWORD_CHANGE_CHECK_TITLE": "Check your password",
+  "PASSWORD_CHANGE_ERROR_1": "Could not set password",
+  "PASSWORD_CHANGE_ERROR_2": "Your password could not be changed.",
   "PASSWORD_CHANGE_NEW_PASSWORD": "New Password",
   "PASSWORD_CHANGE_NO_MATCH": "The passwords do not match. Enter your password again.",
   "PASSWORD_CHANGE_PROMPT_1": "After changing your password, we'll log you out of all your other devices.",
@@ -76,5 +78,14 @@
   "USERNAME": "Username",
   "USERS": "Users",
   "USER_MANAGEMENT": "User Management",
-  "USER_MANAGEMENT_PROMPT": "Hi, {{username}}!"
+  "USER_MANAGEMENT_PROMPT": "Hi, {{username}}!",
+  "VERIFICATION_EMAIL_RESEND_PROMPT": "Check your mailbox for the verification code. You may have to check your spam folder.",
+  "VERIFY_EMAIL": "Verify Email",
+  "VERIFY_EMAIL_FAILED_1": "Email Verification Failed",
+  "VERIFY_EMAIL_FAILED_2": "Your verification code is incorrect, or the verification code has changed.",
+  "VERIFY_EMAIL_FAILED_3": "If it's been more than a day since you received the verification email, you'll need to resend the verification email to get a new code.",
+  "VERIFY_EMAIL_PROMPT": "Enter the verification code",
+  "VERIFY_EMAIL_SUCCESS": "Email Verified",
+  "VERIFY_EMAIL_SUCCESS_PROMPT": "Your email has been verified. Thank you!",
+  "VERIFY_EMAIL_VERIFICATION_CODE": "Verification Code"
 }

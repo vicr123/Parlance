@@ -215,4 +215,40 @@ public class UserController : Controller
 
         return NoContent();
     }
+
+    [HttpPost]
+    [Route("verification/resend")]
+    public async Task<IActionResult> ResendVerificationEmail()
+    {
+        var userId = ulong.Parse(HttpContext.User.Claims.First(claim => claim.Type == Claims.UserId).Value);
+        var user = await _accountsService.UserById(userId);
+
+        if (user.EmailVerified) return BadRequest();
+
+        await _accountsService.ResendVerificationEmail(user);
+        
+        return NoContent();
+    }
+
+    public class VerifyEmailRequestData
+    {
+        public string VerificationCode { get; set; } = null!;
+    }
+
+    [HttpPost]
+    [Route("verification")]
+    public async Task<IActionResult> VerifyEmail([FromBody] VerifyEmailRequestData data)
+    {
+        var userId = ulong.Parse(HttpContext.User.Claims.First(claim => claim.Type == Claims.UserId).Value);
+        var user = await _accountsService.UserById(userId);
+
+        if (user.EmailVerified) return BadRequest();
+
+        if (!await _accountsService.VerifyEmail(user, data.VerificationCode))
+        {
+            return BadRequest();
+        }
+        
+        return NoContent();
+    }
 }

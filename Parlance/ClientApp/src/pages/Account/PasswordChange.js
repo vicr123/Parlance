@@ -46,8 +46,8 @@ export default function(props) {
                     return;
                 }
 
-                Modal.mount(<Modal heading={t("CHANGE_USERNAME_ERROR_1")} buttons={[Modal.OkButton]}>
-                    {t("CHANGE_USERNAME_ERROR_2")}
+                Modal.mount(<Modal heading={t("PASSWORD_CHANGE_ERROR_1")} buttons={[Modal.OkButton]}>
+                    {t("PASSWORD_CHANGE_ERROR_2")}
                 </Modal>)
             }
         }

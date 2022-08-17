@@ -8,6 +8,8 @@ import SmallButton from "../../components/SmallButton";
 import SelectableList from "../../components/SelectableList";
 import {useNavigate} from "react-router-dom";
 import Modal from "../../components/Modal";
+import LoadingModal from "../../components/modals/LoadingModal";
+import Fetch from "../../helpers/Fetch";
 
 export default function(props) {
     const [ignored, forceUpdate] = useReducer(x => x + 1, 0);
@@ -19,13 +21,25 @@ export default function(props) {
     if (!UserManager.currentUser) {
         return null;
     }
+    
+    const resendVerificationEmail = async () => {
+        Modal.mount(<LoadingModal />)
+        try {
+            await Fetch.post("/api/user/verification/resend", {});
+            Modal.mount(<Modal heading={t("EMAIL_VERIFY_RESEND")} buttons={[Modal.OkButton]}>
+                {t("VERIFICATION_EMAIL_RESEND_PROMPT")}
+            </Modal>)
+        } catch {
+            Modal.unmount();
+        }
+    }
 
     let verifyEmailPrompt = UserManager.currentUser.emailVerified ? null : <div className={Styles.verifyEmailPrompt}>
         <PageHeading level={3}>{t("EMAIL_VERIFY_TITLE")}</PageHeading>
         <p>{t("EMAIL_VERIFY_PROMPT")}</p>
         <div className={Styles.verifyEmailButtons}>
-            <SmallButton>{t("EMAIL_VERIFY_RESEND")}</SmallButton>
-            <SmallButton>{t("EMAIL_VERIFY_ENTER_CODE")}</SmallButton>
+            <SmallButton onClick={resendVerificationEmail}>{t("EMAIL_VERIFY_RESEND")}</SmallButton>
+            <SmallButton onClick={() => navigate("verify")}>{t("EMAIL_VERIFY_ENTER_CODE")}</SmallButton>
         </div>
     </div>
 

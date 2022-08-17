@@ -107,6 +107,33 @@ public class Vicr123AccountsService : IVicr123AccountsService
         await userProxy.SetPasswordAsync(newPassword);
     }
 
+    public async Task ResendVerificationEmail(User user)
+    {
+        var objectPath = await _manager.UserByIdAsync(user.Id);
+        var userProxy = _connection.CreateProxy<IUser>(_serviceName, objectPath);
+        if (await userProxy.GetVerifiedAsync()) throw new InvalidOperationException();
+        
+        await userProxy.ResendVerificationEmailAsync();
+    }
+
+    public async Task<bool> VerifyEmail(User user, string verificationCode)
+    {
+        var objectPath = await _manager.UserByIdAsync(user.Id);
+        var userProxy = _connection.CreateProxy<IUser>(_serviceName, objectPath);
+        if (await userProxy.GetVerifiedAsync()) throw new InvalidOperationException();
+
+        try
+        {
+            await userProxy.VerifyEmailAsync(verificationCode);
+            return true;
+        }
+        catch (DBusException ex)
+        {
+            if (ex.ErrorName == "com.vicr123.accounts.Error.VerificationCodeIncorrect") return false;
+            throw;
+        }
+    }
+
     private async Task InitAsync()
     {
         _connection = new Connection(_accountOptions.Value.DbusConnectionPath);

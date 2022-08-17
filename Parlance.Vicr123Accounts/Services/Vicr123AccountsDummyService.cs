@@ -70,4 +70,14 @@ public class Vicr123AccountsDummyService : IVicr123AccountsService
     {
         throw new NotSupportedException();
     }
+
+    public Task ResendVerificationEmail(User user)
+    {
+        throw new NotSupportedException();
+    }
+
+    public Task<bool> VerifyEmail(User user, string verificationCode)
+    {
+        throw new NotSupportedException();
+    }
 }
