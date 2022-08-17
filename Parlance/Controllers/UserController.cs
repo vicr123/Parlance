@@ -1,7 +1,6 @@
 using System.Text.Json;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Parlance.Database;
 using Parlance.Services;
 using Parlance.Vicr123Accounts.Authentication;
 using Parlance.Vicr123Accounts.Services;
@@ -35,7 +34,7 @@ public class UserController : Controller
 
         return Json(new
         {
-            user.Username, user.Email,
+            user.Username, user.Email, user.EmailVerified,
             Superuser = superuser
         });
     }
@@ -143,6 +142,77 @@ public class UserController : Controller
                 }
                 return item.Value;
             }));
+        return NoContent();
+    }
+
+    public class ChangeUsernameRequestData
+    {
+        public string NewUsername { get; set; } = null!;
+        public string Password { get; set; } = null!;
+    }
+    
+    [HttpPost]
+    [Route("username")]
+    public async Task<IActionResult> ChangeUsername([FromBody] ChangeUsernameRequestData data)
+    {
+        var userId = ulong.Parse(HttpContext.User.Claims.First(claim => claim.Type == Claims.UserId).Value);
+        var user = await _accountsService.UserById(userId);
+
+        if (!await _accountsService.VerifyUserPassword(user, data.Password))
+        {
+            return Forbid();
+        }
+
+        user.Username = data.NewUsername;
+        await _accountsService.UpdateUser(user);
+
+        return NoContent();
+    }
+
+    public class ChangeEmailRequestData
+    {
+        public string NewEmail { get; set; } = null!;
+        public string Password { get; set; } = null!;
+    }
+    
+    [HttpPost]
+    [Route("email")]
+    public async Task<IActionResult> ChangeEmail([FromBody] ChangeEmailRequestData data)
+    {
+        var userId = ulong.Parse(HttpContext.User.Claims.First(claim => claim.Type == Claims.UserId).Value);
+        var user = await _accountsService.UserById(userId);
+
+        if (!await _accountsService.VerifyUserPassword(user, data.Password))
+        {
+            return Forbid();
+        }
+
+        user.Email = data.NewEmail;
+        await _accountsService.UpdateUser(user);
+
+        return NoContent();
+    }
+
+    public class ChangePasswordRequestData
+    {
+        public string NewPassword { get; set; } = null!;
+        public string Password { get; set; } = null!;
+    }
+    
+    [HttpPost]
+    [Route("password")]
+    public async Task<IActionResult> ChangeEmail([FromBody] ChangePasswordRequestData data)
+    {
+        var userId = ulong.Parse(HttpContext.User.Claims.First(claim => claim.Type == Claims.UserId).Value);
+        var user = await _accountsService.UserById(userId);
+
+        if (!await _accountsService.VerifyUserPassword(user, data.Password))
+        {
+            return Forbid();
+        }
+
+        await _accountsService.UpdateUserPassword(user, data.NewPassword);
+
         return NoContent();
     }
 }

@@ -55,4 +55,19 @@ public class Vicr123AccountsDummyService : IVicr123AccountsService
     {
         throw new NotSupportedException();
     }
+
+    public Task<bool> VerifyUserPassword(User user, string password)
+    {
+        return Task.FromResult(true);
+    }
+
+    public Task<User> UpdateUser(User user)
+    {
+        throw new NotSupportedException();
+    }
+
+    public Task UpdateUserPassword(User user, string newPassword)
+    {
+        throw new NotSupportedException();
+    }
 }

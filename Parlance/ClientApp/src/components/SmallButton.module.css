@@ -1,0 +1,15 @@
+.smallButton {
+    border: 1px solid var(--border-color);
+    padding: 5px;
+    border-radius: 4px;
+    
+    cursor: default;
+}
+
+.smallButton:hover {
+    background-color: var(--hover-color);
+}
+
+.smallButton:active {
+    background-color: var(--active-color);
+}

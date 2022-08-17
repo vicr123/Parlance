@@ -15,7 +15,7 @@ export default function(props) {
     const {t} = useTranslation();
     
     const updateSuperusers = async () => {
-        let superusers = await Fetch.get("/superusers");
+        let superusers = await Fetch.get("/api/superusers");
         setSuperusers(superusers.map(x => ({
             contents: x,
             onClick: () => {
@@ -28,7 +28,7 @@ export default function(props) {
                         onClick: async () => {
                             Modal.mount(<LoadingModal/>);
                             try {
-                                await Fetch.delete(`/superusers/${encodeURIComponent(x)}`);
+                                await Fetch.delete(`/api/superusers/${encodeURIComponent(x)}`);
                                 await updateSuperusers();
                                 Modal.unmount();
                             } catch (e) {
@@ -65,7 +65,7 @@ export default function(props) {
                 onClick: async () => {
                     Modal.mount(<LoadingModal />);
                     try {
-                        await Fetch.post("/superusers", {
+                        await Fetch.post("/api/superusers", {
                             username: promotingUser
                         });
                         await updateSuperusers();

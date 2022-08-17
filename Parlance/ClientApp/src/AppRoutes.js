@@ -2,6 +2,7 @@ import {Counter} from "./components/Counter";
 import {FetchData} from "./components/FetchData";
 import {Home} from "./pages/Home";
 import Administration from "./pages/Administration";
+import Account from "./pages/Account";
 
 const AppRoutes = [
     {
@@ -11,6 +12,10 @@ const AppRoutes = [
     {
         path: "/admin/*",
         element: <Administration />
+    },
+    {
+        path: "/account/*",
+        element: <Account />
     }
 ];
 

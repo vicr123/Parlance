@@ -7,6 +7,7 @@ import EventEmitter from "eventemitter3";
 import LoginPasswordResetModal from "../components/modals/account/LoginPasswordResetModal";
 import PasswordResetModal from "../components/modals/account/resets/PasswordResetModal";
 import i18n from "./i18n";
+import CryptoJS from "crypto-js";
 
 class UserManager extends EventEmitter {
     #loginSessionDetails;
@@ -22,7 +23,7 @@ class UserManager extends EventEmitter {
     
     async updateDetails() {
         if (localStorage.getItem("token")) {
-            this.#currentUser = await Fetch.get("/user");
+            this.#currentUser = await Fetch.get("/api/user");
             
             this.emit("currentUserChanged", this.#currentUser);
         } else {
@@ -48,7 +49,7 @@ class UserManager extends EventEmitter {
         Modal.mount(<LoadingModal />)
         
         try {
-            let response = await Fetch.post(`/user/token`, this.#loginSessionDetails);
+            let response = await Fetch.post(`/api/user/token`, this.#loginSessionDetails);
             localStorage.setItem("token", response.token);
             await this.updateDetails();
             Modal.unmount();
@@ -94,7 +95,7 @@ class UserManager extends EventEmitter {
     async triggerPasswordReset() {
         Modal.mount(<LoadingModal />);
         try {
-            let response = await Fetch.post(`/user/reset/methods`, {
+            let response = await Fetch.post(`/api/user/reset/methods`, {
                 username: this.#loginSessionDetails.username
             });
             Modal.mount(<PasswordResetModal resetMethods={response} />)
@@ -113,7 +114,7 @@ class UserManager extends EventEmitter {
     async performPasswordReset(type, challenge) {
         Modal.mount(<LoadingModal />)
         try {
-            await Fetch.post("/user/reset", {
+            await Fetch.post("/api/user/reset", {
                 username: this.#loginSessionDetails.username,
                 type,
                 challenge
@@ -148,6 +149,12 @@ class UserManager extends EventEmitter {
     
     get currentUserIsSuperuser() {
         return this.#currentUser.superuser;
+    }
+    
+    get currentUserProfilePicture() {
+        let normalised = this.#currentUser.email.trim().toLowerCase();
+        let md5 = CryptoJS.MD5(normalised);
+        return `https://www.gravatar.com/avatar/${md5}`;
     }
 }
 

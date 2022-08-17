@@ -75,7 +75,39 @@ public class Vicr123AccountsService : IVicr123AccountsService
         await passwordResetProxy.ResetPasswordAsync(type, challenge);
     }
 
-    public async Task InitAsync()
+    public async Task<bool> VerifyUserPassword(User user, string password)
+    {
+        var objectPath = await _manager.UserByIdAsync(user.Id);
+        var userProxy = _connection.CreateProxy<IUser>(_serviceName, objectPath);
+        return await userProxy.VerifyPasswordAsync(password);
+    }
+
+    public async Task<User> UpdateUser(User user)
+    {
+        var objectPath = await _manager.UserByIdAsync(user.Id);
+        var userProxy = _connection.CreateProxy<IUser>(_serviceName, objectPath);
+        
+        if (user.Username != await userProxy.GetUsernameAsync())
+        {
+            await userProxy.SetUsernameAsync(user.Username);
+        }
+
+        if (user.Email != await userProxy.GetEmailAsync())
+        {
+            await userProxy.SetEmailAsync(user.Email);
+        }
+
+        return await UserByObjectPath(objectPath);
+    }
+
+    public async Task UpdateUserPassword(User user, string newPassword)
+    {
+        var objectPath = await _manager.UserByIdAsync(user.Id);
+        var userProxy = _connection.CreateProxy<IUser>(_serviceName, objectPath);
+        await userProxy.SetPasswordAsync(newPassword);
+    }
+
+    private async Task InitAsync()
     {
         _connection = new Connection(_accountOptions.Value.DbusConnectionPath);
         await _connection.ConnectAsync();
@@ -90,7 +122,8 @@ public class Vicr123AccountsService : IVicr123AccountsService
         {
             Id = await userProxy.GetIdAsync(),
             Username = await userProxy.GetUsernameAsync(),
-            Email = await userProxy.GetEmailAsync()
+            Email = await userProxy.GetEmailAsync(),
+            EmailVerified = await userProxy.GetVerifiedAsync()
         };
     }
 }

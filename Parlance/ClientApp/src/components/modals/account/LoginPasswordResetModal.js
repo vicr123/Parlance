@@ -46,7 +46,7 @@ export default withTranslation()(class LoginPasswordResetModal extends React.Com
         ]}>
             <div style={{display: "flex", flexDirection: "column"}}>
                 {this.props.t('LOG_IN_PASSWORD_RESET_PROMPT_1')}
-                {this.props.t('LOG_IN_PASSWORD_RESET_PROMPT_2')}
+                {this.props.t('PASSWORD_SET_SECURITY_PROMPT')}
                 <input type={"password"} placeholder={this.props.t('PASSWORD')} value={this.state.password} onChange={this.passwordTextChanged.bind(this)} />
                 <input type={"password"} placeholder={this.props.t('CONFIRM_PASSWORD')} value={this.state.confirmPassword} onChange={this.confirmPasswordTextChanged.bind(this)} />
             </div>

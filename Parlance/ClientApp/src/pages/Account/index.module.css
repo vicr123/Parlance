@@ -1,0 +1,44 @@
+.accountHeader {
+    padding-top: 20px;
+    
+    display: grid;
+    
+    grid-template-columns: max-content 1fr;
+    grid-template-rows: 1fr 1fr;
+    grid-template-areas: 
+        "accountImage accountUsername"
+        "accountImage accountEmail"
+        ". verifyEmail";
+
+    justify-items: start;
+    align-items: center;
+}
+
+.accountUsername {
+    grid-area: accountUsername;
+    font-size: 20pt;
+}
+
+.accountEmail {
+    grid-area: accountEmail;
+}
+
+.accountImage {
+    grid-area: accountImage;
+    border-radius: 100px;
+    aspect-ratio: 1 / 1;
+    height: 70px;
+    margin-right: 20px;
+}
+
+.verifyEmailPrompt {
+    grid-area: verifyEmail;
+    margin-top: 20px;
+}
+
+.verifyEmailButtons {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    gap: 6px;
+}

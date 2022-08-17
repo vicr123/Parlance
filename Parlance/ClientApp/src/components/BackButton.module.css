@@ -1,0 +1,14 @@
+.backButton {
+    padding-top: 6px;
+    padding-bottom: 6px;
+    
+    cursor: default;
+}
+
+.backButton:hover {
+    background-color: var(--hover-color);
+}
+
+.backButton:active {
+    background-color: var(--active-color);
+}

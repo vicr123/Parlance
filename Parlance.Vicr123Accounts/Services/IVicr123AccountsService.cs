@@ -12,7 +12,8 @@ public class User
 {
     public ulong Id { get; set; }
     public string Username { get; set; } = null!;
-    public string Email { get; init; } = null!;
+    public string Email { get; set; } = null!;
+    public bool EmailVerified { get; init; }
     //Don't include the object path in here because the accounts daemon can kill the object at any time
 }
 
@@ -41,4 +42,7 @@ public interface IVicr123AccountsService
     public Task<User> CreateUser(string username, string password, string email);
     public Task<IEnumerable<IPasswordResetMethod>> PasswordResetMethods(User user);
     public Task PerformPasswordReset(User user, string type, IDictionary<string, object> challenge);
+    public Task<bool> VerifyUserPassword(User user, string password);
+    public Task<User> UpdateUser(User user);
+    public Task UpdateUserPassword(User user, string newPassword);
 }

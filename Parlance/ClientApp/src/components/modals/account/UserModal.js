@@ -17,6 +17,13 @@ export default function(props) {
         })
     }
     
+    bottomButtons.push({
+        text: t("ACCOUNT_SETTINGS"),
+        onClick: () => {
+            document.location = "/account";
+        }
+    })
+    
     return <Modal heading={t('USER_MANAGEMENT')} buttons={[
         {
             text: t('CLOSE'),

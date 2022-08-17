@@ -12,7 +12,6 @@ using Parlance.Vicr123Accounts;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-
 builder.Services.AddControllersWithViews();
 builder.Services.AddSwaggerGen();
 builder.Services.AddVicr123Accounts(builder.Configuration);

@@ -10,7 +10,11 @@ export default function(props) {
 
         return <div className={Styles.listContainer}>
             {props.items.map((item, index) => {
-                return <div className={Styles.listItem} key={index} onClick={item.onClick}>{item.contents}</div>
+                if (typeof(item) === "string") {
+                    return <div className={Styles.listSection}>{item}</div>
+                } else {
+                    return <div className={Styles.listItem} key={index} onClick={item.onClick}>{item.contents}</div>
+                }
             })}
         </div>
     }

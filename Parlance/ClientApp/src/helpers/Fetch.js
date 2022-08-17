@@ -32,7 +32,7 @@ class Fetch {
         // if (showLoader) Loader.mount();
         let headers = Fetch.headers();
 
-        let result = await fetch(`/api${url}`, {
+        let result = await fetch(url, {
             method: method,
             headers: headers
         }).catch((error) => {
@@ -56,7 +56,7 @@ class Fetch {
     static async post(url, data, showLoader = true) {
         let err = null;
         // if (showLoader) Loader.mount();
-        let result = await fetch(`/api${url}`, {
+        let result = await fetch(url, {
             method: "POST",
             headers: Fetch.headers(),
             body: JSON.stringify(data)

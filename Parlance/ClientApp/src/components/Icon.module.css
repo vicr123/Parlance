@@ -1,0 +1,9 @@
+.icon {
+    filter: invert();
+}
+
+@media (prefers-color-scheme: light) {
+    .icon {
+        filter: none;
+    }
+}
