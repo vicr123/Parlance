@@ -1,5 +1,5 @@
-using accounts.DBus;
 using Microsoft.Extensions.Options;
+using Parlance.Vicr123Accounts.DBus;
 using Tmds.DBus;
 
 namespace Parlance.Vicr123Accounts.Services;

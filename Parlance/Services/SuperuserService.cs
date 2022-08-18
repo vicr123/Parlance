@@ -1,5 +1,5 @@
 using Parlance.Database;
-using Parlance.Models;
+using Parlance.Database.Models;
 
 namespace Parlance.Services;
 

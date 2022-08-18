@@ -1,11 +1,8 @@
-using System;
-using System.Collections.Generic;
 using System.Runtime.CompilerServices;
-using System.Threading.Tasks;
 using Tmds.DBus;
 
 [assembly: InternalsVisibleTo(Tmds.DBus.Connection.DynamicAssemblyName)]
-namespace accounts.DBus
+namespace Parlance.Vicr123Accounts.DBus
 {
     [DBusInterface("com.vicr123.accounts.Manager")]
     interface IManager : IDBusObject

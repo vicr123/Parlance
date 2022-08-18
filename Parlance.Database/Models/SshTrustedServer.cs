@@ -1,13 +1,11 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Parlance.Models;
+namespace Parlance.Database.Models;
 
-public class SshKey
+public class SshTrustedServer
 {
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     [Key]
     public Guid Id { get; set; }
-    
-    public string SshKeyContents { get; set; }
 }

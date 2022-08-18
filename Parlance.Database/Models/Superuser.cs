@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace Parlance.Models;
+namespace Parlance.Database.Models;
 
 public class Superuser
 {

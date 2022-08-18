@@ -7,7 +7,16 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="LibGit2Sharp" Version="0.26.2"/>
+        <FrameworkReference Include="Microsoft.AspNetCore.App" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="libgit2sharp-native" Version="0.27.0-preview-0189-ga95463fd9a" />
+      <PackageReference Include="SshKeyGenerator" Version="1.1.50" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Parlance.Database\Parlance.Database.csproj" />
     </ItemGroup>
 
 </Project>

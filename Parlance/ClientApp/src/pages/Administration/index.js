@@ -4,6 +4,7 @@ import {useTranslation} from "react-i18next";
 import Container from "../../components/Container";
 import PageHeading from "../../components/PageHeading";
 import Superusers from "./Superusers";
+import SSH from "./SSH";
 
 export default function(props) {
     const {t} = useTranslation();
@@ -12,9 +13,7 @@ export default function(props) {
         t("SSH"),
         {
             name: t("SSH_KEYS"),
-            render: <div>
-                SSH Keys
-            </div>
+            render: <SSH />
         },
         t("USERS"),
         {

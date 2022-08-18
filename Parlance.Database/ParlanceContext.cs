@@ -1,5 +1,5 @@
 using Microsoft.EntityFrameworkCore;
-using Parlance.Models;
+using Parlance.Database.Models;
 
 namespace Parlance.Database;
 

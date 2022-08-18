@@ -62,6 +62,18 @@
     border-right: 1px solid var(--border-color);
 }
 
+.DestructiveModalButton {
+    background-color: var(--destructive-color);
+}
+
+.DestructiveModalButton:hover {
+    background-color: var(--destructive-hover-color);
+}
+
+.DestructiveModalButton:active {
+    background-color: var(--destructive-active-color);
+}
+
 .ModalProgressSpinner {
     display: flex;
     flex-grow: 1;

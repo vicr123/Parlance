@@ -5,7 +5,7 @@
     src: local('Contemporary'), local('Contemporary-Regular'), url('https://vicr123.com/typeface/Contemporary-Regular.ttf');
 }
 
-:root {
+body {
     color-scheme: light dark;
 
     --foreground-color: white;
@@ -15,12 +15,22 @@
     --border-color: #505050;
     --footer-color: rgba(0,100,200,0.3);
     --hover-color: #144678;
+    
+    --destructive-color: rgba(255, 0, 0, 0.3);
+    --destructive-hover-color: rgba(255, 0, 0, 0.5);
+    --destructive-active-color: rgba(255, 0, 0, 0.7);
 
     --content-width: 900px;
+    
+    background-color: var(--background-color);
+    color: var(--foreground-color);
+
+    font-family: 'Contemporary', sans-serif;
+    font-size: 12pt;
 }
 
 @media (prefers-color-scheme: light) {
-    root {
+    body {
         --foreground-color: black;
         --background-color: white;
 
@@ -29,15 +39,6 @@
         --footer-color: rgba(0,100,200,0.3);
         --hover-color: #64c8ff;
     }
-}
-
-
-body {
-    background-color: var(--background-color);
-    color: var(--foreground-color);
-
-    font-family: 'Contemporary', sans-serif;
-    font-size: 12pt;
 }
 
 a {

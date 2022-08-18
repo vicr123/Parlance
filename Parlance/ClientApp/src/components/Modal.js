@@ -16,7 +16,9 @@ class Modal extends React.Component {
                 <div className={Styles.ModalButtonContainer}>
                     {this.props.buttons?.map(button => {
                         if (typeof button === "object") {
-                            return <div onClick={button.onClick} className={Styles.ModalButton} key={button.text}>{button.text}</div>
+                            let classes = [Styles.ModalButton];
+                            if (button.destructive) classes.push(Styles.DestructiveModalButton);
+                            return <div onClick={button.onClick} className={classes.join(" ")} key={button.text}>{button.text}</div>
                         } else {
                             //deprecated
                             return <div onClick={this.props.onButtonClick.bind(this, button)} className={Styles.ModalButton} key={button}>{button}</div>

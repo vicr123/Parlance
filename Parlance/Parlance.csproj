@@ -36,8 +36,13 @@
     </ItemGroup>
 
     <ItemGroup>
+        <ProjectReference Include="..\Parlance.Database\Parlance.Database.csproj" />
         <ProjectReference Include="..\Parlance.VersionControl\Parlance.VersionControl.csproj" />
         <ProjectReference Include="..\Parlance.Vicr123Accounts\Parlance.Vicr123Accounts.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Database" />
     </ItemGroup>
 
     <Target Name="DebugEnsureNodeEnv" BeforeTargets="Build" Condition=" '$(Configuration)' == 'Debug' And !Exists('$(SpaRoot)node_modules') ">

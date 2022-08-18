@@ -6,6 +6,7 @@ using Parlance.Authorization.Superuser;
 using Parlance.Database;
 using Parlance.Projects;
 using Parlance.Services;
+using Parlance.VersionControl;
 using Parlance.VersionControl.Services;
 using Parlance.Vicr123Accounts;
 
@@ -15,6 +16,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllersWithViews();
 builder.Services.AddSwaggerGen();
 builder.Services.AddVicr123Accounts(builder.Configuration);
+builder.Services.AddVersionControl(builder.Configuration);
 
 builder.Services.AddSingleton<IVersionControlService, VersionControlService>();
 builder.Services.AddSingleton<IProjectService, ProjectService>();

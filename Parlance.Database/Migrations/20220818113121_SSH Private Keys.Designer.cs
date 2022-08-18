@@ -2,18 +2,20 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Parlance.Database;
 
 #nullable disable
 
-namespace Parlance.Migrations
+namespace Parlance.Database.Migrations
 {
     [DbContext(typeof(ParlanceContext))]
-    partial class ParlanceContextModelSnapshot : ModelSnapshot
+    [Migration("20220818113121_SSH Private Keys")]
+    partial class SSHPrivateKeys
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -22,7 +24,7 @@ namespace Parlance.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("Parlance.Models.SshKey", b =>
+            modelBuilder.Entity("Parlance.Database.Models.SshKey", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -32,12 +34,16 @@ namespace Parlance.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<string>("SshPrivateKeyContents")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.HasKey("Id");
 
                     b.ToTable("SshKeys", (string)null);
                 });
 
-            modelBuilder.Entity("Parlance.Models.SshTrustedServer", b =>
+            modelBuilder.Entity("Parlance.Database.Models.SshTrustedServer", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -48,7 +54,7 @@ namespace Parlance.Migrations
                     b.ToTable("SshTrustedServers", (string)null);
                 });
 
-            modelBuilder.Entity("Parlance.Models.Superuser", b =>
+            modelBuilder.Entity("Parlance.Database.Models.Superuser", b =>
                 {
                     b.Property<string>("Username")
                         .HasColumnType("text");
