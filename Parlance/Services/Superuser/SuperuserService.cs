@@ -1,7 +1,6 @@
 using Parlance.Database;
-using Parlance.Database.Models;
 
-namespace Parlance.Services;
+namespace Parlance.Services.Superuser;
 
 public class SuperuserService : ISuperuserService
 {
@@ -19,7 +18,7 @@ public class SuperuserService : ISuperuserService
 
     public async Task GrantSuperuserPermissions(string username)
     {
-        _dbContext.Superusers.Add(new Superuser
+        _dbContext.Superusers.Add(new Database.Models.Superuser
         {
             Username = username
         });

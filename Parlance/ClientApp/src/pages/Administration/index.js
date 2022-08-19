@@ -5,11 +5,17 @@ import Container from "../../components/Container";
 import PageHeading from "../../components/PageHeading";
 import Superusers from "./Superusers";
 import SSH from "./SSH";
+import Projects from "./Projects";
 
 export default function(props) {
     const {t} = useTranslation();
     
     let items = [
+        t("PROJECTS"),
+        {
+            name: t("PROJECTS"),
+            render: <Projects />
+        },
         t("SSH"),
         {
             name: t("SSH_KEYS"),

@@ -12,3 +12,12 @@
 .backButton:active {
     background-color: var(--active-color);
 }
+
+.listPageContainer {
+    border-bottom: 1px solid var(--border-color);
+    max-width: 600px;
+}
+
+.listPageContainer.backButton {
+    padding-left: 6px;
+}

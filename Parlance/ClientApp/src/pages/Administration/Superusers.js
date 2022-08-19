@@ -8,6 +8,7 @@ import Fetch from "../../helpers/Fetch";
 import Modal from "../../components/Modal";
 import LoadingModal from "../../components/modals/LoadingModal";
 import UserManager from "../../helpers/UserManager";
+import LineEdit from "../../components/LineEdit";
 
 export default function(props) {
     const [superusers, setSuperusers] = useState([]);
@@ -92,7 +93,7 @@ export default function(props) {
         <ListPageBlock>
             <PageHeading level={3}>{t("PROMOTE_TO_SUPERUSER")}</PageHeading>
             <p>{t("SUPERUSER_PROMOTE_PROMPT_1")}</p>
-            <input type={"text"} placeholder={"Username"} value={promotingUser} style={{
+            <LineEdit placeholder={"Username"} value={promotingUser} style={{
                 marginBottom: "9px"
             }} onChange={e => setPromotingUser(e.target.value)} />
             <SelectableList onClick={promote}>{t("PROMOTE_TO_SUPERUSER")}</SelectableList>

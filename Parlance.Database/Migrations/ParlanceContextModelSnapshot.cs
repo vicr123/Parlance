@@ -22,6 +22,32 @@ namespace Parlance.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("Parlance.Database.Models.Project", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("SystemName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("VcsDirectory")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Name")
+                        .IsUnique();
+
+                    b.ToTable("Projects", (string)null);
+                });
+
             modelBuilder.Entity("Parlance.Database.Models.SshKey", b =>
                 {
                     b.Property<Guid>("Id")

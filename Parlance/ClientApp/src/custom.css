@@ -10,6 +10,8 @@ body {
 
     --foreground-color: white;
     --background-color: rgb(40, 40, 40);
+    
+    --foreground-disabled-color: rgba(255, 255, 255, 0.5);
 
     --active-color: #0064c8;
     --border-color: #505050;
@@ -33,6 +35,8 @@ body {
     body {
         --foreground-color: black;
         --background-color: white;
+
+        --foreground-disabled-color: rgba(0, 0, 0, 0.5);
 
         --active-color: #00c8ff;
         --border-color: #b4b4b4;

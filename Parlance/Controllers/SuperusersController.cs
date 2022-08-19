@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Parlance.Services;
+using Parlance.Services.Superuser;
 using Parlance.Vicr123Accounts.Authentication;
 
 namespace Parlance.Controllers;

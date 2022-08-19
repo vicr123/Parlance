@@ -37,7 +37,7 @@ export default function(props) {
         <div className={Styles.rightPane}>
             <Routes>
                 {props.items.filter(item => typeof(item) === "object").map((item, index) => {
-                    return <Route key={index} path={`/${toUrl(item.name)}`} element={item.render} />
+                    return <Route key={index} path={`/${toUrl(item.name)}/*`} element={item.render} />
                 })}
             </Routes>
         </div>

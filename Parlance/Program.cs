@@ -4,8 +4,10 @@ using Parlance;
 using Parlance.Authorization.LanguageEditor;
 using Parlance.Authorization.Superuser;
 using Parlance.Database;
-using Parlance.Projects;
 using Parlance.Services;
+using Parlance.Services.Projects;
+using Parlance.Services.RemoteCommunication;
+using Parlance.Services.Superuser;
 using Parlance.VersionControl;
 using Parlance.VersionControl.Services;
 using Parlance.Vicr123Accounts;
@@ -19,8 +21,9 @@ builder.Services.AddVicr123Accounts(builder.Configuration);
 builder.Services.AddVersionControl(builder.Configuration);
 
 builder.Services.AddSingleton<IVersionControlService, VersionControlService>();
-builder.Services.AddSingleton<IProjectService, ProjectService>();
+builder.Services.AddScoped<IProjectService, ProjectService>();
 builder.Services.AddScoped<ISuperuserService, SuperuserService>();
+builder.Services.AddScoped<IRemoteCommunicationService, RemoteCommunicationService>();
 
 builder.Services.Configure<ParlanceOptions>(builder.Configuration.GetSection("Parlance"));
 

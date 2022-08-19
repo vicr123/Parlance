@@ -1,4 +1,4 @@
-namespace Parlance.Services;
+namespace Parlance.Services.Superuser;
 
 public interface ISuperuserService
 {

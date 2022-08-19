@@ -2,6 +2,7 @@ using System.Text.Json;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Parlance.Services;
+using Parlance.Services.Superuser;
 using Parlance.Vicr123Accounts.Authentication;
 using Parlance.Vicr123Accounts.Services;
 using Tmds.DBus;
