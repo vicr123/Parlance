@@ -3,7 +3,7 @@ import {useTranslation} from "react-i18next";
 import UserManager from "../../helpers/UserManager";
 import Container from "../../components/Container";
 import PageHeading from "../../components/PageHeading";
-import Styles from "./index.module.css";
+import Styles from "./AccountSettings.module.css";
 import SmallButton from "../../components/SmallButton";
 import SelectableList from "../../components/SelectableList";
 import {useNavigate} from "react-router-dom";

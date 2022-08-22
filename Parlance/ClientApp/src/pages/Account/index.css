@@ -1,0 +1,26 @@
+.account-settings-lift-exit {
+    opacity: 1;
+    transition: all 0.25s;
+}
+
+.account-settings-lift-exit-active {
+    opacity: 0;
+}
+
+.account-settings-lift-enter {
+    position: absolute;
+    width: 100vw;
+    min-height: 700px;
+    background-color: var(--background-color);
+    z-index: 10;
+    
+    opacity: 0;
+    transform: translateY(10%);
+    
+    transition: all 0.25s;
+}
+
+.account-settings-lift-enter-active {
+    opacity: 1;
+    transform: translateY(0%);
+}

@@ -7,6 +7,7 @@ export default function(props) {
     let inputProps = {...props};
     inputProps.placeholder = "";
     inputProps.style = {};
+    inputProps.password = "";
     
     return <div style={props.style}>
         <div className={Styles.container}>
