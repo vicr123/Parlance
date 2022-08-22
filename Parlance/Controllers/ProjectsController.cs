@@ -1,6 +1,8 @@
+using System.Globalization;
 using LibGit2Sharp;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Primitives;
 using Parlance.Project;
 using Parlance.Services.Projects;
 
@@ -82,6 +84,111 @@ public class ProjectsController : Controller
             {
                 subproject.SystemName
             }));
+        }
+        catch (ProjectNotFoundException)
+        {
+            return NotFound();
+        }
+    }
+
+    [HttpGet]
+    [Route("{project}/{subproject}")]
+    public async Task<IActionResult> GetSubprojectLanguages(string project, string subproject)
+    {
+        try
+        {
+            var p = await _projectService.ProjectBySystemName(project);
+            var subproj = p.GetParlanceProject().SubprojectBySystemName(subproject);
+
+            return Json(subproj.AvailableLanguages().Select(lang => new
+            {
+                Language = lang,
+                LanguageName = new CultureInfo(lang.Replace("_", "-")).DisplayName
+            }));
+        }
+        catch (SubprojectNotFoundException)
+        {
+            return NotFound();
+        }
+        catch (ProjectNotFoundException)
+        {
+            return NotFound();
+        }
+    }
+
+    [HttpGet]
+    [Route("{project}/{subproject}/{language}/entries")]
+    public async Task<IActionResult> GetProjectEntries(string project, string subproject, string language)
+    {
+        try
+        {
+            var p = await _projectService.ProjectBySystemName(project);
+            var translationFile = p.GetParlanceProject().SubprojectBySystemName(subproject).Language(language).TranslationFile;
+            if (translationFile is null) return NotFound();
+
+            Response.Headers.ETag = new StringValues(translationFile.Hash);
+
+            return Json(translationFile.Entries.Select(entry => new
+            {
+                entry.Key, entry.Context, entry.Source, entry.Translation, entry.RequiresPluralisation
+            }));
+        }
+        catch (SubprojectNotFoundException)
+        {
+            return NotFound();
+        }
+        catch (ProjectNotFoundException)
+        {
+            return NotFound();
+        }
+    }
+    
+    [HttpGet]
+    [Route("{project}/{subproject}/{language}/entries/{key}")]
+    public async Task<IActionResult> GetProjectEntryByIndex(string project, string subproject, string language, string key)
+    {
+        try
+        {
+            var p = await _projectService.ProjectBySystemName(project);
+            var translationFile = p.GetParlanceProject().SubprojectBySystemName(subproject).Language(language)
+                .TranslationFile;
+            if (translationFile is null) return NotFound();
+
+            Response.Headers.ETag = new StringValues(translationFile.Hash);
+
+            var entry = translationFile.Entries.Single(entry => entry.Key == key);
+            return Json(new
+            {
+                entry.Key, entry.Context, entry.Source, entry.Translation, entry.RequiresPluralisation
+            });
+        }
+        catch (InvalidOperationException)
+        {
+            return NotFound();
+        }
+    }
+    
+    [HttpPost]
+    [Route("{project}/{subproject}/{language}/entries")]
+    public async Task<IActionResult> SaveProjectEntries(string project, string subproject, string language)
+    {
+        try
+        {
+            var p = await _projectService.ProjectBySystemName(project);
+            var translationFile = p.GetParlanceProject().SubprojectBySystemName(subproject).Language(language).TranslationFile;
+            if (translationFile is null) return NotFound();
+
+            if (!Request.Headers.IfMatch.Contains(translationFile.Hash)) return StatusCode(412); //Precondition Failed
+
+            await translationFile.Save();
+
+            Response.Headers.ETag = new StringValues(translationFile.Hash);
+            
+            return NoContent();
+        }
+        catch (SubprojectNotFoundException)
+        {
+            return NotFound();
         }
         catch (ProjectNotFoundException)
         {

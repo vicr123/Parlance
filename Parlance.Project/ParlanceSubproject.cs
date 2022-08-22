@@ -1,3 +1,6 @@
+using Microsoft.Extensions.FileSystemGlobbing;
+using Microsoft.Extensions.FileSystemGlobbing.Abstractions;
+
 namespace Parlance.Project;
 
 public class ParlanceSubproject : IParlanceSubproject
@@ -8,8 +11,28 @@ public class ParlanceSubproject : IParlanceSubproject
 
     public ParlanceSubproject(IParlanceProject project, SubprojectDefinition subproject)
     {
+        Project = project;
         _subproject = subproject;
     }
 
+    public string Name => _subproject.Name;
     public string SystemName => _subproject.Name.ToLower().Replace(" ", "-");
+    public IParlanceProject Project { get; }
+    public string Path => _subproject.Path;
+
+    public IEnumerable<string> AvailableLanguages()
+    {
+        var wildcard = _subproject.Path.Replace("{lang}", "*");
+        var toTrim = wildcard.Length - wildcard.IndexOf("*", StringComparison.Ordinal) - 1;
+        
+        var matcher = new Matcher();
+        matcher.AddInclude(wildcard);
+        var result = matcher.Execute(new DirectoryInfoWrapper(new DirectoryInfo(Project.VcsDirectory)));
+        return result.Files.Select(file => file.Stem[..^toTrim]);
+    }
+
+    public IParlanceSubprojectLanguage Language(string language)
+    {
+        return new ParlanceSubprojectLanguage(this, language);
+    }
 }
