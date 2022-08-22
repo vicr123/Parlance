@@ -8,6 +8,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Parlance.Vicr123Accounts", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Parlance.Database", "Parlance.Database\Parlance.Database.csproj", "{F111D49A-7CA8-4090-B8B5-E3AFC7788229}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Parlance.Project", "Parlance.Project\Parlance.Project.csproj", "{397FA9C6-20FB-49FD-B088-00C6633B37BB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -30,5 +32,9 @@ Global
 		{F111D49A-7CA8-4090-B8B5-E3AFC7788229}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F111D49A-7CA8-4090-B8B5-E3AFC7788229}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F111D49A-7CA8-4090-B8B5-E3AFC7788229}.Release|Any CPU.Build.0 = Release|Any CPU
+		{397FA9C6-20FB-49FD-B088-00C6633B37BB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{397FA9C6-20FB-49FD-B088-00C6633B37BB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{397FA9C6-20FB-49FD-B088-00C6633B37BB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{397FA9C6-20FB-49FD-B088-00C6633B37BB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

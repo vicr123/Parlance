@@ -23,7 +23,7 @@ public class ProjectService : IProjectService
     {
         var systemName = name.ToLower().Replace(" ", "-");
         var directory = Path.Combine(_parlanceOptions.Value.RepositoryDirectory, systemName);
-        var project = new Project
+        var project = new Database.Models.Project
         {
             Name = name,
             SystemName = systemName,
@@ -85,17 +85,24 @@ public class ProjectService : IProjectService
         await _dbContext.SaveChangesAsync();
     }
 
-    public Task<IEnumerable<Project>> Projects()
+    public Task<IEnumerable<Database.Models.Project>> Projects()
     {
-        return Task.FromResult<IEnumerable<Project>>(_dbContext.Projects);
+        return Task.FromResult<IEnumerable<Database.Models.Project>>(_dbContext.Projects);
     }
 
-    public Task<Project> ProjectBySystemName(string systemName)
+    public Task<Database.Models.Project> ProjectBySystemName(string systemName)
     {
-        return Task.FromResult(_dbContext.Projects.Single(project => project.SystemName == systemName));
+        try
+        {
+            return Task.FromResult(_dbContext.Projects.Single(project => project.SystemName == systemName));
+        }
+        catch (InvalidOperationException)
+        {
+            throw new ProjectNotFoundException();
+        }
     }
 
-    public async Task RemoveProject(Project project)
+    public async Task RemoveProject(Database.Models.Project project)
     {
         Directory.Delete(project.VcsDirectory, true);
         _dbContext.Projects.Remove(project);

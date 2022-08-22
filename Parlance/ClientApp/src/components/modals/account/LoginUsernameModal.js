@@ -3,6 +3,7 @@ import React from "react";
 import LoginPasswordModal from "./LoginPasswordModal";
 import UserManager from "../../../helpers/UserManager";
 import {withTranslation} from "react-i18next";
+import LineEdit from "../../LineEdit";
 
 export default withTranslation()(class LoginUsernameModal extends React.Component {
     constructor(props) {
@@ -35,7 +36,7 @@ export default withTranslation()(class LoginUsernameModal extends React.Componen
         ]}>
             <div style={{display: "flex", flexDirection: "column"}}>
                 {this.props.t('LOG_IN_PROMPT')}
-                <input type={"text"} placeholder={this.props.t('USERNAME')} value={this.state.username} onChange={this.usernameTextChanged.bind(this)} />
+                <LineEdit placeholder={this.props.t('USERNAME')} value={this.state.username} onChange={this.usernameTextChanged.bind(this)} />
             </div>
         </Modal>
     }

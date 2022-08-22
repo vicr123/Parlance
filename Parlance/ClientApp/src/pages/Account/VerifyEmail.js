@@ -11,6 +11,7 @@ import LoadingModal from "../../components/modals/LoadingModal";
 import {useNavigate} from "react-router-dom";
 import UserManager from "../../helpers/UserManager";
 import BackButton from "../../components/BackButton";
+import LineEdit from "../../components/LineEdit";
 
 export default function(props) {
     const [verificationCode, setVerificationCode] = useState("");
@@ -69,7 +70,7 @@ export default function(props) {
             <VerticalLayout gap={0}>
                 <PageHeading level={3}>{t("VERIFY_EMAIL")}</PageHeading>
                 <p>{t("VERIFY_EMAIL_PROMPT")}</p>
-                <input type={"text"} placeholder={t("VERIFY_EMAIL_VERIFICATION_CODE")} value={verificationCode} onChange={e => setVerificationCode(e.target.value)} />
+                <LineEdit placeholder={t("VERIFY_EMAIL_VERIFICATION_CODE")} value={verificationCode} onChange={e => setVerificationCode(e.target.value)} />
                 <VerticalSpacer height={20} />
                 <SelectableList onClick={performVerification}>{t("VERIFY_EMAIL")}</SelectableList>
             </VerticalLayout>

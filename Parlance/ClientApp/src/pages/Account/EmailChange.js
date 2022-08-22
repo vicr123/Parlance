@@ -11,6 +11,7 @@ import LoadingModal from "../../components/modals/LoadingModal";
 import {useNavigate} from "react-router-dom";
 import UserManager from "../../helpers/UserManager";
 import BackButton from "../../components/BackButton";
+import LineEdit from "../../components/LineEdit";
 
 export default function(props) {
     const [newEmail, setNewEmail] = useState("");
@@ -55,7 +56,7 @@ export default function(props) {
             <VerticalLayout gap={0}>
                 <PageHeading level={3}>{t("ACCOUNT_SETTINGS_CHANGE_EMAIL_ADDRESS")}</PageHeading>
                 <p>{t("CHANGE_EMAIL_PROMPT_1")}</p>
-                <input type={"text"} placeholder={t("CHANGE_EMAIL_NEW_EMAIL")} value={newEmail} onChange={e => setNewEmail(e.target.value)} />
+                <LineEdit placeholder={t("CHANGE_EMAIL_NEW_EMAIL")} value={newEmail} onChange={e => setNewEmail(e.target.value)} />
                 <VerticalSpacer height={20} />
                 <SelectableList onClick={performEmailChange}>{t("ACCOUNT_SETTINGS_CHANGE_EMAIL_ADDRESS")}</SelectableList>
             </VerticalLayout>

@@ -11,6 +11,7 @@ import LoadingModal from "../../components/modals/LoadingModal";
 import {useNavigate} from "react-router-dom";
 import UserManager from "../../helpers/UserManager";
 import BackButton from "../../components/BackButton";
+import LineEdit from "../../components/LineEdit";
 
 export default function(props) {
     const [newUsername, setNewUsername] = useState("");
@@ -55,7 +56,7 @@ export default function(props) {
             <VerticalLayout gap={0}>
                 <PageHeading level={3}>{t("ACCOUNT_SETTINGS_CHANGE_USERNAME")}</PageHeading>
                 <p>{t("CHANGE_USERNAME_PROMPT_1")}</p>
-                <input type={"text"} placeholder={t("CHANGE_USERNAME_NEW_USERNAME")} value={newUsername} onChange={e => setNewUsername(e.target.value)} />
+                <LineEdit placeholder={t("CHANGE_USERNAME_NEW_USERNAME")} value={newUsername} onChange={e => setNewUsername(e.target.value)} />
                 <VerticalSpacer height={20} />
                 <SelectableList onClick={performUsernameChange}>{t("ACCOUNT_SETTINGS_CHANGE_USERNAME")}</SelectableList>
             </VerticalLayout>

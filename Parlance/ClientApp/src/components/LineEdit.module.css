@@ -11,7 +11,7 @@
     transition: all 0.2s;
 }
 
-.input[type=text] {
+.input[type=text], .input[type=password] {
     border: none;
     margin-top: 10pt;
     outline: none;

@@ -2,6 +2,7 @@ import {useTranslation} from "react-i18next";
 import {VerticalLayout} from "../../Layouts";
 import Modal from "../../Modal";
 import {useState} from "react";
+import LineEdit from "../../LineEdit";
 
 export default function(props) {
     const [password, setPassword] = useState("");
@@ -16,7 +17,7 @@ export default function(props) {
     ]}>
         <VerticalLayout>
             <span>{t("CONFIRM_PASSWORD_PROMPT")}</span>
-            <input placeholder={t("PASSWORD")} type={"password"} value={password} onChange={e => setPassword(e.target.value)} />
+            <LineEdit password={true} placeholder={t("PASSWORD")} value={password} onChange={e => setPassword(e.target.value)} />
         </VerticalLayout>
     </Modal>
 }

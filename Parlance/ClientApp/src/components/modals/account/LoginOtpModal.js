@@ -4,6 +4,7 @@ import LoginUsernameModal from "./LoginUsernameModal";
 import UserManager from "../../../helpers/UserManager";
 import LoginPasswordModal from "./LoginPasswordModal";
 import {withTranslation} from "react-i18next";
+import LineEdit from "../../LineEdit";
 
 export default withTranslation()(class LoginOtpModal extends React.Component {
     constructor(props) {
@@ -37,7 +38,7 @@ export default withTranslation()(class LoginOtpModal extends React.Component {
             <div style={{display: "flex", flexDirection: "column"}}>
                 {this.props.t('LOG_IN_TWO_FACTOR_AUTHENTICATION_PROMPT_1')}
                 {this.props.t('LOG_IN_TWO_FACTOR_AUTHENTICATION_PROMPT_2')}
-                <input type={"text"} placeholder={this.props.t('TWO_FACTOR_AUTHENTICATION_CODE')} value={this.state.otp} onChange={this.otpTextChanged.bind(this)} />
+                <LineEdit placeholder={this.props.t('TWO_FACTOR_AUTHENTICATION_CODE')} value={this.state.otp} onChange={this.otpTextChanged.bind(this)} />
             </div>
         </Modal>
     }

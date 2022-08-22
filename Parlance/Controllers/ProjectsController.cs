@@ -1,6 +1,7 @@
 using LibGit2Sharp;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Parlance.Project;
 using Parlance.Services.Projects;
 
 namespace Parlance.Controllers;
@@ -62,7 +63,27 @@ public class ProjectsController : Controller
             await _projectService.RemoveProject(p);
             return NoContent();
         }
-        catch (InvalidOperationException ex)
+        catch (ProjectNotFoundException)
+        {
+            return NotFound();
+        }
+    }
+
+    [HttpGet]
+    [Route("{project}")]
+    public async Task<IActionResult> GetSubprojects(string project)
+    {
+        try
+        {
+            var p = await _projectService.ProjectBySystemName(project);
+            var proj = p.GetParlanceProject();
+
+            return Json(proj.Subprojects.Select(subproject => new
+            {
+                subproject.SystemName
+            }));
+        }
+        catch (ProjectNotFoundException)
         {
             return NotFound();
         }

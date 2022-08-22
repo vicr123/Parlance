@@ -11,6 +11,7 @@ import LoadingModal from "../../components/modals/LoadingModal";
 import {useNavigate} from "react-router-dom";
 import UserManager from "../../helpers/UserManager";
 import BackButton from "../../components/BackButton";
+import LineEdit from "../../components/LineEdit";
 
 export default function(props) {
     const [newPassword, setNewPassword] = useState("");
@@ -64,8 +65,8 @@ export default function(props) {
                 <PageHeading level={3}>{t("ACCOUNT_SETTINGS_CHANGE_PASSWORD")}</PageHeading>
                 <p>{t("PASSWORD_CHANGE_PROMPT_1")}</p>
                 <p>{t("PASSWORD_SET_SECURITY_PROMPT")}</p>
-                <input type={"password"} placeholder={t("PASSWORD_CHANGE_NEW_PASSWORD")} value={newPassword} onChange={e => setNewPassword(e.target.value)} />
-                <input type={"password"} placeholder={t("CONFIRM_PASSWORD")} value={newPasswordConfirm} onChange={e => setNewPasswordConfirm(e.target.value)} />
+                <LineEdit password={true} placeholder={t("PASSWORD_CHANGE_NEW_PASSWORD")} value={newPassword} onChange={e => setNewPassword(e.target.value)} />
+                <LineEdit password={true} placeholder={t("CONFIRM_PASSWORD")} value={newPasswordConfirm} onChange={e => setNewPasswordConfirm(e.target.value)} />
                 <VerticalSpacer height={20} />
                 <SelectableList onClick={performPasswordChange}>{t("ACCOUNT_SETTINGS_CHANGE_PASSWORD")}</SelectableList>
             </VerticalLayout>
