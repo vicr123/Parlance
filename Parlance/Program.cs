@@ -11,6 +11,10 @@ using Parlance.Services.Superuser;
 using Parlance.VersionControl;
 using Parlance.VersionControl.Services;
 using Parlance.Vicr123Accounts;
+using Sepia.Globalization;
+
+// Ensure CLDR data is up to date
+await Cldr.Instance.DownloadLatestAsync();
 
 var builder = WebApplication.CreateBuilder(args);
 

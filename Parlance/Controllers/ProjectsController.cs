@@ -4,7 +4,10 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Primitives;
 using Parlance.Project;
+using Parlance.Project.TranslationFiles;
 using Parlance.Services.Projects;
+using Sepia.Globalization;
+using Sepia.Globalization.Plurals;
 
 namespace Parlance.Controllers;
 
@@ -163,6 +166,41 @@ public class ProjectsController : Controller
             });
         }
         catch (InvalidOperationException)
+        {
+            return NotFound();
+        }
+    }
+
+    public class UpdateProjectEntryRequestData
+    {
+        public IList<TranslationWithPluralType> TranslationStrings { get; set; }
+    }
+
+    [HttpPost]
+    [Route("{project}/{subproject}/{language}/entries/{key}")]
+    public async Task<IActionResult> UpdateProjectEntry(string project, string subproject, string language, string key, [FromBody] UpdateProjectEntryRequestData data)
+    {
+        try
+        {
+            var p = await _projectService.ProjectBySystemName(project);
+            var translationFile = p.GetParlanceProject().SubprojectBySystemName(subproject).Language(language).TranslationFile;
+            if (translationFile is null) return NotFound();
+
+            if (!Request.Headers.IfMatch.Contains(translationFile.Hash)) return StatusCode(412); //Precondition Failed
+
+            var entry = translationFile.Entries.Single(entry => entry.Key == key);
+            entry.Translation = data.TranslationStrings;
+            await translationFile.Save();
+
+            Response.Headers.ETag = new StringValues(translationFile.Hash);
+            
+            return NoContent();
+        }
+        catch (SubprojectNotFoundException)
+        {
+            return NotFound();
+        }
+        catch (ProjectNotFoundException)
         {
             return NotFound();
         }

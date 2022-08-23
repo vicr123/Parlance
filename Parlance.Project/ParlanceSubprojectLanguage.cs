@@ -14,5 +14,5 @@ public class ParlanceSubprojectLanguage : IParlanceSubprojectLanguage
         _language = language;
     }
 
-    public IParlanceTranslationFile? TranslationFile => new QtLinguistTranslationFile(Path.Join(_subproject.Project.VcsDirectory, _subproject.Path.Replace("{lang}", _language)));
+    public IParlanceTranslationFile? TranslationFile => new QtLinguistTranslationFile(Path.Join(_subproject.Project.VcsDirectory, _subproject.Path.Replace("{lang}", _language)), _language.ToLocale());
 }
