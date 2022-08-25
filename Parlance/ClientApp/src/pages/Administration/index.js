@@ -28,7 +28,7 @@ export default function(props) {
         }
     ];
     
-    return <div>
+    return <div style={{display: "flex", flexDirection: "column", flexGrow: 1}}>
         <Container bottomBorder={true} style={{
             backgroundColor: "var(--hover-color)"
         }}>

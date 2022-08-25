@@ -1,0 +1,89 @@
+.translationArea {
+    grid-area: translationArea;
+    border-right: 1px solid var(--border-color);
+    
+    display: flex;
+    flex-direction: column;
+}
+
+.sourceTranslationContainer {
+    padding: 9px;
+    height: 100px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.sourceTranslation {
+    white-space: pre-wrap;
+    font-size: 12pt;
+}
+
+.sourceTranslationIndicator {
+    font-size: 10pt;
+    text-transform: uppercase;
+    padding-bottom: 3px;
+}
+
+.translationContainer {
+    display: flex;
+    flex-direction: column;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.translationPart {
+    padding: 9px;
+    
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: max-content max(100px, max-content);
+    gap: 0px 0px;
+    grid-template-areas: 
+        "heading"
+        "translationArea";
+}
+
+.translationPartIndicator {
+    grid-area: heading;
+    padding-bottom: 3px;
+    font-size: 10pt;
+    text-transform: uppercase;
+}
+
+.translationPartEditor {
+    grid-area: translationArea;
+    border: none;
+    
+    font-family: 'Contemporary';
+    font-size: 12pt;
+    
+    margin: 0;
+    padding: 0;
+}
+
+.translationPartEditorTextarea {
+    z-index: 5;
+    color: transparent;
+    background-color: transparent;
+    caret-color: var(--foreground-color);
+    outline: none;
+}
+
+.checksContainer {
+}
+
+.checkItem {
+    padding: 9px;
+}
+
+.checkWarn {
+    color: black;
+    background-color: rgb(255, 150, 0);
+}
+
+.checkError {
+    color: white;
+    background-color: rgb(200, 0, 0);
+}
+
+.translationPreview {
+    color: var(--foreground-disabled-color);
+}

@@ -11,7 +11,8 @@ public interface IParlanceSubproject
     public string SystemName { get; }
     public IParlanceProject Project { get; }
     public string Path { get; }
+    public string TranslationFileType { get; }
 
     public IEnumerable<string> AvailableLanguages();
-    public IParlanceSubprojectLanguage Language(string language);
+    public IParlanceSubprojectLanguage Language(Locale language);
 }

@@ -6,13 +6,14 @@ namespace Parlance.Project;
 public class ParlanceSubprojectLanguage : IParlanceSubprojectLanguage
 {
     private readonly IParlanceSubproject _subproject;
-    private readonly string _language;
+    private readonly Locale _locale;
 
-    public ParlanceSubprojectLanguage(IParlanceSubproject subproject, string language)
+    public ParlanceSubprojectLanguage(IParlanceSubproject subproject, Locale locale)
     {
         _subproject = subproject;
-        _language = language;
+        _locale = locale;
     }
 
-    public IParlanceTranslationFile? TranslationFile => new QtLinguistTranslationFile(Path.Join(_subproject.Project.VcsDirectory, _subproject.Path.Replace("{lang}", _language)), _language.ToLocale());
+    //TODO: Determine whether we need underscored or dashed format
+    public IParlanceTranslationFile? TranslationFile => new QtLinguistTranslationFile(Path.Join(_subproject.Project.VcsDirectory, _subproject.Path.Replace("{lang}", _locale.ToUnderscored())), _locale);
 }

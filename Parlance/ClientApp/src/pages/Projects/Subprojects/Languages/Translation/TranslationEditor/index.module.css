@@ -1,0 +1,9 @@
+.root {
+    display: grid;
+    grid-auto-columns: 1fr;
+    grid-template-columns: 500px 1fr 500px;
+    grid-template-rows: 1fr;
+    gap: 0 0;
+    grid-template-areas: 
+    "entryList translationArea extrasArea";
+}

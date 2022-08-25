@@ -28,4 +28,38 @@ instance.use(initReactI18next).init({
     postProcess: ['pseudo']
 })
 
+i18n.humanReadableLocale = (locale) => {
+    let parts = locale.split("-");
+    
+    let readableParts = [];
+    let language = parts.shift();
+    let country = parts.shift();
+    
+    if (language) readableParts.push((new Intl.DisplayNames([i18n.language], {type: "language"})).of(language));
+    if (country) readableParts.push(`(${(new Intl.DisplayNames([i18n.language], {type: "region"})).of(country)})`);
+    
+    return readableParts.join(" ");
+}
+
+i18n.number = (locale, number) => {
+    return (new Intl.NumberFormat(locale)).format(number);
+}
+
+i18n.pluralPatterns = (locale) => {
+    let rules = new Intl.PluralRules(locale);
+    let categories = {};
+    for (let i = 0; i < 200; i++) {
+        let cat = rules.select(i);
+        if (!categories[cat]) categories[cat] = [];
+        categories[cat].push(i);
+    }
+    
+    // Fix CLDR data???
+    if (locale.toLowerCase() === "pt-br") {
+        categories["many"] = categories["other"];
+    }
+    
+    return categories;
+}
+
 export default i18n;

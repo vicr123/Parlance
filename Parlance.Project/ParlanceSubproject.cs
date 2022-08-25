@@ -19,6 +19,7 @@ public class ParlanceSubproject : IParlanceSubproject
     public string SystemName => _subproject.Name.ToLower().Replace(" ", "-");
     public IParlanceProject Project { get; }
     public string Path => _subproject.Path;
+    public string TranslationFileType => _subproject.Type;
 
     public IEnumerable<string> AvailableLanguages()
     {
@@ -28,10 +29,10 @@ public class ParlanceSubproject : IParlanceSubproject
         var matcher = new Matcher();
         matcher.AddInclude(wildcard);
         var result = matcher.Execute(new DirectoryInfoWrapper(new DirectoryInfo(Project.VcsDirectory)));
-        return result.Files.Select(file => file.Stem[..^toTrim]);
+        return result.Files.Select(file => file.Stem[..^toTrim].ToLocale().ToDashed());
     }
 
-    public IParlanceSubprojectLanguage Language(string language)
+    public IParlanceSubprojectLanguage Language(Locale language)
     {
         return new ParlanceSubprojectLanguage(this, language);
     }

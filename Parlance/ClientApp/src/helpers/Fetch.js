@@ -24,12 +24,11 @@ class Fetch {
      * Uses fetch to make a request to the in-house API
      * @param {string} method Type of request to make
      * @param {string} url endpoint for the API call
-     * @param {boolean} showLoader if true displays a loading animation
+     * @param {function} resultCallback Callback to call when the result is ready containing raw fetch data
      */
-    static async performRequest(method, url, showLoader) {
+    static async performRequest(method, url, resultCallback = () => {}) {
         let err = null;
         // Display loading animation for the user
-        // if (showLoader) Loader.mount();
         let headers = Fetch.headers();
 
         let result = await fetch(url, {
@@ -38,12 +37,13 @@ class Fetch {
         }).catch((error) => {
             err = error;
         }).finally(() => {
-            // if (showLoader) Loader.unmount();
+
         });
 
         if (err) throw err;
         if (result.status === 204) return {};
         if (result.status < 200 || result.status > 299) throw result;
+        resultCallback(result);
         return await result.json();
     }
 
@@ -51,19 +51,21 @@ class Fetch {
      * Use fetch's post request
      * @param {string} url endpoint for fetch request
      * @param {Object} data payload of information
-     * @param {boolean} showLoader if true displays a loading animation
+     * @param {Array} headers Headers to include
      */
-    static async post(url, data, showLoader = true) {
+    static async post(url, data, headers = []) {
         let err = null;
-        // if (showLoader) Loader.mount();
         let result = await fetch(url, {
             method: "POST",
-            headers: Fetch.headers(),
+            headers: [
+                ...headers,
+                ...Fetch.headers()
+            ],
             body: JSON.stringify(data)
         }).catch((error) => {
             err = error;
         }).finally(() => {
-            // if (showLoader) Loader.unmount();
+            
         });
 
         if (err) throw err;
@@ -76,11 +78,9 @@ class Fetch {
      * Use fetch's patch request
      * @param {string} url API endpoint to access
      * @param {Object} data Payload to patch with
-     * @param {boolean} showLoader if true displays a loading animation
      */
-    static async patch(url, data, showLoader = true) {
+    static async patch(url, data) {
         let err = null;
-        // if (showLoader) Loader.mount();
         let result = await fetch(`/api${url}`, {
             method: "PATCH",
             headers: Fetch.headers(),
@@ -88,7 +88,6 @@ class Fetch {
         }).catch((error) => {
             err = error;
         }).finally(() => {
-            // if (showLoader) Loader.unmount();
         });
 
         if (err) throw err;
@@ -100,19 +99,18 @@ class Fetch {
     /**
      * GET request to specific url, used to access in-house API
      * @param {string} url url to perform API request
-     * @param {boolean} showLoader boolean value to display loading animation
+     * @param {function} resultCallback Callback to call when the result is ready containing raw fetch data
      */
-    static get(url, showLoader = true) {
-        return Fetch.performRequest("GET", url, showLoader);
+    static get(url, resultCallback = () => {}) {
+        return Fetch.performRequest("GET", url, resultCallback);
     }
 
     /**
      * DELETE request to specified url
      * @param {string} url url to perform API request
-     * @param {boolean} showLoader boolean value to display loading animation
      */
-    static delete(url, showLoader = true) {
-        return Fetch.performRequest("DELETE", url, showLoader);
+    static delete(url) {
+        return Fetch.performRequest("DELETE", url);
     }
     
     //TODO: Implement caching
@@ -123,7 +121,7 @@ class Fetch {
      */
     static async getPost(id) {
         if (!posts[id]) {
-            posts[id] = await Fetch.get(`/posts/${id}`, false);
+            posts[id] = await Fetch.get(`/posts/${id}`);
         }
         return posts[id];
     }
@@ -133,7 +131,7 @@ class Fetch {
      */
     static async getUser(id) {
         if (!user[id]) {
-            user[id] = await Fetch.get(`/users/${id}`, false);
+            user[id] = await Fetch.get(`/users/${id}`);
         }
         return user[id];
     }

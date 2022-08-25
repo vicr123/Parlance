@@ -42,6 +42,10 @@
         <ProjectReference Include="..\Parlance.VersionControl\Parlance.VersionControl.csproj" />
         <ProjectReference Include="..\Parlance.Vicr123Accounts\Parlance.Vicr123Accounts.csproj" />
     </ItemGroup>
+    
+    <ItemGroup>
+        <EmbeddedResource Include="ClientApp\src\checks.js" />
+    </ItemGroup>
 
     <Target Name="DebugEnsureNodeEnv" BeforeTargets="Build" Condition=" '$(Configuration)' == 'Debug' And !Exists('$(SpaRoot)node_modules') ">
         <!-- Ensure Node.js is installed -->

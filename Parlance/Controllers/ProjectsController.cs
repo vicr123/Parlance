@@ -85,7 +85,7 @@ public class ProjectsController : Controller
 
             return Json(proj.Subprojects.Select(subproject => new
             {
-                subproject.SystemName
+                subproject.SystemName, subproject.Name
             }));
         }
         catch (ProjectNotFoundException)
@@ -103,11 +103,15 @@ public class ProjectsController : Controller
             var p = await _projectService.ProjectBySystemName(project);
             var subproj = p.GetParlanceProject().SubprojectBySystemName(subproject);
 
-            return Json(subproj.AvailableLanguages().Select(lang => new
+            return Json(new
             {
-                Language = lang,
-                LanguageName = new CultureInfo(lang.Replace("_", "-")).DisplayName
-            }));
+                subproj.TranslationFileType,
+                AvailableLanguages = subproj.AvailableLanguages().Select(lang => new
+                {
+                    Language = lang.ToLocale().ToDashed(),
+                    LanguageName = new CultureInfo(lang.ToLocale().ToDashed()).DisplayName
+                })
+            });
         }
         catch (SubprojectNotFoundException)
         {
@@ -119,6 +123,31 @@ public class ProjectsController : Controller
         }
     }
 
+    // [HttpGet]
+    // [Route("{project}/{subproject}/{language}")]
+    // public async Task<IActionResult> GetProjectMeta(string project, string subproject, string language)
+    // {
+    //     try
+    //     {
+    //         var p = await _projectService.ProjectBySystemName(project);
+    //         var subp = p.GetParlanceProject().SubprojectBySystemName(subproject);
+    //         var subprojectLanguage = subp.Language(language.ToLocale());
+    //         
+    //         return Json(new
+    //         {
+    //             subp.TranslationFileType
+    //         });
+    //     }
+    //     catch (SubprojectNotFoundException)
+    //     {
+    //         return NotFound();
+    //     }
+    //     catch (ProjectNotFoundException)
+    //     {
+    //         return NotFound();
+    //     }
+    // }
+
     [HttpGet]
     [Route("{project}/{subproject}/{language}/entries")]
     public async Task<IActionResult> GetProjectEntries(string project, string subproject, string language)
@@ -126,7 +155,7 @@ public class ProjectsController : Controller
         try
         {
             var p = await _projectService.ProjectBySystemName(project);
-            var translationFile = p.GetParlanceProject().SubprojectBySystemName(subproject).Language(language).TranslationFile;
+            var translationFile = p.GetParlanceProject().SubprojectBySystemName(subproject).Language(language.ToLocale()).TranslationFile;
             if (translationFile is null) return NotFound();
 
             Response.Headers.ETag = new StringValues(translationFile.Hash);
@@ -146,6 +175,44 @@ public class ProjectsController : Controller
         }
     }
     
+    public class UpdateProjectEntriesRequestData
+    {
+        public IDictionary<string, UpdateProjectEntryRequestData> Entries { get; set; }
+    }
+
+    [HttpPost]
+    [Route("{project}/{subproject}/{language}/entries/{key}")]
+    public async Task<IActionResult> UpdateProjectEntries(string project, string subproject, string language, string key, [FromBody] UpdateProjectEntriesRequestData data)
+    {
+        try
+        {
+            var p = await _projectService.ProjectBySystemName(project);
+            var translationFile = p.GetParlanceProject().SubprojectBySystemName(subproject).Language(language.ToLocale()).TranslationFile;
+            if (translationFile is null) return NotFound();
+
+            if (!Request.Headers.IfMatch.Contains(translationFile.Hash)) return StatusCode(412); //Precondition Failed
+
+            foreach (var x in data.Entries)
+            {
+                var entry = translationFile.Entries.Single(entry => entry.Key == x.Key);
+                entry.Translation = x.Value.TranslationStrings;
+            }
+            await translationFile.Save();
+
+            Response.Headers.ETag = new StringValues(translationFile.Hash);
+            
+            return NoContent();
+        }
+        catch (SubprojectNotFoundException)
+        {
+            return NotFound();
+        }
+        catch (ProjectNotFoundException)
+        {
+            return NotFound();
+        }
+    }
+    
     [HttpGet]
     [Route("{project}/{subproject}/{language}/entries/{key}")]
     public async Task<IActionResult> GetProjectEntryByIndex(string project, string subproject, string language, string key)
@@ -153,7 +220,7 @@ public class ProjectsController : Controller
         try
         {
             var p = await _projectService.ProjectBySystemName(project);
-            var translationFile = p.GetParlanceProject().SubprojectBySystemName(subproject).Language(language)
+            var translationFile = p.GetParlanceProject().SubprojectBySystemName(subproject).Language(language.ToLocale())
                 .TranslationFile;
             if (translationFile is null) return NotFound();
 
@@ -183,7 +250,7 @@ public class ProjectsController : Controller
         try
         {
             var p = await _projectService.ProjectBySystemName(project);
-            var translationFile = p.GetParlanceProject().SubprojectBySystemName(subproject).Language(language).TranslationFile;
+            var translationFile = p.GetParlanceProject().SubprojectBySystemName(subproject).Language(language.ToLocale()).TranslationFile;
             if (translationFile is null) return NotFound();
 
             if (!Request.Headers.IfMatch.Contains(translationFile.Hash)) return StatusCode(412); //Precondition Failed
@@ -213,7 +280,7 @@ public class ProjectsController : Controller
         try
         {
             var p = await _projectService.ProjectBySystemName(project);
-            var translationFile = p.GetParlanceProject().SubprojectBySystemName(subproject).Language(language).TranslationFile;
+            var translationFile = p.GetParlanceProject().SubprojectBySystemName(subproject).Language(language.ToLocale()).TranslationFile;
             if (translationFile is null) return NotFound();
 
             if (!Request.Headers.IfMatch.Contains(translationFile.Hash)) return StatusCode(412); //Precondition Failed

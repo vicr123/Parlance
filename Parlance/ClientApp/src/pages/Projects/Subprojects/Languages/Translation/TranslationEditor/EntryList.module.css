@@ -1,0 +1,57 @@
+.rootList {
+    grid-area: entryList;
+    border-right: 1px solid var(--border-color);
+    
+    max-height: 100vh;
+    overflow-y: scroll;
+}
+
+.entryItem {
+    padding: 9px;
+    display: grid;
+    grid-template-columns: min-content 1fr;
+    grid-template-rows: 1fr 1fr;
+    gap: 6px 6px;
+    grid-template-areas: 
+        "icon source"
+        ". translation";
+    
+    cursor: pointer;
+}
+
+.selected {
+    background-color: var(--active-color);
+}
+
+.entryIcon {
+    aspect-ratio: 1 / 1;
+    height: 20px;
+    place-self: center;
+    background-color: #00c8ff;
+    grid-area: icon;
+    border-radius: 50px;
+}
+
+.entrySource { 
+    grid-area: source;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+.entryTranslation { 
+    grid-area: translation;
+    color: var(--foreground-disabled-color);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+.categoryHeader {
+    position: sticky;
+    top: 0;
+    
+    padding: 3px;
+    background-color: var(--foreground-color);
+    color: var(--background-color);
+}

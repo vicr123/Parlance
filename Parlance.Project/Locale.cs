@@ -38,6 +38,6 @@ public record Locale
             .GetDocuments("common/supplemental/plurals.xml")
             .Elements(
                 $"supplementalData/plurals[@type='cardinal']/pluralRules[contains(@locales, '{LanguageCode}')]/pluralRule")
-            .Select(Rule.Parse);
+            .Select(Rule.Parse).Where(rule => rule.Text != string.Empty);
     }
 }
