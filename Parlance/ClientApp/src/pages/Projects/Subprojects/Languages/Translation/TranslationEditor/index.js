@@ -7,12 +7,14 @@ import {useEffect, useState} from "react";
 import Fetch from "../../../../../../helpers/Fetch";
 import {HotKeys} from "react-hotkeys";
 import {useUpdateManager} from "./UpdateManager";
+import i18n from "../../../../../../helpers/i18n";
 
 export default function(props) {
     const {project, subproject, language, key} = useParams();
     const [etag, setEtag] = useState();
     const [entries, setEntries] = useState([]);
     const [subprojectData, setSubprojectData] = useState({});
+    const [ready, setReady] = useState(false);
     const updateManager = useUpdateManager();
     
     const translationDirection = (new Intl.Locale(language)).textInfo?.direction || "ltr";
@@ -28,8 +30,14 @@ export default function(props) {
     }
     
     useEffect(() => {
-        updateEntries();
-        updateSubproject();
+        (async () => {
+            await Promise.all([
+                updateEntries(),
+                updateSubproject(),
+                i18n.pluralPatterns(language)
+            ])
+            setReady(true);
+        })();
     }, []);
     
     const pushUpdate = async (key, update) => {
@@ -59,11 +67,17 @@ export default function(props) {
         }
     }
     
-    return <HotKeys keyMap={keymap} handlers={handlers}>
-        <div className={Styles.root}>
-            <EntryList entries={entries} translationDirection={translationDirection} />
-            <TranslationArea onPushUpdate={pushUpdate} entries={entries} translationDirection={translationDirection} translationFileType={subprojectData.translationFileType} />
-            <ExtrasArea />
+    if (ready) {
+        return <HotKeys keyMap={keymap} handlers={handlers}>
+            <div className={Styles.root}>
+                <EntryList entries={entries} translationDirection={translationDirection} />
+                <TranslationArea onPushUpdate={pushUpdate} entries={entries} translationDirection={translationDirection} translationFileType={subprojectData.translationFileType} />
+                <ExtrasArea />
+            </div>
+        </HotKeys>
+    } else {
+        return <div className={Styles.root}>
+            Hang on...
         </div>
-    </HotKeys>
+    }
 }

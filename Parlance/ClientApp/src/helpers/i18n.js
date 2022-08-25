@@ -3,8 +3,11 @@ import HttpBackend from 'i18next-http-backend';
 import LanguageDetector from 'i18next-browser-languagedetector';
 import {initReactI18next} from "react-i18next";
 import Pseudo from "i18next-pseudo";
+import Fetch from "./Fetch";
 
 let instance = i18n.use(HttpBackend);
+
+const pluralPatternsCache = {};
 
 if (process.env.REACT_APP_USE_PSEUDOTRANSLATION) {
     instance.use(new Pseudo({
@@ -45,20 +48,45 @@ i18n.number = (locale, number) => {
     return (new Intl.NumberFormat(locale)).format(number);
 }
 
-i18n.pluralPatterns = (locale) => {
-    let rules = new Intl.PluralRules(locale);
+i18n.list = (locale, items) => {
+    return (new Intl.ListFormat(locale, {
+        style: "narrow",
+        type: "conjunction"
+    })).format(items);
+}
+
+i18n.pluralPatterns = async (locale) => {
+    let promise;
+    if (pluralPatternsCache[locale]) {
+        promise = pluralPatternsCache[locale];
+        if (typeof(promise) !== "promise") {
+            return pluralPatternsCache[locale];
+        }
+    } else {
+        promise = Fetch.get(`/api/cldr/${locale}/plurals`)
+    }
+
+    pluralPatternsCache[locale] = promise;
+    let data = await promise;
     let categories = {};
-    for (let i = 0; i < 200; i++) {
-        let cat = rules.select(i);
-        if (!categories[cat]) categories[cat] = [];
-        categories[cat].push(i);
+    for (let category of data) {
+        categories[category.category] = category.examples;
     }
     
-    // Fix CLDR data???
-    if (locale.toLowerCase() === "pt-br") {
-        categories["many"] = categories["other"];
-    }
+    // let rules = new Intl.PluralRules(locale);
+    // let categories = {};
+    // for (let i = 0; i < 200; i++) {
+    //     let cat = rules.select(i);
+    //     if (!categories[cat]) categories[cat] = [];
+    //     categories[cat].push(i);
+    // }
+    //
+    // // Fix CLDR data???
+    // if (locale.toLowerCase() === "pt-br") {
+    //     categories["many"] = categories["other"];
+    // }
     
+    pluralPatternsCache[locale] = categories;
     return categories;
 }
 

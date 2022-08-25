@@ -1,7 +1,6 @@
 using System.Security.Cryptography;
 using System.Xml.Linq;
-using Sepia.Globalization;
-using Sepia.Globalization.Plurals;
+using Parlance.CLDR;
 
 namespace Parlance.Project.TranslationFiles.QtLinguist;
 

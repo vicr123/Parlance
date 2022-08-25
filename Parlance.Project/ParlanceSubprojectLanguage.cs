@@ -1,3 +1,4 @@
+using Parlance.CLDR;
 using Parlance.Project.TranslationFiles;
 using Parlance.Project.TranslationFiles.QtLinguist;
 

@@ -10,6 +10,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Parlance.Database", "Parlan
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Parlance.Project", "Parlance.Project\Parlance.Project.csproj", "{397FA9C6-20FB-49FD-B088-00C6633B37BB}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Parlance.CLDR", "Parlance.CLDR\Parlance.CLDR.csproj", "{61C7B395-ECC7-4A27-96EC-46C35055C640}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -36,5 +38,9 @@ Global
 		{397FA9C6-20FB-49FD-B088-00C6633B37BB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{397FA9C6-20FB-49FD-B088-00C6633B37BB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{397FA9C6-20FB-49FD-B088-00C6633B37BB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{61C7B395-ECC7-4A27-96EC-46C35055C640}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{61C7B395-ECC7-4A27-96EC-46C35055C640}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{61C7B395-ECC7-4A27-96EC-46C35055C640}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{61C7B395-ECC7-4A27-96EC-46C35055C640}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

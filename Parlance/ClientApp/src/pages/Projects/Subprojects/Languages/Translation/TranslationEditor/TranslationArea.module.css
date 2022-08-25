@@ -87,3 +87,7 @@
 .translationPreview {
     color: var(--foreground-disabled-color);
 }
+
+.translationPartIndicatorExtras {
+    color: var(--foreground-disabled-color);
+}
