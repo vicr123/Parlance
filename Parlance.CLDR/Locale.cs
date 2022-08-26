@@ -38,30 +38,33 @@ public record Locale
 
     public IImmutableList<LocalePluralRule> PluralRules()
     {
-        if (PluralCache.ContainsKey(this)) return PluralCache[this];
-        
-        var plural = Plural.Create(Sepia.Globalization.Locale.Create(ToUnderscored()));
-        var result = Enumerable.Range(0, 201).Select(num =>
+        lock (PluralCache)
         {
-            try
+            if (PluralCache.ContainsKey(this)) return PluralCache[this];
+            
+            var plural = Plural.Create(Sepia.Globalization.Locale.Create(ToUnderscored()));
+            var result = Enumerable.Range(0, 201).Select(num =>
             {
-                return new
+                try
                 {
-                    Category = plural.Category(num),
-                    Number = num
-                };
-            }
-            catch
-            {
-                return new
+                    return new
+                    {
+                        Category = plural.Category(num),
+                        Number = num
+                    };
+                }
+                catch
                 {
-                    Category = "other",
-                    Number = num
-                };
-            }
-        }).GroupBy(item => item.Category).Select((item, index) => new LocalePluralRule(item.Key, item.Select(x => x.Number).ToList(), item.Key == "other" ? 99 : index)).OrderBy(item => item.Index).ToImmutableList();
+                    return new
+                    {
+                        Category = "other",
+                        Number = num
+                    };
+                }
+            }).GroupBy(item => item.Category).Select((item, index) => new LocalePluralRule(item.Key, item.Select(x => x.Number).ToList(), item.Key == "other" ? 99 : index)).OrderBy(item => item.Index).ToImmutableList();
         
-        PluralCache.Add(this, result);
-        return result;
+            PluralCache.Add(this, result);
+            return result;
+        }
     }
 }

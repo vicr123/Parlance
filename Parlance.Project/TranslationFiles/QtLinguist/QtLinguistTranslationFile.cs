@@ -75,7 +75,8 @@ public class QtLinguistTranslationFile : IParlanceTranslationFile
         );
 
         {
-            await using var stream = File.Open(_file, FileMode.Create);
+            //TODO: What if two people write to the file at the same time?
+            await using var stream = File.Open(_file, FileMode.Create, FileAccess.Write, FileShare.ReadWrite);
             await doc.SaveAsync(stream, SaveOptions.None, CancellationToken.None);
         }
 
