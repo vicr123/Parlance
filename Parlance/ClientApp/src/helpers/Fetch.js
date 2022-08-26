@@ -41,9 +41,10 @@ class Fetch {
         });
 
         if (err) throw err;
-        if (result.status === 204) return {};
         if (result.status < 200 || result.status > 299) throw result;
+        
         resultCallback(result);
+        if (result.status === 204) return {};
         return await result.json();
     }
 
@@ -51,16 +52,16 @@ class Fetch {
      * Use fetch's post request
      * @param {string} url endpoint for fetch request
      * @param {Object} data payload of information
-     * @param {Array} headers Headers to include
+     * @param {Object} headers Headers to include
      */
-    static async post(url, data, headers = []) {
+    static async post(url, data, headers = {}, resultCallback = () => {}) {
         let err = null;
         let result = await fetch(url, {
             method: "POST",
-            headers: [
+            headers: {
                 ...headers,
                 ...Fetch.headers()
-            ],
+            },
             body: JSON.stringify(data)
         }).catch((error) => {
             err = error;
@@ -69,8 +70,10 @@ class Fetch {
         });
 
         if (err) throw err;
-        if (result.status === 204) return {};
         if (result.status < 200 || result.status > 299) throw result;
+        
+        resultCallback(result);
+        if (result.status === 204) return {};
         return await result.json();
     }
 

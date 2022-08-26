@@ -27,9 +27,36 @@
     aspect-ratio: 1 / 1;
     height: 20px;
     place-self: center;
-    background-color: #00c8ff;
     grid-area: icon;
     border-radius: 50px;
+    border-width: 4px;
+    border-style: solid;
+    box-sizing: border-box;
+}
+
+.iconIncomplete {
+    background-color: var(--background-color);
+    border-color: var(--border-color);
+}
+
+.iconNoAlerts {
+    border-color: #00c8ff;
+}
+
+.iconWarningAlerts {
+    border-color: #FFA000;
+}
+
+.iconErrorAlerts {
+    border-color: #C80000;
+}
+
+.iconOk {
+    background-color: #00c8ff;
+}
+
+.iconPending {
+    background-color: #FFA000;
 }
 
 .entrySource { 

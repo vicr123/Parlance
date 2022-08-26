@@ -65,5 +65,13 @@ function checkTranslation(source, translation, checkSuite) {
     }).filter(result => result);
 }
 
+function mostSevereType(checks) {
+    let severities = checks.map(check => typeof(check) === "string" ? check : check?.checkSeverity);
+    if (severities.includes("error")) return "error";
+    if (severities.includes("warn")) return "warn";
+    return null;
+}
+
 export { Checks };
 export { checkTranslation };
+export { mostSevereType };

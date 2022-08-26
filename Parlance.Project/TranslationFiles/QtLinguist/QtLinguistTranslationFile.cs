@@ -15,11 +15,13 @@ public class QtLinguistTranslationFile : IParlanceTranslationFile
     {
         _file = file;
         _locale = locale;
-        Hash = Convert.ToHexString(SHA256.HashData(System.Text.Encoding.UTF8.GetBytes(file)));
+
+        var fileContents = await File.ReadAllTextAsync(file);
+        Hash = Convert.ToHexString(SHA256.HashData(System.Text.Encoding.UTF8.GetBytes(fileContents)));
 
         var pluralRules = locale.PluralRules().ToArray();
         
-        var xmlDoc = XDocument.Parse(await File.ReadAllTextAsync(file));
+        var xmlDoc = XDocument.Parse(fileContents);
         Entries = xmlDoc.Descendants("message").Select((msg, idx) => new QtLinguistTranslationFileEntry
         {
             Key = idx.ToString(),
@@ -72,8 +74,12 @@ public class QtLinguistTranslationFile : IParlanceTranslationFile
             )
         );
 
-        await using var stream = File.OpenWrite(_file);
-        await doc.SaveAsync(stream, SaveOptions.None, CancellationToken.None);
+        {
+            await using var stream = File.Open(_file, FileMode.Create);
+            await doc.SaveAsync(stream, SaveOptions.None, CancellationToken.None);
+        }
+
+        await LoadFile(_file, _locale);
     }
 
     [UsedImplicitly]

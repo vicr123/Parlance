@@ -8,20 +8,43 @@ import Fetch from "../../../../../../helpers/Fetch";
 import {HotKeys} from "react-hotkeys";
 import {useUpdateManager} from "./UpdateManager";
 import i18n from "../../../../../../helpers/i18n";
+import Modal from "../../../../../../components/Modal";
+import {useTranslation} from "react-i18next";
 
 export default function(props) {
     const {project, subproject, language, key} = useParams();
-    const [etag, setEtag] = useState();
     const [entries, setEntries] = useState([]);
     const [subprojectData, setSubprojectData] = useState({});
     const [ready, setReady] = useState(false);
+    const {t} = useTranslation();
+    
     const updateManager = useUpdateManager();
+    updateManager.on("outOfDate", () => {
+        Modal.mount(<Modal heading={t("TRANSLATION_OUT_OF_DATE")} buttons={[
+            {
+                text: t("RELOAD"),
+                onClick: () => document.location.reload()
+            }
+        ]}>
+            {t("TRANSLATION_OUT_OF_DATE_PROMPT")}
+        </Modal>)
+    });
+    updateManager.on("error", () => {
+        Modal.mount(<Modal heading={t("TRANSLATION_SUBMIT_ERROR")} buttons={[
+            {
+                text: t("Reload"),
+                onClick: () => document.location.reload()
+            }
+        ]}>
+            {t("TRANSLATION_SUBMIT_ERROR_PROMPT")}
+        </Modal>)
+    })
     
     const translationDirection = (new Intl.Locale(language)).textInfo?.direction || "ltr";
     
     const updateEntries = async () => {
         setEntries(await Fetch.get(`/api/Projects/${project}/${subproject}/${language}/entries`, result => {
-            setEtag(result.headers.get("etag"));
+            updateManager.setEtag(result.headers.get("etag"));
         }));
     }
     
@@ -70,7 +93,7 @@ export default function(props) {
     if (ready) {
         return <HotKeys keyMap={keymap} handlers={handlers}>
             <div className={Styles.root}>
-                <EntryList entries={entries} translationDirection={translationDirection} />
+                <EntryList entries={entries} translationDirection={translationDirection} updateManager={updateManager} translationFileType={subprojectData.translationFileType} />
                 <TranslationArea onPushUpdate={pushUpdate} entries={entries} translationDirection={translationDirection} translationFileType={subprojectData.translationFileType} />
                 <ExtrasArea />
             </div>

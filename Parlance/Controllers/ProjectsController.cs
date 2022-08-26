@@ -270,10 +270,10 @@ public class ProjectsController : Controller
             return NotFound();
         }
     }
-    
+
     [HttpPost]
     [Route("{project}/{subproject}/{language}/entries")]
-    public async Task<IActionResult> SaveProjectEntries(string project, string subproject, string language)
+    public async Task<IActionResult> UpdateProjectEntries(string project, string subproject, string language, [FromBody] IDictionary<string, UpdateProjectEntryRequestData> data)
     {
         try
         {
@@ -282,6 +282,12 @@ public class ProjectsController : Controller
             if (translationFile is null) return NotFound();
 
             if (!Request.Headers.IfMatch.Contains(translationFile.Hash)) return StatusCode(412); //Precondition Failed
+            
+            foreach (var (key, translationData) in data)
+            {
+                var entry = translationFile.Entries.Single(entry => entry.Key == key);
+                entry.Translation = translationData.TranslationStrings;
+            }
 
             await translationFile.Save();
 
