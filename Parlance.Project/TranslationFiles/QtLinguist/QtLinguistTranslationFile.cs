@@ -1,20 +1,17 @@
 using System.Security.Cryptography;
 using System.Xml.Linq;
+using JetBrains.Annotations;
 using Parlance.CLDR;
 
 namespace Parlance.Project.TranslationFiles.QtLinguist;
 
+[TranslationFileType("qt", TranslationFileTypeAttribute.ExpectedTranslationFileNameFormat.Underscored)]
 public class QtLinguistTranslationFile : IParlanceTranslationFile
 {
     private string _file = null!;
-    private Locale _locale;
+    private Locale _locale = null!;
 
-    public QtLinguistTranslationFile(string file, Locale locale)
-    {
-        LoadFile(file, locale);
-    }
-
-    private void LoadFile(string file, Locale locale)
+    private async Task LoadFile(string file, Locale locale)
     {
         _file = file;
         _locale = locale;
@@ -22,7 +19,7 @@ public class QtLinguistTranslationFile : IParlanceTranslationFile
 
         var pluralRules = locale.PluralRules().ToArray();
         
-        var xmlDoc = XDocument.Parse(File.ReadAllText(file));
+        var xmlDoc = XDocument.Parse(await File.ReadAllTextAsync(file));
         Entries = xmlDoc.Descendants("message").Select((msg, idx) => new QtLinguistTranslationFileEntry
         {
             Key = idx.ToString(),
@@ -75,7 +72,15 @@ public class QtLinguistTranslationFile : IParlanceTranslationFile
             )
         );
 
-        await using var stream = File.OpenWrite(_file + ".test");
+        await using var stream = File.OpenWrite(_file);
         await doc.SaveAsync(stream, SaveOptions.None, CancellationToken.None);
+    }
+
+    [UsedImplicitly]
+    public static async Task<IParlanceTranslationFile> CreateAsync(string file, Locale locale)
+    {
+        var translationFile = new QtLinguistTranslationFile();
+        await translationFile.LoadFile(file, locale);
+        return translationFile;
     }
 }

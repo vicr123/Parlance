@@ -5,6 +5,7 @@ using Parlance.Authorization.LanguageEditor;
 using Parlance.Authorization.Superuser;
 using Parlance.CLDR;
 using Parlance.Database;
+using Parlance.Project;
 using Parlance.Project.Checks;
 using Parlance.Services.Projects;
 using Parlance.Services.RemoteCommunication;
@@ -15,6 +16,7 @@ using Parlance.Vicr123Accounts;
 
 // Ensure CLDR data is up to date
 await CldrExtensions.DownloadCldrData();
+ParlanceProjectExtensions.InitialiseParlanceProjects();
 
 var builder = WebApplication.CreateBuilder(args);
 

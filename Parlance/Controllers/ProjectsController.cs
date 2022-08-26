@@ -156,7 +156,7 @@ public class ProjectsController : Controller
         try
         {
             var p = await _projectService.ProjectBySystemName(project);
-            var translationFile = p.GetParlanceProject().SubprojectBySystemName(subproject).Language(language.ToLocale()).TranslationFile;
+            var translationFile = await p.GetParlanceProject().SubprojectBySystemName(subproject).Language(language.ToLocale()).CreateTranslationFile();
             if (translationFile is null) return NotFound();
 
             Response.Headers.ETag = new StringValues(translationFile.Hash);
@@ -188,7 +188,7 @@ public class ProjectsController : Controller
         try
         {
             var p = await _projectService.ProjectBySystemName(project);
-            var translationFile = p.GetParlanceProject().SubprojectBySystemName(subproject).Language(language.ToLocale()).TranslationFile;
+            var translationFile = await p.GetParlanceProject().SubprojectBySystemName(subproject).Language(language.ToLocale()).CreateTranslationFile();
             if (translationFile is null) return NotFound();
 
             if (!Request.Headers.IfMatch.Contains(translationFile.Hash)) return StatusCode(412); //Precondition Failed
@@ -221,8 +221,7 @@ public class ProjectsController : Controller
         try
         {
             var p = await _projectService.ProjectBySystemName(project);
-            var translationFile = p.GetParlanceProject().SubprojectBySystemName(subproject).Language(language.ToLocale())
-                .TranslationFile;
+            var translationFile = await p.GetParlanceProject().SubprojectBySystemName(subproject).Language(language.ToLocale()).CreateTranslationFile();
             if (translationFile is null) return NotFound();
 
             Response.Headers.ETag = new StringValues(translationFile.Hash);
@@ -251,7 +250,7 @@ public class ProjectsController : Controller
         try
         {
             var p = await _projectService.ProjectBySystemName(project);
-            var translationFile = p.GetParlanceProject().SubprojectBySystemName(subproject).Language(language.ToLocale()).TranslationFile;
+            var translationFile = await p.GetParlanceProject().SubprojectBySystemName(subproject).Language(language.ToLocale()).CreateTranslationFile();
             if (translationFile is null) return NotFound();
 
             if (!Request.Headers.IfMatch.Contains(translationFile.Hash)) return StatusCode(412); //Precondition Failed
@@ -281,7 +280,7 @@ public class ProjectsController : Controller
         try
         {
             var p = await _projectService.ProjectBySystemName(project);
-            var translationFile = p.GetParlanceProject().SubprojectBySystemName(subproject).Language(language.ToLocale()).TranslationFile;
+            var translationFile = await p.GetParlanceProject().SubprojectBySystemName(subproject).Language(language.ToLocale()).CreateTranslationFile();
             if (translationFile is null) return NotFound();
 
             if (!Request.Headers.IfMatch.Contains(translationFile.Hash)) return StatusCode(412); //Precondition Failed
