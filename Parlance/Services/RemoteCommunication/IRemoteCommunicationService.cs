@@ -1,5 +1,4 @@
 using LibGit2Sharp;
-using LibGit2Sharp.Handlers;
 
 namespace Parlance.Services.RemoteCommunication;
 

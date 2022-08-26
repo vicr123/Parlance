@@ -50,7 +50,7 @@ public class Vicr123AuthorizationHandler : IAuthorizationHandler
                 var identity = new ClaimsIdentity(claims, "Vicr123Accounts");
                 httpContext.User = new ClaimsPrincipal(identity);
             }
-            catch (DBusException ex)
+            catch (DBusException)
             {
                 context.Fail();
             }

@@ -43,7 +43,7 @@ public class Vicr123AuthenticationHandler : AuthenticationHandler<Vicr123Authent
             return AuthenticateResult.Success(
                 new AuthenticationTicket(new ClaimsPrincipal(identity), AuthenticationScheme));
         }
-        catch (DBusException ex)
+        catch (DBusException)
         {
             return AuthenticateResult.Fail("Invalid Token");
         }

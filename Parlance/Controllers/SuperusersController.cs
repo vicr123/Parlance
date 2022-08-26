@@ -1,8 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Parlance.Services;
 using Parlance.Services.Superuser;
-using Parlance.Vicr123Accounts.Authentication;
 
 namespace Parlance.Controllers;
 
@@ -26,7 +24,7 @@ public class SuperusersController : Controller
 
     public class AddSuperuserRequestData
     {
-        public string Username { get; set; }
+        public string Username { get; set; } = null!;
     }
 
     [Authorize(Policy = "Superuser")]

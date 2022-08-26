@@ -25,9 +25,9 @@ public class QtLinguistTranslationFile : IParlanceTranslationFile
             Key = idx.ToString(),
             Context = ((string) msg.Parent!.Element("name"))!,
             Source = (string)msg.Element("source")!,
-            Translation = msg.Attribute("numerus")?.Value == "yes" ? msg.Descendants("numerusform").Select((content, idx) => new TranslationWithPluralType()
+            Translation = msg.Attribute("numerus")?.Value == "yes" ? msg.Descendants("numerusform").Select((content, idx2) => new TranslationWithPluralType()
             {
-                PluralType = pluralRules[idx].Category,
+                PluralType = pluralRules[idx2].Category,
                 TranslationContent = (string) content
             }).ToList() : new List<TranslationWithPluralType>
             {

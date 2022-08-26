@@ -7,7 +7,7 @@ namespace Parlance.Project.Checks;
 
 public class ParlanceChecks : IParlanceChecks
 {
-    private readonly Engine jsEngine;
+    private readonly Engine _jsEngine;
     
     public ParlanceChecks()
     {
@@ -15,11 +15,11 @@ public class ParlanceChecks : IParlanceChecks
         using var checksReader = new StreamReader(checksStream!, Encoding.UTF8);
         var checksCode = checksReader.ReadToEnd();
 
-        jsEngine = new Engine(options =>
+        _jsEngine = new Engine(_ =>
         {
             
         });
-        jsEngine.AddModule("checks", checksCode);
+        _jsEngine.AddModule("checks", checksCode);
     }
 
     public IEnumerable<CheckResult> CheckTranslation(string source, string translation, string checkSet)
@@ -37,9 +37,9 @@ public class ParlanceChecks : IParlanceChecks
                 hello();
             ");
         
-        var checksModule = jsEngine.ImportModule("checks");
+        var checksModule = _jsEngine.ImportModule("checks");
         var checkTranslationFunction = checksModule.Get("checkTranslation").AsFunctionInstance();
-        var result = jsEngine.Invoke(checkTranslationFunction, new JsString(source), new JsString(translation), new JsString(checkSet));
+        var result = _jsEngine.Invoke(checkTranslationFunction, new JsString(source), new JsString(translation), new JsString(checkSet));
 
         return result.AsArray().Select(val =>
         {

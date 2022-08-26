@@ -1,4 +1,3 @@
-using LibGit2Sharp;
 using Microsoft.EntityFrameworkCore;
 using Parlance.Database;
 using Parlance.Database.Models;

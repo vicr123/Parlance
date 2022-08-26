@@ -1,4 +1,3 @@
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Parlance.Vicr123Accounts.Authentication;
@@ -24,7 +23,7 @@ public static class Vicr123AccountsExtensions
         services.AddAuthentication(o =>
         {
             o.DefaultScheme = Vicr123AuthenticationHandler.AuthenticationScheme;
-        }).AddScheme<Vicr123AuthenticationOptions, Vicr123AuthenticationHandler>(Vicr123AuthenticationHandler.AuthenticationScheme, o => {});
+        }).AddScheme<Vicr123AuthenticationOptions, Vicr123AuthenticationHandler>(Vicr123AuthenticationHandler.AuthenticationScheme, _ => {});
 
         return services;
     }

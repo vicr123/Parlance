@@ -1,5 +1,3 @@
-using Parlance.Database.Models;
-
 namespace Parlance.Services.Projects;
 
 public class ProjectNotFoundException : InvalidOperationException

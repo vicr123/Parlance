@@ -9,9 +9,9 @@ public class Project
     [Key]
     public Guid Id { get; set; }
 
-    public string VcsDirectory { get; set; }
-    
-    public string Name { get; set; }
+    public string VcsDirectory { get; set; } = null!;
 
-    public string SystemName { get; set; }
+    public string Name { get; set; } = null!;
+
+    public string SystemName { get; set; } = null!;
 }

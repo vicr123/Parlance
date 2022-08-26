@@ -9,6 +9,6 @@ public class SshKey
     [Key]
     public Guid Id { get; set; }
     
-    public string SshKeyContents { get; set; }
-    public string SshPrivateKeyContents { get; set; }
+    public string SshKeyContents { get; set; } = null!;
+    public string SshPrivateKeyContents { get; set; } = null!;
 }

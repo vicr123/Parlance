@@ -22,8 +22,8 @@ public class ChecksController : Controller
     }
 
     [HttpPost]
-    public async Task<IActionResult> PerformChecks([FromBody] PerformChecksRequestData data)
+    public Task<IActionResult> PerformChecks([FromBody] PerformChecksRequestData data)
     {
-        return Json(_checks.CheckTranslation(data.Source, data.Translation, data.CheckSuite));
+        return Task.FromResult<IActionResult>(Json(_checks.CheckTranslation(data.Source, data.Translation, data.CheckSuite)));
     }
 }

@@ -1,7 +1,6 @@
 using LibGit2Sharp;
 using Microsoft.Extensions.Options;
 using Parlance.Database;
-using Parlance.Database.Models;
 using Parlance.Services.RemoteCommunication;
 
 namespace Parlance.Services.Projects;
@@ -55,7 +54,7 @@ public class ProjectService : IProjectService
                 {
                     localBranch = repo.Branches.Add(branch, remoteBranch.Tip);
                 }
-                catch (LibGit2SharpException ex)
+                catch (LibGit2SharpException)
                 {
                     localBranch = repo.Branches.Where(b => b.IsRemote == false)
                         .Single(b => b.CanonicalName == $"refs/heads/{branch}");
@@ -66,7 +65,7 @@ public class ProjectService : IProjectService
                     CheckoutModifiers = CheckoutModifiers.Force 
                 });
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 try
                 {

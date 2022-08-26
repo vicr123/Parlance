@@ -1,7 +1,6 @@
 using System.Reflection;
 using Parlance.CLDR;
 using Parlance.Project.TranslationFiles;
-using Parlance.Project.TranslationFiles.QtLinguist;
 
 namespace Parlance.Project;
 

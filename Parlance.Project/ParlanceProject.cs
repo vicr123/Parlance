@@ -18,7 +18,7 @@ public class ParlanceProject : IParlanceProject
                 PropertyNameCaseInsensitive = true
             });
 
-        Subprojects = subprojectDefs.Subprojects.Select(subproject => new ParlanceSubproject(this, subproject));
+        Subprojects = subprojectDefs!.Subprojects.Select(subproject => new ParlanceSubproject(this, subproject));
     }
 
     public string VcsDirectory => _project.VcsDirectory;

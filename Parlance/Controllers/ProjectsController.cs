@@ -7,8 +7,6 @@ using Parlance.CLDR;
 using Parlance.Project;
 using Parlance.Project.TranslationFiles;
 using Parlance.Services.Projects;
-using Sepia.Globalization;
-using Sepia.Globalization.Plurals;
 
 namespace Parlance.Controllers;
 
@@ -35,9 +33,9 @@ public class ProjectsController : Controller
 
     public class AddProjectRequestData
     {
-        public string CloneUrl { get; set; }
-        public string Name { get; set; }
-        public string Branch { get; set; }
+        public string CloneUrl { get; set; } = null!;
+        public string Name { get; set; } = null!;
+        public string Branch { get; set; } = null!;
     }
     
     [Authorize(Policy = "Superuser")]
@@ -178,7 +176,7 @@ public class ProjectsController : Controller
     
     public class UpdateProjectEntriesRequestData
     {
-        public IDictionary<string, UpdateProjectEntryRequestData> Entries { get; set; }
+        public IDictionary<string, UpdateProjectEntryRequestData> Entries { get; set; } = null!;
     }
 
     [HttpPost]
@@ -240,7 +238,7 @@ public class ProjectsController : Controller
 
     public class UpdateProjectEntryRequestData
     {
-        public IList<TranslationWithPluralType> TranslationStrings { get; set; }
+        public IList<TranslationWithPluralType> TranslationStrings { get; set; } = null!;
     }
 
     [HttpPost]

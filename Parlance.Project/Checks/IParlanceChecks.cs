@@ -9,7 +9,7 @@ public class CheckResult
     }
     
     public Severity CheckSeverity { get; set; }
-    public string Message { get; set; }
+    public string Message { get; set; } = null!;
 }
 
 public interface IParlanceChecks

@@ -1,5 +1,4 @@
 using System.Collections.Immutable;
-using Sepia.Globalization;
 using Sepia.Globalization.Plurals;
 
 namespace Parlance.CLDR;

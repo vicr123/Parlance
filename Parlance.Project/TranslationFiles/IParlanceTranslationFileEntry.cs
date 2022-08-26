@@ -2,8 +2,8 @@ namespace Parlance.Project.TranslationFiles;
 
 public class TranslationWithPluralType
 {
-    public string PluralType { get; set; }
-    public string TranslationContent { get; set; }
+    public string PluralType { get; set; } = null!;
+    public string TranslationContent { get; set; } = null!;
 }
 
 public interface IParlanceTranslationFileEntry

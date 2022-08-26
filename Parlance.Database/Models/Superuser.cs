@@ -5,5 +5,5 @@ namespace Parlance.Database.Models;
 public class Superuser
 {
     [Key]
-    public string Username { get; set; }
+    public string Username { get; set; } = null!;
 }
