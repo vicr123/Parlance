@@ -7,6 +7,7 @@ using Parlance.CLDR;
 using Parlance.Database;
 using Parlance.Project;
 using Parlance.Project.Checks;
+using Parlance.Services.Permissions;
 using Parlance.Services.Projects;
 using Parlance.Services.RemoteCommunication;
 using Parlance.Services.Superuser;
@@ -31,6 +32,7 @@ builder.Services.AddSingleton<IVersionControlService, VersionControlService>();
 builder.Services.AddScoped<IProjectService, ProjectService>();
 builder.Services.AddScoped<ISuperuserService, SuperuserService>();
 builder.Services.AddScoped<IRemoteCommunicationService, RemoteCommunicationService>();
+builder.Services.AddScoped<IPermissionsService, PermissionsService>();
 builder.Services.AddSingleton<IParlanceChecks, ParlanceChecks>();
 
 builder.Services.Configure<ParlanceOptions>(builder.Configuration.GetSection("Parlance"));

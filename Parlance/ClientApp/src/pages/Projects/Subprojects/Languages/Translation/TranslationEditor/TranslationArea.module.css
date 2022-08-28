@@ -1,3 +1,8 @@
+.statusAlert {
+    padding: 9px;
+    border-bottom: 1px solid var(--border-color);
+}
+
 .translationArea {
     grid-area: translationArea;
     border-right: 1px solid var(--border-color);

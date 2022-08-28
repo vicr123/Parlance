@@ -1,16 +1,32 @@
 using Microsoft.AspNetCore.Authorization;
+using Parlance.CLDR;
+using Parlance.Services.Permissions;
+using Parlance.Vicr123Accounts.Authentication;
 
 namespace Parlance.Authorization.LanguageEditor;
 
 public class LanguageEditorHandler : AuthorizationHandler<LanguageEditorRequirement>
 {
-    protected override Task HandleRequirementAsync(AuthorizationHandlerContext context,
+    private readonly IPermissionsService _permissionsService;
+
+    public LanguageEditorHandler(IPermissionsService permissionsService)
+    {
+        _permissionsService = permissionsService;
+    }
+
+    protected override async Task HandleRequirementAsync(AuthorizationHandlerContext context,
         LanguageEditorRequirement requirement)
     {
-        if (context.Resource is not HttpContext httpContext) return Task.CompletedTask;
+        if (context.Resource is not HttpContext httpContext) return;
 
-        if (httpContext.User.Claims.Any(claim => claim.Type == "token")) context.Succeed(requirement);
-
-        return Task.CompletedTask;
+        var username = httpContext.User.Claims.FirstOrDefault(claim => claim.Type == Claims.Username)?.Value;
+        if (username is null) return;
+        
+        var routeData = httpContext.GetRouteData();
+        if (await _permissionsService.CanEditProjectLocale(username, routeData.Values["project"]!.ToString()!,
+                routeData.Values["language"]!.ToString()!.ToLocale()))
+        {
+            context.Succeed(requirement);
+        }
     }
 }

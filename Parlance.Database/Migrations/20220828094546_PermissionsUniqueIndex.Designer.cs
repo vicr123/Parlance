@@ -2,18 +2,20 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Parlance.Database;
 
 #nullable disable
 
-namespace Parlance.Migrations
+namespace Parlance.Database.Migrations
 {
     [DbContext(typeof(ParlanceContext))]
-    partial class ParlanceContextModelSnapshot : ModelSnapshot
+    [Migration("20220828094546_PermissionsUniqueIndex")]
+    partial class PermissionsUniqueIndex
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

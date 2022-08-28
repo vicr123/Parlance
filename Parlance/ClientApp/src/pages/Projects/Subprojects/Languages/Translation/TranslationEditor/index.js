@@ -15,6 +15,7 @@ export default function(props) {
     const {project, subproject, language, key} = useParams();
     const [entries, setEntries] = useState([]);
     const [subprojectData, setSubprojectData] = useState({});
+    const [subprojectLanguageData, setSubprojectLanguageData] = useState({});
     const [ready, setReady] = useState(false);
     const {t} = useTranslation();
     
@@ -52,11 +53,18 @@ export default function(props) {
         setSubprojectData(await Fetch.get(`/api/Projects/${project}/${subproject}`));
     }
     
+    const updateSubprojectLanguage = async () => {
+        setSubprojectLanguageData(await Fetch.get(`/api/Projects/${project}/${subproject}/${language}`));
+    }
+    
+    const canEdit = subprojectLanguageData?.canEdit;
+    
     useEffect(() => {
         (async () => {
             await Promise.all([
                 updateEntries(),
                 updateSubproject(),
+                updateSubprojectLanguage(),
                 i18n.pluralPatterns(language)
             ])
             setReady(true);
@@ -64,6 +72,8 @@ export default function(props) {
     }, []);
     
     const pushUpdate = async (key, update) => {
+        if (!canEdit) return;
+        
         setEntries(entries => entries.map(entry => {
             if (entry.key !== key) {
                 return entry;
@@ -94,7 +104,7 @@ export default function(props) {
         return <HotKeys keyMap={keymap} handlers={handlers}>
             <div className={Styles.root}>
                 <EntryList entries={entries} translationDirection={translationDirection} updateManager={updateManager} translationFileType={subprojectData.translationFileType} />
-                <TranslationArea onPushUpdate={pushUpdate} entries={entries} translationDirection={translationDirection} translationFileType={subprojectData.translationFileType} />
+                <TranslationArea onPushUpdate={pushUpdate} entries={entries} translationDirection={translationDirection} translationFileType={subprojectData.translationFileType} canEdit={canEdit} />
                 <ExtrasArea />
             </div>
         </HotKeys>

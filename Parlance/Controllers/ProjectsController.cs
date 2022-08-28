@@ -6,7 +6,9 @@ using Microsoft.Extensions.Primitives;
 using Parlance.CLDR;
 using Parlance.Project;
 using Parlance.Project.TranslationFiles;
+using Parlance.Services.Permissions;
 using Parlance.Services.Projects;
+using Parlance.Vicr123Accounts.Authentication;
 
 namespace Parlance.Controllers;
 
@@ -15,10 +17,12 @@ namespace Parlance.Controllers;
 public class ProjectsController : Controller
 {
     private readonly IProjectService _projectService;
+    private readonly IPermissionsService _permissionsService;
 
-    public ProjectsController(IProjectService projectService)
+    public ProjectsController(IProjectService projectService, IPermissionsService permissionsService)
     {
         _projectService = projectService;
+        _permissionsService = permissionsService;
     }
 
     [HttpGet]
@@ -122,30 +126,32 @@ public class ProjectsController : Controller
         }
     }
 
-    // [HttpGet]
-    // [Route("{project}/{subproject}/{language}")]
-    // public async Task<IActionResult> GetProjectMeta(string project, string subproject, string language)
-    // {
-    //     try
-    //     {
-    //         var p = await _projectService.ProjectBySystemName(project);
-    //         var subp = p.GetParlanceProject().SubprojectBySystemName(subproject);
-    //         var subprojectLanguage = subp.Language(language.ToLocale());
-    //         
-    //         return Json(new
-    //         {
-    //             subp.TranslationFileType
-    //         });
-    //     }
-    //     catch (SubprojectNotFoundException)
-    //     {
-    //         return NotFound();
-    //     }
-    //     catch (ProjectNotFoundException)
-    //     {
-    //         return NotFound();
-    //     }
-    // }
+    [HttpGet]
+    [Route("{project}/{subproject}/{language}")]
+    public async Task<IActionResult> GetProjectMeta(string project, string subproject, string language)
+    {
+        try
+        {
+            var p = await _projectService.ProjectBySystemName(project);
+            var subp = p.GetParlanceProject().SubprojectBySystemName(subproject);
+            var subprojectLanguage = subp.Language(language.ToLocale());
+            
+            var username = HttpContext.User.Claims.FirstOrDefault(claim => claim.Type == Claims.Username)?.Value;
+
+            return Json(new
+            {
+                CanEdit = await _permissionsService.CanEditProjectLocale(username, project, language.ToLocale())
+            });
+        }
+        catch (SubprojectNotFoundException)
+        {
+            return NotFound();
+        }
+        catch (ProjectNotFoundException)
+        {
+            return NotFound();
+        }
+    }
 
     [HttpGet]
     [Route("{project}/{subproject}/{language}/entries")]
@@ -179,39 +185,6 @@ public class ProjectsController : Controller
         public IDictionary<string, UpdateProjectEntryRequestData> Entries { get; set; } = null!;
     }
 
-    [HttpPost]
-    [Route("{project}/{subproject}/{language}/entries/{key}")]
-    public async Task<IActionResult> UpdateProjectEntries(string project, string subproject, string language, string key, [FromBody] UpdateProjectEntriesRequestData data)
-    {
-        try
-        {
-            var p = await _projectService.ProjectBySystemName(project);
-            var translationFile = await p.GetParlanceProject().SubprojectBySystemName(subproject).Language(language.ToLocale()).CreateTranslationFile();
-            if (translationFile is null) return NotFound();
-
-            if (!Request.Headers.IfMatch.Contains(translationFile.Hash)) return StatusCode(412); //Precondition Failed
-
-            foreach (var x in data.Entries)
-            {
-                var entry = translationFile.Entries.Single(entry => entry.Key == x.Key);
-                entry.Translation = x.Value.TranslationStrings;
-            }
-            await translationFile.Save();
-
-            Response.Headers.ETag = new StringValues(translationFile.Hash);
-            
-            return NoContent();
-        }
-        catch (SubprojectNotFoundException)
-        {
-            return NotFound();
-        }
-        catch (ProjectNotFoundException)
-        {
-            return NotFound();
-        }
-    }
-    
     [HttpGet]
     [Route("{project}/{subproject}/{language}/entries/{key}")]
     public async Task<IActionResult> GetProjectEntryByIndex(string project, string subproject, string language, string key)
@@ -243,6 +216,7 @@ public class ProjectsController : Controller
 
     [HttpPost]
     [Route("{project}/{subproject}/{language}/entries/{key}")]
+    [Authorize(Policy = "LanguageEditor")]
     public async Task<IActionResult> UpdateProjectEntry(string project, string subproject, string language, string key, [FromBody] UpdateProjectEntryRequestData data)
     {
         try
@@ -273,6 +247,7 @@ public class ProjectsController : Controller
 
     [HttpPost]
     [Route("{project}/{subproject}/{language}/entries")]
+    [Authorize(Policy = "LanguageEditor")]
     public async Task<IActionResult> UpdateProjectEntries(string project, string subproject, string language, [FromBody] IDictionary<string, UpdateProjectEntryRequestData> data)
     {
         try
