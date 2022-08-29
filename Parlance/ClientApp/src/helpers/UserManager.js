@@ -50,8 +50,7 @@ class UserManager extends EventEmitter {
         
         try {
             let response = await Fetch.post(`/api/user/token`, this.#loginSessionDetails);
-            localStorage.setItem("token", response.token);
-            await this.updateDetails();
+            await this.setToken(response.token);
             Modal.unmount();
         } catch (e) {
             let json = await e.json();
@@ -132,6 +131,11 @@ class UserManager extends EventEmitter {
                 {i18n.t('PASSWORD_RECOVERY_ERROR_PROMPT_2')}
             </Modal>)
         }
+    }
+    
+    async setToken(token) {
+        localStorage.setItem("token", token);
+        await this.updateDetails();
     }
     
     async logout() {

@@ -4,6 +4,7 @@ import LoginPasswordModal from "./LoginPasswordModal";
 import UserManager from "../../../helpers/UserManager";
 import {withTranslation} from "react-i18next";
 import LineEdit from "../../LineEdit";
+import CreateAccountModal from "./CreateAccountModal";
 
 export default withTranslation()(class LoginUsernameModal extends React.Component {
     constructor(props) {
@@ -24,7 +25,8 @@ export default withTranslation()(class LoginUsernameModal extends React.Componen
         return <Modal heading={this.props.t("LOG_IN")} buttons={[
             Modal.CancelButton,
             {
-                text: this.props.t('CREATE_ACCOUNT')
+                text: this.props.t('CREATE_ACCOUNT'),
+                onClick: () => Modal.mount(<CreateAccountModal />)
             },
             {
                 text: this.props.t('NEXT'),

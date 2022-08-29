@@ -1,6 +1,7 @@
 using System.Text.Json;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Parlance.Helpers;
 using Parlance.Services.Superuser;
 using Parlance.Vicr123Accounts.Authentication;
 using Parlance.Vicr123Accounts.Services;
@@ -37,6 +38,41 @@ public class UserController : Controller
             user.Username, user.Email, user.EmailVerified,
             Superuser = superuser
         });
+    }
+
+    public class CreateUserRequestData
+    {
+        public string Username { get; set; } = null!;
+        public string EmailAddress { get; set; } = null!;
+        public string Password { get; set; } = null!;
+    }
+    
+    [HttpPost]
+    public async Task<IActionResult> CreateUser([FromBody] CreateUserRequestData data)
+    {
+        try
+        {
+            await _accountsService.CreateUser(data.Username, data.Password, data.EmailAddress);
+            var token = await _accountsService.ProvisionTokenAsync(new ProvisionTokenParameters()
+            {
+                Username = data.Username,
+                Password = data.Password
+            });
+        
+            return Json(new
+            {
+                Token = token 
+            });
+        }
+        catch (DBusException ex)
+        {
+            if (ex.ErrorName == "com.vicr123.accounts.Error.QueryError")
+            {
+                return this.ClientError(ControllerExtensions.ErrorType.UsernameAlreadyExists);
+            }
+            
+            throw;
+        }
     }
 
     public class UserTokenRequestData

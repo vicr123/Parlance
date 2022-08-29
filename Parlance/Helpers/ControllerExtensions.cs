@@ -8,7 +8,8 @@ public static class ControllerExtensions
     {
         UnknownUser,
         PermissionAlreadyGranted,
-        GitError
+        GitError,
+        UsernameAlreadyExists
     }
     
     public static BadRequestObjectResult ClientError(this Controller controller, ErrorType errorType, object? extraData = null)

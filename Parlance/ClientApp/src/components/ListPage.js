@@ -28,7 +28,7 @@ export default function(props) {
         <div className={Styles.leftPane}>
             {props.items.map(item => {
                 if (typeof(item) === "string") {
-                    return <b className={Styles.listItem}>{item}</b>
+                    return <b className={Styles.listItem}>{item.toUpperCase()}</b>
                 } else {
                     return <ListItem {...item} />
                 }

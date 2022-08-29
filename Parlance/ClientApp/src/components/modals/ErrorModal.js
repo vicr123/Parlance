@@ -3,7 +3,7 @@ import Modal from "../Modal";
 import {VerticalLayout} from "../Layouts";
 import {useEffect, useState} from "react";
 
-export default function ErrorModal({error}) {
+export default function ErrorModal({error, onContinue}) {
     const {t} = useTranslation();
     const [message, setMessage] = useState(t("ERROR_GENERIC"));
     
@@ -21,6 +21,10 @@ export default function ErrorModal({error}) {
                         return;
                     case "PermissionAlreadyGranted":
                         setMessage(t("ERROR_PERMISSION_ALREADY_GRANTED"))
+                        return;
+                    case "UsernameAlreadyExists":
+                        setMessage(t("ERROR_USERNAME_ALREADY_EXISTS"))
+                        return;
                 }
             } catch {
                 
@@ -28,7 +32,16 @@ export default function ErrorModal({error}) {
         })();
     }, [error])
     
-    return <Modal buttons={[Modal.OkButton]}>
+    return <Modal buttons={[{
+        text: t("OK"),
+        onClick: () => {
+            if (onContinue) {
+                onContinue();
+            } else {
+                Modal.unmount();
+            }
+        }
+    }]}>
         <VerticalLayout>
             <span>{message}</span>
         </VerticalLayout>
