@@ -23,6 +23,9 @@ public class LanguageEditorHandler : AuthorizationHandler<LanguageEditorRequirem
         if (username is null) return;
         
         var routeData = httpContext.GetRouteData();
+        if (!routeData.Values.ContainsKey("project")) return;
+        if (!routeData.Values.ContainsKey("language")) return;
+        
         if (await _permissionsService.CanEditProjectLocale(username, routeData.Values["project"]!.ToString()!,
                 routeData.Values["language"]!.ToString()!.ToLocale()))
         {

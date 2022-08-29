@@ -4,14 +4,14 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Parlance.Database.Models;
 
-[Index(nameof(Username), nameof(PermissionType), nameof(SpecificPermission), IsUnique = true)]
+[Index(nameof(UserId), nameof(PermissionType), nameof(SpecificPermission), IsUnique = true)]
 public class Permission
 {
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     [Key]
     public Guid Id { get; set; }
 
-    public string Username { get; set; } = null!;
+    public ulong UserId { get; set; }
     
     public string PermissionType { get; set; } = null!;
     

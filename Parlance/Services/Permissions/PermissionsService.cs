@@ -4,6 +4,7 @@ using Parlance.CLDR;
 using Parlance.Database;
 using Parlance.Database.Models;
 using Parlance.Services.Superuser;
+using Parlance.Vicr123Accounts.Services;
 
 namespace Parlance.Services.Permissions;
 
@@ -13,11 +14,13 @@ public class PermissionsService : IPermissionsService
     
     private readonly ParlanceContext _dbContext;
     private readonly ISuperuserService _superuserService;
+    private readonly IVicr123AccountsService _accountsService;
 
-    public PermissionsService(ParlanceContext dbContext, ISuperuserService superuserService)
+    public PermissionsService(ParlanceContext dbContext, ISuperuserService superuserService, IVicr123AccountsService accountsService)
     {
         _dbContext = dbContext;
         _superuserService = superuserService;
+        _accountsService = accountsService;
     }
 
     public async Task GrantLocalePermission(string user, Locale locale)
@@ -26,7 +29,7 @@ public class PermissionsService : IPermissionsService
         {
             _dbContext.Permissions.Add(new Permission
             {
-                Username = user,
+                UserId = (await _accountsService.UserByUsername(user)).Id,
                 PermissionType = LocalePermissionType,
                 SpecificPermission = locale.ToDashed()
             });
@@ -46,27 +49,36 @@ public class PermissionsService : IPermissionsService
 
     public async Task RevokeLocalePermission(string user, Locale locale)
     {
+        var userId = (await _accountsService.UserByUsername(user)).Id;
+        
         var permission = _dbContext.Permissions.Single(permission =>
-            permission.Username == user && permission.PermissionType == LocalePermissionType &&
+            permission.UserId == userId && permission.PermissionType == LocalePermissionType &&
             permission.SpecificPermission == locale.ToDashed());
 
         _dbContext.Permissions.Remove(permission);
         await _dbContext.SaveChangesAsync();
     }
 
-    public Task<bool> HasLocalePermission(string user, Locale locale)
+    public async Task<bool> HasLocalePermission(string user, Locale locale)
     {
-        return Task.FromResult(_dbContext.Permissions.Any(permission =>
-            permission.Username == user && permission.PermissionType == LocalePermissionType &&
-            permission.SpecificPermission == locale.ToDashed()));
+        var userId = (await _accountsService.UserByUsername(user)).Id;
+
+        return _dbContext.Permissions.Any(permission =>
+            permission.UserId == userId && permission.PermissionType == LocalePermissionType &&
+            permission.SpecificPermission == locale.ToDashed());
     }
 
-    public Task<IEnumerable<string>> LocalePermissions(Locale locale)
+    public async IAsyncEnumerable<string> LocalePermissions(Locale locale)
     {
-        return Task.FromResult<IEnumerable<string>>(_dbContext.Permissions
+        var permissions = _dbContext.Permissions
             .Where(permission => permission.PermissionType == LocalePermissionType &&
-                                 permission.SpecificPermission == locale.ToDashed())
-            .Select(permission => permission.Username));
+                                 permission.SpecificPermission == locale.ToDashed());
+
+        foreach (var permission in permissions)
+        {
+            var user = await _accountsService.UserById(permission.UserId);
+            yield return user.Username;
+        }
     }
 
     public async Task<bool> CanEditProjectLocale(string? user, string project, Locale locale)

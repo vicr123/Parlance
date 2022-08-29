@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Primitives;
 using Parlance.CLDR;
+using Parlance.Helpers;
 using Parlance.Project;
 using Parlance.Project.TranslationFiles;
 using Parlance.Services.Permissions;
@@ -53,10 +54,7 @@ public class ProjectsController : Controller
         }
         catch (LibGit2SharpException ex)
         {
-            return BadRequest(new
-            {
-                ex.Message
-            });
+            return this.ClientError(ControllerExtensions.ErrorType.GitError, ex.Message);
         }
     }
     

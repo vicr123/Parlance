@@ -12,6 +12,7 @@ import Fetch from "../../../helpers/Fetch";
 import LoadingModal from "../../../components/modals/LoadingModal";
 import Modal from "../../../components/Modal";
 import ModalList from "../../../components/ModalList";
+import ErrorModal from "../../../components/modals/ErrorModal";
 
 export default function LocaleSettings(props) {
     const [users, setUsers] = useState([]);
@@ -66,9 +67,8 @@ export default function LocaleSettings(props) {
 
             setAddingUser("");
             Modal.unmount();
-        } catch {
-            //TODO: Error message
-            Modal.unmount();
+        } catch (error) {
+            Modal.mount(<ErrorModal error={error} />)
         }
     }
     

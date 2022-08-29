@@ -1,7 +1,9 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Parlance.CLDR;
+using Parlance.Helpers;
 using Parlance.Services.Permissions;
+using Tmds.DBus;
 
 namespace Parlance.Controllers;
 
@@ -22,7 +24,7 @@ public class PermissionsController : Controller
     [Route("language/{language}")]
     public async Task<IActionResult> GetLocalePermissions(string language)
     {
-        return Json(await _permissionsService.LocalePermissions(language.ToLocale()));
+        return Json(await _permissionsService.LocalePermissions(language.ToLocale()).ToListAsync());
     }
 
     [Authorize(Policy = "Superuser")]
@@ -35,9 +37,17 @@ public class PermissionsController : Controller
             await _permissionsService.GrantLocalePermission(username, language.ToLocale());
             return NoContent();
         }
+        catch (DBusException ex)
+        {
+            if (ex.ErrorName == "com.vicr123.accounts.Error.NoAccount")
+            {
+                return this.ClientError(ControllerExtensions.ErrorType.UnknownUser);
+            }
+            throw;
+        }
         catch (InvalidOperationException)
         {
-            return BadRequest();
+            return this.ClientError(ControllerExtensions.ErrorType.PermissionAlreadyGranted);
         }
     }
     
@@ -50,6 +60,14 @@ public class PermissionsController : Controller
         {
             await _permissionsService.RevokeLocalePermission(username, language.ToLocale());
             return NoContent();
+        }
+        catch (DBusException ex)
+        {
+            if (ex.ErrorName == "com.vicr123.accounts.Error.NoAccount")
+            {
+                return this.ClientError(ControllerExtensions.ErrorType.UnknownUser);
+            }
+            throw;
         }
         catch (InvalidOperationException)
         {
