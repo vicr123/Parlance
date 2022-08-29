@@ -75,7 +75,7 @@ export default function(props) {
                 },
                 {
                     contents: t("ACCOUNT_SETTINGS_TWO_FACTOR"),
-                    onClick: () => Modal.mount(<Modal buttons={[Modal.OkButton]}>Coming Soon</Modal>)
+                    onClick: () => navigate("otp")
                 }
             ]} />
         </Container>

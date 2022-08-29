@@ -33,6 +33,12 @@ public class SomeOther : IPasswordResetMethod
     
 }
 
+public class OtpBackupCode
+{
+    public string Code { get; init; } = null!;
+    public bool Used { get; init; }
+}
+
 public interface IVicr123AccountsService
 {
     public Task<string> ProvisionTokenAsync(ProvisionTokenParameters parameters);
@@ -47,4 +53,10 @@ public interface IVicr123AccountsService
     public Task UpdateUserPassword(User user, string newPassword);
     public Task ResendVerificationEmail(User user);
     public Task<bool> VerifyEmail(User user, string verificationCode);
+    public Task<bool> OtpEnabled(User user);
+    public Task<string> GenerateOtpKey(User user);
+    public Task EnableOtp(User user, string key);
+    public Task DisableOtp(User user);
+    public Task<IEnumerable<OtpBackupCode>> OtpBackupCodes(User user);
+    public Task RegenerateBackupCodes(User user);
 }

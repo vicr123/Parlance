@@ -134,6 +134,52 @@ public class Vicr123AccountsService : IVicr123AccountsService
         }
     }
 
+    public async Task<bool> OtpEnabled(User user)
+    {
+        var objectPath = await _manager.UserByIdAsync(user.Id);
+        var tfProxy = _connection.CreateProxy<ITwoFactor>(_serviceName, objectPath);
+        return await tfProxy.GetTwoFactorEnabledAsync();
+    }
+
+    public async Task<string> GenerateOtpKey(User user)
+    {
+        var objectPath = await _manager.UserByIdAsync(user.Id);
+        var tfProxy = _connection.CreateProxy<ITwoFactor>(_serviceName, objectPath);
+        return await tfProxy.GenerateTwoFactorKeyAsync();
+    }
+
+    public async Task EnableOtp(User user, string key)
+    {
+        var objectPath = await _manager.UserByIdAsync(user.Id);
+        var tfProxy = _connection.CreateProxy<ITwoFactor>(_serviceName, objectPath);
+        await tfProxy.EnableTwoFactorAuthenticationAsync(key);
+    }
+
+    public async Task DisableOtp(User user)
+    {
+        var objectPath = await _manager.UserByIdAsync(user.Id);
+        var tfProxy = _connection.CreateProxy<ITwoFactor>(_serviceName, objectPath);
+        await tfProxy.DisableTwoFactorAuthenticationAsync();
+    }
+
+    public async Task<IEnumerable<OtpBackupCode>> OtpBackupCodes(User user)
+    {
+        var objectPath = await _manager.UserByIdAsync(user.Id);
+        var tfProxy = _connection.CreateProxy<ITwoFactor>(_serviceName, objectPath);
+        return (await tfProxy.GetBackupKeysAsync()).Select(key => new OtpBackupCode
+        {
+            Code = key.Item1,
+            Used = key.Item2
+        });
+    }
+
+    public async Task RegenerateBackupCodes(User user)
+    {
+        var objectPath = await _manager.UserByIdAsync(user.Id);
+        var tfProxy = _connection.CreateProxy<ITwoFactor>(_serviceName, objectPath);
+        await tfProxy.RegenerateBackupKeysAsync();
+    }
+
     private async Task InitAsync()
     {
         _connection = new Connection(_accountOptions.Value.DbusConnectionPath);

@@ -4,15 +4,18 @@ import Modal from "../../Modal";
 import {useState} from "react";
 import LineEdit from "../../LineEdit";
 
-export default function(props) {
+export default function({onAccepted, onRejected}) {
     const [password, setPassword] = useState("");
     const {t} = useTranslation();
     
     return <Modal heading={t("CONFIRM_PASSWORD")} buttons={[
-        Modal.CancelButton,
         {
-            text: "OK",
-            onClick: () => props.onAccepted(password)
+            text: t("CANCEL"),
+            onClick: () => onRejected ? onRejected() : Modal.unmount()
+        },
+        {
+            text: t("OK"),
+            onClick: () => onAccepted(password)
         }
     ]}>
         <VerticalLayout>

@@ -188,6 +188,7 @@ public class UserController : Controller
     }
     
     [HttpPost]
+    [Authorize]
     [Route("username")]
     public async Task<IActionResult> ChangeUsername([FromBody] ChangeUsernameRequestData data)
     {
@@ -212,6 +213,7 @@ public class UserController : Controller
     }
     
     [HttpPost]
+    [Authorize]
     [Route("email")]
     public async Task<IActionResult> ChangeEmail([FromBody] ChangeEmailRequestData data)
     {
@@ -236,6 +238,7 @@ public class UserController : Controller
     }
     
     [HttpPost]
+    [Authorize]
     [Route("password")]
     public async Task<IActionResult> ChangeEmail([FromBody] ChangePasswordRequestData data)
     {
@@ -253,6 +256,7 @@ public class UserController : Controller
     }
 
     [HttpPost]
+    [Authorize]
     [Route("verification/resend")]
     public async Task<IActionResult> ResendVerificationEmail()
     {
@@ -272,6 +276,7 @@ public class UserController : Controller
     }
 
     [HttpPost]
+    [Authorize]
     [Route("verification")]
     public async Task<IActionResult> VerifyEmail([FromBody] VerifyEmailRequestData data)
     {
@@ -286,5 +291,130 @@ public class UserController : Controller
         }
         
         return NoContent();
+    }
+
+    public class OtpRequestData
+    {
+        public string Password { get; set; } = null!;
+    }
+
+    public class EnableOtpRequestData : OtpRequestData
+    {
+        public string OtpCode { get; set; } = null!;
+    }
+
+    [HttpPost]
+    [Authorize]
+    [Route("otp")]
+    public async Task<IActionResult> GetOtpStatus([FromBody] OtpRequestData data)
+    {
+        var userId = ulong.Parse(HttpContext.User.Claims.First(claim => claim.Type == Claims.UserId).Value);
+        var user = await _accountsService.UserById(userId);
+
+        if (!await _accountsService.VerifyUserPassword(user, data.Password))
+        {
+            return Forbid();
+        }
+
+        if (await _accountsService.OtpEnabled(user))
+        {
+            return Json(new
+            {
+                Enabled = true,
+                BackupCodes = await _accountsService.OtpBackupCodes(user)
+            });
+        }
+
+        return Json(new
+        {
+            Enabled = false,
+            Key = await _accountsService.GenerateOtpKey(user)
+        });
+    }
+
+    [HttpPost]
+    [Authorize]
+    [Route("otp/enable")]
+    public async Task<IActionResult> EnableOtp([FromBody] EnableOtpRequestData data)
+    {
+        var userId = ulong.Parse(HttpContext.User.Claims.First(claim => claim.Type == Claims.UserId).Value);
+        var user = await _accountsService.UserById(userId);
+
+        if (!await _accountsService.VerifyUserPassword(user, data.Password))
+        {
+            return Forbid();
+        }
+
+        try
+        {
+            await _accountsService.EnableOtp(user, data.OtpCode);
+            return NoContent();
+        }
+        catch (DBusException ex)
+        {
+            return this.ClientError(ex.ErrorName switch
+            {
+                "com.vicr123.accounts.Error.TwoFactorEnabled" => ControllerExtensions.ErrorType.TwoFactorAlreadyEnabled,
+                "com.vicr123.accounts.Error.TwoFactorRequired" => ControllerExtensions.ErrorType.TwoFactorCodeIncorrect,
+                _ => throw ex
+            });
+        }
+    }
+
+    [HttpPost]
+    [Authorize]
+    [Route("otp/disable")]
+    public async Task<IActionResult> DisableOtp([FromBody] OtpRequestData data)
+    {
+        var userId = ulong.Parse(HttpContext.User.Claims.First(claim => claim.Type == Claims.UserId).Value);
+        var user = await _accountsService.UserById(userId);
+
+        if (!await _accountsService.VerifyUserPassword(user, data.Password))
+        {
+            return Forbid();
+        }
+
+        try
+        {
+            await _accountsService.DisableOtp(user);
+            return NoContent();
+        }
+        catch (DBusException ex)
+        {
+            return this.ClientError(ex.ErrorName switch
+            {
+                "com.vicr123.accounts.Error.TwoFactorDisabled" => ControllerExtensions.ErrorType.TwoFactorAlreadyDisabled,
+                _ => throw ex
+            });
+        }
+    }
+    
+
+    [HttpPost]
+    [Authorize]
+    [Route("otp/regenerate")]
+    public async Task<IActionResult> RegenerateOtpCodes([FromBody] OtpRequestData data)
+    {
+        var userId = ulong.Parse(HttpContext.User.Claims.First(claim => claim.Type == Claims.UserId).Value);
+        var user = await _accountsService.UserById(userId);
+
+        if (!await _accountsService.VerifyUserPassword(user, data.Password))
+        {
+            return Forbid();
+        }
+
+        try
+        {
+            await _accountsService.RegenerateBackupCodes(user);
+            return NoContent();
+        }
+        catch (DBusException ex)
+        {
+            return this.ClientError(ex.ErrorName switch
+            {
+                "com.vicr123.accounts.Error.TwoFactorDisabled" => ControllerExtensions.ErrorType.TwoFactorIsDisabled,
+                _ => throw ex
+            });
+        }
     }
 }

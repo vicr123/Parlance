@@ -12,6 +12,7 @@ import PasswordChange from "./PasswordChange";
 import VerifyEmail from "./VerifyEmail";
 
 import "./index.css";
+import Otp from "./Otp";
 
 export default function(props) {
     const [ignored, forceUpdate] = useReducer(x => x + 1, 0);
@@ -65,6 +66,7 @@ export default function(props) {
                     <Route element={<EmailChange />} path={"/email"} />
                     <Route element={<PasswordChange />} path={"/password"} />
                     <Route element={<VerifyEmail />} path={"/verify"} />
+                    <Route element={<Otp />} path={"/otp"} />
                 </Routes>
             </CSSTransition>
         </TransitionGroup>

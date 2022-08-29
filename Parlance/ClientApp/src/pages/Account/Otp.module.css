@@ -1,0 +1,87 @@
+.setupContainer {
+    display: grid;
+    grid-template-columns: max-content 1fr;
+    grid-template-rows: max-content max-content max-content max-content;
+    gap: 9px 9px;
+    grid-template-areas: 
+        "setupPrompt setupPrompt"
+        "setupNumberOne setupStepOne"
+        "setupNumberTwo setupStepTwo"
+        "setupNumberThree setupStepThree";
+}
+
+.setupPrompt {
+    grid-area: setupPrompt;
+}
+
+.setupNumber {
+    font-size: 30pt;
+}
+
+.setupNumberOne {
+    grid-area: setupNumberOne;
+}
+
+.setupStepOne {
+    grid-area: setupStepOne;
+}
+
+.setupNumberTwo {
+    grid-area: setupNumberTwo;
+}
+
+.setupStepTwo {
+    grid-area: setupStepTwo;
+}
+
+.setupNumberThree {
+    grid-area: setupNumberThree;
+}
+
+.setupStepThree {
+    grid-area: setupStepThree;
+}
+
+.manualSetupKey {
+    font-size: 20pt;
+}
+
+.setupQr {
+    padding: 30px;
+    background: white;
+}
+
+.backupCodesContainer {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: max-content max-content max-content max-content max-content;
+    gap: 9px 9px;
+    
+    justify-items: center;
+}
+
+.backupCode {
+    font-size: 20pt;
+}
+
+.backupCodeUsed {
+    color: var(--foreground-disabled-color);
+    text-decoration: line-through;
+}
+
+.printPage {
+    margin: 1in;
+    font-size: 10pt;
+}
+
+.printHeader {
+    font-size: 30pt;
+}
+
+.printSubtitle {
+    font-size: 15pt;
+}
+
+.printPage .backupCode {
+    font-size: 15pt;
+}

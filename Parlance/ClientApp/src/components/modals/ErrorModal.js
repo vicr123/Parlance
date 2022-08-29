@@ -25,6 +25,18 @@ export default function ErrorModal({error, onContinue}) {
                     case "UsernameAlreadyExists":
                         setMessage(t("ERROR_USERNAME_ALREADY_EXISTS"))
                         return;
+                    case "TwoFactorIsDisabled":
+                        setMessage(t("ERROR_TWO_FACTOR_IS_DISABLED"))
+                        return;
+                    case "TwoFactorAlreadyEnabled":
+                        setMessage(t("ERROR_TWO_FACTOR_ALREADY_ENABLED"))
+                        return;
+                    case "TwoFactorAlreadyDisabled":
+                        setMessage(t("ERROR_TWO_FACTOR_ALREADY_DISABLED"))
+                        return;
+                    case "TwoFactorCodeIncorrect":
+                        setMessage(t("ERROR_TWO_FACTOR_INCORRECT"))
+                        return;
                 }
             } catch {
                 

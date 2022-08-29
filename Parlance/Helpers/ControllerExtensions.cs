@@ -9,7 +9,11 @@ public static class ControllerExtensions
         UnknownUser,
         PermissionAlreadyGranted,
         GitError,
-        UsernameAlreadyExists
+        UsernameAlreadyExists,
+        TwoFactorIsDisabled,
+        TwoFactorAlreadyEnabled,
+        TwoFactorAlreadyDisabled,
+        TwoFactorCodeIncorrect
     }
     
     public static BadRequestObjectResult ClientError(this Controller controller, ErrorType errorType, object? extraData = null)

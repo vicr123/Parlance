@@ -80,4 +80,34 @@ public class Vicr123AccountsDummyService : IVicr123AccountsService
     {
         throw new NotSupportedException();
     }
+
+    public Task<bool> OtpEnabled(User user)
+    {
+        throw new NotSupportedException();
+    }
+
+    public Task<string> GenerateOtpKey(User user)
+    {
+        throw new NotSupportedException();
+    }
+
+    public Task EnableOtp(User user, string key)
+    {
+        throw new NotSupportedException();
+    }
+
+    public Task DisableOtp(User user)
+    {
+        throw new NotSupportedException();
+    }
+
+    public Task<IEnumerable<OtpBackupCode>> OtpBackupCodes(User user)
+    {
+        throw new NotSupportedException();
+    }
+
+    public Task RegenerateBackupCodes(User user)
+    {
+        throw new NotSupportedException();
+    }
 }
