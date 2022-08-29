@@ -14,12 +14,14 @@ public class RemoteCommunicationService : IRemoteCommunicationService
 
     public Credentials CredentialsHandler(string url, string usernameFromUrl, SupportedCredentialTypes types)
     {
-        //TODO
+        //TODO: Check number of retries
+        var key = _dbContext.SshKeys.First();
+        
         return new SshKeyMemoryCredentials
         {
             Username = usernameFromUrl,
-            PublicKey = File.ReadAllText("/home/victor/.ssh/id_rsa.pub"),
-            PrivateKey = File.ReadAllText("/home/victor/.ssh/id_rsa")
+            PublicKey = key.SshKeyContents,
+            PrivateKey = key.SshPrivateKeyContents
         };
     }
 

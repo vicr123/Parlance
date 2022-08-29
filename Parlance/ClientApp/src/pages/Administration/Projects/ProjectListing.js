@@ -16,7 +16,7 @@ export default function(props) {
         let projects = await Fetch.get("/api/projects");
         setProjects(projects.map(project => ({
             contents: project.name,
-            onClick: () => alert(project.systemName)
+            onClick: () => navigate(project.systemName)
         })));
     };
 

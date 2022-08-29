@@ -32,7 +32,7 @@ export default function(props) {
         } catch (ex) {
             let message = t("Couldn't add the project. Try again later.");
             if (ex.status === 400) {
-                message = (await ex.json()).message;
+                message = (await ex.json()).extraData;
             }
             Modal.mount(<Modal heading={t("ADD_PROJECT_ERROR")} buttons={[Modal.OkButton]}>
                 {message}
