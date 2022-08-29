@@ -30,14 +30,14 @@ const PrintableOtpCodes = React.forwardRef(function PrintableOtpCodes({otpState}
         <div ref={ref} className={Styles.printPage}>
             <VerticalLayout>
                 <span className={Styles.printHeader}>Parlance</span>
-                <span className={Styles.printSubtitle}>{t("Two Factor Authentication Backup Codes")}</span>
+                <span className={Styles.printSubtitle}>{t("BACKUP_CODES_PRINT_TITLE")}</span>
             </VerticalLayout>
             <hr />
             <VerticalLayout>
-                <span>{t("Hey there,")}</span>
-                <span>{t("Your backup codes are displayed below. Keep them in a safe place.")}</span>
-                <span>{t("Each backup code can only be used once, so it's a good idea to cross each one out as you use it.")}</span>
-                <span>{t("This page was printed on {{date}}, so if you've regenerated your backup codes since then, these ones may not be the correct ones to use.", {
+                <span>{t("BACKUP_CODES_PRINT_PROMPT_1")}</span>
+                <span>{t("BACKUP_CODES_PRINT_PROMPT_2")}</span>
+                <span>{t("BACKUP_CODES_PRINT_PROMPT_3")}</span>
+                <span>{t("BACKUP_CODES_PRINT_PROMPT_4", {
                     date: (new Intl.DateTimeFormat(i18n.language, {
                         dateStyle: "full"
                     }).format(new Date()))
@@ -46,8 +46,8 @@ const PrintableOtpCodes = React.forwardRef(function PrintableOtpCodes({otpState}
             </VerticalLayout>
             <VerticalSpacer height={20} />
             <VerticalLayout>
-                <PageHeading level={3}>{t("Need more codes?")}</PageHeading>
-                <span>{t("Generate more codes by visiting your Victor Tran account in Parlance. These codes will be invalidated when you do so.")}</span>
+                <PageHeading level={3}>{t("BACKUP_CODES_PRINT_PROMPT_5")}</PageHeading>
+                <span>{t("BACKUP_CODES_PRINT_PROMPT_6")}</span>
             </VerticalLayout>
         </div>
     </div>
@@ -212,14 +212,38 @@ export default function Otp(props) {
     const navigate = useNavigate();
     const {t} = useTranslation();
     
+    const requestPassword = () => {
+        const accept = password => {
+            setPassword(password);
+        };
+
+        const reject = () => {
+            navigate("..");
+            Modal.unmount();
+        }
+
+        Modal.mount(<PasswordConfirmModal onAccepted={accept} onRejected={reject} />)
+    }
+    
     const updateState = async () => {
         if (!password) return;
         
         Modal.mount(<LoadingModal />);
-        setOtpState(await Fetch.post("/api/user/otp", {
-            password: password
-        }));
-        Modal.unmount();
+        try {
+            setOtpState(await Fetch.post("/api/user/otp", {
+                password: password
+            }));
+            Modal.unmount();
+        } catch (error) {
+            if (error.status === 403) {
+                requestPassword();
+            } else {
+                Modal.mount(<ErrorModal error={error} onContinue={() => {
+                    navigate("..");
+                    Modal.unmount();
+                }} />)
+            }
+        }
     };
     
     useEffect(() => {
@@ -227,16 +251,7 @@ export default function Otp(props) {
     }, [password]);
     
     useEffect(() => {
-        const accept = password => {
-            setPassword(password);
-        };
-        
-        const reject = () => {
-            navigate("..");
-            Modal.unmount();
-        }
-        
-        Modal.mount(<PasswordConfirmModal onAccepted={accept} onRejected={reject} />)
+        requestPassword();
     }, []);
     
     let content;
