@@ -6,6 +6,7 @@ import PageHeading from "../../components/PageHeading";
 import Superusers from "./Superusers";
 import SSH from "./SSH";
 import Projects from "./Projects";
+import Locales from "./Locales";
 
 export default function(props) {
     const {t} = useTranslation();
@@ -21,10 +22,14 @@ export default function(props) {
             name: t("SSH_KEYS"),
             render: <SSH />
         },
-        t("USERS"),
+        t("USERS_AND_PERMISSIONS"),
         {
             name: t("SUPERUSERS"),
             render: <Superusers />
+        },
+        {
+            name: t("LOCALES"),
+            render: <Locales />
         }
     ];
     

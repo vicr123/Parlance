@@ -15,6 +15,15 @@ public class PermissionsController : Controller
     {
         _permissionsService = permissionsService;
     }
+    
+
+    [Authorize(Policy = "Superuser")]
+    [HttpGet]
+    [Route("language/{language}")]
+    public async Task<IActionResult> GetLocalePermissions(string language)
+    {
+        return Json(await _permissionsService.LocalePermissions(language.ToLocale()));
+    }
 
     [Authorize(Policy = "Superuser")]
     [HttpPost]

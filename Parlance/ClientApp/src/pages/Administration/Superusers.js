@@ -9,6 +9,7 @@ import Modal from "../../components/Modal";
 import LoadingModal from "../../components/modals/LoadingModal";
 import UserManager from "../../helpers/UserManager";
 import LineEdit from "../../components/LineEdit";
+import {VerticalLayout} from "../../components/Layouts";
 
 export default function(props) {
     const [superusers, setSuperusers] = useState([]);
@@ -54,7 +55,7 @@ export default function(props) {
             Modal.mount(<Modal heading={t("PROMOTE_TO_SUPERUSER")} buttons={[
                 Modal.OkButton
             ]}>
-                <p>{t("PROMOTE_NO_USER_PROMPT")}</p>
+                <span>{t("PROMOTE_NO_USER_PROMPT")}</span>
             </Modal>)
             return;
         }
@@ -79,24 +80,30 @@ export default function(props) {
                 }
             }
         ]}>
-            <p>{t("PROMOTE_PROMPT_1", {user: promotingUser})}</p>
-            <p>{t("PROMOTE_PROMPT_2", {user: promotingUser})}</p>
+            <VerticalLayout>
+                <span>{t("PROMOTE_PROMPT_1", {user: promotingUser})}</span>
+                <span>{t("PROMOTE_PROMPT_2", {user: promotingUser})}</span>
+            </VerticalLayout>
         </Modal>)
     }
     
     return <div>
         <ListPageBlock>
-            <PageHeading level={3}>{t("SUPERUSERS")}</PageHeading>
-            <p>{t("SUPERUSER_PROMPT_1")}</p>
-            <SelectableList items={superusers} />
+            <VerticalLayout>
+                <PageHeading level={3}>{t("SUPERUSERS")}</PageHeading>
+                <span>{t("SUPERUSER_PROMPT_1")}</span>
+                <SelectableList items={superusers} />
+            </VerticalLayout>
         </ListPageBlock>
         <ListPageBlock>
-            <PageHeading level={3}>{t("PROMOTE_TO_SUPERUSER")}</PageHeading>
-            <p>{t("SUPERUSER_PROMOTE_PROMPT_1")}</p>
-            <LineEdit placeholder={"Username"} value={promotingUser} style={{
-                marginBottom: "9px"
-            }} onChange={e => setPromotingUser(e.target.value)} />
-            <SelectableList onClick={promote}>{t("PROMOTE_TO_SUPERUSER")}</SelectableList>
+            <VerticalLayout>
+                <PageHeading level={3}>{t("PROMOTE_TO_SUPERUSER")}</PageHeading>
+                <span>{t("SUPERUSER_PROMOTE_PROMPT_1")}</span>
+                <LineEdit placeholder={"Username"} value={promotingUser} style={{
+                    marginBottom: "9px"
+                }} onChange={e => setPromotingUser(e.target.value)} />
+                <SelectableList onClick={promote}>{t("PROMOTE_TO_SUPERUSER")}</SelectableList>
+            </VerticalLayout>
         </ListPageBlock>
     </div>
 }

@@ -61,6 +61,14 @@ public class PermissionsService : IPermissionsService
             permission.SpecificPermission == locale.ToDashed()));
     }
 
+    public Task<IEnumerable<string>> LocalePermissions(Locale locale)
+    {
+        return Task.FromResult<IEnumerable<string>>(_dbContext.Permissions
+            .Where(permission => permission.PermissionType == LocalePermissionType &&
+                                 permission.SpecificPermission == locale.ToDashed())
+            .Select(permission => permission.Username));
+    }
+
     public async Task<bool> CanEditProjectLocale(string? user, string project, Locale locale)
     {
         if (user is null) return false;

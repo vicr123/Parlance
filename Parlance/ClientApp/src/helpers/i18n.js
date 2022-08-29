@@ -32,16 +32,32 @@ instance.use(initReactI18next).init({
 })
 
 i18n.humanReadableLocale = (locale) => {
-    let parts = locale.split("-");
-    
-    let readableParts = [];
-    let language = parts.shift();
-    let country = parts.shift();
-    
-    if (language) readableParts.push((new Intl.DisplayNames([i18n.language], {type: "language"})).of(language));
-    if (country) readableParts.push(`(${(new Intl.DisplayNames([i18n.language], {type: "region"})).of(country)})`);
-    
-    return readableParts.join(" ");
+    try {
+        let parts = locale.split("-");
+
+        let readableParts = [];
+        let language = parts.shift();
+        let script = parts.shift();
+        let country = parts.shift();
+
+        if (language) readableParts.push((new Intl.DisplayNames([i18n.language], {type: "language"})).of(language));
+
+        if (script) {
+            //Ensure this is actually a script
+            try {
+                readableParts.push(`(${(new Intl.DisplayNames([i18n.language], {type: "script"})).of(script)})`);
+            } catch {
+                //Probably a country then
+                country = script;
+            }
+        }
+
+        if (country) readableParts.push(`(${(new Intl.DisplayNames([i18n.language], {type: "region"})).of(country)})`);
+
+        return readableParts.join(" ");
+    } catch {
+        return locale;
+    }
 }
 
 i18n.number = (locale, number) => {

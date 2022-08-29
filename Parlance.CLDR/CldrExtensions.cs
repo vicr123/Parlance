@@ -7,9 +7,23 @@ namespace Parlance.CLDR;
 
 public static class CldrExtensions
 {
+    private static readonly List<string> Scripts = new List<string>();
+    
     public static async Task DownloadCldrData()
     {
         await Cldr.Instance.DownloadLatestAsync();
+
+        var scriptMetadata = Cldr.Instance.GetTextDocuments("common/properties/scriptMetadata.txt");
+        foreach (var reader in scriptMetadata)
+        {
+            while (!reader.EndOfStream)
+            {
+                var line = await reader.ReadLineAsync();
+                if (line == null || line.StartsWith("#")) continue;
+                
+                Scripts.Add(line.Split(";")[0]);
+            }
+        }
     }
     
     public static IServiceCollection AddCldr(this IServiceCollection services, IConfiguration configuration)
@@ -19,19 +33,34 @@ public static class CldrExtensions
 
     public static Locale ToLocale(this string localeIdentifier)
     {
+        Queue<string>? parts = null;
         if (localeIdentifier.Contains("-"))
         {
-            var parts = localeIdentifier.Split("-");
-            return new Locale(parts[0], parts[1]);
+            parts = new Queue<string>(localeIdentifier.Split("-"));
         }
 
         if (localeIdentifier.Contains("_"))
         {
-            var parts = localeIdentifier.Split("_");
-            return new Locale(parts[0], parts[1]);
+            parts = new Queue<string>(localeIdentifier.Split("_"));
         }
 
-        return new Locale(localeIdentifier, null);
+        if (parts is null) return new Locale(localeIdentifier, null, null);
+        
+        var languageCode = parts.Dequeue();
+        string? script = null;
+        string? countryCode = null;
+
+        if (parts.Count > 0)
+        {
+            if (Scripts.Contains(parts.Peek())) script = parts.Dequeue();
+        }
+
+        if (parts.Count > 0)
+        {
+            countryCode = parts.Dequeue();
+        }
+            
+        return new Locale(languageCode, countryCode, script);
     }
 
     public static IEnumerable<int> GetExamples(this Rule pluralRule)
