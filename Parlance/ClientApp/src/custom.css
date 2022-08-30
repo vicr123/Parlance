@@ -26,6 +26,10 @@ body {
 
     --content-width: 900px;
     
+    --translation-progress-indicator-complete: rgb(0, 150, 0);
+    --translation-progress-indicator-error: rgb(200, 0, 0);
+    --translation-progress-indicator-warning: rgb(200, 100, 0);
+    
     background-color: var(--background-color);
     color: var(--foreground-color);
 

@@ -59,8 +59,9 @@ public class PermissionsService : IPermissionsService
         await _dbContext.SaveChangesAsync();
     }
 
-    public async Task<bool> HasLocalePermission(string user, Locale locale)
+    public async Task<bool> HasLocalePermission(string? user, Locale locale)
     {
+        if (user is null) return false;
         var userId = (await _accountsService.UserByUsername(user)).Id;
 
         return _dbContext.Permissions.Any(permission =>
@@ -87,5 +88,11 @@ public class PermissionsService : IPermissionsService
         if (await _superuserService.IsSuperuser(user)) return true;
         if (await HasLocalePermission(user, locale)) return true;
         return false;
+    }
+
+    public Task<bool> HasManageProjectPermission(string? user, string project)
+    {
+        if (user is null) return Task.FromResult(false);
+        return Task.FromResult(true);
     }
 }

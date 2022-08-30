@@ -1,6 +1,8 @@
 using LibGit2Sharp;
 using Microsoft.Extensions.Options;
 using Parlance.Database;
+using Parlance.Project;
+using Parlance.Project.Index;
 using Parlance.Services.RemoteCommunication;
 
 namespace Parlance.Services.Projects;
@@ -9,12 +11,14 @@ public class ProjectService : IProjectService
 {
     private readonly IOptions<ParlanceOptions> _parlanceOptions;
     private readonly IRemoteCommunicationService _remoteCommunicationService;
+    private readonly IParlanceIndexingService _indexingService;
     private readonly ParlanceContext _dbContext;
 
-    public ProjectService(IOptions<ParlanceOptions> parlanceOptions, IRemoteCommunicationService remoteCommunicationService, ParlanceContext dbContext)
+    public ProjectService(IOptions<ParlanceOptions> parlanceOptions, IRemoteCommunicationService remoteCommunicationService, IParlanceIndexingService indexingService, ParlanceContext dbContext)
     {
         _parlanceOptions = parlanceOptions;
         _remoteCommunicationService = remoteCommunicationService;
+        _indexingService = indexingService;
         _dbContext = dbContext;
     }
     
@@ -79,6 +83,26 @@ public class ProjectService : IProjectService
                 throw;
             }
         });
+
+        try
+        {
+        
+            //Run checks on the project
+            await _indexingService.IndexProject(project.GetParlanceProject());
+        }
+        catch (Exception)
+        {
+            try
+            {
+                Directory.Delete(directory, true);
+            }
+            catch
+            {
+                // ignored
+            }
+
+            throw;
+        }
         _dbContext.Projects.Add(project);
 
         await _dbContext.SaveChangesAsync();

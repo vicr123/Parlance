@@ -15,7 +15,7 @@ export default function(props) {
 
     useEffect(() => {
         updateProjects();
-    });
+    }, []);
 
     return <div>
         <Container>

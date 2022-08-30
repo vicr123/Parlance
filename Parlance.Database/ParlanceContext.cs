@@ -14,6 +14,7 @@ public class ParlanceContext : DbContext
     public DbSet<Superuser> Superusers { get; set; } = null!;
     public DbSet<Project> Projects { get; set; } = null!;
     public DbSet<Permission> Permissions { get; set; } = null!;
+    public DbSet<IndexItem> Index { get; set; } = null!;
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -23,6 +24,7 @@ public class ParlanceContext : DbContext
         modelBuilder.Entity<Project>().ToTable("Projects")
             .HasIndex(p => p.Name).IsUnique();
         modelBuilder.Entity<Permission>().ToTable("Permissions");
+        modelBuilder.Entity<IndexItem>().ToTable("Index");
     }
 }
 

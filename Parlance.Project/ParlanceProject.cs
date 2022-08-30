@@ -21,6 +21,7 @@ public class ParlanceProject : IParlanceProject
         Subprojects = subprojectDefs!.Subprojects.Select(subproject => new ParlanceSubproject(this, subproject));
     }
 
+    public string Name => _project.Name;
     public string VcsDirectory => _project.VcsDirectory;
     public IEnumerable<IParlanceSubproject> Subprojects { get; }
     

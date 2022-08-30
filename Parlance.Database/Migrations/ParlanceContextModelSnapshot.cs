@@ -22,6 +22,39 @@ namespace Parlance.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("Parlance.Database.Models.IndexItem", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("ItemIdentifier")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Language")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Project")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Record")
+                        .HasColumnType("text");
+
+                    b.Property<int>("RecordType")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Subproject")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Index", (string)null);
+                });
+
             modelBuilder.Entity("Parlance.Database.Models.Permission", b =>
                 {
                     b.Property<Guid>("Id")

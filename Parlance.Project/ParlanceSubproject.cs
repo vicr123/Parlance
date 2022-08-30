@@ -22,7 +22,7 @@ public class ParlanceSubproject : IParlanceSubproject
     public string Path => _subproject.Path;
     public string TranslationFileType => _subproject.Type;
 
-    public IEnumerable<string> AvailableLanguages()
+    public IEnumerable<Locale> AvailableLanguages()
     {
         var wildcard = _subproject.Path.Replace("{lang}", "*");
         var toTrim = wildcard.Length - wildcard.IndexOf("*", StringComparison.Ordinal) - 1;
@@ -30,7 +30,7 @@ public class ParlanceSubproject : IParlanceSubproject
         var matcher = new Matcher();
         matcher.AddInclude(wildcard);
         var result = matcher.Execute(new DirectoryInfoWrapper(new DirectoryInfo(Project.VcsDirectory)));
-        return result.Files.Select(file => file.Stem[..^toTrim].ToLocale().ToDashed());
+        return result.Files.Select(file => file.Stem[..^toTrim].ToLocale());
     }
 
     public IParlanceSubprojectLanguage Language(Locale language)

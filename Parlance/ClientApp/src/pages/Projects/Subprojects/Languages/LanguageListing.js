@@ -5,6 +5,7 @@ import Container from "../../../../components/Container";
 import PageHeading from "../../../../components/PageHeading";
 import SelectableList from "../../../../components/SelectableList";
 import i18n from "../../../../helpers/i18n";
+import TranslationProgressIndicator from "../../../../components/TranslationProgressIndicator";
 
 export default function(props) {
     const {project, subproject} = useParams();
@@ -18,13 +19,13 @@ export default function(props) {
 
     useEffect(() => {
         updateProjects();
-    });
+    }, []);
     
     return <div>
         <Container>
             <PageHeading level={3}>Available Languages</PageHeading>
             <SelectableList items={languages.map(p => ({
-                contents: i18n.humanReadableLocale(p.language),
+                contents: <TranslationProgressIndicator title={i18n.humanReadableLocale(p.language)} data={p.completionData} />,
                 onClick: () => navigate(p.language)
             }))} />
         </Container>

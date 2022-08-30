@@ -6,6 +6,7 @@ using Microsoft.Extensions.Primitives;
 using Parlance.CLDR;
 using Parlance.Helpers;
 using Parlance.Project;
+using Parlance.Project.Index;
 using Parlance.Project.TranslationFiles;
 using Parlance.Services.Permissions;
 using Parlance.Services.Projects;
@@ -19,11 +20,13 @@ public class ProjectsController : Controller
 {
     private readonly IProjectService _projectService;
     private readonly IPermissionsService _permissionsService;
+    private readonly IParlanceIndexingService _indexingService;
 
-    public ProjectsController(IProjectService projectService, IPermissionsService permissionsService)
+    public ProjectsController(IProjectService projectService, IPermissionsService permissionsService, IParlanceIndexingService indexingService)
     {
         _projectService = projectService;
         _permissionsService = permissionsService;
+        _indexingService = indexingService;
     }
 
     [HttpGet]
@@ -83,11 +86,47 @@ public class ProjectsController : Controller
         {
             var p = await _projectService.ProjectBySystemName(project);
             var proj = p.GetParlanceProject();
+            
+            var indexResults = await _indexingService.OverallResults(proj);
+            
+            var username = HttpContext.User.Claims.FirstOrDefault(claim => claim.Type == Claims.Username)?.Value;
 
-            return Json(proj.Subprojects.Select(subproject => new
+            return Json(new
             {
-                subproject.SystemName, subproject.Name
-            }));
+                CompletionData = indexResults,
+                p.Name,
+                Subprojects = await Task.WhenAll(proj.Subprojects.Select(async subproject =>
+                {
+                    var subprojectIndexResults = await _indexingService.OverallResults(subproject);
+                    
+                    return new
+                    {
+                        CompletionData = subprojectIndexResults,
+                        subproject.SystemName, subproject.Name
+                    };
+                })),
+                CanManage = await _permissionsService.HasManageProjectPermission(username, project)
+            });
+        }
+        catch (ProjectNotFoundException)
+        {
+            return NotFound();
+        }
+    }
+    
+
+    [HttpPost]
+    [Authorize(Policy = "Superuser")]
+    [Route("{project}/reindex")]
+    public async Task<IActionResult> ReindexProject(string project)
+    {
+        try
+        {
+            var p = await _projectService.ProjectBySystemName(project);
+            var proj = p.GetParlanceProject();
+
+            await _indexingService.IndexProject(proj);
+            return NoContent();
         }
         catch (ProjectNotFoundException)
         {
@@ -103,15 +142,25 @@ public class ProjectsController : Controller
         {
             var p = await _projectService.ProjectBySystemName(project);
             var subproj = p.GetParlanceProject().SubprojectBySystemName(subproject);
+            
+            var indexResults = await _indexingService.OverallResults(subproj);
 
             return Json(new
             {
+                CompletionData = indexResults,
                 subproj.TranslationFileType,
-                AvailableLanguages = subproj.AvailableLanguages().Select(lang => new
+                AvailableLanguages = await Task.WhenAll(subproj.AvailableLanguages().Select(async lang =>
                 {
-                    Language = lang.ToLocale().ToDashed(),
-                    LanguageName = new CultureInfo(lang.ToLocale().ToDashed()).DisplayName
-                })
+                    var subprojectLanguage = subproj.Language(lang);
+                    var subprojectLanguageIndexResults = await _indexingService.OverallResults(subprojectLanguage);
+                    
+                    return new
+                    {
+                        CompletionData = subprojectLanguageIndexResults,
+                        Language = lang.ToDashed(),
+                        LanguageName = new CultureInfo(lang.ToDashed()).DisplayName
+                    };
+                }))
             });
         }
         catch (SubprojectNotFoundException)
@@ -133,11 +182,15 @@ public class ProjectsController : Controller
             var p = await _projectService.ProjectBySystemName(project);
             var subp = p.GetParlanceProject().SubprojectBySystemName(subproject);
             var subprojectLanguage = subp.Language(language.ToLocale());
+
+            var indexResults = await _indexingService.OverallResults(subprojectLanguage);
+            await using var translationFile = await subprojectLanguage.CreateTranslationFile(_indexingService);
             
             var username = HttpContext.User.Claims.FirstOrDefault(claim => claim.Type == Claims.Username)?.Value;
 
             return Json(new
             {
+                CompletionData = indexResults,
                 CanEdit = await _permissionsService.CanEditProjectLocale(username, project, language.ToLocale())
             });
         }
@@ -158,7 +211,7 @@ public class ProjectsController : Controller
         try
         {
             var p = await _projectService.ProjectBySystemName(project);
-            var translationFile = await p.GetParlanceProject().SubprojectBySystemName(subproject).Language(language.ToLocale()).CreateTranslationFile();
+            await using var translationFile = await p.GetParlanceProject().SubprojectBySystemName(subproject).Language(language.ToLocale()).CreateTranslationFile(_indexingService);
             if (translationFile is null) return NotFound();
 
             Response.Headers.ETag = new StringValues(translationFile.Hash);
@@ -177,11 +230,6 @@ public class ProjectsController : Controller
             return NotFound();
         }
     }
-    
-    public class UpdateProjectEntriesRequestData
-    {
-        public IDictionary<string, UpdateProjectEntryRequestData> Entries { get; set; } = null!;
-    }
 
     [HttpGet]
     [Route("{project}/{subproject}/{language}/entries/{key}")]
@@ -190,7 +238,7 @@ public class ProjectsController : Controller
         try
         {
             var p = await _projectService.ProjectBySystemName(project);
-            var translationFile = await p.GetParlanceProject().SubprojectBySystemName(subproject).Language(language.ToLocale()).CreateTranslationFile();
+            await using var translationFile = await p.GetParlanceProject().SubprojectBySystemName(subproject).Language(language.ToLocale()).CreateTranslationFile(_indexingService);
             if (translationFile is null) return NotFound();
 
             Response.Headers.ETag = new StringValues(translationFile.Hash);
@@ -220,7 +268,7 @@ public class ProjectsController : Controller
         try
         {
             var p = await _projectService.ProjectBySystemName(project);
-            var translationFile = await p.GetParlanceProject().SubprojectBySystemName(subproject).Language(language.ToLocale()).CreateTranslationFile();
+            await using var translationFile = await p.GetParlanceProject().SubprojectBySystemName(subproject).Language(language.ToLocale()).CreateTranslationFile(_indexingService);
             if (translationFile is null) return NotFound();
 
             if (!Request.Headers.IfMatch.Contains(translationFile.Hash)) return StatusCode(412); //Precondition Failed
@@ -251,7 +299,7 @@ public class ProjectsController : Controller
         try
         {
             var p = await _projectService.ProjectBySystemName(project);
-            var translationFile = await p.GetParlanceProject().SubprojectBySystemName(subproject).Language(language.ToLocale()).CreateTranslationFile();
+            await using var translationFile = await p.GetParlanceProject().SubprojectBySystemName(subproject).Language(language.ToLocale()).CreateTranslationFile(_indexingService);
             if (translationFile is null) return NotFound();
 
             if (!Request.Headers.IfMatch.Contains(translationFile.Hash)) return StatusCode(412); //Precondition Failed

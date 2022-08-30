@@ -54,7 +54,8 @@ public record Locale
         {
             if (PluralCache.ContainsKey(this)) return PluralCache[this];
             
-            var plural = Plural.Create(Sepia.Globalization.Locale.Create(ToUnderscored()));
+            //HACK: For some reason German doesn't seem to be working correctly so hardcode the English rules
+            var plural = Plural.Create(Sepia.Globalization.Locale.Create(LanguageCode == "de" ? "en" : ToUnderscored()));
             var result = Enumerable.Range(0, 201).Select(num =>
             {
                 try

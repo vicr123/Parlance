@@ -1,12 +1,14 @@
+using System.Runtime.Intrinsics.Arm;
 using System.Security.Cryptography;
 using System.Xml.Linq;
 using JetBrains.Annotations;
 using Parlance.CLDR;
+using Parlance.Project.Index;
 
 namespace Parlance.Project.TranslationFiles.QtLinguist;
 
 [TranslationFileType("qt", TranslationFileTypeAttribute.ExpectedTranslationFileNameFormat.Underscored)]
-public class QtLinguistTranslationFile : IParlanceTranslationFile
+public class QtLinguistTranslationFile : ParlanceTranslationFile, IParlanceMonoTranslationFile
 {
     private string _file = null!;
     private Locale _locale = null!;
@@ -24,7 +26,7 @@ public class QtLinguistTranslationFile : IParlanceTranslationFile
         var xmlDoc = XDocument.Parse(fileContents);
         Entries = xmlDoc.Descendants("message").Select((msg, idx) => new QtLinguistTranslationFileEntry
         {
-            Key = idx.ToString(),
+            RealKey = (string)msg.Element("source")!,
             Context = ((string) msg.Parent!.Element("name"))!,
             Source = (string)msg.Element("source")!,
             Translation = msg.Attribute("numerus")?.Value == "yes" ? msg.Descendants("numerusform").Select((content, idx2) => new TranslationWithPluralType()
@@ -44,11 +46,11 @@ public class QtLinguistTranslationFile : IParlanceTranslationFile
         }).Cast<IParlanceTranslationFileEntry>().ToList();
     }
 
-    public string Hash { get; private set; } = null!;
+    public override string Hash { get; internal set; } = null!;
 
-    public IList<IParlanceTranslationFileEntry> Entries { get; private set; } = null!;
+    public override IList<IParlanceTranslationFileEntry> Entries { get; internal set; } = null!;
 
-    public async Task Save()
+    public new async Task Save()
     {
         var pluralRules = _locale.PluralRules().ToList();
         
@@ -67,7 +69,7 @@ public class QtLinguistTranslationFile : IParlanceTranslationFile
                                 }
                                 : new XElement("translation", new XText(entry.Translation.Single(x => x.PluralType == "singular").TranslationContent)),
                             ((QtLinguistTranslationFileEntry) entry).Locations.Select(location => new XElement("location", new XAttribute("filename", location.Filename), new XAttribute("line", location.Line))),
-                            new XElement("source", new XText(entry.Source))
+                            new XElement("source", new XText(((QtLinguistTranslationFileEntry) entry).RealKey))
                         ))
                     )
                 )
@@ -81,13 +83,17 @@ public class QtLinguistTranslationFile : IParlanceTranslationFile
         }
 
         await LoadFile(_file, _locale);
+        await base.Save();
     }
 
-    [UsedImplicitly]
-    public static async Task<IParlanceTranslationFile> CreateAsync(string file, Locale locale)
+    public static async Task<ParlanceTranslationFile> CreateAsync(string file, Locale locale, IParlanceSubprojectLanguage? subprojectLanguage, IParlanceIndexingService? indexingService)
     {
-        var translationFile = new QtLinguistTranslationFile();
+        var translationFile = new QtLinguistTranslationFile(subprojectLanguage, indexingService);
         await translationFile.LoadFile(file, locale);
         return translationFile;
+    }
+
+    public QtLinguistTranslationFile(IParlanceSubprojectLanguage? subprojectLanguage, IParlanceIndexingService? indexingService) : base(subprojectLanguage, indexingService)
+    {
     }
 }

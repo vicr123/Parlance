@@ -1,48 +1,49 @@
 using System.Reflection;
 using Parlance.CLDR;
+using Parlance.Project.Index;
 using Parlance.Project.TranslationFiles;
 
 namespace Parlance.Project;
 
 public class ParlanceSubprojectLanguage : IParlanceSubprojectLanguage
 {
-    private readonly IParlanceSubproject _subproject;
-    private readonly Locale _locale;
-
     public static List<Type> TranslationFileTypes { get; } = new();
 
     public ParlanceSubprojectLanguage(IParlanceSubproject subproject, Locale locale)
     {
-        _subproject = subproject;
-        _locale = locale;
+        Subproject = subproject;
+        Locale = locale;
     }
 
-    public async Task<IParlanceTranslationFile?> CreateTranslationFile()
+    public string IndexResourceIdentifier => $"project-{Subproject.Project.Name}-{Subproject.Name}-{Locale.ToDashed()}";
+    public IParlanceSubproject Subproject { get; }
+    public Locale Locale { get; }
+
+    public async Task<ParlanceTranslationFile?> CreateTranslationFile(IParlanceIndexingService? indexingService)
     {
         foreach (var type in TranslationFileTypes)
         {
             var attr = (TranslationFileTypeAttribute) type.GetCustomAttribute(typeof(TranslationFileTypeAttribute))!;
-            if (attr.HandlerFor != _subproject.TranslationFileType) continue;
+            if (attr.HandlerFor != Subproject.TranslationFileType) continue;
             
-            var translationFilePath = Path.Join(_subproject.Project.VcsDirectory,
-                _subproject.Path.Replace("{lang}",  attr.FileNameFormat switch
+            var translationFilePath = Path.Join(Subproject.Project.VcsDirectory,
+                Subproject.Path.Replace("{lang}",  attr.FileNameFormat switch
                 {
-                    TranslationFileTypeAttribute.ExpectedTranslationFileNameFormat.Dashed => _locale.ToDashed(),
-                    TranslationFileTypeAttribute.ExpectedTranslationFileNameFormat.Underscored => _locale.ToUnderscored(),
+                    TranslationFileTypeAttribute.ExpectedTranslationFileNameFormat.Dashed => Locale.ToDashed(),
+                    TranslationFileTypeAttribute.ExpectedTranslationFileNameFormat.Underscored => Locale.ToUnderscored(),
                     _ => throw new ArgumentOutOfRangeException()
                 }));
-                
-            var createMethod = type.GetMethod("CreateAsync");
-            if (createMethod == null) continue;
-            if (createMethod.ReturnParameter.ParameterType != typeof(Task<IParlanceTranslationFile>)) continue;
-                
-            var args = createMethod.GetParameters();
-            if (args.Length == 2)
+
+            if (type.GetInterface(nameof(IParlanceMonoTranslationFile)) is not null)
             {
-                if (args[0].ParameterType != typeof(string) || args[1].ParameterType != typeof(Locale)) continue;
-                return await (Task<IParlanceTranslationFile>) createMethod.Invoke(null, new object[] {
-                    translationFilePath, _locale
+                var createMethod = type.GetMethod("CreateAsync");
+                return await (Task<ParlanceTranslationFile>) createMethod!.Invoke(null, new object?[] {
+                    translationFilePath, Locale, this, indexingService
                 })!;
+            }
+            else
+            {
+                throw new InvalidOperationException();
             }
             
             //TODO: Dual type translation files

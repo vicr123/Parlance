@@ -1,0 +1,68 @@
+.root {
+    display: grid;
+    grid-template-columns: 1fr max-content max-content;
+    grid-template-rows: max-content max-content;
+    gap: 6px 6px;
+    grid-template-areas: 
+    "title . metrics"
+    "progress progress progress";
+}
+
+.title {
+    grid-area: title;
+}
+
+.metrics {
+    display: flex;
+    flex-direction: row-reverse;
+    gap: 18px;
+    
+    grid-area: metrics;
+}
+
+.percentComplete {
+    
+}
+
+.warnings {
+    color: var(--translation-progress-indicator-warning);
+}
+
+.errors {
+    color: var(--translation-progress-indicator-error);
+}
+
+.progress {
+    grid-area: progress;
+    
+    display: flex;
+    
+    height: 5px;
+    background-color: var(--border-color);
+}
+
+.metric {
+    display: flex;
+    flex-direction: column;
+}
+
+.metricValue {
+    
+}
+
+.metricTitle {
+    text-transform: uppercase;
+    font-size: 8pt;
+}
+
+.progressBarSectionComplete {
+    background-color: var(--translation-progress-indicator-complete);
+}
+
+.progressBarSectionErrors {
+    background-color: var(--translation-progress-indicator-error);
+}
+
+.progressBarSectionWarnings {
+    background-color: var(--translation-progress-indicator-warning);
+}

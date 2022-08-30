@@ -1,4 +1,4 @@
-export default function(props) {
+export default function Dashboard(props) {
     return <div>
         Dashboard
     </div>

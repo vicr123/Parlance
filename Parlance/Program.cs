@@ -26,6 +26,7 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddSwaggerGen();
 builder.Services.AddVicr123Accounts(builder.Configuration);
 builder.Services.AddVersionControl(builder.Configuration);
+builder.Services.AddParlanceProjects(builder.Configuration);
 builder.Services.AddCldr(builder.Configuration);
 
 builder.Services.AddSingleton<IVersionControlService, VersionControlService>();
@@ -33,7 +34,6 @@ builder.Services.AddScoped<IProjectService, ProjectService>();
 builder.Services.AddScoped<ISuperuserService, SuperuserService>();
 builder.Services.AddScoped<IRemoteCommunicationService, RemoteCommunicationService>();
 builder.Services.AddScoped<IPermissionsService, PermissionsService>();
-builder.Services.AddSingleton<IParlanceChecks, ParlanceChecks>();
 
 builder.Services.Configure<ParlanceOptions>(builder.Configuration.GetSection("Parlance"));
 
