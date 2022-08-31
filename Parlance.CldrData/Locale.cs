@@ -1,4 +1,6 @@
+using System.Collections.Concurrent;
 using System.Collections.Immutable;
+using NCalc;
 using Sepia.Globalization;
 using Sepia.Globalization.Plurals;
 
@@ -6,27 +8,9 @@ namespace Parlance.CldrData;
 
 public record LocalePluralRule(string Category, IList<int> Examples, int Index);
 
-public record Locale
+public record Locale(string LanguageCode, string? CountryCode, string? Script)
 {
-    private static readonly Dictionary<Locale, IImmutableList<LocalePluralRule>> PluralCache = new();
-
-    public Locale(string languageCode, string? countryCode, string? script)
-    {
-        LanguageCode = languageCode.ToLower();
-        CountryCode = countryCode?.ToLower();
-        Script = script;
-    }
-
-    public string LanguageCode { get; }
-    public string? CountryCode { get; }
-    public string? Script { get; }
-
-    public void Deconstruct(out string languageCode, out string? countryCode, out string? script)
-    {
-        languageCode = this.LanguageCode;
-        countryCode = this.CountryCode;
-        script = this.Script;
-    }
+    private static readonly ConcurrentDictionary<Locale, IReadOnlyList<LocalePluralRule>> PluralCache = new();
 
     public string ToDashed()
     {
@@ -46,37 +30,39 @@ public record Locale
         return string.Join('_', parts);
     }
 
-    public IImmutableList<LocalePluralRule> PluralRules()
+    public IReadOnlyList<LocalePluralRule> PluralRules()
     {
-        lock (PluralCache)
+        if (PluralCache.ContainsKey(this)) return PluralCache[this];
+
+        //HACK: For some reason German doesn't seem to be working correctly so hardcode the English rules
+        var plural = Plural.Create(Sepia.Globalization.Locale.Create(LanguageCode == "de" ? "en" : ToUnderscored()));
+
+        var result = Enumerable.Range(0, 201).Select(num =>
         {
-            if (PluralCache.ContainsKey(this)) return PluralCache[this];
-            
-            //HACK: For some reason German doesn't seem to be working correctly so hardcode the English rules
-            var plural = Plural.Create(Sepia.Globalization.Locale.Create(LanguageCode == "de" ? "en" : ToUnderscored()));
-            var result = Enumerable.Range(0, 201).Select(num =>
+            try
             {
-                try
+                return new
                 {
-                    return new
-                    {
-                        Category = plural.Category(num),
-                        Number = num
-                    };
-                }
-                catch
+                    Category = plural.Category(num),
+                    Number = num
+                };
+            }
+            catch
+            {
+                return new
                 {
-                    return new
-                    {
-                        Category = "other",
-                        Number = num
-                    };
-                }
-            }).GroupBy(item => item.Category).Select((item, index) => new LocalePluralRule(item.Key, item.Select(x => x.Number).ToList(), item.Key == "other" ? 99 : index)).OrderBy(item => item.Index).ToImmutableList();
-        
-            PluralCache.Add(this, result);
-            return result;
-        }
+                    Category = "other",
+                    Number = num
+                };
+            }
+        })
+        .GroupBy(item => item.Category)
+        .Select((item, index) => new LocalePluralRule(item.Key, item.Select(x => x.Number).ToList(), item.Key == "other" ? 99 : index))
+        .OrderBy(item => item.Index)
+        .ToList();
+
+        PluralCache.TryAdd(this, result);
+        return result;
     }
 
     public static IEnumerable<Locale> GetLocales()
