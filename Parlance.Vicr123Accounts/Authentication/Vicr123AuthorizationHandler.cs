@@ -25,37 +25,36 @@ public class Vicr123AuthorizationHandler : IAuthorizationHandler
 
     public async Task HandleAsync(AuthorizationHandlerContext context)
     {
-        if (context.Resource is HttpContext httpContext)
+        if (context.Resource is not HttpContext httpContext)
         {
-            var authHeader =
-                httpContext.Request.Headers["Authorization"].FirstOrDefault(header => header.StartsWith("Bearer "));
-            if (authHeader is null)
-            {
-                context.Fail();
-                return;
-            }
+            context.Fail();
+            return;
+        }
 
-            var token = authHeader[7..];
-            try
-            {
-                var user = await _accountsService.UserByToken(token);
+        var authHeader =
+            httpContext.Request.Headers["Authorization"].FirstOrDefault(header => header.StartsWith("Bearer "));
+        if (authHeader is null)
+        {
+            context.Fail();
+            return;
+        }
 
-                var claims = new[]
-                {
+        var token = authHeader[7..];
+        try
+        {
+            var user = await _accountsService.UserByToken(token);
+
+            var claims = new[]
+            {
                     new Claim(Claims.Token, token),
                     new Claim(Claims.Username, user.Username),
                     new Claim(Claims.Email, user.Email),
                     new Claim(Claims.UserId, user.Id.ToString())
                 };
-                var identity = new ClaimsIdentity(claims, "Vicr123Accounts");
-                httpContext.User = new ClaimsPrincipal(identity);
-            }
-            catch (DBusException)
-            {
-                context.Fail();
-            }
+            var identity = new ClaimsIdentity(claims, "Vicr123Accounts");
+            httpContext.User = new ClaimsPrincipal(identity);
         }
-        else
+        catch (DBusException)
         {
             context.Fail();
         }

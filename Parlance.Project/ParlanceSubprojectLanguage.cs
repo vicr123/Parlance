@@ -15,7 +15,6 @@ public class ParlanceSubprojectLanguage : IParlanceSubprojectLanguage
         Locale = locale;
     }
 
-    public string IndexResourceIdentifier => $"project-{Subproject.Project.Name}-{Subproject.Name}-{Locale.ToDashed()}";
     public IParlanceSubproject Subproject { get; }
     public Locale Locale { get; }
 
@@ -29,12 +28,12 @@ public class ParlanceSubprojectLanguage : IParlanceSubprojectLanguage
             var translationFilePath = Path.Join(Subproject.Project.VcsDirectory,
                 Subproject.Path.Replace("{lang}",  attr.FileNameFormat switch
                 {
-                    TranslationFileTypeAttribute.ExpectedTranslationFileNameFormat.Dashed => Locale.ToDashed(),
-                    TranslationFileTypeAttribute.ExpectedTranslationFileNameFormat.Underscored => Locale.ToUnderscored(),
+                    ExpectedTranslationFileNameFormat.Dashed => Locale.ToDashed(),
+                    ExpectedTranslationFileNameFormat.Underscored => Locale.ToUnderscored(),
                     _ => throw new ArgumentOutOfRangeException()
                 }));
 
-            if (type.GetInterface(nameof(IParlanceMonoTranslationFile)) is not null)
+            if (type.GetInterface(nameof(IParlanceDualTranslationFile)) is not null)
             {
                 var createMethod = type.GetMethod("CreateAsync");
                 return await (Task<ParlanceTranslationFile>) createMethod!.Invoke(null, new object?[] {

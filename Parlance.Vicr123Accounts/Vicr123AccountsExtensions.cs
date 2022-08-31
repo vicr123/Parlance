@@ -10,7 +10,7 @@ public static class Vicr123AccountsExtensions
     public static IServiceCollection AddVicr123Accounts(this IServiceCollection services, IConfiguration configuration)
     {
         var useDummy = configuration.GetSection("Parlance")["UseDummyAuthenticationService"];
-        if (useDummy is not null && useDummy == "True")
+        if (useDummy == "True")
         {
             services.AddSingleton<IVicr123AccountsService, Vicr123AccountsDummyService>();
         }

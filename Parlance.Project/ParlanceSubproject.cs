@@ -4,11 +4,11 @@ using Parlance.CLDR;
 
 namespace Parlance.Project;
 
+public record SubprojectDefinition(string Name, string Type, string Path, string BaseLang);
+
 public class ParlanceSubproject : IParlanceSubproject
 {
     private readonly SubprojectDefinition _subproject;
-
-    public record SubprojectDefinition(string Name, string Type, string Path, string BaseLang);
 
     public ParlanceSubproject(IParlanceProject project, SubprojectDefinition subproject)
     {

@@ -17,7 +17,7 @@ using Parlance.Vicr123Accounts;
 
 // Ensure CLDR data is up to date
 await CldrExtensions.DownloadCldrData();
-ParlanceProjectExtensions.InitialiseParlanceProjects();
+ParlanceProjectExtensions.InitializeParlanceProjects();
 
 var builder = WebApplication.CreateBuilder(args);
 
