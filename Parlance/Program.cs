@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Parlance;
 using Parlance.Authorization.LanguageEditor;
 using Parlance.Authorization.Superuser;
-using Parlance.CLDR;
+using Parlance.CldrData;
 using Parlance.Database;
 using Parlance.Project;
 using Parlance.Project.Checks;

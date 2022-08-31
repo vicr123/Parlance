@@ -1,6 +1,6 @@
 using Microsoft.Extensions.FileSystemGlobbing;
 using Microsoft.Extensions.FileSystemGlobbing.Abstractions;
-using Parlance.CLDR;
+using Parlance.CldrData;
 
 namespace Parlance.Project;
 

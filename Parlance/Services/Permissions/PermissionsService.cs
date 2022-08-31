@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Npgsql;
-using Parlance.CLDR;
+using Parlance.CldrData;
 using Parlance.Database;
 using Parlance.Database.Models;
 using Parlance.Services.Superuser;

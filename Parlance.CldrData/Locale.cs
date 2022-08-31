@@ -2,7 +2,7 @@ using System.Collections.Immutable;
 using Sepia.Globalization;
 using Sepia.Globalization.Plurals;
 
-namespace Parlance.CLDR;
+namespace Parlance.CldrData;
 
 public record LocalePluralRule(string Category, IList<int> Examples, int Index);
 

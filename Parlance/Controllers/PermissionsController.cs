@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Parlance.CLDR;
+using Parlance.CldrData;
 using Parlance.Helpers;
 using Parlance.Services.Permissions;
 using Tmds.DBus;

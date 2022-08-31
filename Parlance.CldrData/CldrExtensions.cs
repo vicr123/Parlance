@@ -3,7 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Sepia.Globalization;
 using Sepia.Globalization.Plurals;
 
-namespace Parlance.CLDR;
+namespace Parlance.CldrData;
 
 public static class CldrExtensions
 {

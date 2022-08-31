@@ -2,7 +2,7 @@ using System.Runtime.Intrinsics.Arm;
 using System.Security.Cryptography;
 using System.Xml.Linq;
 using JetBrains.Annotations;
-using Parlance.CLDR;
+using Parlance.CldrData;
 using Parlance.Project.Index;
 
 namespace Parlance.Project.TranslationFiles.QtLinguist;

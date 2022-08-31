@@ -1,4 +1,4 @@
-using Parlance.CLDR;
+using Parlance.CldrData;
 using Parlance.Project.Index;
 
 namespace Parlance.Project.TranslationFiles;

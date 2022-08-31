@@ -3,7 +3,7 @@ using LibGit2Sharp;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Primitives;
-using Parlance.CLDR;
+using Parlance.CldrData;
 using Parlance.Helpers;
 using Parlance.Project;
 using Parlance.Project.Index;

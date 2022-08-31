@@ -1,5 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
-using Parlance.CLDR;
+using Parlance.CldrData;
 
 namespace Parlance.Controllers;
 
