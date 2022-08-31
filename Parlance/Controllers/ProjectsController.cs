@@ -32,11 +32,16 @@ public class ProjectsController : Controller
     [HttpGet]
     public async Task<IActionResult> GetProjects()
     {
-        var projects = await _projectService.Projects();
-        return Json(projects.Select(project => new
+        var projects = (await _projectService.Projects()).ToList();
+        return Json(await Task.WhenAll(projects.Select(async project =>
         {
-            project.Name, project.SystemName
-        }));
+            var indexResults = await _indexingService.OverallResults(project.GetParlanceProject());
+            return new
+            {
+                CompletionData = indexResults,
+                project.Name, project.SystemName
+            };
+        })));
     }
 
     public class AddProjectRequestData
