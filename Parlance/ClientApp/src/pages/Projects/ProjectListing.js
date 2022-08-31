@@ -4,6 +4,8 @@ import {useEffect, useState} from "react";
 import Fetch from "../../helpers/Fetch";
 import SelectableList from "../../components/SelectableList";
 import {useNavigate} from "react-router-dom";
+import i18n from "../../helpers/i18n";
+import TranslationProgressIndicator from "../../components/TranslationProgressIndicator";
 
 export default function(props) {
     const [projects, setProjects] = useState([]);
@@ -21,7 +23,7 @@ export default function(props) {
         <Container>
             <PageHeading level={3}>Available Projects</PageHeading>
             <SelectableList items={projects.map(p => ({
-                contents: p.name,
+                contents: <TranslationProgressIndicator title={i18n.humanReadableLocale(p.name)} data={p.completionData} />,
                 onClick: () => navigate(p.systemName)
             }))} />
         </Container>

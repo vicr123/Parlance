@@ -1,4 +1,5 @@
 import Styles from "./TranslationProgressIndicator.module.css";
+import {useTranslation} from "react-i18next";
 
 const percent = value => `${value * 100}%`;
 
@@ -19,13 +20,15 @@ function TranslationProgressBar({data, className}) {
 }
 
 export default function TranslationProgressIndicator({title, data}) {
+    const {t} = useTranslation();
+    
     let metrics = [
-        <TranslationProgressMetric key={"total"} value={data.count} title={"Total"} className={Styles.percentComplete} />,
-        <TranslationProgressMetric key={"complete"} value={`${Math.round(data.complete / data.count * 100)}%`} title={"Complete"} className={Styles.percentComplete} />,
-        <TranslationProgressMetric key={"remain"} value={data.count - data.complete} title={"Remaining"} className={Styles.remain} />
+        <TranslationProgressMetric key={"total"} value={data.count} title={t("TRANSLATION_PROGRESS_INDICATOR_TOTAL")} className={Styles.percentComplete} />,
+        <TranslationProgressMetric key={"complete"} value={`${Math.round(data.complete / data.count * 100)}%`} title={t("TRANSLATION_PROGRESS_INDICATOR_COMPLETE")} className={Styles.percentComplete} />,
+        <TranslationProgressMetric key={"remain"} value={data.count - data.complete} title={t("Remaining")} className={Styles.remain} />
     ]
-    if (data.warnings > 0) metrics.push(<TranslationProgressMetric key={"warnings"} value={data.warnings} title={"Warnings"} className={Styles.warnings} />);
-    if (data.errors > 0) metrics.push(<TranslationProgressMetric key={"errors"} value={data.errors} title={"Errors"} className={Styles.errors} />);
+    if (data.warnings > 0) metrics.push(<TranslationProgressMetric key={"warnings"} value={data.warnings} title={t("TRANSLATION_PROGRESS_INDICATOR_WARNINGS")} className={Styles.warnings} />);
+    if (data.errors > 0) metrics.push(<TranslationProgressMetric key={"errors"} value={data.errors} title={t("TRANSLATION_PROGRESS_INDICATOR_ERRORS")} className={Styles.errors} />);
     
     return <div className={Styles.root}>
         <span className={Styles.title}>{title}</span>
