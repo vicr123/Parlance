@@ -19,18 +19,20 @@ public class User
 
 public interface IPasswordResetMethod
 {
-    
+    public object ToJsonSerializable();
 }
 
 public class EmailPasswordResetMethod : IPasswordResetMethod
 {
     public string Domain { get; init; } = null!;
     public string User { get; init; } = null!;
-}
 
-public class SomeOther : IPasswordResetMethod
-{
-    
+    public object ToJsonSerializable() => new
+    {
+        Type = "email",
+        Domain,
+        User
+    };
 }
 
 public class OtpBackupCode

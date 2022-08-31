@@ -57,7 +57,7 @@ public class ProjectsController : Controller
         }
         catch (LibGit2SharpException ex)
         {
-            return this.ClientError(ControllerExtensions.ErrorType.GitError, ex.Message);
+            return this.ClientError(ParlanceClientError.GitError, ex.Message);
         }
     }
     

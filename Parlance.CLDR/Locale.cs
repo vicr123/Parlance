@@ -30,8 +30,7 @@ public record Locale
 
     public string ToDashed()
     {
-        var parts = new List<string>();
-        parts.Add(LanguageCode);
+        var parts = new List<string> { LanguageCode };
         if (Script is not null) parts.Add(Script);
         if (CountryCode is not null) parts.Add(CountryCode);
 
@@ -40,8 +39,7 @@ public record Locale
 
     public string ToUnderscored()
     {
-        var parts = new List<string>();
-        parts.Add(LanguageCode);
+        var parts = new List<string> { LanguageCode };
         if (Script is not null) parts.Add(Script);
         if (CountryCode is not null) parts.Add(CountryCode.ToUpper());
 

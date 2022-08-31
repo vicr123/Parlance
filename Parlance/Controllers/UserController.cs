@@ -53,7 +53,7 @@ public class UserController : Controller
         try
         {
             await _accountsService.CreateUser(data.Username, data.Password, data.EmailAddress);
-            var token = await _accountsService.ProvisionTokenAsync(new ProvisionTokenParameters()
+            var token = await _accountsService.ProvisionTokenAsync(new ProvisionTokenParameters
             {
                 Username = data.Username,
                 Password = data.Password
@@ -64,14 +64,9 @@ public class UserController : Controller
                 Token = token 
             });
         }
-        catch (DBusException ex)
+        catch (DBusException ex) when (ex.ErrorName == "com.vicr123.accounts.Error.QueryError")
         {
-            if (ex.ErrorName == "com.vicr123.accounts.Error.QueryError")
-            {
-                return this.ClientError(ControllerExtensions.ErrorType.UsernameAlreadyExists);
-            }
-            
-            throw;
+            return this.ClientError(ParlanceClientError.UsernameAlreadyExists);
         }
     }
 
@@ -129,20 +124,7 @@ public class UserController : Controller
     {
         var user = await _accountsService.UserByUsername(data.Username);
         return Json(
-            (await _accountsService.PasswordResetMethods(user)).Select(method =>
-            {
-                if (method is EmailPasswordResetMethod emailMethod)
-                {
-                    return new
-                    {
-                        Type = "email",
-                        emailMethod.Domain,
-                        emailMethod.User
-                    };
-                }
-
-                return null;
-            }).Where(method => method is not null)
+            (await _accountsService.PasswordResetMethods(user)).Select(m => m.ToJsonSerializable())
         );
     }
 
@@ -354,8 +336,8 @@ public class UserController : Controller
         {
             return this.ClientError(ex.ErrorName switch
             {
-                "com.vicr123.accounts.Error.TwoFactorEnabled" => ControllerExtensions.ErrorType.TwoFactorAlreadyEnabled,
-                "com.vicr123.accounts.Error.TwoFactorRequired" => ControllerExtensions.ErrorType.TwoFactorCodeIncorrect,
+                "com.vicr123.accounts.Error.TwoFactorEnabled" => ParlanceClientError.TwoFactorAlreadyEnabled,
+                "com.vicr123.accounts.Error.TwoFactorRequired" => ParlanceClientError.TwoFactorCodeIncorrect,
                 _ => throw ex
             });
         }
@@ -383,7 +365,7 @@ public class UserController : Controller
         {
             return this.ClientError(ex.ErrorName switch
             {
-                "com.vicr123.accounts.Error.TwoFactorDisabled" => ControllerExtensions.ErrorType.TwoFactorAlreadyDisabled,
+                "com.vicr123.accounts.Error.TwoFactorDisabled" => ParlanceClientError.TwoFactorAlreadyDisabled,
                 _ => throw ex
             });
         }
@@ -412,7 +394,7 @@ public class UserController : Controller
         {
             return this.ClientError(ex.ErrorName switch
             {
-                "com.vicr123.accounts.Error.TwoFactorDisabled" => ControllerExtensions.ErrorType.TwoFactorIsDisabled,
+                "com.vicr123.accounts.Error.TwoFactorDisabled" => ParlanceClientError.TwoFactorIsDisabled,
                 _ => throw ex
             });
         }

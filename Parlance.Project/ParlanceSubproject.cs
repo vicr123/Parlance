@@ -25,7 +25,7 @@ public class ParlanceSubproject : IParlanceSubproject
     public IEnumerable<Locale> AvailableLanguages()
     {
         var wildcard = _subproject.Path.Replace("{lang}", "*");
-        var toTrim = wildcard.Length - wildcard.IndexOf("*", StringComparison.Ordinal) - 1;
+        var toTrim = wildcard.Length - wildcard.IndexOf('*') - 1;
         
         var matcher = new Matcher();
         matcher.AddInclude(wildcard);

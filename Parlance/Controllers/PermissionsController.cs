@@ -41,13 +41,13 @@ public class PermissionsController : Controller
         {
             if (ex.ErrorName == "com.vicr123.accounts.Error.NoAccount")
             {
-                return this.ClientError(ControllerExtensions.ErrorType.UnknownUser);
+                return this.ClientError(ParlanceClientError.UnknownUser);
             }
             throw;
         }
         catch (InvalidOperationException)
         {
-            return this.ClientError(ControllerExtensions.ErrorType.PermissionAlreadyGranted);
+            return this.ClientError(ParlanceClientError.PermissionAlreadyGranted);
         }
     }
     
@@ -61,13 +61,9 @@ public class PermissionsController : Controller
             await _permissionsService.RevokeLocalePermission(username, language.ToLocale());
             return NoContent();
         }
-        catch (DBusException ex)
+        catch (DBusException ex) when (ex.ErrorName == "com.vicr123.accounts.Error.NoAccount")
         {
-            if (ex.ErrorName == "com.vicr123.accounts.Error.NoAccount")
-            {
-                return this.ClientError(ControllerExtensions.ErrorType.UnknownUser);
-            }
-            throw;
+            return this.ClientError(ParlanceClientError.UnknownUser);
         }
         catch (InvalidOperationException)
         {

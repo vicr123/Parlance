@@ -7,7 +7,12 @@ namespace Parlance.Project;
 
 public class ParlanceSubprojectLanguage : IParlanceSubprojectLanguage
 {
-    public static List<Type> TranslationFileTypes { get; } = new();
+    public static List<Type> TranslationFileTypes { get; } = FindTranslationTypes();
+
+    private static List<Type> FindTranslationTypes()
+    {
+        return typeof(ParlanceProjectExtensions).Assembly.GetTypes().Where(t => t.IsDefined(typeof(TranslationFileTypeAttribute))).ToList();
+    }
 
     public ParlanceSubprojectLanguage(IParlanceSubproject subproject, Locale locale)
     {
@@ -30,7 +35,7 @@ public class ParlanceSubprojectLanguage : IParlanceSubprojectLanguage
                 {
                     ExpectedTranslationFileNameFormat.Dashed => Locale.ToDashed(),
                     ExpectedTranslationFileNameFormat.Underscored => Locale.ToUnderscored(),
-                    _ => throw new ArgumentOutOfRangeException()
+                    _ => throw new ArgumentOutOfRangeException($"Invalid value for FileNameFormat for attribute '{attr}'.")
                 }));
 
             if (type.GetInterface(nameof(IParlanceDualTranslationFile)) is not null)

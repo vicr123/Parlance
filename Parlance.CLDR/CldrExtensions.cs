@@ -7,12 +7,11 @@ namespace Parlance.CLDR;
 
 public static class CldrExtensions
 {
-    private static readonly List<string> Scripts = new List<string>();
-    
-    public static async Task DownloadCldrData()
+    private static readonly Lazy<Task<List<string>>> scripts = new(async () => 
     {
         await Cldr.Instance.DownloadLatestAsync();
 
+        var scripts = new List<string>();
         var scriptMetadata = Cldr.Instance.GetTextDocuments("common/properties/scriptMetadata.txt");
         foreach (var reader in scriptMetadata)
         {
@@ -21,11 +20,14 @@ public static class CldrExtensions
                 var line = await reader.ReadLineAsync();
                 if (line == null || line.StartsWith("#")) continue;
                 
-                Scripts.Add(line.Split(";")[0]);
+                scripts.Add(line.Split(";")[0]);
             }
         }
-    }
-    
+        return scripts;
+    }, LazyThreadSafetyMode.ExecutionAndPublication);
+
+    private static List<string> Scripts => scripts.Value.Result;
+        
     public static IServiceCollection AddCldr(this IServiceCollection services, IConfiguration configuration)
     {
         return services;
@@ -34,14 +36,14 @@ public static class CldrExtensions
     public static Locale ToLocale(this string localeIdentifier)
     {
         Queue<string>? parts = null;
-        if (localeIdentifier.Contains("-"))
+        if (localeIdentifier.Contains('-'))
         {
-            parts = new Queue<string>(localeIdentifier.Split("-"));
+            parts = new Queue<string>(localeIdentifier.Split('-'));
         }
 
-        if (localeIdentifier.Contains("_"))
+        if (localeIdentifier.Contains('_'))
         {
-            parts = new Queue<string>(localeIdentifier.Split("_"));
+            parts = new Queue<string>(localeIdentifier.Split('_'));
         }
 
         if (parts is null) return new Locale(localeIdentifier, null, null);

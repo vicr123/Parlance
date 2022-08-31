@@ -24,7 +24,7 @@ public class ProjectService : IProjectService
     
     public async Task RegisterProject(string cloneUrl, string branch, string name)
     {
-        var systemName = name.ToLower().Replace(" ", "-");
+        var systemName = name.ToLower().Replace(' ', '-');
         var directory = Path.Combine(_parlanceOptions.Value.RepositoryDirectory, systemName);
         var project = new Database.Models.Project
         {
@@ -64,7 +64,7 @@ public class ProjectService : IProjectService
                         .Single(b => b.CanonicalName == $"refs/heads/{branch}");
                 }
                 
-                repo.Checkout(localBranch.Tip.Tree, new []{"*"}, new CheckoutOptions()
+                repo.Checkout(localBranch.Tip.Tree, new[] { "*" }, new CheckoutOptions
                 {
                     CheckoutModifiers = CheckoutModifiers.Force 
                 });

@@ -2,21 +2,21 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Parlance.Helpers;
 
+public enum ParlanceClientError
+{
+    UnknownUser,
+    PermissionAlreadyGranted,
+    GitError,
+    UsernameAlreadyExists,
+    TwoFactorIsDisabled,
+    TwoFactorAlreadyEnabled,
+    TwoFactorAlreadyDisabled,
+    TwoFactorCodeIncorrect
+}
+
 public static class ControllerExtensions
 {
-    public enum ErrorType
-    {
-        UnknownUser,
-        PermissionAlreadyGranted,
-        GitError,
-        UsernameAlreadyExists,
-        TwoFactorIsDisabled,
-        TwoFactorAlreadyEnabled,
-        TwoFactorAlreadyDisabled,
-        TwoFactorCodeIncorrect
-    }
-    
-    public static BadRequestObjectResult ClientError(this Controller controller, ErrorType errorType, object? extraData = null)
+    public static BadRequestObjectResult ClientError(this Controller controller, ParlanceClientError errorType, object? extraData = null)
     {
         return controller.BadRequest(new
         {
