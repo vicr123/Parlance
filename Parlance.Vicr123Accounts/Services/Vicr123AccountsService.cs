@@ -127,10 +127,9 @@ public class Vicr123AccountsService : IVicr123AccountsService
             await userProxy.VerifyEmailAsync(verificationCode);
             return true;
         }
-        catch (DBusException ex)
+        catch (DBusException ex) when (ex.ErrorName == "com.vicr123.accounts.Error.VerificationCodeIncorrect")
         {
-            if (ex.ErrorName == "com.vicr123.accounts.Error.VerificationCodeIncorrect") return false;
-            throw;
+            return false;
         }
     }
 

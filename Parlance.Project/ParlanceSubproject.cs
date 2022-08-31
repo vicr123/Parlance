@@ -1,14 +1,14 @@
 using Microsoft.Extensions.FileSystemGlobbing;
 using Microsoft.Extensions.FileSystemGlobbing.Abstractions;
-using Parlance.CLDR;
+using Parlance.CldrData;
 
 namespace Parlance.Project;
+
+public record SubprojectDefinition(string Name, string Type, string Path, string BaseLang);
 
 public class ParlanceSubproject : IParlanceSubproject
 {
     private readonly SubprojectDefinition _subproject;
-
-    public record SubprojectDefinition(string Name, string Type, string Path, string BaseLang);
 
     public ParlanceSubproject(IParlanceProject project, SubprojectDefinition subproject)
     {
@@ -25,7 +25,7 @@ public class ParlanceSubproject : IParlanceSubproject
     public IEnumerable<Locale> AvailableLanguages()
     {
         var wildcard = _subproject.Path.Replace("{lang}", "*");
-        var toTrim = wildcard.Length - wildcard.IndexOf("*", StringComparison.Ordinal) - 1;
+        var toTrim = wildcard.Length - wildcard.IndexOf('*') - 1;
         
         var matcher = new Matcher();
         matcher.AddInclude(wildcard);

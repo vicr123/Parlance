@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Npgsql;
-using Parlance.CLDR;
+using Parlance.CldrData;
 using Parlance.Database;
 using Parlance.Database.Models;
 using Parlance.Services.Superuser;
@@ -36,14 +36,9 @@ public class PermissionsService : IPermissionsService
 
             await _dbContext.SaveChangesAsync();
         }
-        catch (DbUpdateException ex)
+        catch (DbUpdateException ex) when (ex.InnerException is PostgresException { SqlState: PostgresErrorCodes.UniqueViolation })
         {
-            if (ex.InnerException is PostgresException { SqlState: PostgresErrorCodes.UniqueViolation })
-            {
-                throw new InvalidOperationException();
-            }
-
-            throw;
+            throw new InvalidOperationException();
         }
     }
 

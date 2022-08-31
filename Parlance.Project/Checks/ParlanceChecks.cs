@@ -15,10 +15,7 @@ public class ParlanceChecks : IParlanceChecks
         using var checksReader = new StreamReader(checksStream!, Encoding.UTF8);
         var checksCode = checksReader.ReadToEnd();
 
-        _jsEngine = new Engine(_ =>
-        {
-            
-        });
+        _jsEngine = new Engine();
         _jsEngine.AddModule("checks", checksCode);
     }
 
@@ -50,7 +47,7 @@ public class ParlanceChecks : IParlanceChecks
                 {
                     "warn" => CheckResult.Severity.Warning,
                     "error" => CheckResult.Severity.Error,
-                    _ => throw new ArgumentOutOfRangeException()
+                    var s => throw new ArgumentOutOfRangeException($"Invalid severity value '{s}' from checker script.")
                 },
                 Message = obj.Get("message").AsString()
             };

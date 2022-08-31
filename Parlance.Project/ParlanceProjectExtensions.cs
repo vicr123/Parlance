@@ -13,12 +13,7 @@ public static class ParlanceProjectExtensions
     {
         return new ParlanceProject(project);
     }
-
-    public static void InitialiseParlanceProjects()
-    {
-        ParlanceSubprojectLanguage.TranslationFileTypes.AddRange(Assembly.GetExecutingAssembly().GetTypes().Where(t => t.IsDefined(typeof(TranslationFileTypeAttribute))));
-    }
-
+    
     public static IServiceCollection AddParlanceProjects(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddSingleton<IParlanceChecks, ParlanceChecks>();

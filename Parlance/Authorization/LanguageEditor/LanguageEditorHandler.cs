@@ -1,5 +1,5 @@
 using Microsoft.AspNetCore.Authorization;
-using Parlance.CLDR;
+using Parlance.CldrData;
 using Parlance.Services.Permissions;
 using Parlance.Vicr123Accounts.Authentication;
 

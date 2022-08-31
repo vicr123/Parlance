@@ -1,4 +1,4 @@
-using Parlance.CLDR;
+using Parlance.CldrData;
 
 namespace Parlance.Services.Permissions;
 

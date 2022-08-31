@@ -3,14 +3,9 @@ using JetBrains.Annotations;
 namespace Parlance.Project.TranslationFiles;
 
 [MeansImplicitUse]
+[AttributeUsage(AttributeTargets.Class)]
 public class TranslationFileTypeAttribute : Attribute
 {
-    public enum ExpectedTranslationFileNameFormat
-    {
-        Dashed,
-        Underscored
-    }
-    
     public string HandlerFor { get; }
     public ExpectedTranslationFileNameFormat FileNameFormat { get; }
 
@@ -19,4 +14,10 @@ public class TranslationFileTypeAttribute : Attribute
         HandlerFor = handlerFor;
         FileNameFormat = fileNameFormat;
     }
+}
+
+public enum ExpectedTranslationFileNameFormat
+{
+    Dashed,
+    Underscored
 }

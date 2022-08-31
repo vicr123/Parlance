@@ -9,7 +9,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Parlance.CLDR\Parlance.CLDR.csproj" />
+      <ProjectReference Include="..\Parlance.CldrData\Parlance.CldrData.csproj" />
       <ProjectReference Include="..\Parlance.Database\Parlance.Database.csproj" />
     </ItemGroup>
 

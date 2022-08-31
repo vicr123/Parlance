@@ -1,39 +1,42 @@
+using System.Collections.ObjectModel;
 using System.Text.Json;
 
 namespace Parlance.Project;
 
-record ParlanceJson(string Name, IEnumerable<ParlanceSubproject.SubprojectDefinition> Subprojects);
+record ParlanceJson(string Name, IEnumerable<SubprojectDefinition> Subprojects);
 
 public class ParlanceProject : IParlanceProject
 {
     private readonly Database.Models.Project _project;
 
+    private static readonly JsonSerializerOptions _options = new()
+    {
+        PropertyNameCaseInsensitive = true
+    };
+
     public ParlanceProject(Database.Models.Project project)
     {
         _project = project;
-        var subprojectDefs =
-            JsonSerializer.Deserialize<ParlanceJson>(File.OpenRead(Path.Combine(project.VcsDirectory,
-                ".parlance.json")), new JsonSerializerOptions()
-            {
-                PropertyNameCaseInsensitive = true
-            });
+        using var file = File.OpenRead(Path.Combine(project.VcsDirectory, ".parlance.json"));
+        var subprojectDefs = JsonSerializer.Deserialize<ParlanceJson>(file, _options);
+        
+        if (subprojectDefs is null)
+        {
+            throw new InvalidDataException("The Parlance project definition is invalid.");
+        }
 
-        Subprojects = subprojectDefs!.Subprojects.Select(subproject => new ParlanceSubproject(this, subproject));
+        Subprojects = subprojectDefs.Subprojects.Select(subproject => new ParlanceSubproject(this, subproject))
+                                                .ToList()
+                                                .AsReadOnly();
     }
 
     public string Name => _project.Name;
     public string VcsDirectory => _project.VcsDirectory;
-    public IEnumerable<IParlanceSubproject> Subprojects { get; }
-    
+    public IReadOnlyList<IParlanceSubproject> Subprojects { get; }
+
     public IParlanceSubproject SubprojectBySystemName(string systemName)
     {
-        try
-        {
-            return Subprojects.First(subproject => subproject.SystemName == systemName);
-        }
-        catch (InvalidOperationException)
-        {
-            throw new SubprojectNotFoundException();
-        }
+        return Subprojects.FirstOrDefault(subproject => subproject.SystemName == systemName)
+               ?? throw new SubprojectNotFoundException();
     }
 }

@@ -1,5 +1,5 @@
 using System.Reflection;
-using Parlance.CLDR;
+using Parlance.CldrData;
 using Parlance.Project.Index;
 using Parlance.Project.TranslationFiles;
 
@@ -7,7 +7,12 @@ namespace Parlance.Project;
 
 public class ParlanceSubprojectLanguage : IParlanceSubprojectLanguage
 {
-    public static List<Type> TranslationFileTypes { get; } = new();
+    public static List<Type> TranslationFileTypes { get; } = FindTranslationTypes();
+
+    private static List<Type> FindTranslationTypes()
+    {
+        return typeof(ParlanceProjectExtensions).Assembly.GetTypes().Where(t => t.IsDefined(typeof(TranslationFileTypeAttribute))).ToList();
+    }
 
     public ParlanceSubprojectLanguage(IParlanceSubproject subproject, Locale locale)
     {
@@ -15,7 +20,6 @@ public class ParlanceSubprojectLanguage : IParlanceSubprojectLanguage
         Locale = locale;
     }
 
-    public string IndexResourceIdentifier => $"project-{Subproject.Project.Name}-{Subproject.Name}-{Locale.ToDashed()}";
     public IParlanceSubproject Subproject { get; }
     public Locale Locale { get; }
 
@@ -29,12 +33,12 @@ public class ParlanceSubprojectLanguage : IParlanceSubprojectLanguage
             var translationFilePath = Path.Join(Subproject.Project.VcsDirectory,
                 Subproject.Path.Replace("{lang}",  attr.FileNameFormat switch
                 {
-                    TranslationFileTypeAttribute.ExpectedTranslationFileNameFormat.Dashed => Locale.ToDashed(),
-                    TranslationFileTypeAttribute.ExpectedTranslationFileNameFormat.Underscored => Locale.ToUnderscored(),
-                    _ => throw new ArgumentOutOfRangeException()
+                    ExpectedTranslationFileNameFormat.Dashed => Locale.ToDashed(),
+                    ExpectedTranslationFileNameFormat.Underscored => Locale.ToUnderscored(),
+                    _ => throw new ArgumentOutOfRangeException($"Invalid value for FileNameFormat for attribute '{attr}'.")
                 }));
 
-            if (type.GetInterface(nameof(IParlanceMonoTranslationFile)) is not null)
+            if (type.GetInterface(nameof(IParlanceDualTranslationFile)) is not null)
             {
                 var createMethod = type.GetMethod("CreateAsync");
                 return await (Task<ParlanceTranslationFile>) createMethod!.Invoke(null, new object?[] {

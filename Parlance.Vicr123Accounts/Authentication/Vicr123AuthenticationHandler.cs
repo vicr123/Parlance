@@ -13,7 +13,11 @@ public class Vicr123AuthenticationHandler : AuthenticationHandler<Vicr123Authent
     private readonly IVicr123AccountsService _accountsService;
     public const string AuthenticationScheme = "Vicr123Accounts";
 
-    public Vicr123AuthenticationHandler(IOptionsMonitor<Vicr123AuthenticationOptions> options, ILoggerFactory logger, UrlEncoder encoder, ISystemClock clock, IVicr123AccountsService accountsService) : base(options, logger, encoder, clock)
+    public Vicr123AuthenticationHandler(IOptionsMonitor<Vicr123AuthenticationOptions> options,
+                                        ILoggerFactory logger,
+                                        UrlEncoder encoder,
+                                        ISystemClock clock,
+                                        IVicr123AccountsService accountsService) : base(options, logger, encoder, clock)
     {
         _accountsService = accountsService;
     }
