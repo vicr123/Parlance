@@ -2,7 +2,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Nodes;
-using System.Xml.Linq;
+using JetBrains.Annotations;
 using Parlance.CldrData;
 using Parlance.Project.Index;
 
@@ -16,12 +16,13 @@ public class WebextensionJsonTranslationFile : ParlanceTranslationFile, IParlanc
     private string _baseFile = null!;
     private Locale _baseLocale = null!;
 
-    class TranslationItem
+    [UsedImplicitly]
+    private class TranslationItem
     {
         // ReSharper disable InconsistentNaming
-        public string? message { get; set; }
-        public string? description { get; set; }
-        public JsonObject? placeholders { get; set; }
+        public string? message { get; [UsedImplicitly] init; }
+        public string? description { get; [UsedImplicitly] init; }
+        public JsonObject? placeholders { get; [UsedImplicitly] init; }
         // ReSharper restore InconsistentNaming
     }
     
@@ -99,8 +100,8 @@ public class WebextensionJsonTranslationFile : ParlanceTranslationFile, IParlanc
         await base.Save();
     }
 
-    public override string Hash { get; internal set; }
-    public override IList<IParlanceTranslationFileEntry> Entries { get; internal set; }
+    public override string Hash { get; internal set; } = null!;
+    public override IList<IParlanceTranslationFileEntry> Entries { get; internal set; } = null!;
 
     public static async Task<ParlanceTranslationFile> CreateAsync(string file, Locale locale, string baseFile, Locale baseLocale,
         IParlanceSubprojectLanguage? subprojectLanguage, IParlanceIndexingService? indexingService)

@@ -1,7 +1,5 @@
-using System.Runtime.Intrinsics.Arm;
 using System.Security.Cryptography;
 using System.Xml.Linq;
-using JetBrains.Annotations;
 using Parlance.CldrData;
 using Parlance.Project.Index;
 
@@ -24,7 +22,7 @@ public class QtLinguistTranslationFile : ParlanceTranslationFile, IParlanceDualT
         var pluralRules = locale.PluralRules().ToArray();
         
         var xmlDoc = XDocument.Parse(fileContents);
-        Entries = xmlDoc.Descendants("message").Select((msg, idx) => new QtLinguistTranslationFileEntry
+        Entries = xmlDoc.Descendants("message").Select(msg => new QtLinguistTranslationFileEntry
         {
             RealKey = (string)msg.Element("source")!,
             Context = ((string) msg.Parent!.Element("name"))!,
