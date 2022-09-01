@@ -45,12 +45,26 @@ public class ParlanceSubprojectLanguage : IParlanceSubprojectLanguage
                     translationFilePath, Locale, this, indexingService
                 })!;
             }
+
+            if (type.GetInterface(nameof(IParlanceMonoTranslationFile)) is not null)
+            {
+                var baseFilePath = Path.Join(Subproject.Project.VcsDirectory,
+                    Subproject.Path.Replace("{lang}",  attr.FileNameFormat switch
+                    {
+                        ExpectedTranslationFileNameFormat.Dashed => Subproject.BaseLang.ToDashed(),
+                        ExpectedTranslationFileNameFormat.Underscored => Subproject.BaseLang.ToUnderscored(),
+                        _ => throw new ArgumentOutOfRangeException($"Invalid value for FileNameFormat for attribute '{attr}'.")
+                    }));
+                
+                var createMethod = type.GetMethod("CreateAsync");
+                return await (Task<ParlanceTranslationFile>) createMethod!.Invoke(null, new object?[] {
+                    translationFilePath, Locale, baseFilePath, Subproject.BaseLang, this, indexingService
+                })!;
+            }
             else
             {
                 throw new InvalidOperationException();
             }
-            
-            //TODO: Dual type translation files
         }
 
         return null;

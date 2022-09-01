@@ -50,7 +50,7 @@ public class QtLinguistTranslationFile : ParlanceTranslationFile, IParlanceDualT
 
     public override IList<IParlanceTranslationFileEntry> Entries { get; internal set; } = null!;
 
-    public new async Task Save()
+    public override async Task Save()
     {
         var pluralRules = _locale.PluralRules().ToList();
         

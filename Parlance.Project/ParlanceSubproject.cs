@@ -21,6 +21,7 @@ public class ParlanceSubproject : IParlanceSubproject
     public IParlanceProject Project { get; }
     public string Path => _subproject.Path;
     public string TranslationFileType => _subproject.Type;
+    public Locale BaseLang => _subproject.BaseLang.ToLocale();
 
     public IEnumerable<Locale> AvailableLanguages()
     {
