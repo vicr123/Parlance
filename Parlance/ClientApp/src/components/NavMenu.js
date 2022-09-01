@@ -22,7 +22,7 @@ export default function(props) {
     
     const manageAccount = () => {
         if (UserManager.isLoggedIn) {
-            Modal.mount(<UserModal />)
+            Modal.mount(<UserModal navigate={navigate} />)
         } else {
             UserManager.clearLoginDetails();
             Modal.mount(<LoginUsernameModal />)

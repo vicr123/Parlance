@@ -154,6 +154,8 @@ public class ProjectsController : Controller
             {
                 CompletionData = indexResults,
                 subproj.TranslationFileType,
+                subproj.Name,
+                ProjectName = subproj.Project.Name,
                 AvailableLanguages = await Task.WhenAll(subproj.AvailableLanguages().Select(async lang =>
                 {
                     var subprojectLanguage = subproj.Language(lang);
@@ -196,6 +198,9 @@ public class ProjectsController : Controller
             return Json(new
             {
                 CompletionData = indexResults,
+                ProjectName = p.Name,
+                SubprojectName = subp.Name,
+                Language = subprojectLanguage.Locale.ToDashed(),
                 CanEdit = await _permissionsService.CanEditProjectLocale(username, project, language.ToLocale())
             });
         }

@@ -11,7 +11,7 @@ import Locales from "./Locales";
 export default function(props) {
     const {t} = useTranslation();
     
-    let items = [
+    const items = [
         t("PROJECTS"),
         {
             name: t("PROJECTS"),
