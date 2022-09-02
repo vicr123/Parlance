@@ -23,7 +23,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddVicr123Accounts(builder.Configuration);
 builder.Services.AddVersionControl(builder.Configuration);
 builder.Services.AddParlanceProjects(builder.Configuration);
-builder.Services.AddCldr(builder.Configuration);
+await builder.Services.AddCldrAsync(builder.Configuration);
 
 builder.Services.AddSingleton<IVersionControlService, VersionControlService>();
 builder.Services.AddScoped<IProjectService, ProjectService>();

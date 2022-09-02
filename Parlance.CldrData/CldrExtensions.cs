@@ -9,8 +9,6 @@ public static class CldrExtensions
 {
     private static readonly Lazy<Task<List<string>>> scripts = new(async () => 
     {
-        await Cldr.Instance.DownloadLatestAsync();
-
         var scripts = new List<string>();
         var scriptMetadata = Cldr.Instance.GetTextDocuments("common/properties/scriptMetadata.txt");
         foreach (var reader in scriptMetadata)
@@ -28,8 +26,9 @@ public static class CldrExtensions
 
     private static List<string> Scripts => scripts.Value.Result;
         
-    public static IServiceCollection AddCldr(this IServiceCollection services, IConfiguration configuration)
+    public static async Task<IServiceCollection> AddCldrAsync(this IServiceCollection services, IConfiguration configuration)
     {
+        await Cldr.Instance.DownloadLatestAsync();
         return services;
     }
 
