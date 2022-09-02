@@ -35,7 +35,10 @@ builder.Services.Configure<ParlanceOptions>(builder.Configuration.GetSection("Pa
 
 builder.Services.AddDbContext<ParlanceContext>(options =>
 {
-    options.UseNpgsql(builder.Configuration.GetSection("Parlance")["DatabaseConnectionString"]);
+    options.UseNpgsql(builder.Configuration.GetSection("Parlance")["DatabaseConnectionString"], optionsBuilder =>
+    {
+        optionsBuilder.EnableRetryOnFailure();
+    });
 });
 
 builder.Services.AddScoped<IAuthorizationHandler, LanguageEditorHandler>();
