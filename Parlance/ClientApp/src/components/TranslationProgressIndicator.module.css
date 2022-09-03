@@ -12,6 +12,10 @@
     grid-area: title;
 }
 
+.newTitle {
+    color: var(--foreground-disabled-color);
+}
+
 .metrics {
     display: flex;
     flex-direction: row-reverse;

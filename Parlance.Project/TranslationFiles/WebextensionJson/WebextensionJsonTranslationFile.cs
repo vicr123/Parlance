@@ -8,27 +8,29 @@ using Parlance.Project.Index;
 
 namespace Parlance.Project.TranslationFiles.WebextensionJson;
 
-[TranslationFileType("webext-json", ExpectedTranslationFileNameFormat.Dashed)]
+[TranslationFileType("webext-json", ExpectedTranslationFileNameFormat.Underscored)]
 public class WebextensionJsonTranslationFile : ParlanceTranslationFile, IParlanceMonoTranslationFile
 {
-    private string _file = null!;
-    private Locale _locale = null!;
     private string _baseFile = null!;
     private Locale _baseLocale = null!;
+    private string _file = null!;
+    private Locale _locale = null!;
 
-    [UsedImplicitly]
-    private class TranslationItem
+    public WebextensionJsonTranslationFile(IParlanceSubprojectLanguage? subprojectLanguage,
+        IParlanceIndexingService? indexingService) : base(subprojectLanguage, indexingService)
     {
-        // ReSharper disable InconsistentNaming
-        public string? message { get; [UsedImplicitly] init; }
-        public string? description { get; [UsedImplicitly] init; }
-        public JsonObject? placeholders { get; [UsedImplicitly] init; }
-        // ReSharper restore InconsistentNaming
     }
-    
-    public WebextensionJsonTranslationFile(IParlanceSubprojectLanguage? subprojectLanguage, IParlanceIndexingService? indexingService) : base(subprojectLanguage, indexingService)
+
+    public override string Hash { get; internal set; } = null!;
+    public override IList<IParlanceTranslationFileEntry> Entries { get; internal set; } = null!;
+
+    public static async Task<ParlanceTranslationFile> CreateAsync(string file, Locale locale, string baseFile,
+        Locale baseLocale,
+        IParlanceSubprojectLanguage? subprojectLanguage, IParlanceIndexingService? indexingService)
     {
-        
+        var translationFile = new WebextensionJsonTranslationFile(subprojectLanguage, indexingService);
+        await translationFile.LoadFile(file, locale, baseFile, baseLocale);
+        return translationFile;
     }
 
     private async Task LoadFile(string file, Locale locale, string baseFile, Locale baseLocale)
@@ -39,7 +41,7 @@ public class WebextensionJsonTranslationFile : ParlanceTranslationFile, IParlanc
         _baseLocale = baseLocale;
 
         //TODO: Use a stream?
-        
+
         var fileContents = await File.ReadAllTextAsync(file);
         await using var baseFileContents = File.OpenRead(baseFile);
         Hash = Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(fileContents)));
@@ -92,7 +94,7 @@ public class WebextensionJsonTranslationFile : ParlanceTranslationFile, IParlanc
             return acc;
         });
 
-        await File.WriteAllTextAsync(_file, obj.ToJsonString(new JsonSerializerOptions()
+        await File.WriteAllTextAsync(_file, obj.ToJsonString(new JsonSerializerOptions
         {
             WriteIndented = true
         }), Encoding.UTF8);
@@ -100,14 +102,21 @@ public class WebextensionJsonTranslationFile : ParlanceTranslationFile, IParlanc
         await base.Save();
     }
 
-    public override string Hash { get; internal set; } = null!;
-    public override IList<IParlanceTranslationFileEntry> Entries { get; internal set; } = null!;
-
-    public static async Task<ParlanceTranslationFile> CreateAsync(string file, Locale locale, string baseFile, Locale baseLocale,
-        IParlanceSubprojectLanguage? subprojectLanguage, IParlanceIndexingService? indexingService)
+    private protected override Task UseAsBaseImpl(string filename, Locale locale)
     {
-        var translationFile = new WebextensionJsonTranslationFile(subprojectLanguage, indexingService);
-        await translationFile.LoadFile(file, locale, baseFile, baseLocale);
-        return translationFile;
+        _file = filename;
+        _locale = locale;
+        return Task.CompletedTask;
+    }
+
+    [UsedImplicitly]
+    private class TranslationItem
+    {
+        // ReSharper disable InconsistentNaming
+        public string? message { get; [UsedImplicitly] init; }
+        public string? description { get; [UsedImplicitly] init; }
+
+        public JsonObject? placeholders { get; [UsedImplicitly] init; }
+        // ReSharper restore InconsistentNaming
     }
 }

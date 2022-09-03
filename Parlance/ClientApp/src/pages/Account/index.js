@@ -14,7 +14,7 @@ import VerifyEmail from "./VerifyEmail";
 import "./index.css";
 import Otp from "./Otp";
 
-export default function(props) {
+export default function () {
     const [ignored, forceUpdate] = useReducer(x => x + 1, 0);
     const location = useLocation();
     const {t} = useTranslation();
@@ -42,7 +42,7 @@ export default function(props) {
             </Container>
         </div>
     }
-    
+
     return <div>
         <Container bottomBorder={true} style={{
             backgroundColor: "var(--hover-color)"
@@ -61,12 +61,12 @@ export default function(props) {
                 timeout={250}
                 classNames={"account-settings-lift"}>
                 <Routes location={useLocation()}>
-                    <Route element={<AccountSettings />} path={"/"} />
-                    <Route element={<UsernameChange />} path={"/username"} />
-                    <Route element={<EmailChange />} path={"/email"} />
-                    <Route element={<PasswordChange />} path={"/password"} />
-                    <Route element={<VerifyEmail />} path={"/verify"} />
-                    <Route element={<Otp />} path={"/otp"} />
+                    <Route element={<AccountSettings/>} path={"/"}/>
+                    <Route element={<UsernameChange/>} path={"/username"}/>
+                    <Route element={<EmailChange/>} path={"/email"}/>
+                    <Route element={<PasswordChange/>} path={"/password"}/>
+                    <Route element={<VerifyEmail/>} path={"/verify"}/>
+                    <Route element={<Otp/>} path={"/otp"}/>
                 </Routes>
             </CSSTransition>
         </TransitionGroup>
