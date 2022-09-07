@@ -14,7 +14,6 @@ using Parlance.VersionControl;
 using Parlance.VersionControl.Services;
 using Parlance.Vicr123Accounts;
 
-
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -25,7 +24,6 @@ builder.Services.AddVersionControl(builder.Configuration);
 builder.Services.AddParlanceProjects(builder.Configuration);
 await builder.Services.AddCldrAsync(builder.Configuration);
 
-builder.Services.AddSingleton<IVersionControlService, VersionControlService>();
 builder.Services.AddScoped<IProjectService, ProjectService>();
 builder.Services.AddScoped<ISuperuserService, SuperuserService>();
 builder.Services.AddScoped<IRemoteCommunicationService, RemoteCommunicationService>();

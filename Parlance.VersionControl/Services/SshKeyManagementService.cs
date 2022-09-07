@@ -20,10 +20,8 @@ public class SshKeyManagementService : ISshKeyManagementService
 
     public async Task<bool> SshKeyIsGenerated()
     {
-        return await _dbContext.SshKeys.CountAsync() > 0;
+        return await _dbContext.SshKeys.AnyAsync();
     }
-    
-    
 
     public async Task GenerateNewSshKey()
     {

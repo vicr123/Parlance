@@ -12,11 +12,12 @@
 
     <ItemGroup>
       <PackageReference Include="BouncyCastle" Version="1.8.9" NoWarn="NU1701" />
-      <PackageReference Include="libgit2sharp-native" Version="0.27.0-preview-0189-ga95463fd9a" />
+      <PackageReference Include="libgit2sharp-native" Version="0.27.0-preview-0191-gc6bd3683c0" />
     </ItemGroup>
 
     <ItemGroup>
       <ProjectReference Include="..\Parlance.Database\Parlance.Database.csproj" />
+      <ProjectReference Include="..\Parlance.Project\Parlance.Project.csproj" />
     </ItemGroup>
 
 </Project>
