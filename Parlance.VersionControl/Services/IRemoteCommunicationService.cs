@@ -1,6 +1,6 @@
 using LibGit2Sharp;
 
-namespace Parlance.Services.RemoteCommunication;
+namespace Parlance.VersionControl.Services;
 
 public interface IRemoteCommunicationService
 {

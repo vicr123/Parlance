@@ -1,4 +1,5 @@
 using System.Runtime.Intrinsics.Arm;
+using System.Runtime.Versioning;
 using System.Security.Cryptography;
 using System.Xml.Linq;
 using JetBrains.Annotations;
@@ -8,6 +9,7 @@ using Parlance.Project.Index;
 namespace Parlance.Project.TranslationFiles.QtLinguist;
 
 [TranslationFileType("qt", ExpectedTranslationFileNameFormat.Underscored)]
+[RequiresPreviewFeatures]
 public class QtLinguistTranslationFile : ParlanceTranslationFile, IParlanceDualTranslationFile
 {
     private string _file = null!;
@@ -50,7 +52,7 @@ public class QtLinguistTranslationFile : ParlanceTranslationFile, IParlanceDualT
 
     public override IList<IParlanceTranslationFileEntry> Entries { get; internal set; } = null!;
 
-    public new async Task Save()
+    public override async Task Save()
     {
         var pluralRules = _locale.PluralRules().ToList();
         

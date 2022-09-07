@@ -10,6 +10,7 @@ using Parlance.Project.Index;
 using Parlance.Project.TranslationFiles;
 using Parlance.Services.Permissions;
 using Parlance.Services.Projects;
+using Parlance.VersionControl.Services;
 using Parlance.Vicr123Accounts.Authentication;
 
 namespace Parlance.Controllers;
@@ -21,12 +22,17 @@ public class ProjectsController : Controller
     private readonly IProjectService _projectService;
     private readonly IPermissionsService _permissionsService;
     private readonly IParlanceIndexingService _indexingService;
+    private readonly IVersionControlService _versionControlService;
 
-    public ProjectsController(IProjectService projectService, IPermissionsService permissionsService, IParlanceIndexingService indexingService)
+    public ProjectsController(IProjectService projectService,
+                              IPermissionsService permissionsService,
+                              IParlanceIndexingService indexingService,
+                              IVersionControlService versionControlService)
     {
         _projectService = projectService;
         _permissionsService = permissionsService;
         _indexingService = indexingService;
+        _versionControlService = versionControlService;
     }
 
     [HttpGet]
@@ -131,6 +137,46 @@ public class ProjectsController : Controller
             var proj = p.GetParlanceProject();
 
             await _indexingService.IndexProject(proj);
+            return NoContent();
+        }
+        catch (ProjectNotFoundException)
+        {
+            return NotFound();
+        }
+    }
+
+
+    [HttpPost]
+    [Authorize(Policy = "Superuser")]
+    [Route("{project}/vcs/push")]
+    public async Task<IActionResult> PushProjectToVcs(string project)
+    {
+        try
+        {
+            var p = await _projectService.ProjectBySystemName(project);
+            var proj = p.GetParlanceProject();
+
+            await _versionControlService.PublishSavedChangesToSource(proj);
+
+            return NoContent();
+        }
+        catch (ProjectNotFoundException)
+        {
+            return NotFound();
+        }
+    }
+
+    [HttpPost]
+    [Authorize(Policy = "Superuser")]
+    [Route("{project}/vcs/commit")]
+    public async Task<IActionResult> CommitProjectToVcs(string project)
+    {
+        try
+        {
+            var p = await _projectService.ProjectBySystemName(project);
+            var proj = p.GetParlanceProject();
+
+            await _versionControlService.SaveChangesToVersionControl(proj);
             return NoContent();
         }
         catch (ProjectNotFoundException)

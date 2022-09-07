@@ -9,7 +9,7 @@ public static class VersionControlExtensions
     public static IServiceCollection AddVersionControl(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddScoped<ISshKeyManagementService, SshKeyManagementService>();
-        services.AddScoped<IVersionControlService, VersionControlService>();
+        services.AddScoped<IVersionControlService, GitVersionControlService>();
         return services;
     }
 }

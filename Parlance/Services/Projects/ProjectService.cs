@@ -1,9 +1,8 @@
-using LibGit2Sharp;
 using Microsoft.Extensions.Options;
 using Parlance.Database;
 using Parlance.Project;
 using Parlance.Project.Index;
-using Parlance.Services.RemoteCommunication;
+using Parlance.VersionControl.Services;
 
 namespace Parlance.Services.Projects;
 
@@ -13,15 +12,24 @@ public class ProjectService : IProjectService
     private readonly IRemoteCommunicationService _remoteCommunicationService;
     private readonly IParlanceIndexingService _indexingService;
     private readonly ParlanceContext _dbContext;
+    private readonly IVersionControlService _versionControlService;
+    private readonly ILogger<ProjectService> _logger;
 
-    public ProjectService(IOptions<ParlanceOptions> parlanceOptions, IRemoteCommunicationService remoteCommunicationService, IParlanceIndexingService indexingService, ParlanceContext dbContext)
+    public ProjectService(IOptions<ParlanceOptions> parlanceOptions,
+                          IRemoteCommunicationService remoteCommunicationService,
+                          IParlanceIndexingService indexingService,
+                          ParlanceContext dbContext,
+                          IVersionControlService versionControlService,
+                          ILogger<ProjectService> logger)
     {
         _parlanceOptions = parlanceOptions;
         _remoteCommunicationService = remoteCommunicationService;
         _indexingService = indexingService;
         _dbContext = dbContext;
+        _versionControlService = versionControlService;
+        _logger = logger;
     }
-    
+
     public async Task RegisterProject(string cloneUrl, string branch, string name)
     {
         var systemName = name.ToLower().Replace(' ', '-');
@@ -32,75 +40,38 @@ public class ProjectService : IProjectService
             SystemName = systemName,
             VcsDirectory = directory
         };
-        
-        await Task.Run(() =>
+
+        void TryDeleteDirectory(Exception ex, string directoryPath)
         {
             try
             {
-                var repoPath = Repository.Clone(cloneUrl, directory,
-                    new CloneOptions
-                    {
-                        CredentialsProvider = _remoteCommunicationService.CredentialsHandler,
-                        CertificateCheck = _remoteCommunicationService.CertificateCheckHandler,
-                        IsBare = false,
-                        OnTransferProgress = progress =>
-                        {
-                            return true;
-                        }
-                    });
-
-                using var repo = new Repository(repoPath);
-                var remoteBranch = repo.Branches.Where(b => b.IsRemote)
-                    .Single(b => b.CanonicalName == $"refs/remotes/origin/{branch}");
-
-                Branch localBranch;
-                try
-                {
-                    localBranch = repo.Branches.Add(branch, remoteBranch.Tip);
-                }
-                catch (LibGit2SharpException)
-                {
-                    localBranch = repo.Branches.Where(b => b.IsRemote == false)
-                        .Single(b => b.CanonicalName == $"refs/heads/{branch}");
-                }
-                
-                repo.Checkout(localBranch.Tip.Tree, new[] { "*" }, new CheckoutOptions
-                {
-                    CheckoutModifiers = CheckoutModifiers.Force 
-                });
-            }
-            catch (Exception)
-            {
-                try
-                {
-                    Directory.Delete(directory, true);
-                }
-                catch
-                {
-                    // ignored
-                }
-
-                throw;
-            }
-        });
-
-        try
-        {
-        
-            //Run checks on the project
-            await _indexingService.IndexProject(project.GetParlanceProject());
-        }
-        catch (Exception)
-        {
-            try
-            {
-                Directory.Delete(directory, true);
+                _logger.LogError(ex, "Error registering repository. Deleting directory {Directory}", directoryPath);
+                Directory.Delete(directoryPath, recursive: true);
             }
             catch
             {
                 // ignored
             }
+        }
 
+        try
+        {
+            await _versionControlService.DownloadFromSource(cloneUrl, directory, branch);
+        }
+        catch (Exception ex)
+        {
+            TryDeleteDirectory(ex, directory);
+            throw;
+        }
+
+        try
+        {
+            //Run checks on the project
+            await _indexingService.IndexProject(project.GetParlanceProject());
+        }
+        catch (Exception ex)
+        {
+            TryDeleteDirectory(ex, directory);
             throw;
         }
         _dbContext.Projects.Add(project);

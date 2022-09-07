@@ -15,7 +15,7 @@ public abstract class ParlanceTranslationFile : IAsyncDisposable
         _indexingService = indexingService;
     }
 
-    public Task Save()
+    public virtual Task Save()
     {
         _edited = true;
         return Task.CompletedTask;
