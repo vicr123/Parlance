@@ -1,3 +1,4 @@
+using System.Runtime.Versioning;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
@@ -9,6 +10,7 @@ using Parlance.Project.Index;
 namespace Parlance.Project.TranslationFiles.WebextensionJson;
 
 [TranslationFileType("webext-json", ExpectedTranslationFileNameFormat.Underscored)]
+[RequiresPreviewFeatures]
 public class WebextensionJsonTranslationFile : ParlanceTranslationFile, IParlanceMonoTranslationFile
 {
     private string _baseFile = null!;
