@@ -2,6 +2,7 @@ using System.Text.Json;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Parlance.Helpers;
+using Parlance.Services.Permissions;
 using Parlance.Services.Superuser;
 using Parlance.Vicr123Accounts.Authentication;
 using Parlance.Vicr123Accounts.Services;
@@ -18,11 +19,13 @@ public class UserController : Controller
 {
     private readonly IVicr123AccountsService _accountsService;
     private readonly ISuperuserService _superuserService;
+    private readonly IPermissionsService _permissionsService;
 
-    public UserController(IVicr123AccountsService accountsService, ISuperuserService superuserService)
+    public UserController(IVicr123AccountsService accountsService, ISuperuserService superuserService, IPermissionsService permissionsService)
     {
         _accountsService = accountsService;
         _superuserService = superuserService;
+        _permissionsService = permissionsService;
     }
 
     [Authorize]
@@ -36,7 +39,8 @@ public class UserController : Controller
         return Json(new
         {
             user.Username, user.Email, user.EmailVerified,
-            Superuser = superuser
+            Superuser = superuser,
+            LanguagePermissions = await _permissionsService.UserPermissions(user.Username).SelectAwait(x => ValueTask.FromResult(x.ToDashed())).ToListAsync()
         });
     }
 

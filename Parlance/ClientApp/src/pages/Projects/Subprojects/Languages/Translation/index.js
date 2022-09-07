@@ -7,5 +7,6 @@ export default function Translation(props) {
         <Route element={<Dashboard />} path={"/"} />
         <Route element={<TranslationEditor />} path={"/translate"} />
         <Route element={<TranslationEditor />} path={"/translate/:key"} />
+        <Route element={<Dashboard />} path={"/*"} />
     </Routes>
 }

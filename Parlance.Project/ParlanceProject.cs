@@ -1,4 +1,3 @@
-using System.Collections.ObjectModel;
 using System.Text.Json;
 
 namespace Parlance.Project;
@@ -9,7 +8,7 @@ public class ParlanceProject : IParlanceProject
 {
     private readonly Database.Models.Project _project;
 
-    private static readonly JsonSerializerOptions _options = new()
+    private static readonly JsonSerializerOptions Options = new()
     {
         PropertyNameCaseInsensitive = true
     };
@@ -18,7 +17,7 @@ public class ParlanceProject : IParlanceProject
     {
         _project = project;
         using var file = File.OpenRead(Path.Combine(project.VcsDirectory, ".parlance.json"));
-        var subprojectDefs = JsonSerializer.Deserialize<ParlanceJson>(file, _options);
+        var subprojectDefs = JsonSerializer.Deserialize<ParlanceJson>(file, Options);
         
         if (subprojectDefs is null)
         {

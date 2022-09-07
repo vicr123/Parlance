@@ -4,7 +4,7 @@ import {useTranslation} from "react-i18next";
 import ModalList from "../../ModalList";
 import {useNavigate} from "react-router-dom";
 
-export default function(props) {
+export default function({navigate}) {
     const {t} = useTranslation();
     
     let bottomButtons = [];
@@ -12,7 +12,8 @@ export default function(props) {
         bottomButtons.push({
             text: t('PARLANCE_ADMINISTRATION'),
             onClick: () => {
-                document.location = "/admin";
+                navigate("/admin");
+                Modal.unmount();
             }
         })
     }
@@ -20,7 +21,8 @@ export default function(props) {
     bottomButtons.push({
         text: t("ACCOUNT_SETTINGS"),
         onClick: () => {
-            document.location = "/account";
+            navigate("/account");
+            Modal.unmount();
         }
     })
     

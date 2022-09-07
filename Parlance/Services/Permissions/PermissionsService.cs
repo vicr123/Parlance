@@ -90,4 +90,18 @@ public class PermissionsService : IPermissionsService
         if (user is null) return Task.FromResult(false);
         return Task.FromResult(true);
     }
+
+    public async IAsyncEnumerable<Locale> UserPermissions(string? user)
+    {
+        if (user is null) yield break;
+        var userId = (await _accountsService.UserByUsername(user)).Id;
+
+        var permissions = _dbContext.Permissions.Where(permission =>
+            permission.PermissionType == LocalePermissionType && permission.UserId == userId);
+
+        foreach (var permission in permissions)
+        {
+            yield return permission.SpecificPermission.ToLocale();
+        }
+    }
 }

@@ -10,4 +10,5 @@ public interface IPermissionsService
     public IAsyncEnumerable<string> LocalePermissions(Locale locale);
     public Task<bool> CanEditProjectLocale(string? user, string project, Locale locale);
     public Task<bool> HasManageProjectPermission(string? user, string project);
+    public IAsyncEnumerable<Locale> UserPermissions(string? user);
 }

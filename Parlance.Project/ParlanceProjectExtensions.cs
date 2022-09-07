@@ -1,9 +1,7 @@
-using System.Reflection;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Parlance.Project.Checks;
 using Parlance.Project.Index;
-using Parlance.Project.TranslationFiles;
 
 namespace Parlance.Project;
 

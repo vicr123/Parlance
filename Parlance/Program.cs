@@ -6,7 +6,6 @@ using Parlance.Authorization.Superuser;
 using Parlance.CldrData;
 using Parlance.Database;
 using Parlance.Project;
-using Parlance.Project.Checks;
 using Parlance.Services.Permissions;
 using Parlance.Services.Projects;
 using Parlance.Services.RemoteCommunication;
@@ -23,7 +22,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddVicr123Accounts(builder.Configuration);
 builder.Services.AddVersionControl(builder.Configuration);
 builder.Services.AddParlanceProjects(builder.Configuration);
-builder.Services.AddCldr(builder.Configuration);
+await builder.Services.AddCldrAsync(builder.Configuration);
 
 builder.Services.AddScoped<IProjectService, ProjectService>();
 builder.Services.AddScoped<ISuperuserService, SuperuserService>();
@@ -34,7 +33,10 @@ builder.Services.Configure<ParlanceOptions>(builder.Configuration.GetSection("Pa
 
 builder.Services.AddDbContext<ParlanceContext>(options =>
 {
-    options.UseNpgsql(builder.Configuration.GetSection("Parlance")["DatabaseConnectionString"]);
+    options.UseNpgsql(builder.Configuration.GetSection("Parlance")["DatabaseConnectionString"], optionsBuilder =>
+    {
+        optionsBuilder.EnableRetryOnFailure();
+    });
 });
 
 builder.Services.AddScoped<IAuthorizationHandler, LanguageEditorHandler>();

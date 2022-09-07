@@ -5,11 +5,11 @@ import TranslationArea from "./TranslationArea";
 import ExtrasArea from "./ExtrasArea";
 import {useEffect, useState} from "react";
 import Fetch from "../../../../../../helpers/Fetch";
-import {HotKeys} from "react-hotkeys";
 import {useUpdateManager} from "./UpdateManager";
 import i18n from "../../../../../../helpers/i18n";
 import Modal from "../../../../../../components/Modal";
 import {useTranslation} from "react-i18next";
+import {useHotkeys} from "react-hotkeys-hook";
 
 export default function(props) {
     const {project, subproject, language, key} = useParams();
@@ -18,6 +18,12 @@ export default function(props) {
     const [subprojectLanguageData, setSubprojectLanguageData] = useState({});
     const [ready, setReady] = useState(false);
     const {t} = useTranslation();
+    
+    useHotkeys("ctrl+enter", () => alert("NEXT!"), {
+        enableOnTags: ["TEXTAREA"]
+    });
+    useHotkeys("ctrl+up", () => alert("BACK!"));
+    useHotkeys("ctrl+down", () => alert("NEXT!"));
     
     const updateManager = useUpdateManager();
     updateManager.on("outOfDate", () => {
@@ -86,28 +92,12 @@ export default function(props) {
         updateManager.queueForUpdate(key, update);
     };
     
-    const keymap = {
-        NEXT: ["down", "ctrl+enter"],
-        BACK: "up"
-    };
-    
-    const handlers = {
-        NEXT: () => {
-            console.log("NEXT");
-        },
-        BACK: () => {
-            console.log("BACK");
-        }
-    }
-    
     if (ready) {
-        return <HotKeys keyMap={keymap} handlers={handlers}>
-            <div className={Styles.root}>
-                <EntryList entries={entries} translationDirection={translationDirection} updateManager={updateManager} translationFileType={subprojectData.translationFileType} />
-                <TranslationArea onPushUpdate={pushUpdate} entries={entries} translationDirection={translationDirection} translationFileType={subprojectData.translationFileType} canEdit={canEdit} />
-                <ExtrasArea />
-            </div>
-        </HotKeys>
+        return <div className={Styles.root}>
+            <EntryList entries={entries} translationDirection={translationDirection} updateManager={updateManager} translationFileType={subprojectData.translationFileType} />
+            <TranslationArea onPushUpdate={pushUpdate} entries={entries} translationDirection={translationDirection} translationFileType={subprojectData.translationFileType} canEdit={canEdit} />
+            <ExtrasArea />
+        </div>
     } else {
         return <div className={Styles.root}>
             Hang on...

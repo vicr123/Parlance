@@ -5,14 +5,24 @@ namespace Parlance.Project.TranslationFiles;
 
 public abstract class ParlanceTranslationFile : IAsyncDisposable
 {
-    private readonly IParlanceSubprojectLanguage? _subprojectLanguage;
     private readonly IParlanceIndexingService? _indexingService;
+    private readonly IParlanceSubprojectLanguage? _subprojectLanguage;
     private bool _edited;
 
-    protected ParlanceTranslationFile(IParlanceSubprojectLanguage? subprojectLanguage, IParlanceIndexingService? indexingService)
+    protected ParlanceTranslationFile(IParlanceSubprojectLanguage? subprojectLanguage,
+        IParlanceIndexingService? indexingService)
     {
         _subprojectLanguage = subprojectLanguage;
         _indexingService = indexingService;
+    }
+
+    public abstract string Hash { get; internal set; }
+    public abstract IList<IParlanceTranslationFileEntry> Entries { get; internal set; }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (_edited && _indexingService is not null && _subprojectLanguage is not null)
+            await _indexingService.IndexTranslationFile(_subprojectLanguage);
     }
 
     public virtual Task Save()
@@ -20,15 +30,16 @@ public abstract class ParlanceTranslationFile : IAsyncDisposable
         _edited = true;
         return Task.CompletedTask;
     }
-    
-    public async ValueTask DisposeAsync()
+
+    public async Task UseAsBaseFor(string filename, Locale locale)
     {
-        if (_edited && _indexingService is not null && _subprojectLanguage is not null)
-        {
-            await _indexingService.IndexTranslationFile(_subprojectLanguage);
-        }
+        foreach (var entry in Entries)
+        foreach (var translation in entry.Translation)
+            translation.TranslationContent = "";
+
+        await UseAsBaseImpl(filename, locale);
+        await Save();
     }
 
-    public abstract string Hash { get; internal set; }
-    public abstract IList<IParlanceTranslationFileEntry> Entries { get; internal set; }
+    private protected abstract Task UseAsBaseImpl(string filename, Locale locale);
 }

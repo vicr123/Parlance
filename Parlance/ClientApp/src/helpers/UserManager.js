@@ -8,6 +8,7 @@ import LoginPasswordResetModal from "../components/modals/account/LoginPasswordR
 import PasswordResetModal from "../components/modals/account/resets/PasswordResetModal";
 import i18n from "./i18n";
 import CryptoJS from "crypto-js";
+import LoginErrorModal from "../components/modals/account/LoginErrorModal";
 
 class UserManager extends EventEmitter {
     #loginSessionDetails;
@@ -23,9 +24,14 @@ class UserManager extends EventEmitter {
     
     async updateDetails() {
         if (localStorage.getItem("token")) {
-            this.#currentUser = await Fetch.get("/api/user");
-            
-            this.emit("currentUserChanged", this.#currentUser);
+            try {
+                this.#currentUser = await Fetch.get("/api/user");
+                this.emit("currentUserChanged", this.#currentUser);
+            } catch {
+                //Couldn't get user details, so log out
+                await this.logout();
+                Modal.mount(<LoginErrorModal />)
+            }
         } else {
             this.#currentUser = null;
             
