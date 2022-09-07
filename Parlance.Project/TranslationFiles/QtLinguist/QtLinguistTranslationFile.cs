@@ -44,7 +44,7 @@ public class QtLinguistTranslationFile : ParlanceTranslationFile, IParlanceDualT
         var xmlDoc = XDocument.Parse(fileContents);
         Entries = xmlDoc.Descendants("message").Select(msg => new QtLinguistTranslationFileEntry
         {
-            RealKey = (string)msg.Element("source")!,
+            RealKey = (string)msg.Element("source")! + "-" + (string)msg.Parent!.Element("name")!,
             Context = ((string)msg.Parent!.Element("name"))!,
             Source = (string)msg.Element("source")!,
             Translation = msg.Attribute("numerus")?.Value == "yes"
@@ -102,7 +102,7 @@ public class QtLinguistTranslationFile : ParlanceTranslationFile, IParlanceDualT
                             ((QtLinguistTranslationFileEntry)entry).Locations.Select(location =>
                                 new XElement("location", new XAttribute("filename", location.Filename),
                                     new XAttribute("line", location.Line))),
-                            new XElement("source", new XText(((QtLinguistTranslationFileEntry)entry).RealKey))
+                            new XElement("source", new XText(((QtLinguistTranslationFileEntry)entry).Source))
                         ))
                     )
                 )
