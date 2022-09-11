@@ -8,12 +8,14 @@
     padding-top: 6px;
 
     margin-bottom: 9px;
+    align-items: center;
 }
 
 .buttonBox {
     display: flex;
     justify-content: flex-end;
     gap: 6px;
+    align-items: center;
 }
 
 .border {
@@ -22,9 +24,13 @@
     background-color: var(--border-color);
 }
 
-.commitContainer {
+.commitAligner {
     display: flex;
     justify-content: flex-end;
+}
+
+.commitContainer {
+    display: flex;
     gap: 6px;
 }
 
@@ -34,4 +40,9 @@
 
 .commitIdentifier {
     color: var(--foreground-disabled-color);
+}
+
+.commitFileChange {
+    color: var(--foreground-disabled-color);
+    font-family: var(--fixed-font);
 }

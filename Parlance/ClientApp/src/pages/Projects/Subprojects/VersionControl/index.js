@@ -10,6 +10,7 @@ import SmallButton from "../../../../components/SmallButton";
 import Modal from "../../../../components/Modal";
 import LoadingModal from "../../../../components/modals/LoadingModal";
 import ErrorModal from "../../../../components/modals/ErrorModal";
+import {VerticalLayout} from "../../../../components/Layouts";
 
 function Commit({commit}) {
     return <div className={Styles.commitContainer}>
@@ -37,33 +38,156 @@ export default function VersionControl() {
         </div>
     }
 
+    const fetch = async () => {
+        Modal.mount(<LoadingModal/>);
+        try {
+            await Fetch.post(`/api/projects/${project}/vcs/fetch`, {});
+            await updateVcs();
+            Modal.unmount();
+        } catch (err) {
+            Modal.mount(<ErrorModal error={err}/>);
+        }
+    }
+
+    const pull = async () => {
+        Modal.mount(<LoadingModal/>);
+
+        try {
+            await Fetch.post(`/api/projects/${project}/vcs/pull`);
+            await updateVcs();
+            Modal.unmount();
+        } catch (err) {
+            Modal.mount(<ErrorModal error={err} specialRenderings={{
+                "DirtyWorkingTree": <Modal buttons={[
+                    Modal.CancelButton,
+                    {
+                        text: t("VCS_DISCARD_UNCOMMITTED_CHANGES"),
+                        onClick: () => {
+
+                        },
+                        destructive: true
+                    },
+                    {
+                        text: t("VCS_CREATE_COMMIT"),
+                        onClick: commit
+                    }
+                ]}>
+                    <VerticalLayout>
+                        <span>{t("ERROR_DIRTY_WORKING_TREE")}</span>
+                    </VerticalLayout>
+                </Modal>
+            }}/>)
+        }
+    }
+
+    const push = async () => {
+        Modal.mount(<LoadingModal/>);
+
+        try {
+            await Fetch.post(`/api/projects/${project}/vcs/push`);
+            await updateVcs();
+            Modal.unmount();
+        } catch (err) {
+            Modal.mount(<ErrorModal error={err} specialRenderings={{
+                "NonFastForwardableError": <Modal buttons={[
+                    Modal.CancelButton,
+                    {
+                        text: t("VCS_PULL"),
+                        onClick: pull
+                    }
+                ]}>
+                    <VerticalLayout>
+                        <span>{t("ERROR_NON_FAST_FORWARDABLE")}</span>
+                    </VerticalLayout>
+                </Modal>
+            }}/>)
+        }
+    }
+
+    const commit = () => {
+        if (vcsState.changedFiles.length === 0) {
+            Modal.mount(<Modal heading={t("VCS_NOTHING_TO_COMMIT")} buttons={[Modal.OkButton]}>
+                <VerticalLayout>
+                    <span>{t("VCS_NOTHING_TO_COMMIT_PROMPT")}</span>
+                </VerticalLayout>
+            </Modal>);
+            return;
+        }
+
+        Modal.mount(<Modal heading={t("VCS_COMMIT")} buttons={[
+            Modal.CancelButton,
+            {
+                text: t("VCS_CREATE_COMMIT"),
+                onClick: async () => {
+                    Modal.mount(<LoadingModal/>);
+
+                    try {
+                        let commit = await Fetch.post(`/api/projects/${project}/vcs/commit`);
+                        await updateVcs();
+                        Modal.mount(<Modal heading={t("VCS_CREATED_COMMIT")} buttons={[
+                            {
+                                text: t("DONE"),
+                                onClick: () => Modal.unmount()
+                            },
+                            {
+                                text: t("VCS_PUSH"),
+                                onClick: push
+                            }
+                        ]}>
+                            <VerticalLayout>
+                                <span>{t("VCS_CREATED_COMMIT_PROMPT")}</span>
+                                <Commit commit={commit}/>
+                            </VerticalLayout>
+                        </Modal>)
+                    } catch (err) {
+                        Modal.mount(<ErrorModal error={err}/>)
+                    }
+                }
+            }
+        ]}>
+            <VerticalLayout>
+                <span>{t("VCS_COMMIT_PROMPT", {count: vcsState.changedFiles.length})}</span>
+                <VerticalLayout>
+                    {vcsState.changedFiles.map(file => <span key={file}
+                                                             className={Styles.commitFileChange}>{file}</span>)}
+                </VerticalLayout>
+            </VerticalLayout>
+        </Modal>)
+    }
+
     return <div>
         <Container>
-            <PageHeading level={3}>{t("Git")}</PageHeading>
+            <PageHeading level={3}>{t("VCS_GIT")}</PageHeading>
             <div className={Styles.infoGrid}>
-                <span>{t("Last Local Commit")}</span>
-                <Commit commit={vcsState.latestLocalCommit}/>
-                <div className={Styles.border}/>
-
-                <span>{t("Last Remote Commit")}</span>
-                <Commit commit={vcsState.latestRemoteCommit}/>
-                <div className={Styles.border}/>
-
-                <span>{t("Incoming Commits")}</span>
-                <div className={Styles.buttonBox}>
-                    <SmallButton>{t("Pull {{count}} commits", {count: vcsState.behind})}</SmallButton>
+                <span>{t("VCS_LAST_LOCAL_COMMIT")}</span>
+                <div className={Styles.commitAligner}>
+                    <Commit commit={vcsState.latestLocalCommit}/>
                 </div>
                 <div className={Styles.border}/>
 
-                <span>{t("Uncommitted Changes")}</span>
+                <span>{t("VCS_LAST_REMOTE_COMMIT")}</span>
                 <div className={Styles.buttonBox}>
-                    <SmallButton>{t("Commit {{count}} files", {count: vcsState.changedFiles.length})}</SmallButton>
+                    <Commit commit={vcsState.latestRemoteCommit}/>
+                    <SmallButton onClick={fetch}>{t("VCS_FETCH")}</SmallButton>
                 </div>
                 <div className={Styles.border}/>
 
-                <span>{t("Outgoing Commits")}</span>
+                <span>{t("VCS_INCOMING_COMMITS")}</span>
                 <div className={Styles.buttonBox}>
-                    <SmallButton>{t("Push {{count}} commits", {count: vcsState.ahead})}</SmallButton>
+                    <SmallButton onClick={pull}>{t("VCS_INCOMING_COMMITS_PULL", {count: vcsState.behind})}</SmallButton>
+                </div>
+                <div className={Styles.border}/>
+
+                <span>{t("VCS_UNCOMMITTED_CHANGES")}</span>
+                <div className={Styles.buttonBox}>
+                    <SmallButton
+                        onClick={commit}>{t("VCS_UNCOMMITTED_CHANGES_COMMIT", {count: vcsState.changedFiles.length})}</SmallButton>
+                </div>
+                <div className={Styles.border}/>
+
+                <span>{t("VCS_OUTGOING_COMMITS")}</span>
+                <div className={Styles.buttonBox}>
+                    <SmallButton onClick={push}>{t("VCS_OUTGOING_COMMITS_PUSH", {count: vcsState.ahead})}</SmallButton>
                 </div>
                 <div className={Styles.border}/>
             </div>
@@ -72,35 +196,20 @@ export default function VersionControl() {
             <PageHeading level={3}>{t("ACTIONS")}</PageHeading>
             <SelectableList items={[
                 {
-                    contents: t("Fetch"),
-                    onClick: async () => {
-                        Modal.mount(<LoadingModal/>);
-                        try {
-                            await Fetch.post(`/api/projects/${project}/vcs/fetch`, {});
-                            await updateVcs();
-                            Modal.unmount();
-                        } catch (err) {
-                            Modal.mount(<ErrorModal error={err}/>);
-                        }
-                    }
+                    contents: t("VCS_FETCH"),
+                    onClick: fetch
                 },
                 {
-                    contents: t("Pull"),
-                    onClick: () => {
-
-                    }
+                    contents: t("VCS_PULL"),
+                    onClick: pull
                 },
                 {
-                    contents: t("Commit"),
-                    onClick: () => {
-
-                    }
+                    contents: t("VCS_COMMIT"),
+                    onClick: commit
                 },
                 {
-                    contents: t("Push"),
-                    onClick: () => {
-
-                    }
+                    contents: t("VCS_PUSH"),
+                    onClick: push
                 }
             ]}/>
         </Container>

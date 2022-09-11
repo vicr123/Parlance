@@ -3,18 +3,24 @@ import Modal from "../Modal";
 import {VerticalLayout} from "../Layouts";
 import {useEffect, useState} from "react";
 
-export default function ErrorModal({error, onContinue}) {
+export default function ErrorModal({error, onContinue, specialRenderings}) {
     const {t} = useTranslation();
     const [message, setMessage] = useState(t("ERROR_GENERIC"));
-    
+    const [specialRendering, setSpecialRendering] = useState(null);
+
     useEffect(() => {
         (async () => {
             try {
                 if (!error) return;
-                
+
                 let json = await error.json();
                 let jsonError = json.error;
-                
+
+                if (specialRenderings && specialRenderings[jsonError]) {
+                    setSpecialRendering(specialRenderings[jsonError])
+                    return;
+                }
+
                 switch (jsonError) {
                     case "UnknownUser":
                         setMessage(t("ERROR_UNKNOWN_USER"))
@@ -37,13 +43,24 @@ export default function ErrorModal({error, onContinue}) {
                     case "TwoFactorCodeIncorrect":
                         setMessage(t("ERROR_TWO_FACTOR_INCORRECT"))
                         return;
+                    case "NonFastForwardableError":
+                        setMessage(t("ERROR_NON_FAST_FORWARDABLE"))
+                        return;
+                    case "MergeConflict":
+                        setMessage(t("ERROR_MERGE_CONFLICT"))
+                        return;
+                    case "DirtyWorkingTree":
+                        setMessage(t("ERROR_DIRTY_WORKING_TREE"))
+                        return;
                 }
             } catch {
-                
+
             }
         })();
     }, [error])
-    
+
+    if (specialRendering) return specialRendering;
+
     return <Modal buttons={[{
         text: t("OK"),
         onClick: () => {

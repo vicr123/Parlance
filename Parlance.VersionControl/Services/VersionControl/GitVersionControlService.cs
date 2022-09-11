@@ -5,6 +5,7 @@ namespace Parlance.VersionControl.Services.VersionControl;
 
 public class GitVersionControlService : IVersionControlService
 {
+    private readonly Identity _identity = new("Parlance", "parlance@vicr123.com");
     private readonly IRemoteCommunicationService _remoteCommunicationService;
 
     public GitVersionControlService(IRemoteCommunicationService remoteCommunicationService)
@@ -22,7 +23,7 @@ public class GitVersionControlService : IVersionControlService
         return Task.Run(() => UpdateVersionControlMetadataCore(project));
     }
 
-    public Task SaveChangesToVersionControl(IParlanceProject project)
+    public Task<VersionControlCommit?> SaveChangesToVersionControl(IParlanceProject project)
     {
         return Task.Run(() => SaveChangesToVersionControlCore(project));
     }
@@ -30,6 +31,11 @@ public class GitVersionControlService : IVersionControlService
     public Task PublishSavedChangesToSource(IParlanceProject project)
     {
         return Task.Run(() => PublishSavedChangesToSourceCore(project));
+    }
+
+    public Task ReconcileRemoteWithLocal(IParlanceProject project)
+    {
+        return Task.Run(() => ReconcileRemoteWithLocalCore(project));
     }
 
     public VersionControlStatus VersionControlStatus(IParlanceProject project)
@@ -44,6 +50,46 @@ public class GitVersionControlService : IVersionControlService
             Behind = repo.Head.TrackingDetails.BehindBy.GetValueOrDefault(),
             ChangedFiles = repo.RetrieveStatus().Select(x => x.FilePath)
         };
+    }
+
+    private void ReconcileRemoteWithLocalCore(IParlanceProject project)
+    {
+        using var repo = new Repository(project.VcsDirectory);
+        if (repo.RetrieveStatus().IsDirty) throw new DirtyWorkingTreeException();
+
+        //Attempt to reconcile the remote by rebasing
+        //If that fails (i.e. merge conflict) reconcile the remote by merging
+        //If that still fails, fail the operation
+
+        try
+        {
+            ReconcileRemoteWithLocalCoreRebase(repo);
+        }
+        catch (MergeConflictException ex)
+        {
+            ReconcileRemoteWithLocalCoreMerge(repo);
+        }
+    }
+
+    private void ReconcileRemoteWithLocalCoreRebase(Repository repo)
+    {
+        var rebaseResult = repo.Rebase.Start(repo.Head, repo.Head.TrackedBranch, null, _identity, new RebaseOptions());
+        if (rebaseResult.Status is RebaseStatus.Conflicts or RebaseStatus.Stop)
+        {
+            repo.Rebase.Abort();
+            throw new MergeConflictException();
+        }
+    }
+
+    private void ReconcileRemoteWithLocalCoreMerge(Repository repo)
+    {
+        var tip = repo.Head.Tip;
+        var mergeResult = repo.Merge(repo.Head.TrackedBranch, new Signature(_identity, DateTimeOffset.Now));
+        if (mergeResult.Status == MergeStatus.Conflicts)
+        {
+            repo.Reset(ResetMode.Hard, tip);
+            throw new MergeConflictException();
+        }
     }
 
     private void UpdateVersionControlMetadataCore(IParlanceProject project)
@@ -108,20 +154,21 @@ public class GitVersionControlService : IVersionControlService
         }
     }
 
-    private void SaveChangesToVersionControlCore(IParlanceProject project)
+    private VersionControlCommit? SaveChangesToVersionControlCore(IParlanceProject project)
     {
         using var repo = new Repository(project.VcsDirectory);
         var status = repo.RetrieveStatus();
 
-        if (!status.IsDirty) return;
+        if (!status.IsDirty) return null;
 
         Commands.Stage(repo, "*");
 
         // TODO: Allow customizing the author of the committer
         // TODO: Express actual translation authors through Author
-        var signature = new Signature("Parlance", "parlance@vicr123.com", DateTimeOffset.Now);
+        var signature = new Signature(_identity, DateTimeOffset.Now);
 
-        repo.Commit("Update Translations", signature, signature);
+        var commit = repo.Commit("Update Translations", signature, signature);
+        return new VersionControlCommit(commit);
     }
 
     private void PublishSavedChangesToSourceCore(IParlanceProject project)

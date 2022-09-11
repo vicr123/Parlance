@@ -3,6 +3,14 @@ using Parlance.Project;
 
 namespace Parlance.VersionControl.Services.VersionControl;
 
+public class MergeConflictException : Exception
+{
+}
+
+public class DirtyWorkingTreeException : Exception
+{
+}
+
 public class VersionControlCommit
 {
     public VersionControlCommit(Commit commit)
@@ -28,7 +36,8 @@ public interface IVersionControlService
 {
     Task DownloadFromSource(string sourceUrl, string directory, string branch);
     Task UpdateVersionControlMetadata(IParlanceProject project);
-    Task SaveChangesToVersionControl(IParlanceProject project);
+    Task<VersionControlCommit?> SaveChangesToVersionControl(IParlanceProject project);
     Task PublishSavedChangesToSource(IParlanceProject project);
+    Task ReconcileRemoteWithLocal(IParlanceProject project);
     VersionControlStatus VersionControlStatus(IParlanceProject project);
 }

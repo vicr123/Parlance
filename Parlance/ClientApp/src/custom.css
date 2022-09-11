@@ -32,6 +32,8 @@ body {
     --translation-progress-indicator-error: rgb(200, 0, 0);
     --translation-progress-indicator-warning: rgb(200, 100, 0);
 
+    --fixed-font: 'JetBrains Mono', monospace;
+
     background-color: var(--background-color);
     color: var(--foreground-color);
 
@@ -58,7 +60,7 @@ a {
 }
 
 code {
-    font-family: 'JetBrains Mono', monospace;
+    font-family: var(--fixed-font);
 }
 
 input[type=text], input[type=password] {

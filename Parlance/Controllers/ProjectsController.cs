@@ -169,6 +169,43 @@ public class ProjectsController : Controller
 
             return NoContent();
         }
+        catch (LibGit2SharpException ex)
+        {
+            return this.ClientError(ParlanceClientError.GitError, ex.Message);
+        }
+        catch (ProjectNotFoundException)
+        {
+            return NotFound();
+        }
+    }
+
+
+    [HttpPost]
+    [Authorize(Policy = "ProjectManager")]
+    [Route("{project}/vcs/pull")]
+    public async Task<IActionResult> PullFromVcs(string project)
+    {
+        try
+        {
+            var p = await _projectService.ProjectBySystemName(project);
+            var proj = p.GetParlanceProject();
+
+            await _versionControlService.ReconcileRemoteWithLocal(proj);
+
+            return NoContent();
+        }
+        catch (MergeConflictException)
+        {
+            return this.ClientError(ParlanceClientError.MergeConflict);
+        }
+        catch (DirtyWorkingTreeException)
+        {
+            return this.ClientError(ParlanceClientError.DirtyWorkingTree);
+        }
+        catch (LibGit2SharpException ex)
+        {
+            return this.ClientError(ParlanceClientError.GitError, ex.Message);
+        }
         catch (ProjectNotFoundException)
         {
             return NotFound();
@@ -189,6 +226,14 @@ public class ProjectsController : Controller
 
             return NoContent();
         }
+        catch (NonFastForwardException)
+        {
+            return this.ClientError(ParlanceClientError.NonFastForwardableError);
+        }
+        catch (LibGit2SharpException ex)
+        {
+            return this.ClientError(ParlanceClientError.GitError, ex.Message);
+        }
         catch (ProjectNotFoundException)
         {
             return NotFound();
@@ -205,8 +250,14 @@ public class ProjectsController : Controller
             var p = await _projectService.ProjectBySystemName(project);
             var proj = p.GetParlanceProject();
 
-            await _versionControlService.SaveChangesToVersionControl(proj);
-            return NoContent();
+            var commit = await _versionControlService.SaveChangesToVersionControl(proj);
+            if (commit is null) return BadRequest();
+
+            return Json(commit);
+        }
+        catch (LibGit2SharpException ex)
+        {
+            return this.ClientError(ParlanceClientError.GitError, ex.Message);
         }
         catch (ProjectNotFoundException)
         {

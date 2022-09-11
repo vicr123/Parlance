@@ -11,12 +11,16 @@ public enum ParlanceClientError
     TwoFactorIsDisabled,
     TwoFactorAlreadyEnabled,
     TwoFactorAlreadyDisabled,
-    TwoFactorCodeIncorrect
+    TwoFactorCodeIncorrect,
+    NonFastForwardableError,
+    MergeConflict,
+    DirtyWorkingTree
 }
 
 public static class ControllerExtensions
 {
-    public static BadRequestObjectResult ClientError(this Controller controller, ParlanceClientError errorType, object? extraData = null)
+    public static BadRequestObjectResult ClientError(this Controller controller, ParlanceClientError errorType,
+        object? extraData = null)
     {
         return controller.BadRequest(new
         {
