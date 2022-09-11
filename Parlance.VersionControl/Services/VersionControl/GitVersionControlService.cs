@@ -1,8 +1,7 @@
 using LibGit2Sharp;
-using Microsoft.Extensions.Logging;
 using Parlance.Project;
 
-namespace Parlance.VersionControl.Services;
+namespace Parlance.VersionControl.Services.VersionControl;
 
 public class GitVersionControlService : IVersionControlService
 {
@@ -14,7 +13,49 @@ public class GitVersionControlService : IVersionControlService
     }
 
     public Task DownloadFromSource(string cloneUrl, string directory, string branch)
-        => Task.Run(() => DownloadFromSourceCore(cloneUrl, directory, branch));
+    {
+        return Task.Run(() => DownloadFromSourceCore(cloneUrl, directory, branch));
+    }
+
+    public Task UpdateVersionControlMetadata(IParlanceProject project)
+    {
+        return Task.Run(() => UpdateVersionControlMetadataCore(project));
+    }
+
+    public Task SaveChangesToVersionControl(IParlanceProject project)
+    {
+        return Task.Run(() => SaveChangesToVersionControlCore(project));
+    }
+
+    public Task PublishSavedChangesToSource(IParlanceProject project)
+    {
+        return Task.Run(() => PublishSavedChangesToSourceCore(project));
+    }
+
+    public VersionControlStatus VersionControlStatus(IParlanceProject project)
+    {
+        using var repo = new Repository(project.VcsDirectory);
+
+        return new VersionControlStatus
+        {
+            LatestLocalCommit = new VersionControlCommit(repo.Head.Tip),
+            LatestRemoteCommit = new VersionControlCommit(repo.Head.TrackedBranch.Tip),
+            Ahead = repo.Head.TrackingDetails.AheadBy.GetValueOrDefault(),
+            Behind = repo.Head.TrackingDetails.BehindBy.GetValueOrDefault(),
+            ChangedFiles = repo.RetrieveStatus().Select(x => x.FilePath)
+        };
+    }
+
+    private void UpdateVersionControlMetadataCore(IParlanceProject project)
+    {
+        using var repo = new Repository(project.VcsDirectory);
+        repo.Network.Fetch("origin",
+            repo.Network.Remotes["origin"].FetchRefSpecs.Select(refspec => refspec.Specification), new FetchOptions
+            {
+                CredentialsProvider = _remoteCommunicationService.CredentialsHandler,
+                CertificateCheck = _remoteCommunicationService.CertificateCheckHandler
+            });
+    }
 
     private void DownloadFromSourceCore(string cloneUrl, string directory, string branch)
     {
@@ -26,10 +67,7 @@ public class GitVersionControlService : IVersionControlService
                     CredentialsProvider = _remoteCommunicationService.CredentialsHandler,
                     CertificateCheck = _remoteCommunicationService.CertificateCheckHandler,
                     IsBare = false,
-                    OnTransferProgress = progress =>
-                    {
-                        return true;
-                    }
+                    OnTransferProgress = progress => { return true; }
                 });
 
             using var repo = new Repository(repoPath);
@@ -68,21 +106,14 @@ public class GitVersionControlService : IVersionControlService
 
             throw;
         }
-
     }
-
-    public Task SaveChangesToVersionControl(IParlanceProject project)
-        => Task.Run(() => SaveChangesToVersionControlCore(project));
 
     private void SaveChangesToVersionControlCore(IParlanceProject project)
     {
-        var repo = new Repository(project.VcsDirectory);
+        using var repo = new Repository(project.VcsDirectory);
         var status = repo.RetrieveStatus();
 
-        if (!status.IsDirty)
-        {
-            return;
-        }
+        if (!status.IsDirty) return;
 
         Commands.Stage(repo, "*");
 
@@ -93,21 +124,14 @@ public class GitVersionControlService : IVersionControlService
         repo.Commit("Update Translations", signature, signature);
     }
 
-    public Task PublishSavedChangesToSource(IParlanceProject project)
-        => Task.Run(() => PublishSavedChangesToSourceCore(project));
-
     private void PublishSavedChangesToSourceCore(IParlanceProject project)
     {
         var repo = new Repository(project.VcsDirectory);
         var branch = repo.Head;
-        /*var config = Configuration.BuildFrom(Path.Join(project.VcsDirectory, ".git", "config"));
-        config.
-        repo.Network.Push(branch.up)*/
         repo.Network.Push(branch, new PushOptions
-        { 
+        {
             CredentialsProvider = _remoteCommunicationService.CredentialsHandler,
-            CertificateCheck = _remoteCommunicationService.CertificateCheckHandler,
+            CertificateCheck = _remoteCommunicationService.CertificateCheckHandler
         });
     }
-
 }

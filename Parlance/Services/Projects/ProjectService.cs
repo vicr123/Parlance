@@ -3,24 +3,25 @@ using Parlance.Database;
 using Parlance.Project;
 using Parlance.Project.Index;
 using Parlance.VersionControl.Services;
+using Parlance.VersionControl.Services.VersionControl;
 
 namespace Parlance.Services.Projects;
 
 public class ProjectService : IProjectService
 {
+    private readonly ParlanceContext _dbContext;
+    private readonly IParlanceIndexingService _indexingService;
+    private readonly ILogger<ProjectService> _logger;
     private readonly IOptions<ParlanceOptions> _parlanceOptions;
     private readonly IRemoteCommunicationService _remoteCommunicationService;
-    private readonly IParlanceIndexingService _indexingService;
-    private readonly ParlanceContext _dbContext;
     private readonly IVersionControlService _versionControlService;
-    private readonly ILogger<ProjectService> _logger;
 
     public ProjectService(IOptions<ParlanceOptions> parlanceOptions,
-                          IRemoteCommunicationService remoteCommunicationService,
-                          IParlanceIndexingService indexingService,
-                          ParlanceContext dbContext,
-                          IVersionControlService versionControlService,
-                          ILogger<ProjectService> logger)
+        IRemoteCommunicationService remoteCommunicationService,
+        IParlanceIndexingService indexingService,
+        ParlanceContext dbContext,
+        IVersionControlService versionControlService,
+        ILogger<ProjectService> logger)
     {
         _parlanceOptions = parlanceOptions;
         _remoteCommunicationService = remoteCommunicationService;
@@ -46,7 +47,7 @@ public class ProjectService : IProjectService
             try
             {
                 _logger.LogError(ex, "Error registering repository. Deleting directory {Directory}", directoryPath);
-                Directory.Delete(directoryPath, recursive: true);
+                Directory.Delete(directoryPath, true);
             }
             catch
             {
@@ -74,6 +75,7 @@ public class ProjectService : IProjectService
             TryDeleteDirectory(ex, directory);
             throw;
         }
+
         _dbContext.Projects.Add(project);
 
         await _dbContext.SaveChangesAsync();

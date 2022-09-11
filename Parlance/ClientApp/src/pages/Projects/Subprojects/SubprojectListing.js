@@ -1,4 +1,4 @@
-import {useEffect, useState} from "react";
+import React, {useEffect, useState} from "react";
 import {useNavigate, useParams} from "react-router-dom";
 import Fetch from "../../../helpers/Fetch";
 import Container from "../../../components/Container";
@@ -24,9 +24,10 @@ export default function SubprojectListing(props) {
         <Container>
             <PageHeading level={3}>Available Subprojects</PageHeading>
             <SelectableList items={projectData?.subprojects?.map(p => ({
-                contents: <TranslationProgressIndicator title={i18n.humanReadableLocale(p.name)} data={p.completionData} />,
+                contents: <TranslationProgressIndicator title={i18n.humanReadableLocale(p.name)}
+                                                        data={p.completionData}/>,
                 onClick: () => navigate(p.systemName)
-            }))} />
+            }))}/>
         </Container>
     </div>
 }

@@ -1,4 +1,4 @@
-namespace Parlance.VersionControl.Services;
+namespace Parlance.VersionControl.Services.SshKeyManagement;
 
 public interface ISshKeyManagementService
 {

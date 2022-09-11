@@ -33,10 +33,8 @@ builder.Services.Configure<ParlanceOptions>(builder.Configuration.GetSection("Pa
 
 builder.Services.AddDbContext<ParlanceContext>(options =>
 {
-    options.UseNpgsql(builder.Configuration.GetSection("Parlance")["DatabaseConnectionString"], optionsBuilder =>
-    {
-        optionsBuilder.EnableRetryOnFailure();
-    });
+    options.UseNpgsql(builder.Configuration.GetSection("Parlance")["DatabaseConnectionString"],
+        optionsBuilder => { optionsBuilder.EnableRetryOnFailure(); });
 });
 
 builder.Services.AddScoped<IAuthorizationHandler, LanguageEditorHandler>();
@@ -46,6 +44,9 @@ builder.Services.AddAuthorizationCore(options =>
 {
     options.AddPolicy("LanguageEditor", policy => policy.Requirements.Add(new LanguageEditorRequirement()));
     options.AddPolicy("Superuser", policy => policy.Requirements.Add(new SuperuserRequirement()));
+
+    //TODO
+    options.AddPolicy("ProjectManager", policy => policy.Requirements.Add(new SuperuserRequirement()));
 });
 
 var app = builder.Build();

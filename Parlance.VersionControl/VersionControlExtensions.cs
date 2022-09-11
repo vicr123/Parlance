@@ -1,6 +1,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Parlance.VersionControl.Services;
+using Parlance.VersionControl.Services.SshKeyManagement;
+using Parlance.VersionControl.Services.VersionControl;
 
 namespace Parlance.VersionControl;
 

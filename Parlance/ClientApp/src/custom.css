@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono&display=swap');
+
 @font-face {
     font-family: 'Contemporary';
     font-style: normal;
@@ -12,24 +14,24 @@ body {
 
     --foreground-color: white;
     --background-color: rgb(40, 40, 40);
-    
+
     --foreground-disabled-color: rgba(255, 255, 255, 0.5);
 
     --active-color: #0064c8;
     --border-color: #505050;
-    --footer-color: rgba(0,100,200,0.3);
+    --footer-color: rgba(0, 100, 200, 0.3);
     --hover-color: #144678;
-    
+
     --destructive-color: rgba(255, 0, 0, 0.3);
     --destructive-hover-color: rgba(255, 0, 0, 0.5);
     --destructive-active-color: rgba(255, 0, 0, 0.7);
 
     --content-width: 900px;
-    
+
     --translation-progress-indicator-complete: rgb(0, 150, 0);
     --translation-progress-indicator-error: rgb(200, 0, 0);
     --translation-progress-indicator-warning: rgb(200, 100, 0);
-    
+
     background-color: var(--background-color);
     color: var(--foreground-color);
 
@@ -46,7 +48,7 @@ body {
 
         --active-color: #00c8ff;
         --border-color: #b4b4b4;
-        --footer-color: rgba(0,100,200,0.3);
+        --footer-color: rgba(0, 100, 200, 0.3);
         --hover-color: #64c8ff;
     }
 }
@@ -56,13 +58,7 @@ a {
 }
 
 code {
-    color: #E01A76;
-}
-
-.btn-primary {
-    color: #fff;
-    background-color: #1b6ec2;
-    border-color: #1861ac;
+    font-family: 'JetBrains Mono', monospace;
 }
 
 input[type=text], input[type=password] {

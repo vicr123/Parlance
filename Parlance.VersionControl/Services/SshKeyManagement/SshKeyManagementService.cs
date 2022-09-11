@@ -7,7 +7,7 @@ using Parlance.Database;
 using Parlance.Database.Models;
 using Parlance.VersionControl.Ssh;
 
-namespace Parlance.VersionControl.Services;
+namespace Parlance.VersionControl.Services.SshKeyManagement;
 
 public class SshKeyManagementService : ISshKeyManagementService
 {
@@ -30,14 +30,18 @@ public class SshKeyManagementService : ISshKeyManagementService
         var keygen = new Ed25519KeyPairGenerator();
         keygen.Init(new KeyGenerationParameters(new SecureRandom(), 255));
         var keyPair = keygen.GenerateKeyPair();
-        
+
         var privateKey = (Ed25519PrivateKeyParameters)keyPair.Private;
         var publicKey = (Ed25519PublicKeyParameters)keyPair.Public;
-        
+
         _dbContext.Add(new SshKey
         {
-            SshKeyContents = "ssh-ed25519 " + Convert.ToBase64String(await SshWriter.EncodePublicKey(publicKey)) + " Parlance",
-            SshPrivateKeyContents = "-----BEGIN OPENSSH PRIVATE KEY-----\n" + string.Concat(Convert.ToBase64String(await SshWriter.EncodePrivateKey(privateKey)).Select((c, i) => i > 0 && i % 70 == 0 ? c.ToString() : c + "\n")) + "\n-----END OPENSSH PRIVATE KEY-----"
+            SshKeyContents = "ssh-ed25519 " + Convert.ToBase64String(await SshWriter.EncodePublicKey(publicKey)) +
+                             " Parlance",
+            SshPrivateKeyContents = "-----BEGIN OPENSSH PRIVATE KEY-----\n" +
+                                    string.Concat(Convert.ToBase64String(await SshWriter.EncodePrivateKey(privateKey))
+                                        .Select((c, i) => i > 0 && i % 70 == 0 ? c.ToString() : c + "\n")) +
+                                    "\n-----END OPENSSH PRIVATE KEY-----"
         });
 
         await _dbContext.SaveChangesAsync();

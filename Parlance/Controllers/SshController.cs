@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Parlance.VersionControl.Services;
+using Parlance.VersionControl.Services.SshKeyManagement;
 
 namespace Parlance.Controllers;
 
@@ -20,7 +20,7 @@ public class SshController : Controller
     public async Task<IActionResult> GetSshPublicKey()
     {
         if (!await _sshKeyManagementService.SshKeyIsGenerated()) return NotFound();
-        
+
         return Json(new
         {
             PublicKey = await _sshKeyManagementService.SshPublicKey()
@@ -32,9 +32,9 @@ public class SshController : Controller
     public async Task<IActionResult> GenerateSshPublicKey()
     {
         if (await _sshKeyManagementService.SshKeyIsGenerated()) return Conflict();
-        
+
         await _sshKeyManagementService.GenerateNewSshKey();
-        
+
         return Json(new
         {
             PublicKey = await _sshKeyManagementService.SshPublicKey()

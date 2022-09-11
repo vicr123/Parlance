@@ -10,7 +10,7 @@ using Parlance.Project.Index;
 using Parlance.Project.TranslationFiles;
 using Parlance.Services.Permissions;
 using Parlance.Services.Projects;
-using Parlance.VersionControl.Services;
+using Parlance.VersionControl.Services.VersionControl;
 using Parlance.Vicr123Accounts.Authentication;
 
 namespace Parlance.Controllers;
@@ -20,14 +20,14 @@ namespace Parlance.Controllers;
 public class ProjectsController : Controller
 {
     private readonly IParlanceIndexingService _indexingService;
-    private readonly IVersionControlService _versionControlService;
     private readonly IPermissionsService _permissionsService;
     private readonly IProjectService _projectService;
+    private readonly IVersionControlService _versionControlService;
 
     public ProjectsController(IProjectService projectService,
-                              IPermissionsService permissionsService,
-                              IParlanceIndexingService indexingService,
-                              IVersionControlService versionControlService)
+        IPermissionsService permissionsService,
+        IParlanceIndexingService indexingService,
+        IVersionControlService versionControlService)
     {
         _projectService = projectService;
         _permissionsService = permissionsService;
@@ -120,7 +120,7 @@ public class ProjectsController : Controller
 
 
     [HttpPost]
-    [Authorize(Policy = "Superuser")]
+    [Authorize(Policy = "ProjectManager")]
     [Route("{project}/reindex")]
     public async Task<IActionResult> ReindexProject(string project)
     {
@@ -138,9 +138,45 @@ public class ProjectsController : Controller
         }
     }
 
+    [HttpGet]
+    [Authorize(Policy = "ProjectManager")]
+    [Route("{project}/vcs")]
+    public async Task<IActionResult> GetVcsDetails(string project)
+    {
+        try
+        {
+            var p = await _projectService.ProjectBySystemName(project);
+            var proj = p.GetParlanceProject();
+            return Json(_versionControlService.VersionControlStatus(proj));
+        }
+        catch (ProjectNotFoundException)
+        {
+            return NotFound();
+        }
+    }
 
     [HttpPost]
-    [Authorize(Policy = "Superuser")]
+    [Authorize(Policy = "ProjectManager")]
+    [Route("{project}/vcs/fetch")]
+    public async Task<IActionResult> FetchFromVcs(string project)
+    {
+        try
+        {
+            var p = await _projectService.ProjectBySystemName(project);
+            var proj = p.GetParlanceProject();
+
+            await _versionControlService.UpdateVersionControlMetadata(proj);
+
+            return NoContent();
+        }
+        catch (ProjectNotFoundException)
+        {
+            return NotFound();
+        }
+    }
+
+    [HttpPost]
+    [Authorize(Policy = "ProjectManager")]
     [Route("{project}/vcs/push")]
     public async Task<IActionResult> PushProjectToVcs(string project)
     {
@@ -160,7 +196,7 @@ public class ProjectsController : Controller
     }
 
     [HttpPost]
-    [Authorize(Policy = "Superuser")]
+    [Authorize(Policy = "ProjectManager")]
     [Route("{project}/vcs/commit")]
     public async Task<IActionResult> CommitProjectToVcs(string project)
     {

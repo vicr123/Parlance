@@ -12,7 +12,7 @@
 
     <ItemGroup>
       <PackageReference Include="BouncyCastle" Version="1.8.9" NoWarn="NU1701" />
-      <PackageReference Include="libgit2sharp-native" Version="0.27.0-preview-0191-gc6bd3683c0" />
+      <PackageReference Include="libgit2sharp-native" Version="0.27.0-preview-0192-g8127855d5f" />
     </ItemGroup>
 
     <ItemGroup>
