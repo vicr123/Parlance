@@ -10,7 +10,6 @@ using Parlance.Project.Index;
 using Parlance.Project.TranslationFiles;
 using Parlance.Services.Permissions;
 using Parlance.Services.Projects;
-using Parlance.VersionControl.Services.VersionControl;
 using Parlance.Vicr123Accounts.Authentication;
 
 namespace Parlance.Controllers;
@@ -22,17 +21,14 @@ public class ProjectsController : Controller
     private readonly IParlanceIndexingService _indexingService;
     private readonly IPermissionsService _permissionsService;
     private readonly IProjectService _projectService;
-    private readonly IVersionControlService _versionControlService;
 
     public ProjectsController(IProjectService projectService,
         IPermissionsService permissionsService,
-        IParlanceIndexingService indexingService,
-        IVersionControlService versionControlService)
+        IParlanceIndexingService indexingService)
     {
         _projectService = projectService;
         _permissionsService = permissionsService;
         _indexingService = indexingService;
-        _versionControlService = versionControlService;
     }
 
     [HttpGet]
@@ -131,133 +127,6 @@ public class ProjectsController : Controller
 
             await _indexingService.IndexProject(proj);
             return NoContent();
-        }
-        catch (ProjectNotFoundException)
-        {
-            return NotFound();
-        }
-    }
-
-    [HttpGet]
-    [Authorize(Policy = "ProjectManager")]
-    [Route("{project}/vcs")]
-    public async Task<IActionResult> GetVcsDetails(string project)
-    {
-        try
-        {
-            var p = await _projectService.ProjectBySystemName(project);
-            var proj = p.GetParlanceProject();
-            return Json(_versionControlService.VersionControlStatus(proj));
-        }
-        catch (ProjectNotFoundException)
-        {
-            return NotFound();
-        }
-    }
-
-    [HttpPost]
-    [Authorize(Policy = "ProjectManager")]
-    [Route("{project}/vcs/fetch")]
-    public async Task<IActionResult> FetchFromVcs(string project)
-    {
-        try
-        {
-            var p = await _projectService.ProjectBySystemName(project);
-            var proj = p.GetParlanceProject();
-
-            await _versionControlService.UpdateVersionControlMetadata(proj);
-
-            return NoContent();
-        }
-        catch (LibGit2SharpException ex)
-        {
-            return this.ClientError(ParlanceClientError.GitError, ex.Message);
-        }
-        catch (ProjectNotFoundException)
-        {
-            return NotFound();
-        }
-    }
-
-
-    [HttpPost]
-    [Authorize(Policy = "ProjectManager")]
-    [Route("{project}/vcs/pull")]
-    public async Task<IActionResult> PullFromVcs(string project)
-    {
-        try
-        {
-            var p = await _projectService.ProjectBySystemName(project);
-            var proj = p.GetParlanceProject();
-
-            await _versionControlService.ReconcileRemoteWithLocal(proj);
-
-            return NoContent();
-        }
-        catch (MergeConflictException)
-        {
-            return this.ClientError(ParlanceClientError.MergeConflict);
-        }
-        catch (DirtyWorkingTreeException)
-        {
-            return this.ClientError(ParlanceClientError.DirtyWorkingTree);
-        }
-        catch (LibGit2SharpException ex)
-        {
-            return this.ClientError(ParlanceClientError.GitError, ex.Message);
-        }
-        catch (ProjectNotFoundException)
-        {
-            return NotFound();
-        }
-    }
-
-    [HttpPost]
-    [Authorize(Policy = "ProjectManager")]
-    [Route("{project}/vcs/push")]
-    public async Task<IActionResult> PushProjectToVcs(string project)
-    {
-        try
-        {
-            var p = await _projectService.ProjectBySystemName(project);
-            var proj = p.GetParlanceProject();
-
-            await _versionControlService.PublishSavedChangesToSource(proj);
-
-            return NoContent();
-        }
-        catch (NonFastForwardException)
-        {
-            return this.ClientError(ParlanceClientError.NonFastForwardableError);
-        }
-        catch (LibGit2SharpException ex)
-        {
-            return this.ClientError(ParlanceClientError.GitError, ex.Message);
-        }
-        catch (ProjectNotFoundException)
-        {
-            return NotFound();
-        }
-    }
-
-    [HttpPost]
-    [Authorize(Policy = "ProjectManager")]
-    [Route("{project}/vcs/commit")]
-    public async Task<IActionResult> CommitProjectToVcs(string project)
-    {
-        try
-        {
-            var p = await _projectService.ProjectBySystemName(project);
-            var proj = p.GetParlanceProject();
-
-            var commit = await _versionControlService.SaveChangesToVersionControl(proj);
-            if (commit is null) return BadRequest();
-
-            return Json(commit);
-        }
-        catch (LibGit2SharpException ex)
-        {
-            return this.ClientError(ParlanceClientError.GitError, ex.Message);
         }
         catch (ProjectNotFoundException)
         {

@@ -1,5 +1,5 @@
 import {useNavigate, useParams} from "react-router-dom";
-import {useEffect, useReducer, useState} from "react";
+import React, {useEffect, useReducer, useState} from "react";
 import Fetch from "../../../../helpers/Fetch";
 import Container from "../../../../components/Container";
 import PageHeading from "../../../../components/PageHeading";
@@ -70,7 +70,7 @@ export default function (props) {
 
     return <div>
         <Container>
-            <PageHeading level={3}>Available Languages</PageHeading>
+            <PageHeading level={3}>{t("AVAILABLE_LANGUAGES")}</PageHeading>
             <SelectableList items={showLanguages.map(p => ({
                 contents: <TranslationProgressIndicator title={i18n.humanReadableLocale(p.language)}
                                                         data={p.completionData}/>,

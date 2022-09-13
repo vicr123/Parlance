@@ -52,6 +52,11 @@ public class GitVersionControlService : IVersionControlService
         };
     }
 
+    public Repository ProjectRepository(IParlanceProject project)
+    {
+        return new Repository(project.VcsDirectory);
+    }
+
     private void ReconcileRemoteWithLocalCore(IParlanceProject project)
     {
         using var repo = new Repository(project.VcsDirectory);
@@ -71,7 +76,7 @@ public class GitVersionControlService : IVersionControlService
         }
     }
 
-    private void ReconcileRemoteWithLocalCoreRebase(Repository repo)
+    private void ReconcileRemoteWithLocalCoreRebase(IRepository repo)
     {
         var rebaseResult = repo.Rebase.Start(repo.Head, repo.Head.TrackedBranch, null, _identity, new RebaseOptions());
         if (rebaseResult.Status is RebaseStatus.Conflicts or RebaseStatus.Stop)
@@ -81,7 +86,7 @@ public class GitVersionControlService : IVersionControlService
         }
     }
 
-    private void ReconcileRemoteWithLocalCoreMerge(Repository repo)
+    private void ReconcileRemoteWithLocalCoreMerge(IRepository repo)
     {
         var tip = repo.Head.Tip;
         var mergeResult = repo.Merge(repo.Head.TrackedBranch, new Signature(_identity, DateTimeOffset.Now));
