@@ -67,7 +67,7 @@
   "ENABLE_TWO_FACTOR_AUTHENTICATION": "Enable Two Factor Authentication",
   "ERROR_DIRTY_WORKING_TREE": "Uncommitted changes exist in the repository. Commit or discard the changes first.",
   "ERROR_GENERIC": "Sorry, there was an issue.",
-  "ERROR_MERGE_CONFLICT": "Unable to reconcile the local repository with the remote as merge conflicts resulted from the merge operation.",
+  "ERROR_MERGE_CONFLICT": "Unable to reconcile the Parlance repository with the remote as merge conflicts resulted from the merge operation.",
   "ERROR_NON_FAST_FORWARDABLE": "The repository is out of date and needs to be updated by pulling.",
   "ERROR_PERMISSION_ALREADY_GRANTED": "Permissions have already been granted to that user.",
   "ERROR_TWO_FACTOR_ALREADY_DISABLED": "Two Factor Authentication is already disabled",

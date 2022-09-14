@@ -10,7 +10,7 @@ import SmallButton from "../../../../components/SmallButton";
 import Modal from "../../../../components/Modal";
 import LoadingModal from "../../../../components/modals/LoadingModal";
 import ErrorModal from "../../../../components/modals/ErrorModal";
-import {VerticalLayout} from "../../../../components/Layouts";
+import {VerticalLayout, VerticalSpacer} from "../../../../components/Layouts";
 
 function Commit({commit}) {
     return <div className={Styles.commitContainer}>
@@ -23,6 +23,8 @@ export default function VersionControl() {
     const [vcsState, setVcsState] = useState();
     const {project} = useParams();
     const {t} = useTranslation();
+
+    const cloneUrl = `${window.location.protocol}//${window.location.host}/git/${project}/`;
 
     const updateVcs = async () => {
         setVcsState(await Fetch.get(`/api/Projects/${project}/vcs`));
@@ -74,6 +76,15 @@ export default function VersionControl() {
                 ]}>
                     <VerticalLayout>
                         <span>{t("ERROR_DIRTY_WORKING_TREE")}</span>
+                    </VerticalLayout>
+                </Modal>,
+                "MergeConflict": <Modal heading={t("Merge Conflict")} buttons={[Modal.OkButton]}>
+                    <VerticalLayout>
+                        <span>{t("translation:ERROR_MERGE_CONFLICT")}</span>
+                        <VerticalSpacer height={20}/>
+                        <PageHeading level={3}>{t("Reconciling Changes")}</PageHeading>
+                        <span>{t("In order to reconcile the repository, merge the Parlance repository locally by adding the below remote and merging it:")}</span>
+                        <code>{cloneUrl}</code>
                     </VerticalLayout>
                 </Modal>
             }}/>)
@@ -155,6 +166,10 @@ export default function VersionControl() {
         </Modal>)
     }
 
+    const copyCloneUrl = () => {
+        navigator.clipboard.writeText(cloneUrl);
+    }
+
     return <div>
         <Container>
             <PageHeading level={3}>{t("VCS_GIT")}</PageHeading>
@@ -188,6 +203,13 @@ export default function VersionControl() {
                 <span>{t("VCS_OUTGOING_COMMITS")}</span>
                 <div className={Styles.buttonBox}>
                     <SmallButton onClick={push}>{t("VCS_OUTGOING_COMMITS_PUSH", {count: vcsState.ahead})}</SmallButton>
+                </div>
+                <div className={Styles.border}/>
+
+                <span>{t("Clone URL")}</span>
+                <div className={Styles.buttonBox}>
+                    <code>{cloneUrl}</code>
+                    <SmallButton onClick={copyCloneUrl}>{t("Copy")}</SmallButton>
                 </div>
                 <div className={Styles.border}/>
             </div>
