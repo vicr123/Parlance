@@ -40,4 +40,5 @@ public interface IVersionControlService
     Task PublishSavedChangesToSource(IParlanceProject project);
     Task ReconcileRemoteWithLocal(IParlanceProject project);
     VersionControlStatus VersionControlStatus(IParlanceProject project);
+    string CloneUrl(IParlanceProject project);
 }

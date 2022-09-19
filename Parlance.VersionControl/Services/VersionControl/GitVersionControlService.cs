@@ -52,6 +52,12 @@ public class GitVersionControlService : IVersionControlService
         };
     }
 
+    public string CloneUrl(IParlanceProject project)
+    {
+        using var repo = new Repository(project.VcsDirectory);
+        return repo.Network.Remotes["origin"].Url;
+    }
+
     public Repository ProjectRepository(IParlanceProject project)
     {
         return new Repository(project.VcsDirectory);

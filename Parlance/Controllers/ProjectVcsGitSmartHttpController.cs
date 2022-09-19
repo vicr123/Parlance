@@ -171,13 +171,6 @@ public class ProjectVcsGitSmartHttpController : Controller
             Request.Body = new GZipStream(oldStream, CompressionMode.Decompress);
         }
 
-        Request.EnableBuffering();
-
-        var data = new byte[8192];
-        await Request.Body.ReadAsync(data);
-        Request.Body.Seek(0, SeekOrigin.Begin);
-        var dataString = Encoding.UTF8.GetString(data);
-
         try
         {
             var p = await _projectService.ProjectBySystemName(project);
@@ -245,9 +238,11 @@ public class ProjectVcsGitSmartHttpController : Controller
         IEnumerable<byte[]> args,
         IRepository repo)
     {
+#pragma warning disable CS0219
         var thinPack = false;
         var noprogress = false;
         var ofsdelta = false;
+#pragma warning restore CS0219
         var done = false;
         var want = new Queue<string>();
         var have = new List<string>();

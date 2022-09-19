@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Parlance.Helpers;
 using Parlance.Project;
+using Parlance.Project.Index;
 using Parlance.Services.Projects;
 using Parlance.VersionControl.Services.VersionControl;
 
@@ -12,13 +13,16 @@ namespace Parlance.Controllers;
 [Route("api/projects/{project}")]
 public class ProjectVcsController : Controller
 {
+    private readonly IParlanceIndexingService _indexingService;
     private readonly IProjectService _projectService;
     private readonly IVersionControlService _versionControlService;
 
-    public ProjectVcsController(IProjectService projectService, IVersionControlService versionControlService)
+    public ProjectVcsController(IProjectService projectService, IVersionControlService versionControlService,
+        IParlanceIndexingService indexingService)
     {
         _projectService = projectService;
         _versionControlService = versionControlService;
+        _indexingService = indexingService;
     }
 
     [HttpGet]
@@ -73,7 +77,9 @@ public class ProjectVcsController : Controller
             var p = await _projectService.ProjectBySystemName(project);
             var proj = p.GetParlanceProject();
 
+            await _versionControlService.UpdateVersionControlMetadata(proj);
             await _versionControlService.ReconcileRemoteWithLocal(proj);
+            await _indexingService.IndexProject(proj);
 
             return NoContent();
         }
