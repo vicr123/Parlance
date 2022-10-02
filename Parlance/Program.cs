@@ -5,6 +5,7 @@ using Parlance.Authorization.LanguageEditor;
 using Parlance.Authorization.Superuser;
 using Parlance.CldrData;
 using Parlance.Database;
+using Parlance.Jobs;
 using Parlance.Project;
 using Parlance.Services.Permissions;
 using Parlance.Services.Projects;
@@ -14,6 +15,7 @@ using Parlance.Services.Superuser;
 using Parlance.VersionControl;
 using Parlance.VersionControl.Services;
 using Parlance.Vicr123Accounts;
+using Quartz;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -43,6 +45,19 @@ builder.Services.AddDbContext<ParlanceContext>(options =>
 
 builder.Services.AddScoped<IAuthorizationHandler, LanguageEditorHandler>();
 builder.Services.AddScoped<IAuthorizationHandler, SuperuserHandler>();
+
+builder.Services.AddQuartz(q =>
+{
+    q.UseMicrosoftDependencyInjectionJobFactory();
+    q.ScheduleJob<ProjectCommitJob>(trigger => trigger
+        .WithSimpleSchedule(x => x
+            .WithIntervalInMinutes(60)
+            .RepeatForever()
+            .WithMisfireHandlingInstructionNowWithRemainingCount()
+        )
+    );
+});
+builder.Services.AddQuartzServer(options => { options.WaitForJobsToComplete = true; });
 
 builder.Services.AddAuthorizationCore(options =>
 {

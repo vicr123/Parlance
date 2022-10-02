@@ -35,11 +35,11 @@ public class ProjectUpdaterService : BackgroundService
             {
                 await versionControlService.UpdateVersionControlMetadata(project);
 
-                //TODO: Maybe make a commit?
                 if (!versionControlService.VersionControlStatus(project).ChangedFiles.Any())
                 {
                     await versionControlService.ReconcileRemoteWithLocal(project);
                     await indexingService.IndexProject(project);
+                    await versionControlService.PublishSavedChangesToSource(project);
                 }
             }
             catch (LibGit2SharpException)
