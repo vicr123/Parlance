@@ -1,0 +1,17 @@
+.placeholder {
+    color: var(--editor-placeholder-foreground);
+    background-color: var(--editor-placeholder-background);
+    border-radius: 3px;
+}
+
+.hint {
+    font-size: 8pt;
+}
+
+.warning {
+    background-color: red;
+}
+
+.hidden {
+    display: none;
+}

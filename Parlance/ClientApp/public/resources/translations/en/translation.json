@@ -59,6 +59,8 @@
   "DEMOTE_SUPERUSER_PROMPT_1": "Demoting {{user}} from a superuser will no longer allow them to manage the Parlance server.",
   "DEMOTE_SUPERUSER_PROMPT_2": "Do you want to demote {{user}}?",
   "DONE": "Done",
+  "EDITOR_NUMERIC_PLACEHOLDER": "numeric",
+  "EDITOR_PLACEHOLDER": "placeholder",
   "EMAIL_ADDRESS": "Email Address",
   "EMAIL_VERIFY_ENTER_CODE": "Enter Verification Code",
   "EMAIL_VERIFY_PROMPT": "Check your email for a code that we sent you. If you can't find it, try checking your spam folder, and if that doesn't work, try resending a verification email.",

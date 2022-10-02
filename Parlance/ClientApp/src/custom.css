@@ -8,7 +8,7 @@
 }
 
 body {
-    color-scheme: light dark;
+    color-scheme: dark;
     overflow: hidden;
     margin: 0;
 
@@ -32,6 +32,9 @@ body {
     --translation-progress-indicator-error: rgb(200, 0, 0);
     --translation-progress-indicator-warning: rgb(200, 100, 0);
 
+    --editor-placeholder-foreground: rgb(150, 150, 150);
+    --editor-placeholder-background: rgb(60, 60, 60);
+
     --fixed-font: 'JetBrains Mono', monospace;
 
     background-color: var(--background-color);
@@ -43,6 +46,7 @@ body {
 
 @media (prefers-color-scheme: light) {
     body {
+        color-scheme: light;
         --foreground-color: black;
         --background-color: white;
 
@@ -52,6 +56,9 @@ body {
         --border-color: #b4b4b4;
         --footer-color: rgba(0, 100, 200, 0.3);
         --hover-color: #64c8ff;
+
+        --editor-placeholder-foreground: rgb(150, 150, 150);
+        --editor-placeholder-background: rgb(230, 230, 230);
     }
 }
 
