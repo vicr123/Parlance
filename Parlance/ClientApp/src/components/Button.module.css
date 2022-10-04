@@ -3,10 +3,14 @@
     cursor: default;
 }
 
-.button:hover {
+.button:not(.disabled):hover {
     background-color: var(--hover-color);
 }
 
-.button:active {
+.button:not(.disabled):active {
     background-color: var(--active-color);
+}
+
+.button.disabled {
+    color: var(--foreground-disabled-color);
 }

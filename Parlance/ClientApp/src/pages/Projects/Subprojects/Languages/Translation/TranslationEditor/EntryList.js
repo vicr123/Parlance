@@ -1,15 +1,21 @@
 import Styles from "./EntryList.module.css";
 import {useNavigate, useParams} from "react-router-dom";
 import {useForceUpdate} from "../../../../../../helpers/Hooks";
-import {Checks, checkTranslation, mostSevereType} from "../../../../../../checks";
+import {checkTranslation, mostSevereType} from "../../../../../../checks";
+import BackButton from "../../../../../../components/BackButton";
+import {useTranslation} from "react-i18next";
+import useTranslationEntries from "./EntryUtils";
+import {Fragment} from "react";
 
-export default function({entries, translationDirection, updateManager, translationFileType}) {
+export default function EntryList({entries, translationDirection, updateManager, translationFileType}) {
     const {project, subproject, language, key} = useParams();
+    const {t} = useTranslation();
     const forceUpdate = useForceUpdate();
     const navigate = useNavigate();
-    
+    const {goToEntry} = useTranslationEntries(entries);
+
     updateManager.on("keyStateChanged", forceUpdate);
-    
+
     const contexts = entries.reduce((prev, current) => {
         if (!prev[current.context]) prev[current.context] = [];
         prev[current.context].push(current);
@@ -17,16 +23,17 @@ export default function({entries, translationDirection, updateManager, translati
     }, {});
 
     return <div className={Styles.rootList}>
-        {Object.keys(contexts).map(context => <>
+        <BackButton text={t("Quit")} onClick={() => navigate("..")} inListPage={true}/>
+        {Object.keys(contexts).map((context, idx) => <Fragment key={idx}>
             <div className={Styles.categoryHeader}>{context}</div>
             {contexts[context].map(entry => {
                 const navigateToKey = () => {
-                    navigate(`/projects/${project}/${subproject}/${language}/translate/${entry.key}`, {replace: true});
+                    goToEntry(entry.key);
                 }
-                
+
                 const classes = [Styles.entryItem];
                 if (entry.key === key) classes.push(Styles.selected);
-                
+
                 const iconClasses = [Styles.entryIcon];
                 if (!updateManager.isPending(entry.key) && entry.translation.every(entry => entry.translationContent === "")) {
                     iconClasses.push(Styles.iconIncomplete);
@@ -50,13 +57,14 @@ export default function({entries, translationDirection, updateManager, translati
                             break;
                     }
                 }
-                
-                return <div onClick={navigateToKey} className={classes.join(" ")}>
+
+                return <div onClick={navigateToKey} className={classes.join(" ")} key={entry.key}>
                     <div className={iconClasses.join(" ")}></div>
                     <div className={Styles.entrySource}>{entry.source}</div>
-                    <div dir={translationDirection} className={Styles.entryTranslation}>{entry.translation[0]?.translationContent}</div>
+                    <div dir={translationDirection}
+                         className={Styles.entryTranslation}>{entry.translation[0]?.translationContent}</div>
                 </div>
             })}
-        </>)}
+        </Fragment>)}
     </div>
 }

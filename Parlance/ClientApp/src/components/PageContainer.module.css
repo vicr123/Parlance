@@ -1,3 +1,6 @@
 .pageContainer {
     padding-top: 9px;
+
+    grid-area: content;
+    overflow: auto;
 }

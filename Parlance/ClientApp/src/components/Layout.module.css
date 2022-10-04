@@ -1,8 +1,14 @@
 .rootLayout {
     height: 100vh;
     max-height: 100vh;
-    
-    display: flex;
-    flex-direction: column;
+
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: max-content 1fr;
+    gap: 0 0;
+    grid-template-areas: 
+        "header"
+        "content";
+
     overflow: auto;
 }

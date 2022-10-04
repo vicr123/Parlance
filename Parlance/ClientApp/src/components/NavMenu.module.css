@@ -1,4 +1,8 @@
-﻿.navbarWrapper {
+﻿.navbarHeader {
+    grid-area: header;
+}
+
+.navbarWrapper {
     display: flex;
     flex-direction: column;
     align-items: center;

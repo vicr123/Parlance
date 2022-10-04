@@ -6,9 +6,16 @@
 .translationArea {
     grid-area: translationArea;
     border-right: 1px solid var(--border-color);
-    
+}
+
+.translationAreaInner {
+    grid-area: translationArea;
+
     display: flex;
     flex-direction: column;
+
+    position: sticky;
+    top: 0;
 }
 
 .sourceTranslationContainer {
@@ -36,7 +43,7 @@
 
 .translationPart {
     padding: 9px;
-    
+
     display: grid;
     grid-template-columns: 1fr;
     grid-template-rows: max-content max(100px, max-content);
@@ -56,10 +63,10 @@
 .translationPartEditor {
     grid-area: translationArea;
     border: none;
-    
+
     font-family: 'Contemporary';
     font-size: 12pt;
-    
+
     margin: 0;
     padding: 0;
 }
@@ -94,5 +101,36 @@
 }
 
 .translationPartIndicatorExtras {
+    color: var(--foreground-disabled-color);
+}
+
+.controls {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+
+    border-bottom: 1px solid var(--border-color);
+}
+
+.controlArea {
+    display: flex;
+    flex-direction: row;
+}
+
+.controlArea:first-child {
+    border-right: 1px solid var(--border-color);
+}
+
+.controlArea:last-child {
+    border-left: 1px solid var(--border-color);
+}
+
+.navButtonContents {
+    display: flex;
+    flex-direction: column;
+}
+
+.navButtonSource {
+    font-size: 10pt;
     color: var(--foreground-disabled-color);
 }

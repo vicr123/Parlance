@@ -2,12 +2,17 @@ import Container from "./Container";
 import Styles from "./BackButton.module.css"
 import Icon from "./Icon";
 import {HorizontalLayout} from "./Layouts";
+import {useTranslation} from "react-i18next";
 
-export default function({onClick, inListPage}) {
+export default function BackButton({onClick, inListPage, text}) {
+    const {t} = useTranslation();
+
+    if (!text) text = t("BACK");
+
     const child = <HorizontalLayout>
-        <Icon icon={"go-previous"} />Back
+        <Icon icon={"go-previous"}/>{text}
     </HorizontalLayout>;
-    
+
     if (inListPage) {
         return <div className={`${Styles.listPageContainer} ${Styles.backButton}`} onClick={onClick}>
             {child}
@@ -17,5 +22,5 @@ export default function({onClick, inListPage}) {
             {child}
         </Container>
     }
-    
+
 }

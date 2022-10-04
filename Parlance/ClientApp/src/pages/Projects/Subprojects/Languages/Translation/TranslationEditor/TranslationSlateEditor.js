@@ -1,9 +1,10 @@
 import {useEffect, useState} from "react";
 import {Editable, Slate, withReact} from "slate-react";
-import {createEditor, Node} from "slate";
+import {createEditor, Node, Transforms} from "slate";
 import Styles from "./TranslationSlateEditor.module.css";
 import Placeholders from "./Placeholders";
 import {useTranslation} from "react-i18next";
+import {useHotkeys} from "react-hotkeys-hook";
 
 function Placeholder({attributes, direction, hasFocus, preview, children}) {
     let contents = children;
@@ -46,14 +47,37 @@ export function TranslationSlateEditor({
     const [editor] = useState(() => withReact(createEditor()));
     const [hasFocus, setHasFocus] = useState(false);
 
+    const forceSave = () => {
+        onTranslationUpdate(editor.children.map(n => Node.string(n)).join("\n"));
+    }
+
+    useHotkeys("ctrl+enter", () => {
+        forceSave();
+    }, {
+        enableOnTags: ["INPUT", "TEXTAREA", "SELECT"],
+        enableOnContentEditable: true,
+        filter: () => hasFocus
+    }, [onTranslationUpdate]);
+
     useEffect(() => {
-        editor.children = [
-            {
-                type: 'paragraph',
-                children: [{text: value}]
-            }
-        ];
-        editor.onChange();
+        if (value === editor.children.map(n => Node.string(n)).join("\n")) return;
+
+        while (editor.children.length !== 1) {
+            Transforms.removeNodes(editor, {
+                at: [0]
+            })
+        }
+
+        Transforms.insertNodes(editor, {
+            type: "paragraph",
+            children: [{text: value}]
+        }, {
+            at: [editor.children.length]
+        });
+
+        Transforms.removeNodes(editor, {
+            at: [0]
+        });
     }, [value])
     useEffect(() => {
         editor.onChange();
@@ -101,13 +125,14 @@ export function TranslationSlateEditor({
     }
 
     const blur = () => {
-        // console.log("BLUR ME");
-        // console.log(editor.children);
-        onTranslationUpdate(editor.children.map(n => Node.string(n)).join("\n"));
+        forceSave();
         setHasFocus(false);
     }
 
-    return <Slate dir={translationDirection} editor={editor} value={[]} onChange={changeEvent}>
+    return <Slate dir={translationDirection} editor={editor} value={[{
+        type: "paragraph",
+        children: [{text: "Loading"}]
+    }]} onChange={changeEvent}>
         <Editable renderLeaf={Leaf} decorate={decorate} onBlur={blur}
                   onFocus={focus} readOnly={readOnly}/>
     </Slate>

@@ -1,9 +1,9 @@
 .rootList {
     grid-area: entryList;
     border-right: 1px solid var(--border-color);
-    
-    max-height: 100vh;
-    overflow-y: scroll;
+
+    /*max-height: 100vh;*/
+    /*overflow-y: scroll;*/
 }
 
 .entryItem {
@@ -15,7 +15,7 @@
     grid-template-areas: 
         "icon source"
         ". translation";
-    
+
     cursor: pointer;
 }
 
@@ -59,14 +59,14 @@
     background-color: #FFA000;
 }
 
-.entrySource { 
+.entrySource {
     grid-area: source;
     text-overflow: ellipsis;
     white-space: nowrap;
     overflow: hidden;
 }
 
-.entryTranslation { 
+.entryTranslation {
     grid-area: translation;
     color: var(--foreground-disabled-color);
     text-overflow: ellipsis;
@@ -77,7 +77,7 @@
 .categoryHeader {
     position: sticky;
     top: 0;
-    
+
     padding: 3px;
     background-color: var(--foreground-color);
     color: var(--background-color);

@@ -154,6 +154,8 @@
   "SUPERUSER_PROMOTE_PROMPT_1": "Enter the name of a user to promote to a superuser.",
   "SUPERUSER_PROMPT_1": "Superusers have full control of the Parlance server and can make any administration changes.",
   "TRANSLATION_AREA_INDICATOR_PLURAL_FORM": "Plural form {{numbers}}",
+  "TRANSLATION_AREA_NEXT_UNFINISHED": "Next Unfinished",
+  "TRANSLATION_AREA_PREVIOUS_UNFINISHED": "Previous Unfinished",
   "TRANSLATION_AREA_SOURCE_TRANSLATION_TITLE": "Source Translation",
   "TRANSLATION_AREA_TITLE": "Translation into {{lang}}",
   "TRANSLATION_OUT_OF_DATE": "Out of date",
