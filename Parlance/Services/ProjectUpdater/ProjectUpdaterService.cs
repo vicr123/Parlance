@@ -39,7 +39,9 @@ public class ProjectUpdaterService : BackgroundService
                 {
                     await versionControlService.ReconcileRemoteWithLocal(project);
                     await indexingService.IndexProject(project);
-                    await versionControlService.PublishSavedChangesToSource(project);
+
+                    if (versionControlService.VersionControlStatus(project).Ahead > 0)
+                        await versionControlService.PublishSavedChangesToSource(project);
                 }
             }
             catch (LibGit2SharpException)
