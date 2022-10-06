@@ -38,6 +38,30 @@ function checkQtNumericPlaceholders(source, translation) {
     };
 }
 
+function checki18nextPlaceholders(source, translation) {
+    return [...source.matchAll(/{{(.+)}}/g)].flatMap(placeholder => {
+        let ph = placeholder[1];
+        if (!translation.includes(`{{${ph}}}`)) {
+            return {
+                checkSeverity: "error",
+                message: `Placeholder {{${ph}}} not present in translation`
+            }
+        }
+    });
+}
+
+function checki18nextHtmlPlaceholders(source, translation) {
+    return [...source.matchAll(/<(.+?)>/g)].flatMap(placeholder => {
+        let ph = placeholder[1];
+        if (!translation.includes(`<${ph}>`)) {
+            return {
+                checkSeverity: "error",
+                message: `Placeholder <${ph}> not present in translation`
+            }
+        }
+    });
+}
+
 const Checks = {
     "common": [
         checkDuplicate,
@@ -48,16 +72,20 @@ const Checks = {
         checkQtPlaceholders,
         checkQtNumericPlaceholders,
         "common"
+    ],
+    "i18next": [
+        checki18nextPlaceholders,
+        checki18nextHtmlPlaceholders
     ]
 }
 
 function checkTranslation(source, translation, checkSuite) {
     if (translation === "") return [];
-    
+
     let suite = Checks[checkSuite];
     if (!suite) return [];
     return suite.flatMap(check => {
-        if (typeof(check) === "string") {
+        if (typeof (check) === "string") {
             return checkTranslation(source, translation, check);
         } else {
             return check(source, translation);
@@ -66,12 +94,12 @@ function checkTranslation(source, translation, checkSuite) {
 }
 
 function mostSevereType(checks) {
-    let severities = checks.map(check => typeof(check) === "string" ? check : check?.checkSeverity);
+    let severities = checks.map(check => typeof (check) === "string" ? check : check?.checkSeverity);
     if (severities.includes("error")) return "error";
     if (severities.includes("warn")) return "warn";
     return null;
 }
 
-export { Checks };
-export { checkTranslation };
-export { mostSevereType };
+export {Checks};
+export {checkTranslation};
+export {mostSevereType};

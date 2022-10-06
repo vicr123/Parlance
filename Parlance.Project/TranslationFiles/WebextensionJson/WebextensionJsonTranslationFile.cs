@@ -96,6 +96,7 @@ public class WebextensionJsonTranslationFile : ParlanceTranslationFile, IParlanc
             return acc;
         });
 
+        Directory.CreateDirectory(Path.GetDirectoryName(_file)!);
         await File.WriteAllTextAsync(_file, obj.ToJsonString(new JsonSerializerOptions
         {
             WriteIndented = true
@@ -108,6 +109,20 @@ public class WebextensionJsonTranslationFile : ParlanceTranslationFile, IParlanc
     {
         _file = filename;
         _locale = locale;
+
+        foreach (var entry in Entries)
+        {
+            if (!entry.RequiresPluralisation) continue;
+            entry.Translation.Clear();
+
+            foreach (var pluralRule in locale.PluralRules())
+                entry.Translation.Add(new()
+                {
+                    PluralType = pluralRule.Category,
+                    TranslationContent = string.Empty
+                });
+        }
+
         return Task.CompletedTask;
     }
 

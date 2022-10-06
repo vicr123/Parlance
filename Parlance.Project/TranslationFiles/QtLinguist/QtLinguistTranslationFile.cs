@@ -72,6 +72,20 @@ public class QtLinguistTranslationFile : ParlanceTranslationFile, IParlanceDualT
     {
         _file = filename;
         _locale = locale;
+
+        foreach (var entry in Entries)
+        {
+            if (!entry.RequiresPluralisation) continue;
+            entry.Translation.Clear();
+
+            foreach (var pluralRule in locale.PluralRules())
+                entry.Translation.Add(new()
+                {
+                    PluralType = pluralRule.Category,
+                    TranslationContent = string.Empty
+                });
+        }
+
         return Task.CompletedTask;
     }
 
@@ -111,6 +125,7 @@ public class QtLinguistTranslationFile : ParlanceTranslationFile, IParlanceDualT
 
         {
             //TODO: What if two people write to the file at the same time?
+            Directory.CreateDirectory(Path.GetDirectoryName(_file)!);
             await using var stream = File.Open(_file, FileMode.Create, FileAccess.Write, FileShare.ReadWrite);
             await doc.SaveAsync(stream, SaveOptions.None, CancellationToken.None);
         }
