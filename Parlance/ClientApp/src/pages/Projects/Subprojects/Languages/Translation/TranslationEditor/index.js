@@ -57,7 +57,7 @@ export default function TranslationEditor(props) {
 
     const updateEntries = async () => {
         setEntries(await Fetch.get(`/api/Projects/${project}/${subproject}/${language}/entries`, result => {
-            updateManager.setEtag(result.headers.get("etag"));
+            updateManager.setEtag(result.headers.get("X-Parlance-Hash"));
         }));
     }
 

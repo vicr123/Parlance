@@ -49,7 +49,7 @@ class UpdateManager extends EventEmitter {
             await Fetch.post(`/api/Projects/${this.#project}/${this.#subproject}/${this.#language}/entries`, data, {
                 "If-Match": this.#etag
             }, result => {
-                this.setEtag(result.headers.get("ETag"));
+                this.setEtag(result.headers.get("X-Parlance-Hash"));
             });
             this.#updating = false;
             this.#submitting = {};

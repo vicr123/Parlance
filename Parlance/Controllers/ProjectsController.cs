@@ -240,7 +240,7 @@ public class ProjectsController : Controller
                 .Language(language.ToLocale()).CreateTranslationFile(_indexingService);
             if (translationFile is null) return NotFound();
 
-            Response.Headers.ETag = new StringValues(translationFile.Hash);
+            Response.Headers["X-Parlance-Hash"] = new StringValues(translationFile.Hash);
 
             return Json(translationFile.Entries.Select(entry => new
             {
@@ -269,7 +269,7 @@ public class ProjectsController : Controller
                 .Language(language.ToLocale()).CreateTranslationFile(_indexingService);
             if (translationFile is null) return NotFound();
 
-            Response.Headers.ETag = new StringValues(translationFile.Hash);
+            Response.Headers["X-Parlance-Hash"] = new StringValues(translationFile.Hash);
 
             var entry = translationFile.Entries.Single(entry => entry.Key == key);
             return Json(new
@@ -302,7 +302,7 @@ public class ProjectsController : Controller
             entry.Translation = data.TranslationStrings;
             await translationFile.Save();
 
-            Response.Headers.ETag = new StringValues(translationFile.Hash);
+            Response.Headers["X-Parlance-Hash"] = new StringValues(translationFile.Hash);
 
             return NoContent();
         }
@@ -339,7 +339,7 @@ public class ProjectsController : Controller
 
             await translationFile.Save();
 
-            Response.Headers.ETag = new StringValues(translationFile.Hash);
+            Response.Headers["X-Parlance-Hash"] = new StringValues(translationFile.Hash);
 
             return NoContent();
         }
