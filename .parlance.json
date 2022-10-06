@@ -1,0 +1,11 @@
+{
+  "name": "Parlance",
+  "subprojects": [
+    {
+      "name": "Parlance Web",
+      "type": "i18next",
+      "path": "/Parlance/ClientApp/public/resources/translations/{lang}/translation.json",
+      "baseLang": "en"
+    }
+  ]
+}
