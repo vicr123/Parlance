@@ -1,15 +1,12 @@
-﻿FROM mcr.microsoft.com/dotnet/aspnet:6.0 AS base
+﻿FROM archlinux AS base
 WORKDIR /app
 EXPOSE 80
 EXPOSE 443
 
-FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
+FROM archlinux AS build
 
 # Install Node.js
-RUN curl -fsSL https://deb.nodesource.com/setup_14.x | bash - \
-    && apt-get install -y \
-        nodejs \
-    && rm -rf /var/lib/apt/lists/*
+RUN pacman -Sy --noconfirm nodejs dotnet-runtime dotnet-sdk aspnet-targeting-pack npm && rm -rf /var/lib/pacman/sync
 
 WORKDIR /src
 COPY ["Parlance/Parlance.csproj", "Parlance/"]
@@ -24,7 +21,7 @@ RUN dotnet publish "Parlance.csproj" -c Release -o /app/publish
 FROM base AS final
 
 # Install libgit2
-RUN apt-get update && apt-get install -y libgit2-1.1 && rm -rf /var/lib/apt/lists/*
+RUN pacman -Sy --noconfirm libgit2 dotnet-runtime aspnet-runtime && rm -rf /var/lib/pacman/sync
 
 WORKDIR /app
 COPY --from=publish /app/publish .
