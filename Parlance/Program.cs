@@ -68,6 +68,8 @@ builder.Services.AddAuthorizationCore(options =>
     options.AddPolicy("ProjectManager", policy => policy.Requirements.Add(new SuperuserRequirement()));
 });
 
+builder.Services.AddResponseCompression(options => { options.EnableForHttps = true; });
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -81,6 +83,7 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseResponseCompression();
 app.UseStaticFiles();
 app.UseRouting();
 
