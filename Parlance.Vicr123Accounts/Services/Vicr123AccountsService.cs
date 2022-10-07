@@ -60,9 +60,10 @@ public class Vicr123AccountsService : IVicr123AccountsService
         var passwordResetProxy = _connection.CreateProxy<IPasswordReset>(_serviceName, objectPath);
         var methods = await passwordResetProxy.ResetMethodsAsync();
 
-        return methods.Select(method => (IPasswordResetMethod?) (method.Item1 switch
+        return methods.Select(method => (IPasswordResetMethod?)(method.Item1 switch
             {
-                "email" => new EmailPasswordResetMethod() { Domain = method.Item2["domain"].ToString()!, User = method.Item2["user"].ToString()! },
+                "email" => new EmailPasswordResetMethod
+                    { Domain = method.Item2["domain"].ToString()!, User = method.Item2["user"].ToString()! },
                 _ => null
             }))
             .Where(prMethod => prMethod is not null)!;
@@ -86,16 +87,10 @@ public class Vicr123AccountsService : IVicr123AccountsService
     {
         var objectPath = await _manager.UserByIdAsync(user.Id);
         var userProxy = _connection.CreateProxy<IUser>(_serviceName, objectPath);
-        
-        if (user.Username != await userProxy.GetUsernameAsync())
-        {
-            await userProxy.SetUsernameAsync(user.Username);
-        }
 
-        if (user.Email != await userProxy.GetEmailAsync())
-        {
-            await userProxy.SetEmailAsync(user.Email);
-        }
+        if (user.Username != await userProxy.GetUsernameAsync()) await userProxy.SetUsernameAsync(user.Username);
+
+        if (user.Email != await userProxy.GetEmailAsync()) await userProxy.SetEmailAsync(user.Email);
 
         return await UserByObjectPath(objectPath);
     }
@@ -112,7 +107,7 @@ public class Vicr123AccountsService : IVicr123AccountsService
         var objectPath = await _manager.UserByIdAsync(user.Id);
         var userProxy = _connection.CreateProxy<IUser>(_serviceName, objectPath);
         if (await userProxy.GetVerifiedAsync()) throw new InvalidOperationException();
-        
+
         await userProxy.ResendVerificationEmailAsync();
     }
 
@@ -181,7 +176,10 @@ public class Vicr123AccountsService : IVicr123AccountsService
 
     private async Task InitAsync()
     {
-        _connection = new Connection(_accountOptions.Value.DbusConnectionPath);
+        _connection = new Connection(new ClientConnectionOptions(_accountOptions.Value.DbusConnectionPath)
+        {
+            AutoConnect = true
+        });
         await _connection.ConnectAsync();
 
         _manager = _connection.CreateProxy<IManager>(_serviceName, "/com/vicr123/accounts");

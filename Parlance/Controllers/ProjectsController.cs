@@ -194,7 +194,6 @@ public class ProjectsController : Controller
 
     [HttpGet]
     [Route("{project}/{subproject}/{language}")]
-    [Authorize(Policy = "LanguageEditor")]
     public async Task<IActionResult> GetProjectMeta(string project, string subproject, string language)
     {
         try

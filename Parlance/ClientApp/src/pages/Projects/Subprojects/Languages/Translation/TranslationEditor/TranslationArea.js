@@ -67,9 +67,10 @@ function TranslationPart({
                 }
             })}</div>
             <TranslationSlateEditor value={translationContent} translationFileType={translationFileType}
-                                    translationDirection={translationDirection} readOnly={false}
+                                    translationDirection={translationDirection} readOnly={!canEdit}
                                     onTranslationUpdate={onTranslationUpdate} onChange={textChange}
-                                    pluralExample={pluralExample?.number !== undefined ? i18n.number(language, pluralExample.number) : null}/>
+                                    pluralExample={pluralExample?.number !== undefined ? i18n.number(language, pluralExample.number) : null}
+            />
         </div>
         <div className={Styles.checksContainer}>
             {checkState.map((check, idx) => {
@@ -117,7 +118,6 @@ export default function TranslationArea({entries, translationDirection, translat
             <div className={Styles.sourceTranslationContainer}>
                 <div
                     className={Styles.sourceTranslationIndicator}>{t("TRANSLATION_AREA_SOURCE_TRANSLATION_TITLE")}</div>
-                {/*<div className={Styles.sourceTranslation}>{entry.source}</div>*/}
                 <TranslationSlateEditor value={entry.source} translationFileType={translationFileType}
                                         translationDirection={translationDirection} readOnly={true} onChange={() => {
                 }}/>
