@@ -52,6 +52,9 @@ export default function ErrorModal({error, onContinue, specialRenderings}) {
                     case "DirtyWorkingTree":
                         setMessage(t("ERROR_DIRTY_WORKING_TREE"))
                         return;
+                    case "BadTokenRequestType":
+                        setMessage(t("ERROR_BAD_TOKEN_REQUEST_TYPE"))
+                        return;
                 }
             } catch {
 

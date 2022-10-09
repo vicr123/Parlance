@@ -1,4 +1,6 @@
 using System.Text.Json;
+using Fido2NetLib;
+using Fido2NetLib.Objects;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Parlance.Helpers;
@@ -18,14 +20,17 @@ namespace Parlance.Controllers;
 public class UserController : Controller
 {
     private readonly IVicr123AccountsService _accountsService;
-    private readonly ISuperuserService _superuserService;
+    private readonly IParlanceFidoService _parlanceFidoService;
     private readonly IPermissionsService _permissionsService;
+    private readonly ISuperuserService _superuserService;
 
-    public UserController(IVicr123AccountsService accountsService, ISuperuserService superuserService, IPermissionsService permissionsService)
+    public UserController(IVicr123AccountsService accountsService, ISuperuserService superuserService,
+        IPermissionsService permissionsService, IParlanceFidoService parlanceFidoService)
     {
         _accountsService = accountsService;
         _superuserService = superuserService;
         _permissionsService = permissionsService;
+        _parlanceFidoService = parlanceFidoService;
     }
 
     [Authorize]
@@ -38,19 +43,13 @@ public class UserController : Controller
 
         return Json(new
         {
-            user.Username, user.Email, user.EmailVerified,
+            user.Id, user.Username, user.Email, user.EmailVerified,
             Superuser = superuser,
-            LanguagePermissions = await _permissionsService.UserPermissions(user.Username).SelectAwait(x => ValueTask.FromResult(x.ToDashed())).ToListAsync()
+            LanguagePermissions = await _permissionsService.UserPermissions(user.Username)
+                .SelectAwait(x => ValueTask.FromResult(x.ToDashed())).ToListAsync()
         });
     }
 
-    public class CreateUserRequestData
-    {
-        public string Username { get; set; } = null!;
-        public string EmailAddress { get; set; } = null!;
-        public string Password { get; set; } = null!;
-    }
-    
     [HttpPost]
     public async Task<IActionResult> CreateUser([FromBody] CreateUserRequestData data)
     {
@@ -62,10 +61,10 @@ public class UserController : Controller
                 Username = data.Username,
                 Password = data.Password
             });
-        
+
             return Json(new
             {
-                Token = token 
+                Token = token
             });
         }
         catch (DBusException ex) when (ex.ErrorName == "com.vicr123.accounts.Error.QueryError")
@@ -74,32 +73,34 @@ public class UserController : Controller
         }
     }
 
-    public class UserTokenRequestData
-    {
-        public string Username { get; set; } = null!;
-        public string Password { get; set; } = null!;
-        public string? OtpToken { get; set; }
-        public string? NewPassword { get; set; }
-    }
-
     [HttpPost]
-    [Route("token")]
-    public async Task<IActionResult> GetUserToken([FromBody] UserTokenRequestData data)
+    [Route("tokenTypes")]
+    public async Task<IActionResult> GetOpportunitiesForLogin([FromBody] UsernameRequestData data)
     {
         try
         {
-            var token = await _accountsService.ProvisionTokenAsync(new ProvisionTokenParameters
-            {
-                Username = data.Username,
-                Password = data.Password,
-                OtpToken = data.OtpToken,
-                NewPassword = data.NewPassword
-            });
+            var user = await _accountsService.UserByUsername(data.Username);
 
-            return Json(new
+            var opportunities = new List<object>
             {
-                Token = token
-            });
+                new
+                {
+                    Type = "password"
+                }
+            };
+
+            if (_parlanceFidoService.HaveFidoCredentials(user))
+            {
+                var (id, options) = _parlanceFidoService.GetCredentials(user);
+                opportunities.Add(new
+                {
+                    Type = "fido",
+                    Options = options,
+                    Id = id
+                });
+            }
+
+            return Json(opportunities);
         }
         catch (DBusException ex)
         {
@@ -117,14 +118,70 @@ public class UserController : Controller
         }
     }
 
-    public class PasswordResetMethodsRequestData
+    [HttpPost]
+    [Route("token")]
+    public async Task<IActionResult> GetUserToken([FromBody] UserTokenRequestData data)
     {
-        public string Username { get; set; } = null!;
+        try
+        {
+            switch (data.Type)
+            {
+                case "password":
+                {
+                    if (data.Password is null) return this.ClientError(ParlanceClientError.IncorrectParameters);
+
+                    var token = await _accountsService.ProvisionTokenAsync(new ProvisionTokenParameters
+                    {
+                        Username = data.Username,
+                        Password = data.Password,
+                        OtpToken = data.OtpToken,
+                        NewPassword = data.NewPassword
+                    });
+
+                    return Json(new
+                    {
+                        Token = token
+                    });
+                }
+                case "fido2":
+                    if (data.KeyTokenId is null || data.KeyResponse is null)
+                        return this.ClientError(ParlanceClientError.IncorrectParameters);
+
+                    var user = await _accountsService.UserByUsername(data.Username);
+                    return Json(new
+                    {
+                        Token = await _parlanceFidoService.GetToken(user, data.KeyTokenId.Value, data.KeyResponse)
+                    });
+            }
+
+            return this.ClientError(ParlanceClientError.BadTokenRequestType);
+        }
+        catch (DBusException ex)
+        {
+            return Unauthorized(new
+            {
+                Status = ex.ErrorName switch
+                {
+                    "com.vicr123.accounts.Error.DisabledAccount" => "DisabledAccount",
+                    "com.vicr123.accounts.Error.TwoFactorRequired" => "OtpRequired",
+                    "com.vicr123.accounts.Error.PasswordResetRequired" => "PasswordResetRequired",
+                    "com.vicr123.accounts.Error.PasswordResetRequestRequired" => "PasswordResetRequestRequired",
+                    _ => "Failed"
+                }
+            });
+        }
+        catch (Fido2VerificationException ex)
+        {
+            return Unauthorized(new
+            {
+                Status = "InvalidSecurityKey"
+            });
+        }
     }
-    
+
     [HttpPost]
     [Route("reset/methods")]
-    public async Task<IActionResult> GetPasswordResetMethods([FromBody] PasswordResetMethodsRequestData data)
+    public async Task<IActionResult> GetPasswordResetMethods([FromBody] UsernameRequestData data)
     {
         var user = await _accountsService.UserByUsername(data.Username);
         return Json(
@@ -132,13 +189,6 @@ public class UserController : Controller
         );
     }
 
-    public class PerformResetRequestData
-    {
-        public string Username { get; set; } = null!;
-        public string Type { get; set; } = null!;
-        public IDictionary<string, object> Challenge { get; set; } = null!;
-    }
-    
     [HttpPost]
     [Route("reset")]
     public async Task<IActionResult> PerformReset([FromBody] PerformResetRequestData data)
@@ -148,7 +198,6 @@ public class UserController : Controller
             item =>
             {
                 if (item.Value is JsonElement json)
-                {
                     return json.ValueKind switch
                     {
                         JsonValueKind.Undefined => "undefined",
@@ -161,18 +210,11 @@ public class UserController : Controller
                         JsonValueKind.Null => "null",
                         _ => throw new ArgumentOutOfRangeException()
                     };
-                }
                 return item.Value;
             }));
         return NoContent();
     }
 
-    public class ChangeUsernameRequestData
-    {
-        public string NewUsername { get; set; } = null!;
-        public string Password { get; set; } = null!;
-    }
-    
     [HttpPost]
     [Authorize]
     [Route("username")]
@@ -181,10 +223,7 @@ public class UserController : Controller
         var userId = ulong.Parse(HttpContext.User.Claims.First(claim => claim.Type == Claims.UserId).Value);
         var user = await _accountsService.UserById(userId);
 
-        if (!await _accountsService.VerifyUserPassword(user, data.Password))
-        {
-            return Forbid();
-        }
+        if (!await _accountsService.VerifyUserPassword(user, data.Password)) return Forbid();
 
         user.Username = data.NewUsername;
         await _accountsService.UpdateUser(user);
@@ -192,12 +231,6 @@ public class UserController : Controller
         return NoContent();
     }
 
-    public class ChangeEmailRequestData
-    {
-        public string NewEmail { get; set; } = null!;
-        public string Password { get; set; } = null!;
-    }
-    
     [HttpPost]
     [Authorize]
     [Route("email")]
@@ -206,10 +239,7 @@ public class UserController : Controller
         var userId = ulong.Parse(HttpContext.User.Claims.First(claim => claim.Type == Claims.UserId).Value);
         var user = await _accountsService.UserById(userId);
 
-        if (!await _accountsService.VerifyUserPassword(user, data.Password))
-        {
-            return Forbid();
-        }
+        if (!await _accountsService.VerifyUserPassword(user, data.Password)) return Forbid();
 
         user.Email = data.NewEmail;
         await _accountsService.UpdateUser(user);
@@ -217,12 +247,6 @@ public class UserController : Controller
         return NoContent();
     }
 
-    public class ChangePasswordRequestData
-    {
-        public string NewPassword { get; set; } = null!;
-        public string Password { get; set; } = null!;
-    }
-    
     [HttpPost]
     [Authorize]
     [Route("password")]
@@ -231,10 +255,7 @@ public class UserController : Controller
         var userId = ulong.Parse(HttpContext.User.Claims.First(claim => claim.Type == Claims.UserId).Value);
         var user = await _accountsService.UserById(userId);
 
-        if (!await _accountsService.VerifyUserPassword(user, data.Password))
-        {
-            return Forbid();
-        }
+        if (!await _accountsService.VerifyUserPassword(user, data.Password)) return Forbid();
 
         await _accountsService.UpdateUserPassword(user, data.NewPassword);
 
@@ -252,13 +273,8 @@ public class UserController : Controller
         if (user.EmailVerified) return BadRequest();
 
         await _accountsService.ResendVerificationEmail(user);
-        
-        return NoContent();
-    }
 
-    public class VerifyEmailRequestData
-    {
-        public string VerificationCode { get; set; } = null!;
+        return NoContent();
     }
 
     [HttpPost]
@@ -271,22 +287,9 @@ public class UserController : Controller
 
         if (user.EmailVerified) return BadRequest();
 
-        if (!await _accountsService.VerifyEmail(user, data.VerificationCode))
-        {
-            return BadRequest();
-        }
-        
+        if (!await _accountsService.VerifyEmail(user, data.VerificationCode)) return BadRequest();
+
         return NoContent();
-    }
-
-    public class OtpRequestData
-    {
-        public string Password { get; set; } = null!;
-    }
-
-    public class EnableOtpRequestData : OtpRequestData
-    {
-        public string OtpCode { get; set; } = null!;
     }
 
     [HttpPost]
@@ -297,19 +300,14 @@ public class UserController : Controller
         var userId = ulong.Parse(HttpContext.User.Claims.First(claim => claim.Type == Claims.UserId).Value);
         var user = await _accountsService.UserById(userId);
 
-        if (!await _accountsService.VerifyUserPassword(user, data.Password))
-        {
-            return Forbid();
-        }
+        if (!await _accountsService.VerifyUserPassword(user, data.Password)) return Forbid();
 
         if (await _accountsService.OtpEnabled(user))
-        {
             return Json(new
             {
                 Enabled = true,
                 BackupCodes = await _accountsService.OtpBackupCodes(user)
             });
-        }
 
         return Json(new
         {
@@ -326,10 +324,7 @@ public class UserController : Controller
         var userId = ulong.Parse(HttpContext.User.Claims.First(claim => claim.Type == Claims.UserId).Value);
         var user = await _accountsService.UserById(userId);
 
-        if (!await _accountsService.VerifyUserPassword(user, data.Password))
-        {
-            return Forbid();
-        }
+        if (!await _accountsService.VerifyUserPassword(user, data.Password)) return Forbid();
 
         try
         {
@@ -355,10 +350,7 @@ public class UserController : Controller
         var userId = ulong.Parse(HttpContext.User.Claims.First(claim => claim.Type == Claims.UserId).Value);
         var user = await _accountsService.UserById(userId);
 
-        if (!await _accountsService.VerifyUserPassword(user, data.Password))
-        {
-            return Forbid();
-        }
+        if (!await _accountsService.VerifyUserPassword(user, data.Password)) return Forbid();
 
         try
         {
@@ -374,7 +366,7 @@ public class UserController : Controller
             });
         }
     }
-    
+
 
     [HttpPost]
     [Authorize]
@@ -384,10 +376,7 @@ public class UserController : Controller
         var userId = ulong.Parse(HttpContext.User.Claims.First(claim => claim.Type == Claims.UserId).Value);
         var user = await _accountsService.UserById(userId);
 
-        if (!await _accountsService.VerifyUserPassword(user, data.Password))
-        {
-            return Forbid();
-        }
+        if (!await _accountsService.VerifyUserPassword(user, data.Password)) return Forbid();
 
         try
         {
@@ -402,5 +391,122 @@ public class UserController : Controller
                 _ => throw ex
             });
         }
+    }
+
+    [HttpPost]
+    [Authorize]
+    [Route("keys/prepareRegister")]
+    public async Task<IActionResult> PrepareRegisterKeys([FromBody] PrepareRegisterKeysRequestData data)
+    {
+        var userId = ulong.Parse(HttpContext.User.Claims.First(claim => claim.Type == Claims.UserId).Value);
+        var user = await _accountsService.UserById(userId);
+
+        if (!await _accountsService.VerifyUserPassword(user, data.Password)) return Forbid();
+
+        var (id, options) = _parlanceFidoService.PrepareCredentials(user, data.AuthenticatorAttachmentType switch
+        {
+            "platform" => AuthenticatorAttachment.Platform,
+            "cross-platform" => AuthenticatorAttachment.CrossPlatform,
+            _ => throw new ArgumentException()
+        });
+
+        return Json(new
+        {
+            AuthenticatorOptions = options,
+            Id = id
+        });
+    }
+
+    [HttpPost]
+    [Authorize]
+    [Route("keys/register")]
+    public async Task<IActionResult> RegisterKeys([FromBody] RegisterKeysRequestData data)
+    {
+        var userId = ulong.Parse(HttpContext.User.Claims.First(claim => claim.Type == Claims.UserId).Value);
+        var user = await _accountsService.UserById(userId);
+
+        if (!await _accountsService.VerifyUserPassword(user, data.Password)) return Forbid();
+
+        await _parlanceFidoService.StoreCredentials(user, data.Id, data.Name, data.Response);
+
+        return NoContent();
+    }
+
+    public class CreateUserRequestData
+    {
+        public string Username { get; set; } = null!;
+        public string EmailAddress { get; set; } = null!;
+        public string Password { get; set; } = null!;
+    }
+
+    public class UserTokenRequestData
+    {
+        public string Username { get; set; } = null!;
+        public string Type { get; set; } = null!;
+        public string? Password { get; set; }
+        public string? OtpToken { get; set; }
+        public string? NewPassword { get; set; }
+        public int? KeyTokenId { get; set; }
+        public AuthenticatorAssertionRawResponse? KeyResponse { get; set; }
+    }
+
+    public class UsernameRequestData
+    {
+        public string Username { get; set; } = null!;
+    }
+
+    public class PerformResetRequestData
+    {
+        public string Username { get; set; } = null!;
+        public string Type { get; set; } = null!;
+        public IDictionary<string, object> Challenge { get; set; } = null!;
+    }
+
+    public class ChangeUsernameRequestData
+    {
+        public string NewUsername { get; set; } = null!;
+        public string Password { get; set; } = null!;
+    }
+
+    public class ChangeEmailRequestData
+    {
+        public string NewEmail { get; set; } = null!;
+        public string Password { get; set; } = null!;
+    }
+
+    public class ChangePasswordRequestData
+    {
+        public string NewPassword { get; set; } = null!;
+        public string Password { get; set; } = null!;
+    }
+
+    public class VerifyEmailRequestData
+    {
+        public string VerificationCode { get; set; } = null!;
+    }
+
+    public class OtpRequestData
+    {
+        public string Password { get; set; } = null!;
+    }
+
+    public class EnableOtpRequestData : OtpRequestData
+    {
+        public string OtpCode { get; set; } = null!;
+    }
+
+
+    public class PrepareRegisterKeysRequestData
+    {
+        public string Password { get; set; } = null!;
+        public string AuthenticatorAttachmentType { get; set; } = null!;
+    }
+
+    public class RegisterKeysRequestData
+    {
+        public int Id { get; set; }
+        public string Password { get; set; } = null!;
+        public string Name { get; set; } = null!;
+        public AuthenticatorAttestationRawResponse Response { get; set; } = null!;
     }
 }

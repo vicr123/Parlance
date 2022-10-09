@@ -15,6 +15,7 @@ namespace Parlance.Vicr123Accounts.DBus
         Task<ObjectPath> UserByIdAsync(ulong Id);
         Task<ulong> UserIdByUsernameAsync(string Username);
         Task<string> ProvisionTokenAsync(string Username, string Password, string Application, IDictionary<string, object> ExtraOptions);
+        Task<string> ForceProvisionTokenAsync(ulong UserId, string Application);
         Task<ObjectPath> UserForTokenAsync(string Token);
         Task<ulong[]> AllUsersAsync();
     }

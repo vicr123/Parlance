@@ -14,7 +14,9 @@ public enum ParlanceClientError
     TwoFactorCodeIncorrect,
     NonFastForwardableError,
     MergeConflict,
-    DirtyWorkingTree
+    DirtyWorkingTree,
+    BadTokenRequestType,
+    IncorrectParameters
 }
 
 public static class ControllerExtensions

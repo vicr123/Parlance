@@ -11,19 +11,22 @@ public static class Vicr123AccountsExtensions
     {
         var useDummy = configuration.GetSection("Parlance")["UseDummyAuthenticationService"];
         if (useDummy == "True")
-        {
             services.AddSingleton<IVicr123AccountsService, Vicr123AccountsDummyService>();
-        }
         else
-        {
             services.AddSingleton<IVicr123AccountsService, Vicr123AccountsService>();
-        }
-        // services.AddSingleton<IAuthorizationHandler, Vicr123AuthorizationHandler>();
+        services.AddScoped<IParlanceFidoService, ParlanceFidoService>();
         services.Configure<Vicr123AccountsOptions>(configuration.GetSection("Vicr123Accounts"));
-        services.AddAuthentication(o =>
+        services.AddAuthentication(o => { o.DefaultScheme = Vicr123AuthenticationHandler.AuthenticationScheme; })
+            .AddScheme<Vicr123AuthenticationOptions, Vicr123AuthenticationHandler>(
+                Vicr123AuthenticationHandler.AuthenticationScheme, _ => { });
+
+        services.AddFido2(options =>
         {
-            o.DefaultScheme = Vicr123AuthenticationHandler.AuthenticationScheme;
-        }).AddScheme<Vicr123AuthenticationOptions, Vicr123AuthenticationHandler>(Vicr123AuthenticationHandler.AuthenticationScheme, _ => {});
+            options.ServerDomain = configuration.GetValue<string>("fido2:ServerDomain");
+            options.Origins = configuration.GetSection("fido2:Origins").Get<HashSet<string>>();
+            options.ServerName = "Parlance";
+            options.TimestampDriftTolerance = 30000;
+        }).AddCachedMetadataService(config => { config.AddFidoMetadataRepository(httpClientBuilder => { }); });
 
         return services;
     }

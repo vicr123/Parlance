@@ -15,7 +15,12 @@
     </ItemGroup>
 
     <ItemGroup>
+        <PackageReference Include="Fido2.AspNet" Version="3.0.1" />
         <PackageReference Include="Tmds.DBus" Version="0.11.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Parlance.Database\Parlance.Database.csproj" />
     </ItemGroup>
 
 </Project>

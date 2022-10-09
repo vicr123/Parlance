@@ -30,6 +30,11 @@ public class Vicr123AccountsService : IVicr123AccountsService
             extraOptions);
     }
 
+    public async Task<string> ForceProvisionTokenAsync(ulong userId)
+    {
+        return await _manager.ForceProvisionTokenAsync(userId, _applicationName);
+    }
+
     public async Task<User> UserByToken(string token)
     {
         var objectPath = await _manager.UserForTokenAsync(token);

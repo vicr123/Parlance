@@ -11,7 +11,7 @@ import Modal from "../../components/Modal";
 import LoadingModal from "../../components/modals/LoadingModal";
 import Fetch from "../../helpers/Fetch";
 
-export default function(props) {
+export default function AccountSettings() {
     const [ignored, forceUpdate] = useReducer(x => x + 1, 0);
     const navigate = useNavigate();
     const {t} = useTranslation();
@@ -21,9 +21,9 @@ export default function(props) {
     if (!UserManager.currentUser) {
         return null;
     }
-    
+
     const resendVerificationEmail = async () => {
-        Modal.mount(<LoadingModal />)
+        Modal.mount(<LoadingModal/>)
         try {
             await Fetch.post("/api/user/verification/resend", {});
             Modal.mount(<Modal heading={t("EMAIL_VERIFY_RESEND")} buttons={[Modal.OkButton]}>
@@ -49,7 +49,7 @@ export default function(props) {
                 <span className={Styles.accountUsername}>{UserManager.currentUser.username}</span>
                 <span className={Styles.accountEmail}>{UserManager.currentUser.email}</span>
 
-                <img className={Styles.accountImage} src={UserManager.currentUserProfilePicture} />
+                <img className={Styles.accountImage} src={UserManager.currentUserProfilePicture}/>
                 {verifyEmailPrompt}
             </div>
         </Container>
@@ -76,8 +76,12 @@ export default function(props) {
                 {
                     contents: t("ACCOUNT_SETTINGS_TWO_FACTOR"),
                     onClick: () => navigate("otp")
+                },
+                {
+                    contents: t("ACCOUNT_SETTINGS_MANAGE_SECURITY_KEYS"),
+                    onClick: () => navigate("keys")
                 }
-            ]} />
+            ]}/>
         </Container>
     </div>
 }

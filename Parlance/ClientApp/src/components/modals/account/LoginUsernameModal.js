@@ -1,45 +1,39 @@
 import Modal from "../../Modal";
-import React from "react";
+import React, {useState} from "react";
 import LoginPasswordModal from "./LoginPasswordModal";
 import UserManager from "../../../helpers/UserManager";
-import {withTranslation} from "react-i18next";
+import {useTranslation} from "react-i18next";
 import LineEdit from "../../LineEdit";
 import CreateAccountModal from "./CreateAccountModal";
+import LoadingModal from "../LoadingModal";
 
-export default withTranslation()(class LoginUsernameModal extends React.Component {
-    constructor(props) {
-        super(props);
-        
-        this.state = {
-            username: UserManager.loginDetail("username")
-        }
-    }
-    
-    usernameTextChanged(e) {
-        this.setState({
-            username: e.target.value
-        });
-    }
-    
-    render(props) {
-        return <Modal heading={this.props.t("LOG_IN")} buttons={[
-            Modal.CancelButton,
-            {
-                text: this.props.t('CREATE_ACCOUNT'),
-                onClick: () => Modal.mount(<CreateAccountModal />)
-            },
-            {
-                text: this.props.t('NEXT'),
-                onClick: () => {
-                    UserManager.setLoginDetail("username", this.state.username);
-                    Modal.mount(<LoginPasswordModal />)
+export default function LoginUsernameModal() {
+    const [username, setUsername] = useState(UserManager.loginDetail("username"));
+    const {t} = useTranslation();
+
+    return <Modal heading={t("LOG_IN")} buttons={[
+        Modal.CancelButton,
+        {
+            text: t('CREATE_ACCOUNT'),
+            onClick: () => Modal.mount(<CreateAccountModal/>)
+        },
+        {
+            text: t('NEXT'),
+            onClick: async () => {
+                try {
+                    Modal.mount(<LoadingModal/>)
+                    await UserManager.setUsername(username);
+                    Modal.mount(<LoginPasswordModal/>)
+                } catch {
+                    Modal.mount(<LoginUsernameModal/>)
                 }
             }
-        ]}>
-            <div style={{display: "flex", flexDirection: "column"}}>
-                {this.props.t('LOG_IN_PROMPT')}
-                <LineEdit placeholder={this.props.t('USERNAME')} value={this.state.username} onChange={this.usernameTextChanged.bind(this)} />
-            </div>
-        </Modal>
-    }
-})
+        }
+    ]}>
+        <div style={{display: "flex", flexDirection: "column"}}>
+            {t('LOG_IN_PROMPT')}
+            <LineEdit placeholder={t('USERNAME')} value={username}
+                      onChange={e => setUsername(e.target.value)}/>
+        </div>
+    </Modal>;
+}

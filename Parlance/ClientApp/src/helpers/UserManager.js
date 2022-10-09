@@ -9,19 +9,46 @@ import PasswordResetModal from "../components/modals/account/resets/PasswordRese
 import i18n from "./i18n";
 import CryptoJS from "crypto-js";
 import LoginErrorModal from "../components/modals/account/LoginErrorModal";
+import React from "react";
+import LoginSecurityKeyModal from "../components/modals/account/LoginSecurityKeyModal";
+import LoginSecurityKeyFailureModal from "../components/modals/account/LoginSecurityKeyFailureModal";
+import {decode, encode} from "./Base64";
 
 class UserManager extends EventEmitter {
     #loginSessionDetails;
     #currentUser;
-    
+    #availableLoginTypes;
+
     constructor() {
         super();
         this.#loginSessionDetails = {};
         this.#currentUser = null;
-        
+
         this.updateDetails();
     }
-    
+
+    get isLoggedIn() {
+        return !!localStorage.getItem("token");
+    }
+
+    get currentUser() {
+        return this.#currentUser;
+    }
+
+    get currentUserIsSuperuser() {
+        return this.#currentUser.superuser;
+    }
+
+    get currentUserProfilePicture() {
+        let normalised = this.#currentUser.email.trim().toLowerCase();
+        let md5 = CryptoJS.MD5(normalised);
+        return `https://www.gravatar.com/avatar/${md5}`;
+    }
+
+    get loginTypes() {
+        return this.#availableLoginTypes;
+    }
+
     async updateDetails() {
         if (localStorage.getItem("token")) {
             try {
@@ -30,42 +57,57 @@ class UserManager extends EventEmitter {
             } catch {
                 //Couldn't get user details, so log out
                 await this.logout();
-                Modal.mount(<LoginErrorModal />)
+                Modal.mount(<LoginErrorModal/>)
             }
         } else {
             this.#currentUser = null;
-            
+
             this.emit("currentUserChanged", this.#currentUser);
         }
     }
-    
+
     setLoginDetail(key, value) {
         this.#loginSessionDetails[key] = value;
     }
-    
+
     loginDetail(key) {
         return this.#loginSessionDetails[key] || "";
     }
-    
+
     clearLoginDetails() {
         this.#loginSessionDetails = {};
     }
-    
-    async attemptLogin() {
-        Modal.mount(<LoadingModal />)
-        
+
+    async setUsername(username) {
+        this.#availableLoginTypes = await Fetch.post("/api/user/tokentypes", {
+            username: username
+        });
+        this.setLoginDetail("username", username);
+    }
+
+    async attemptLogin({fido2Details = null} = {}) {
+        Modal.mount(<LoadingModal/>)
+
         try {
             let response = await Fetch.post(`/api/user/token`, this.#loginSessionDetails);
             await this.setToken(response.token);
             Modal.unmount();
         } catch (e) {
             let json = await e.json();
-            
+
             if (this.#loginSessionDetails.newPassword) {
                 this.#loginSessionDetails.password = this.#loginSessionDetails.newPassword;
                 delete this.#loginSessionDetails.newPassword;
             }
-            
+
+            this.setLoginDetail("keyTokenId", null);
+            this.setLoginDetail("keyResponse", null);
+
+            if (fido2Details) {
+                Modal.mount(<LoginSecurityKeyFailureModal details={fido2Details}/>)
+                return;
+            }
+
             switch (json.status) {
                 case "DisabledAccount":
                     Modal.mount(<Modal heading={i18n.t('ACCOUNT_DISABLED_TITLE')} buttons={[
@@ -75,10 +117,10 @@ class UserManager extends EventEmitter {
                     </Modal>);
                     return;
                 case "OtpRequired":
-                    Modal.mount(<LoginOtpModal />);
+                    Modal.mount(<LoginOtpModal/>);
                     return;
                 case "PasswordResetRequired":
-                    Modal.mount(<LoginPasswordResetModal />);
+                    Modal.mount(<LoginPasswordResetModal/>);
                     return;
                 case "PasswordResetRequestRequired":
                     Modal.mount(<Modal heading={i18n.t('RESET_PASSWORD')} buttons={[
@@ -92,32 +134,32 @@ class UserManager extends EventEmitter {
                     </Modal>);
                     return;
                 default:
-                    Modal.mount(<LoginPasswordModal />)
+                    Modal.mount(<LoginPasswordModal/>)
             }
         }
     }
-    
+
     async triggerPasswordReset() {
-        Modal.mount(<LoadingModal />);
+        Modal.mount(<LoadingModal/>);
         try {
             let response = await Fetch.post(`/api/user/reset/methods`, {
                 username: this.#loginSessionDetails.username
             });
-            Modal.mount(<PasswordResetModal resetMethods={response} />)
+            Modal.mount(<PasswordResetModal resetMethods={response}/>)
         } catch (e) {
             Modal.mount(<Modal heading={i18n.t('PASSWORD_RECOVERY_TITLE')} buttons={[
                 {
                     text: i18n.t('OK'),
-                    onClick: () => Modal.mount(<LoginPasswordModal />)
+                    onClick: () => Modal.mount(<LoginPasswordModal/>)
                 }
             ]}>
                 {i18n.t('PASSWORD_RECOVERY_ERROR_PROMPT')}
             </Modal>)
         }
     }
-    
+
     async performPasswordReset(type, challenge) {
-        Modal.mount(<LoadingModal />)
+        Modal.mount(<LoadingModal/>)
         try {
             await Fetch.post("/api/user/reset", {
                 username: this.#loginSessionDetails.username,
@@ -127,7 +169,7 @@ class UserManager extends EventEmitter {
             Modal.mount(<Modal heading={i18n.t('PASSWORD_RECOVERY_TITLE')} buttons={[
                 {
                     text: i18n.t('OK'),
-                    onClick: () => Modal.mount(<LoginPasswordModal />)
+                    onClick: () => Modal.mount(<LoginPasswordModal/>)
                 }
             ]}>
                 {i18n.t('PASSWORD_RECOVERY_SUCCESS_PROMPT')}
@@ -138,33 +180,58 @@ class UserManager extends EventEmitter {
             </Modal>)
         }
     }
-    
+
     async setToken(token) {
         localStorage.setItem("token", token);
         await this.updateDetails();
     }
-    
+
     async logout() {
         localStorage.removeItem("token");
         await this.updateDetails();
     }
-    
-    get isLoggedIn() {
-        return !!localStorage.getItem("token");
-    }
-    
-    get currentUser() {
-        return this.#currentUser;
-    }
-    
-    get currentUserIsSuperuser() {
-        return this.#currentUser.superuser;
-    }
-    
-    get currentUserProfilePicture() {
-        let normalised = this.#currentUser.email.trim().toLowerCase();
-        let md5 = CryptoJS.MD5(normalised);
-        return `https://www.gravatar.com/avatar/${md5}`;
+
+    async attemptFido2Login(details) {
+        Modal.mount(<LoginSecurityKeyModal details={details}/>)
+
+        //Perform webauthn authentication
+        try {
+            let assertion = await navigator.credentials.get({
+                publicKey: {
+                    challenge: decode(details.options.challenge),
+                    allowCredentials: details.options.allowCredentials.map(x => ({
+                        type: x.type,
+                        id: decode(x.id)
+                    })),
+                    userVerification: details.options.userVerification,
+                    extensions: details.options.extensions
+                }
+            });
+
+            console.log(assertion);
+
+            this.setLoginDetail("type", "fido2");
+            this.setLoginDetail("keyTokenId", details.id);
+            this.setLoginDetail("keyResponse", {
+                authenticatorAttachment: assertion.authenticatorAttachment,
+                id: assertion.id,
+                rawId: encode(assertion.rawId),
+                type: assertion.type,
+                response: {
+                    authenticatorData: encode(assertion.response.authenticatorData),
+                    clientDataJSON: encode(assertion.response.clientDataJSON),
+                    signature: encode(assertion.response.signature),
+                    userHandle: encode(assertion.response.userHandle)
+                }
+            });
+
+            await this.attemptLogin({
+                fido2Details: details
+            });
+        } catch (e) {
+            console.log(e);
+            Modal.mount(<LoginPasswordModal/>)
+        }
     }
 }
 

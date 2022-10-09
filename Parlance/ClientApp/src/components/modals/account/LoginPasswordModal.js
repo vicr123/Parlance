@@ -1,47 +1,54 @@
 import Modal from "../../Modal";
-import React from "react";
+import React, {useState} from "react";
 import LoginUsernameModal from "./LoginUsernameModal";
 import UserManager from "../../../helpers/UserManager";
-import {withTranslation} from "react-i18next";
+import {useTranslation} from "react-i18next";
 import LineEdit from "../../LineEdit";
+import ModalList from "../../ModalList";
 
-export default withTranslation()(class LoginPasswordModal extends React.Component {
-    constructor(props) {
-        super(props);
+export default function LoginPasswordModal() {
+    const [password, setPassword] = useState("");
+    const {t} = useTranslation();
 
-        this.state = {
-            password: UserManager.loginDetail("password")
+    const loginTypes = UserManager.loginTypes.map(type => {
+        switch (type.type) {
+            case "password":
+                return <div key={"password"} style={{display: "flex", flexDirection: "column"}}>
+                    {t('LOG_IN_PASSWORD_PROMPT')}
+                    <LineEdit password={true} placeholder={t('PASSWORD')} value={password}
+                              onChange={e => setPassword(e.target.value)}/>
+                </div>
+            case "fido":
+                return <ModalList>
+                    {[
+                        {
+                            text: t("Use Security Key"),
+                            onClick: () => UserManager.attemptFido2Login(type)
+                        }
+                    ]}
+                </ModalList>
         }
-    }
+    });
 
-    passwordTextChanged(e) {
-        this.setState({
-            password: e.target.value
-        });
-    }
-
-    render(props) {
-        return <Modal heading={this.props.t("LOG_IN_PASSWORD_TITLE", {username: UserManager.loginDetail("username")})} buttons={[
-            {
-                text: this.props.t('BACK'),
-                onClick: () => Modal.mount(<LoginUsernameModal />)
-            },
-            {
-                text: this.props.t('FORGOT_PASSWORD'),
-                onClick: () => UserManager.triggerPasswordReset()
-            },
-            {
-                text: this.props.t('NEXT'),
-                onClick: () => {
-                    UserManager.setLoginDetail("password", this.state.password);
-                    UserManager.attemptLogin();
-                }
+    return <Modal heading={t("LOG_IN_PASSWORD_TITLE", {username: UserManager.loginDetail("username")})} buttons={[
+        {
+            text: t('BACK'),
+            onClick: () => Modal.mount(<LoginUsernameModal/>)
+        },
+        {
+            text: t('FORGOT_PASSWORD'),
+            onClick: () => UserManager.triggerPasswordReset()
+        },
+        {
+            text: t('NEXT'),
+            onClick: () => {
+                UserManager.setLoginDetail("password", password);
+                UserManager.setLoginDetail("type", "password");
+                UserManager.attemptLogin();
             }
-        ]}>
-            <div style={{display: "flex", flexDirection: "column"}}>
-                {this.props.t('LOG_IN_PASSWORD_PROMPT')}
-                <LineEdit password={true} placeholder={this.props.t('PASSWORD')} value={this.state.password} onChange={this.passwordTextChanged.bind(this)} />
-            </div>
-        </Modal>
-    }
-})
+        }
+    ]}>
+        {loginTypes}
+    </Modal>
+}
+

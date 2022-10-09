@@ -13,6 +13,7 @@ public class User
     public ulong Id { get; set; }
     public string Username { get; set; } = null!;
     public string Email { get; set; } = null!;
+
     public bool EmailVerified { get; init; }
     //Don't include the object path in here because the accounts daemon can kill the object at any time
 }
@@ -27,12 +28,15 @@ public class EmailPasswordResetMethod : IPasswordResetMethod
     public string Domain { get; init; } = null!;
     public string User { get; init; } = null!;
 
-    public object ToJsonSerializable() => new
+    public object ToJsonSerializable()
     {
-        Type = "email",
-        Domain,
-        User
-    };
+        return new
+        {
+            Type = "email",
+            Domain,
+            User
+        };
+    }
 }
 
 public class OtpBackupCode
@@ -44,6 +48,7 @@ public class OtpBackupCode
 public interface IVicr123AccountsService
 {
     public Task<string> ProvisionTokenAsync(ProvisionTokenParameters parameters);
+    public Task<string> ForceProvisionTokenAsync(ulong userId);
     public Task<User> UserByToken(string token);
     public Task<User> UserById(ulong id);
     public Task<User> UserByUsername(string username);

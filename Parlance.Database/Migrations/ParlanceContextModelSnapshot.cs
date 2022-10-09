@@ -22,6 +22,28 @@ namespace Parlance.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("Parlance.Database.Models.Alert", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("AlertMessage")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("AlertType")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Project")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Alerts", (string)null);
+                });
+
             modelBuilder.Entity("Parlance.Database.Models.IndexItem", b =>
                 {
                     b.Property<Guid>("Id")
@@ -104,6 +126,49 @@ namespace Parlance.Migrations
                         .IsUnique();
 
                     b.ToTable("Projects", (string)null);
+                });
+
+            modelBuilder.Entity("Parlance.Database.Models.SecurityKey", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("AaGuid")
+                        .HasColumnType("uuid");
+
+                    b.Property<long>("Counter")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("CredType")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<byte[]>("CredentialId")
+                        .IsRequired()
+                        .HasColumnType("bytea");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<byte[]>("PublicKey")
+                        .IsRequired()
+                        .HasColumnType("bytea");
+
+                    b.Property<DateTime>("RegistrationDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<byte[]>("UserHandle")
+                        .IsRequired()
+                        .HasColumnType("bytea");
+
+                    b.Property<decimal>("UserId")
+                        .HasColumnType("numeric(20,0)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("SecurityKeys", (string)null);
                 });
 
             modelBuilder.Entity("Parlance.Database.Models.SshKey", b =>
