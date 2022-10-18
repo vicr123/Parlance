@@ -14,8 +14,8 @@ public static class Vicr123AccountsExtensions
             services.AddSingleton<IVicr123AccountsService, Vicr123AccountsDummyService>();
         else
             services.AddSingleton<IVicr123AccountsService, Vicr123AccountsService>();
-        services.AddScoped<IParlanceFidoService, ParlanceFidoService>();
         services.Configure<Vicr123AccountsOptions>(configuration.GetSection("Vicr123Accounts"));
+        services.Configure<Fido2Options>(configuration.GetSection("fido2"));
         services.AddAuthentication(o => { o.DefaultScheme = Vicr123AuthenticationHandler.AuthenticationScheme; })
             .AddScheme<Vicr123AuthenticationOptions, Vicr123AuthenticationHandler>(
                 Vicr123AuthenticationHandler.AuthenticationScheme, _ => { });

@@ -1,21 +1,28 @@
+using System.Security.Cryptography;
+using System.Text.Json;
+using accounts.DBus;
+using Fido2NetLib;
 using Microsoft.Extensions.Options;
-using Parlance.Vicr123Accounts.DBus;
 using Tmds.DBus;
+using IFido2 = accounts.DBus.IFido2;
 
 namespace Parlance.Vicr123Accounts.Services;
 
 public class Vicr123AccountsService : IVicr123AccountsService
 {
+    private static readonly Dictionary<int, (string, AssertionOptions)> CachedAssertionOptions = new();
     private readonly IOptions<Vicr123AccountsOptions> _accountOptions;
-    private readonly string _applicationName = "Parlance";
 
+    private readonly string _applicationName = "Parlance";
+    private readonly IOptions<Fido2Options> _fidoOptions;
     private readonly string _serviceName = "com.vicr123.accounts";
     private Connection _connection = null!;
     private IManager _manager = null!;
 
-    public Vicr123AccountsService(IOptions<Vicr123AccountsOptions> accountOptions)
+    public Vicr123AccountsService(IOptions<Vicr123AccountsOptions> accountOptions, IOptions<Fido2Options> fidoOptions)
     {
         _accountOptions = accountOptions;
+        _fidoOptions = fidoOptions;
         InitAsync().Wait();
     }
 
@@ -177,6 +184,93 @@ public class Vicr123AccountsService : IVicr123AccountsService
         var objectPath = await _manager.UserByIdAsync(user.Id);
         var tfProxy = _connection.CreateProxy<ITwoFactor>(_serviceName, objectPath);
         await tfProxy.RegenerateBackupKeysAsync();
+    }
+
+    public async Task<string> PrepareRegisterFidoKey(User user, bool crossPlatformAttachment)
+    {
+        var objectPath = await _manager.UserByIdAsync(user.Id);
+        var fidoProxy = _connection.CreateProxy<IFido2>(_serviceName, objectPath);
+        return await fidoProxy.PrepareRegisterAsync(_applicationName, _fidoOptions.Value.ServerDomain,
+            crossPlatformAttachment ? 1 : 0);
+    }
+
+    public async Task FinishRegisterFidoKey(User user, JsonElement response, string name)
+    {
+        var objectPath = await _manager.UserByIdAsync(user.Id);
+        var fidoProxy = _connection.CreateProxy<IFido2>(_serviceName, objectPath);
+        await fidoProxy.CompleteRegisterAsync(response.GetRawText(), _fidoOptions.Value.Origins.ToArray(), name);
+    }
+
+    public async Task<IEnumerable<string>> LoginMethods(string username)
+    {
+        return await _manager.TokenProvisioningMethodsAsync(username, _applicationName);
+    }
+
+    public async Task<IDictionary<string, object>> ProvisionTokenByMethodAsync(string method, string username,
+        IDictionary<string, object> parameters)
+    {
+        return await _manager.ProvisionTokenByMethodAsync(method, username, _applicationName, parameters);
+    }
+
+    public async Task<(int, AssertionOptions)> GetFidoAssertionOptions(string username)
+    {
+        var response = await _manager.ProvisionTokenByMethodAsync("fido", username, _applicationName,
+            new Dictionary<string, object>
+            {
+                { "rpname", _applicationName },
+                { "rpid", _fidoOptions.Value.ServerDomain }
+            });
+
+        var assertionOptions = JsonSerializer.Deserialize<AssertionOptions>((byte[])response["options"]) ??
+                               throw new InvalidOperationException();
+        var id = RandomNumberGenerator.GetInt32(int.MaxValue);
+        CachedAssertionOptions.Add(id, (username, assertionOptions));
+
+        return (id, assertionOptions);
+    }
+
+    public async Task<string> ProvisionTokenViaFido(int id, AuthenticatorAssertionRawResponse response)
+    {
+        var (username, assertionOptions) = CachedAssertionOptions[id];
+        CachedAssertionOptions.Remove(id);
+
+        var dbusResponse = await _manager.ProvisionTokenByMethodAsync("fido", username, _applicationName,
+            new Dictionary<string, object>
+            {
+                { "rpname", _applicationName },
+                { "rpid", _fidoOptions.Value.ServerDomain },
+                { "pregetOptions", JsonSerializer.SerializeToUtf8Bytes(assertionOptions) },
+                { "response", JsonSerializer.SerializeToUtf8Bytes(response) },
+                {
+                    "extraOrigins", _fidoOptions.Value.Origins.ToArray()
+                }
+            });
+
+        return dbusResponse["token"].ToString()!;
+    }
+
+    public async Task<IEnumerable<FidoKey>> GetFidoKeys(User user)
+    {
+        var objectPath = await _manager.UserByIdAsync(user.Id);
+        var fidoProxy = _connection.CreateProxy<IFido2>(_serviceName, objectPath);
+        var keys = await fidoProxy.GetKeysAsync();
+        return keys.Select(tuple =>
+        {
+            var (id, application, name) = tuple;
+            return new FidoKey
+            {
+                Id = id,
+                Application = application,
+                Name = name
+            };
+        });
+    }
+
+    public async Task DeleteFidoKey(User user, int id)
+    {
+        var objectPath = await _manager.UserByIdAsync(user.Id);
+        var fidoProxy = _connection.CreateProxy<IFido2>(_serviceName, objectPath);
+        await fidoProxy.DeleteKeyAsync(id);
     }
 
     private async Task InitAsync()

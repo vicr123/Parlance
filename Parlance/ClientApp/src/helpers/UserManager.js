@@ -191,8 +191,19 @@ class UserManager extends EventEmitter {
         await this.updateDetails();
     }
 
-    async attemptFido2Login(details) {
-        Modal.mount(<LoginSecurityKeyModal details={details}/>)
+    async attemptFido2Login() {
+        Modal.mount(<LoginSecurityKeyModal/>)
+
+        let details;
+        try {
+            details = await Fetch.post("/api/user/token", {
+                type: "fido",
+                username: this.loginDetail("username")
+            });
+        } catch {
+            Modal.mount(<LoginSecurityKeyFailureModal/>);
+            return;
+        }
 
         //Perform webauthn authentication
         try {
@@ -210,7 +221,7 @@ class UserManager extends EventEmitter {
 
             console.log(assertion);
 
-            this.setLoginDetail("type", "fido2");
+            this.setLoginDetail("type", "fido");
             this.setLoginDetail("keyTokenId", details.id);
             this.setLoginDetail("keyResponse", {
                 authenticatorAttachment: assertion.authenticatorAttachment,

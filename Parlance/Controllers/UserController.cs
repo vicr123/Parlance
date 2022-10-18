@@ -1,6 +1,6 @@
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using Fido2NetLib;
-using Fido2NetLib.Objects;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Parlance.Helpers;
@@ -20,17 +20,16 @@ namespace Parlance.Controllers;
 public class UserController : Controller
 {
     private readonly IVicr123AccountsService _accountsService;
-    private readonly IParlanceFidoService _parlanceFidoService;
+
     private readonly IPermissionsService _permissionsService;
     private readonly ISuperuserService _superuserService;
 
     public UserController(IVicr123AccountsService accountsService, ISuperuserService superuserService,
-        IPermissionsService permissionsService, IParlanceFidoService parlanceFidoService)
+        IPermissionsService permissionsService)
     {
         _accountsService = accountsService;
         _superuserService = superuserService;
         _permissionsService = permissionsService;
-        _parlanceFidoService = parlanceFidoService;
     }
 
     [Authorize]
@@ -79,28 +78,7 @@ public class UserController : Controller
     {
         try
         {
-            var user = await _accountsService.UserByUsername(data.Username);
-
-            var opportunities = new List<object>
-            {
-                new
-                {
-                    Type = "password"
-                }
-            };
-
-            if (_parlanceFidoService.HaveFidoCredentials(user))
-            {
-                var (id, options) = _parlanceFidoService.GetCredentials(user);
-                opportunities.Add(new
-                {
-                    Type = "fido",
-                    Options = options,
-                    Id = id
-                });
-            }
-
-            return Json(opportunities);
+            return Json(await _accountsService.LoginMethods(data.Username));
         }
         catch (DBusException ex)
         {
@@ -124,18 +102,24 @@ public class UserController : Controller
     {
         try
         {
+            var methods = await _accountsService.LoginMethods(data.Username);
+            if (!methods.Contains(data.Type)) return this.ClientError(ParlanceClientError.IncorrectParameters);
+
             switch (data.Type)
             {
                 case "password":
                 {
-                    if (data.Password is null) return this.ClientError(ParlanceClientError.IncorrectParameters);
+                    if (data is not UserTokenRequestDataPassword pwData)
+                        return this.ClientError(ParlanceClientError.IncorrectParameters);
+
+                    if (pwData.Password is null) return this.ClientError(ParlanceClientError.IncorrectParameters);
 
                     var token = await _accountsService.ProvisionTokenAsync(new ProvisionTokenParameters
                     {
-                        Username = data.Username,
-                        Password = data.Password,
-                        OtpToken = data.OtpToken,
-                        NewPassword = data.NewPassword
+                        Username = pwData.Username,
+                        Password = pwData.Password,
+                        OtpToken = pwData.OtpToken,
+                        NewPassword = pwData.NewPassword
                     });
 
                     return Json(new
@@ -143,15 +127,27 @@ public class UserController : Controller
                         Token = token
                     });
                 }
-                case "fido2":
-                    if (data.KeyTokenId is null || data.KeyResponse is null)
+                case "fido":
+                    if (data is not UserTokenRequestDataFido fidoData)
                         return this.ClientError(ParlanceClientError.IncorrectParameters);
 
-                    var user = await _accountsService.UserByUsername(data.Username);
+                    if (fidoData.KeyTokenId is null || fidoData.KeyResponse is null)
+                    {
+                        var (id, response) = await _accountsService.GetFidoAssertionOptions(fidoData.Username);
+                        return Json(new
+                        {
+                            Options = response,
+                            Id = id
+                        });
+                    }
+
                     return Json(new
                     {
-                        Token = await _parlanceFidoService.GetToken(user, data.KeyTokenId.Value, data.KeyResponse)
+                        Token = await _accountsService.ProvisionTokenViaFido(fidoData.KeyTokenId.Value,
+                            fidoData.KeyResponse)
                     });
+
+                    break;
             }
 
             return this.ClientError(ParlanceClientError.BadTokenRequestType);
@@ -395,6 +391,37 @@ public class UserController : Controller
 
     [HttpPost]
     [Authorize]
+    [Route("keys")]
+    public async Task<IActionResult> GetFidoKeys([FromBody] OtpRequestData data)
+    {
+        var userId = ulong.Parse(HttpContext.User.Claims.First(claim => claim.Type == Claims.UserId).Value);
+        var user = await _accountsService.UserById(userId);
+
+        if (!await _accountsService.VerifyUserPassword(user, data.Password)) return Forbid();
+
+        return Json(await _accountsService.GetFidoKeys(user));
+    }
+
+
+    [HttpPost]
+    [Authorize]
+    [Route("keys/{key:int}/delete")]
+    public async Task<IActionResult> DeleteFidoKey([FromBody] OtpRequestData data, [FromRoute] int key)
+    {
+        var userId = ulong.Parse(HttpContext.User.Claims.First(claim => claim.Type == Claims.UserId).Value);
+        var user = await _accountsService.UserById(userId);
+
+        if (!await _accountsService.VerifyUserPassword(user, data.Password)) return Forbid();
+
+        var keys = await _accountsService.GetFidoKeys(user);
+        if (keys.All(x => x.Id != key)) return NotFound();
+
+        await _accountsService.DeleteFidoKey(user, key);
+        return NoContent();
+    }
+
+    [HttpPost]
+    [Authorize]
     [Route("keys/prepareRegister")]
     public async Task<IActionResult> PrepareRegisterKeys([FromBody] PrepareRegisterKeysRequestData data)
     {
@@ -403,17 +430,13 @@ public class UserController : Controller
 
         if (!await _accountsService.VerifyUserPassword(user, data.Password)) return Forbid();
 
-        var (id, options) = _parlanceFidoService.PrepareCredentials(user, data.AuthenticatorAttachmentType switch
-        {
-            "platform" => AuthenticatorAttachment.Platform,
-            "cross-platform" => AuthenticatorAttachment.CrossPlatform,
-            _ => throw new ArgumentException()
-        });
+        var response =
+            await _accountsService.PrepareRegisterFidoKey(user, data.AuthenticatorAttachmentType == "cross-platform");
 
         return Json(new
         {
-            AuthenticatorOptions = options,
-            Id = id
+            AuthenticatorOptions = JsonDocument.Parse(response).RootElement,
+            Id = 0
         });
     }
 
@@ -427,7 +450,7 @@ public class UserController : Controller
 
         if (!await _accountsService.VerifyUserPassword(user, data.Password)) return Forbid();
 
-        await _parlanceFidoService.StoreCredentials(user, data.Id, data.Name, data.Response);
+        await _accountsService.FinishRegisterFidoKey(user, data.Response, data.Name);
 
         return NoContent();
     }
@@ -439,15 +462,44 @@ public class UserController : Controller
         public string Password { get; set; } = null!;
     }
 
+    [JsonConverter(typeof(UserTokenRequestDataConverter))]
     public class UserTokenRequestData
     {
         public string Username { get; set; } = null!;
         public string Type { get; set; } = null!;
+    }
+
+    public class UserTokenRequestDataPassword : UserTokenRequestData
+    {
         public string? Password { get; set; }
         public string? OtpToken { get; set; }
         public string? NewPassword { get; set; }
+    }
+
+    public class UserTokenRequestDataFido : UserTokenRequestData
+    {
         public int? KeyTokenId { get; set; }
         public AuthenticatorAssertionRawResponse? KeyResponse { get; set; }
+    }
+
+    public class UserTokenRequestDataConverter : JsonConverter<UserTokenRequestData>
+    {
+        public override UserTokenRequestData? Read(ref Utf8JsonReader reader, Type typeToConvert,
+            JsonSerializerOptions options)
+        {
+            using var doc = JsonDocument.ParseValue(ref reader);
+            return doc.RootElement.GetProperty("type").GetString() switch
+            {
+                "password" => doc.RootElement.Deserialize<UserTokenRequestDataPassword>(options),
+                "fido" => doc.RootElement.Deserialize<UserTokenRequestDataFido>(options),
+                _ => throw new JsonException()
+            };
+        }
+
+        public override void Write(Utf8JsonWriter writer, UserTokenRequestData value, JsonSerializerOptions options)
+        {
+            JsonSerializer.Serialize(writer, value, options);
+        }
     }
 
     public class UsernameRequestData
@@ -507,6 +559,6 @@ public class UserController : Controller
         public int Id { get; set; }
         public string Password { get; set; } = null!;
         public string Name { get; set; } = null!;
-        public AuthenticatorAttestationRawResponse Response { get; set; } = null!;
+        public JsonElement Response { get; set; }
     }
 }

@@ -12,7 +12,7 @@ export default function LoginSecurityKeyModal({details}) {
             onClick: () => Modal.mount(<LoginPasswordModal/>)
         }
     ]}>
-        {t("Follow the instructions in your browser to use your security key.")}
+        {t("SECURITY_KEY_LOGIN_PROMPT")}
     </Modal>
 }
 

@@ -1,3 +1,6 @@
+using System.Text.Json;
+using Fido2NetLib;
+
 namespace Parlance.Vicr123Accounts.Services;
 
 public class ProvisionTokenParameters
@@ -45,6 +48,13 @@ public class OtpBackupCode
     public bool Used { get; init; }
 }
 
+public class FidoKey
+{
+    public int Id { get; init; }
+    public string Application { get; init; } = null!;
+    public string Name { get; init; } = null!;
+}
+
 public interface IVicr123AccountsService
 {
     public Task<string> ProvisionTokenAsync(ProvisionTokenParameters parameters);
@@ -66,4 +76,16 @@ public interface IVicr123AccountsService
     public Task DisableOtp(User user);
     public Task<IEnumerable<OtpBackupCode>> OtpBackupCodes(User user);
     public Task RegenerateBackupCodes(User user);
+
+    public Task<string> PrepareRegisterFidoKey(User user, bool crossPlatformAttachment);
+    public Task FinishRegisterFidoKey(User user, JsonElement response, string name);
+    public Task<IEnumerable<string>> LoginMethods(string username);
+
+    public Task<IDictionary<string, object>> ProvisionTokenByMethodAsync(string method, string username,
+        IDictionary<string, object> parameters);
+
+    public Task<(int, AssertionOptions)> GetFidoAssertionOptions(string username);
+    public Task<string> ProvisionTokenViaFido(int id, AuthenticatorAssertionRawResponse response);
+    public Task<IEnumerable<FidoKey>> GetFidoKeys(User user);
+    public Task DeleteFidoKey(User user, int id);
 }

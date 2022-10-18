@@ -11,7 +11,7 @@ export default function LoginPasswordModal() {
     const {t} = useTranslation();
 
     const loginTypes = UserManager.loginTypes.map(type => {
-        switch (type.type) {
+        switch (type) {
             case "password":
                 return <div key={"password"} style={{display: "flex", flexDirection: "column"}}>
                     {t('LOG_IN_PASSWORD_PROMPT')}
@@ -19,11 +19,14 @@ export default function LoginPasswordModal() {
                               onChange={e => setPassword(e.target.value)}/>
                 </div>
             case "fido":
+                //Ensure the browser supports webauthn
+                if (!window.PublicKeyCredential) return null;
+                
                 return <ModalList>
                     {[
                         {
-                            text: t("Use Security Key"),
-                            onClick: () => UserManager.attemptFido2Login(type)
+                            text: t("LOG_IN_USE_SECURITY_KEY_PROMPT"),
+                            onClick: () => UserManager.attemptFido2Login()
                         }
                     ]}
                 </ModalList>

@@ -13,11 +13,84 @@ import PageHeading from "../../components/PageHeading";
 import SelectableList from "../../components/SelectableList";
 import RegisterSecurityKeyModal from "../../components/modals/account/securityKeys/RegisterSecurityKeyModal";
 
+import Styles from "./SecurityKeys.module.css";
+
+function KeyList({keys, title, after, onManageKey}) {
+    if (keys.length === 0) return null;
+
+    return <VerticalLayout>
+        <SelectableList items={[
+            title,
+            ...keys.map(key => ({
+                contents: key.application === "Parlance" ? key.name : <div className={Styles.SecurityKey}>
+                    <span className={Styles.SecurityKeyName}>{key.name}</span>
+                    <span className={Styles.SecurityKeyApplication}>{key.application}</span>
+                </div>,
+                onClick: () => onManageKey(key)
+            })),
+        ]}/>
+        <span>{after}</span>
+    </VerticalLayout>
+}
+
 function SecurityKeysUi({password}) {
+    const [keys, setKeys] = useState([]);
     const {t} = useTranslation();
 
+    const updateKeys = async () => {
+        setKeys(await Fetch.post("/api/user/keys", {
+            password: password
+        }));
+    }
+
+    useEffect(() => {
+        updateKeys();
+    }, []);
+
+    const manageKey = key => {
+        Modal.mount(<Modal heading={t("SECURITY_KEY_DEREGISTER")} buttons={[
+            Modal.CancelButton,
+            {
+                text: t("SECURITY_KEY_DEREGISTER"),
+                destructive: true,
+                onClick: async () => {
+                    Modal.mount(<LoadingModal/>)
+                    try {
+                        await Fetch.post(`/api/user/keys/${key.id}/delete`, {
+                            password: password
+                        });
+
+                        await updateKeys();
+                        Modal.unmount();
+                    } catch (err) {
+                        Modal.mount(<ErrorModal error={err}/>)
+                    }
+                }
+            }
+        ]}>
+            {t("SECURITY_KEY_DEREGISTER_PROMPT", {
+                key: key.name,
+                application: key.application
+            })}
+        </Modal>)
+    }
+
     const registerKey = type => {
-        Modal.mount(<RegisterSecurityKeyModal type={type} password={password}/>)
+        //Ensure the browser supports webauthn
+        if (!window.PublicKeyCredential) {
+            Modal.mount(<Modal heading={t("translation:UNSUPPORTED_BROWSER")} buttons={[Modal.OkButton]}>
+                <span>{t("SECURITY_KEY_UNSUPPORTED_BROWSER_PROMPT")}</span>
+                <ul>
+                    <li>Google Chrome</li>
+                    <li>Firefox</li>
+                    <li>Microsoft Edge</li>
+                    <li>Safari</li>
+                </ul>
+            </Modal>)
+            return;
+        }
+
+        Modal.mount(<RegisterSecurityKeyModal type={type} password={password} onDone={updateKeys}/>)
     };
 
     return <>
@@ -26,46 +99,28 @@ function SecurityKeysUi({password}) {
         }}>
             <VerticalLayout>
                 <PageHeading level={3}>{t("ACCOUNT_SETTINGS_MANAGE_SECURITY_KEYS")}</PageHeading>
-                <span>{t("If you wish, you can use security keys to log into Parlance instead of using a password and Two Factor Authentication code.")}</span>
+                <span>{t("ACCOUNT_SETTINGS_MANAGE_SECURITY_KEYS_PROMPT")}</span>
             </VerticalLayout>
 
-            <VerticalLayout>
-                <SelectableList items={[
-                    t("Registered Security Keys"),
-                    {
-                        contents: "Key 1",
-                        onClick: () => {
-                        }
-                    },
-                    {
-                        contents: "Key 2",
-                        onClick: () => {
-                        }
-                    },
-                    {
-                        contents: "Key 3",
-                        onClick: () => {
-                        }
-                    },
-                    {
-                        contents: "Key 4",
-                        onClick: () => {
-                        }
-                    }
-                ]}/>
-                <span>{t("You can use any of these keys to log into Parlance.")}</span>
-            </VerticalLayout>
+            {<KeyList keys={keys.filter(key => key.application === "Parlance")}
+                      title={t("SECURITY_KEY_REGISTERED_SECURITY_KEYS")}
+                      after={t("SECURITY_KEY_REGISTERED_SECURITY_KEYS_PROMPT")} onManageKey={manageKey}/>}
+
+            {<KeyList keys={keys.filter(key => key.application !== "Parlance")}
+                      title={t("SECURITY_KEY_OTHER_SECURITY_KEYS")}
+                      after={t("translation:SECURITY_KEY_OTHER_SECURITY_KEYS_PROMPT")}
+                      onManageKey={manageKey}/>}
 
             <VerticalSpacer/>
             <VerticalLayout>
                 {/*<SelectableList onClick={registerKey}>{t("Register New Security Key")}</SelectableList>*/}
                 <SelectableList items={[
                     {
-                        contents: t("Register New Security Key"),
+                        contents: t("SECURITY_KEY_REGISTER_SECURITY_KEY"),
                         onClick: () => registerKey("cross-platform")
                     },
                     {
-                        contents: t("Register New Biometric"),
+                        contents: t("SECURITY_KEY_REGISTER_BIOMETRIC"),
                         onClick: () => registerKey("platform")
                     }
                 ]}/>

@@ -1,4 +1,6 @@
 using System.Collections.Concurrent;
+using System.Text.Json;
+using Fido2NetLib;
 
 namespace Parlance.Vicr123Accounts.Services;
 
@@ -115,6 +117,51 @@ public class Vicr123AccountsDummyService : IVicr123AccountsService
     }
 
     public Task RegenerateBackupCodes(User user)
+    {
+        throw new NotSupportedException();
+    }
+
+    public Task<string> PrepareRegisterFidoKey(User user, bool crossPlatformAttachment)
+    {
+        throw new NotSupportedException();
+    }
+
+    public Task FinishRegisterFidoKey(User user, JsonElement response, string name)
+    {
+        throw new NotSupportedException();
+    }
+
+    public Task<IEnumerable<string>> LoginMethods(string username)
+    {
+        return Task.FromResult<IEnumerable<string>>(new List<string>
+        {
+            "password"
+        });
+    }
+
+    public Task<IDictionary<string, object>> ProvisionTokenByMethodAsync(string method, string username,
+        IDictionary<string, object> parameters)
+    {
+        //TODO
+        throw new NotImplementedException();
+    }
+
+    public Task<(int, AssertionOptions)> GetFidoAssertionOptions(string username)
+    {
+        throw new NotSupportedException();
+    }
+
+    public Task<string> ProvisionTokenViaFido(int id, AuthenticatorAssertionRawResponse response)
+    {
+        throw new NotSupportedException();
+    }
+
+    public Task<IEnumerable<FidoKey>> GetFidoKeys(User user)
+    {
+        throw new NotSupportedException();
+    }
+
+    public Task DeleteFidoKey(User user, int id)
     {
         throw new NotSupportedException();
     }

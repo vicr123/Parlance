@@ -1,0 +1,13 @@
+.SecurityKey {
+    display: flex;
+    flex-direction: column;
+}
+
+.SecurityKeyName {
+
+}
+
+.SecurityKeyApplication {
+    color: var(--foreground-disabled-color);
+    font-size: 10pt;
+}
