@@ -33,19 +33,8 @@ function KeyList({keys, title, after, onManageKey}) {
     </VerticalLayout>
 }
 
-function SecurityKeysUi({password}) {
-    const [keys, setKeys] = useState([]);
+function SecurityKeysUi({password, onUpdateKeys, keys}) {
     const {t} = useTranslation();
-
-    const updateKeys = async () => {
-        setKeys(await Fetch.post("/api/user/keys", {
-            password: password
-        }));
-    }
-
-    useEffect(() => {
-        updateKeys();
-    }, []);
 
     const manageKey = key => {
         Modal.mount(<Modal heading={t("SECURITY_KEY_DEREGISTER")} buttons={[
@@ -60,8 +49,7 @@ function SecurityKeysUi({password}) {
                             password: password
                         });
 
-                        await updateKeys();
-                        Modal.unmount();
+                        await onUpdateKeys();
                     } catch (err) {
                         Modal.mount(<ErrorModal error={err}/>)
                     }
@@ -90,7 +78,7 @@ function SecurityKeysUi({password}) {
             return;
         }
 
-        Modal.mount(<RegisterSecurityKeyModal type={type} password={password} onDone={updateKeys}/>)
+        Modal.mount(<RegisterSecurityKeyModal type={type} password={password} onDone={onUpdateKeys}/>)
     };
 
     return <>
@@ -153,7 +141,7 @@ export default function SecurityKeys() {
 
         Modal.mount(<LoadingModal/>);
         try {
-            setSecurityKeyState(await Fetch.post("/api/user/otp", {
+            setSecurityKeyState(await Fetch.post("/api/user/keys", {
                 password: password
             }));
             Modal.unmount();
@@ -188,7 +176,7 @@ export default function SecurityKeys() {
             </VerticalLayout>
         </Container>
     } else {
-        content = <SecurityKeysUi password={password}/>
+        content = <SecurityKeysUi password={password} onUpdateKeys={updateState} keys={securityKeyState}/>
     }
 
     return <div>
