@@ -10,7 +10,8 @@ public enum IndexItemType
     CumulativeWarning, //Warnings not superseded by errors
     PassedChecks,
     Complete,
-    TranslationString
+    TranslationString,
+    OutOfDate
 }
 
 public class IndexItem

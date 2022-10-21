@@ -90,6 +90,7 @@ public class UserController : Controller
                     "com.vicr123.accounts.Error.TwoFactorRequired" => "OtpRequired",
                     "com.vicr123.accounts.Error.PasswordResetRequired" => "PasswordResetRequired",
                     "com.vicr123.accounts.Error.PasswordResetRequestRequired" => "PasswordResetRequestRequired",
+                    "com.vicr123.accounts.Error.NoAccount" => "NoAccount",
                     _ => "Failed"
                 }
             });
@@ -146,8 +147,6 @@ public class UserController : Controller
                         Token = await _accountsService.ProvisionTokenViaFido(fidoData.KeyTokenId.Value,
                             fidoData.KeyResponse)
                     });
-
-                    break;
             }
 
             return this.ClientError(ParlanceClientError.BadTokenRequestType);

@@ -4,6 +4,7 @@
   "private": true,
   "dependencies": {
     "crypto-js": "^4.1.1",
+    "diff": "^5.1.0",
     "eventemitter3": "^4.0.7",
     "http-proxy-middleware": "^2.0.6",
     "i18next": "^21.9.0",

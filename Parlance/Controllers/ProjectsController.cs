@@ -7,6 +7,7 @@ using Parlance.CldrData;
 using Parlance.Helpers;
 using Parlance.Project;
 using Parlance.Project.Index;
+using Parlance.Project.SourceStrings;
 using Parlance.Project.TranslationFiles;
 using Parlance.Services.Permissions;
 using Parlance.Services.Projects;
@@ -21,14 +22,16 @@ public class ProjectsController : Controller
     private readonly IParlanceIndexingService _indexingService;
     private readonly IPermissionsService _permissionsService;
     private readonly IProjectService _projectService;
+    private readonly IParlanceSourceStringsService _sourceStringsService;
 
     public ProjectsController(IProjectService projectService,
         IPermissionsService permissionsService,
-        IParlanceIndexingService indexingService)
+        IParlanceIndexingService indexingService, IParlanceSourceStringsService sourceStringsService)
     {
         _projectService = projectService;
         _permissionsService = permissionsService;
         _indexingService = indexingService;
+        _sourceStringsService = sourceStringsService;
     }
 
     [HttpGet]
@@ -235,16 +238,18 @@ public class ProjectsController : Controller
         try
         {
             var p = await _projectService.ProjectBySystemName(project);
-            await using var translationFile = await p.GetParlanceProject().SubprojectBySystemName(subproject)
-                .Language(language.ToLocale()).CreateTranslationFile(_indexingService);
+            var subprojectLanguage = p.GetParlanceProject().SubprojectBySystemName(subproject)
+                .Language(language.ToLocale());
+            await using var translationFile = await subprojectLanguage.CreateTranslationFile(_indexingService);
             if (translationFile is null) return NotFound();
 
             Response.Headers["X-Parlance-Hash"] = new StringValues(translationFile.Hash);
 
-            return Json(translationFile.Entries.Select(entry => new
+            return Json(await Task.WhenAll(translationFile.Entries.Select(async entry => new
             {
-                entry.Key, entry.Context, entry.Source, entry.Translation, entry.RequiresPluralisation
-            }));
+                entry.Key, entry.Context, entry.Source, entry.Translation, entry.RequiresPluralisation,
+                OldSourceString = await _sourceStringsService.GetSourceStringChange(subprojectLanguage, entry)
+            })));
         }
         catch (SubprojectNotFoundException)
         {
@@ -264,8 +269,9 @@ public class ProjectsController : Controller
         try
         {
             var p = await _projectService.ProjectBySystemName(project);
-            await using var translationFile = await p.GetParlanceProject().SubprojectBySystemName(subproject)
-                .Language(language.ToLocale()).CreateTranslationFile(_indexingService);
+            var subprojectLanguage = p.GetParlanceProject().SubprojectBySystemName(subproject)
+                .Language(language.ToLocale());
+            await using var translationFile = await subprojectLanguage.CreateTranslationFile(_indexingService);
             if (translationFile is null) return NotFound();
 
             Response.Headers["X-Parlance-Hash"] = new StringValues(translationFile.Hash);
@@ -273,7 +279,8 @@ public class ProjectsController : Controller
             var entry = translationFile.Entries.Single(entry => entry.Key == key);
             return Json(new
             {
-                entry.Key, entry.Context, entry.Source, entry.Translation, entry.RequiresPluralisation
+                entry.Key, entry.Context, entry.Source, entry.Translation, entry.RequiresPluralisation,
+                OldSourceString = await _sourceStringsService.GetSourceStringChange(subprojectLanguage, entry)
             });
         }
         catch (InvalidOperationException)
@@ -291,14 +298,19 @@ public class ProjectsController : Controller
         try
         {
             var p = await _projectService.ProjectBySystemName(project);
-            await using var translationFile = await p.GetParlanceProject().SubprojectBySystemName(subproject)
-                .Language(language.ToLocale()).CreateTranslationFile(_indexingService);
+            var subprojectLanguage = p.GetParlanceProject().SubprojectBySystemName(subproject)
+                .Language(language.ToLocale());
+            await using var translationFile = await subprojectLanguage.CreateTranslationFile(_indexingService);
             if (translationFile is null) return NotFound();
 
             if (!Request.Headers.IfMatch.Contains(translationFile.Hash)) return StatusCode(412); //Precondition Failed
 
             var entry = translationFile.Entries.Single(entry => entry.Key == key);
             entry.Translation = data.TranslationStrings;
+
+            //Record this edit in the database
+            await _sourceStringsService.RegisterSourceStringChange(subprojectLanguage, entry);
+
             await translationFile.Save();
 
             Response.Headers["X-Parlance-Hash"] = new StringValues(translationFile.Hash);
@@ -324,8 +336,9 @@ public class ProjectsController : Controller
         try
         {
             var p = await _projectService.ProjectBySystemName(project);
-            await using var translationFile = await p.GetParlanceProject().SubprojectBySystemName(subproject)
-                .Language(language.ToLocale()).CreateTranslationFile(_indexingService);
+            var subprojectLanguage = p.GetParlanceProject().SubprojectBySystemName(subproject)
+                .Language(language.ToLocale());
+            await using var translationFile = await subprojectLanguage.CreateTranslationFile(_indexingService);
             if (translationFile is null) return NotFound();
 
             if (!Request.Headers.IfMatch.Contains(translationFile.Hash)) return StatusCode(412); //Precondition Failed
@@ -334,9 +347,13 @@ public class ProjectsController : Controller
             {
                 var entry = translationFile.Entries.Single(entry => entry.Key == key);
                 entry.Translation = translationData.TranslationStrings;
+
+                //Record this edit in the database
+                await _sourceStringsService.RegisterSourceStringChange(subprojectLanguage, entry);
             }
 
             await translationFile.Save();
+
 
             Response.Headers["X-Parlance-Hash"] = new StringValues(translationFile.Hash);
 

@@ -20,7 +20,7 @@
 
 .sourceTranslationContainer {
     padding: 9px;
-    height: 100px;
+    min-height: 100px;
     border-bottom: 1px solid var(--border-color);
 }
 

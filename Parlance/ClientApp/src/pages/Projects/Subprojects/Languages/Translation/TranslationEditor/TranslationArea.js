@@ -118,7 +118,8 @@ export default function TranslationArea({entries, translationDirection, translat
             <div className={Styles.sourceTranslationContainer}>
                 <div
                     className={Styles.sourceTranslationIndicator}>{t("TRANSLATION_AREA_SOURCE_TRANSLATION_TITLE")}</div>
-                <TranslationSlateEditor value={entry.source} translationFileType={translationFileType}
+                <TranslationSlateEditor value={entry.source} diffWith={entry.oldSourceString}
+                                        translationFileType={translationFileType}
                                         translationDirection={translationDirection} readOnly={true} onChange={() => {
                 }}/>
             </div>

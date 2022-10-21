@@ -39,7 +39,7 @@ function checkQtNumericPlaceholders(source, translation) {
 }
 
 function checki18nextPlaceholders(source, translation) {
-    return [...source.matchAll(/{{(.+)}}/g)].flatMap(placeholder => {
+    return [...source.matchAll(/{{(.+?)}}/g)].flatMap(placeholder => {
         let ph = placeholder[1];
         if (!translation.includes(`{{${ph}}}`)) {
             return {

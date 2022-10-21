@@ -2,18 +2,20 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Parlance.Database;
 
 #nullable disable
 
-namespace Parlance.Migrations
+namespace Parlance.Database.Migrations
 {
     [DbContext(typeof(ParlanceContext))]
-    partial class ParlanceContextModelSnapshot : ModelSnapshot
+    [Migration("20221007111727_SecurityKey")]
+    partial class SecurityKey
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -128,35 +130,39 @@ namespace Parlance.Migrations
                     b.ToTable("Projects", (string)null);
                 });
 
-            modelBuilder.Entity("Parlance.Database.Models.SourceStrings", b =>
+            modelBuilder.Entity("Parlance.Database.Models.SecurityKey", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<string>("Key")
+                    b.Property<Guid>("AaGuid")
+                        .HasColumnType("uuid");
+
+                    b.Property<long>("Counter")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("CredType")
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("Language")
+                    b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("Project")
+                    b.Property<byte[]>("PublicKey")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("bytea");
 
-                    b.Property<string>("SourceTranslation")
-                        .IsRequired()
-                        .HasColumnType("text");
+                    b.Property<DateTime>("RegistrationDate")
+                        .HasColumnType("timestamp with time zone");
 
-                    b.Property<string>("Subproject")
-                        .IsRequired()
-                        .HasColumnType("text");
+                    b.Property<decimal>("UserId")
+                        .HasColumnType("numeric(20,0)");
 
                     b.HasKey("Id");
 
-                    b.ToTable("SourceStrings", (string)null);
+                    b.ToTable("SecurityKeys", (string)null);
                 });
 
             modelBuilder.Entity("Parlance.Database.Models.SshKey", b =>

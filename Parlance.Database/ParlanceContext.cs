@@ -16,7 +16,7 @@ public class ParlanceContext : DbContext
     public DbSet<Permission> Permissions { get; set; } = null!;
     public DbSet<IndexItem> Index { get; set; } = null!;
     public DbSet<Alert> Alerts { get; set; } = null!;
-    public DbSet<SecurityKey> SecurityKeys { get; set; } = null!;
+    public DbSet<SourceStrings> SourceStrings { get; set; } = null!;
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -28,7 +28,7 @@ public class ParlanceContext : DbContext
         modelBuilder.Entity<Permission>().ToTable("Permissions");
         modelBuilder.Entity<IndexItem>().ToTable("Index");
         modelBuilder.Entity<Alert>().ToTable("Alerts");
-        modelBuilder.Entity<SecurityKey>().ToTable("SecurityKeys");
+        modelBuilder.Entity<SourceStrings>().ToTable("SourceStrings");
     }
 }
 

@@ -15,3 +15,16 @@
 .hidden {
     display: none;
 }
+
+.diff {
+
+}
+
+.diffAdd {
+    background-color: rgba(0, 200, 0, 0.3);
+}
+
+.diffRemove {
+    background-color: rgba(200, 0, 0, 0.3);
+    text-decoration: line-through;
+}

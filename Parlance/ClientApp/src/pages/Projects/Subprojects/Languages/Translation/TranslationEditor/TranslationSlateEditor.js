@@ -1,10 +1,11 @@
-import {useEffect, useState} from "react";
+import {useCallback, useEffect, useState} from "react";
 import {Editable, Slate, withReact} from "slate-react";
 import {createEditor, Node, Transforms} from "slate";
 import Styles from "./TranslationSlateEditor.module.css";
 import Placeholders from "./Placeholders";
 import {useTranslation} from "react-i18next";
 import {useHotkeys} from "react-hotkeys-hook";
+import {diffWords} from "diff";
 
 function Placeholder({attributes, direction, hasFocus, preview, children}) {
     let contents = children;
@@ -42,7 +43,8 @@ export function TranslationSlateEditor({
                                            readOnly,
                                            onTranslationUpdate,
                                            onChange,
-                                           pluralExample
+                                           pluralExample,
+                                           diffWith
                                        }) {
     const [editor] = useState(() => withReact(createEditor()));
     const [hasFocus, setHasFocus] = useState(false);
@@ -60,25 +62,63 @@ export function TranslationSlateEditor({
     }, [onTranslationUpdate]);
 
     useEffect(() => {
-        if (value === editor.children.map(n => Node.string(n)).join("\n")) return;
+        if (diffWith) {
+            let changes = diffWords(diffWith, value);
+            console.log(changes);
 
-        while (editor.children.length !== 1) {
+            while (editor.children.length !== 1) {
+                Transforms.removeNodes(editor, {
+                    at: [0]
+                })
+            }
+
+            for (let change of changes) {
+                Transforms.insertNodes(editor, {
+                    type: change.added ? "add" : (change.removed ? "remove" : "diff"),
+                    children: [{text: change.value}]
+                }, {
+                    at: [editor.children.length]
+                });
+            }
+
+            Transforms.insertNodes(editor, {
+                type: "paragraph",
+                children: [{text: ""}]
+            }, {
+                at: [editor.children.length]
+            });
+
+            Transforms.insertNodes(editor, {
+                type: "paragraph",
+                children: [{text: value}]
+            }, {
+                at: [editor.children.length]
+            });
+
             Transforms.removeNodes(editor, {
                 at: [0]
-            })
+            });
+        } else {
+            if (value === editor.children.map(n => Node.string(n)).join("\n")) return;
+
+            while (editor.children.length !== 1) {
+                Transforms.removeNodes(editor, {
+                    at: [0]
+                })
+            }
+
+            Transforms.insertNodes(editor, {
+                type: "paragraph",
+                children: [{text: value}]
+            }, {
+                at: [editor.children.length]
+            });
+
+            Transforms.removeNodes(editor, {
+                at: [0]
+            });
         }
-
-        Transforms.insertNodes(editor, {
-            type: "paragraph",
-            children: [{text: value}]
-        }, {
-            at: [editor.children.length]
-        });
-
-        Transforms.removeNodes(editor, {
-            at: [0]
-        });
-    }, [value])
+    }, [value, diffWith])
     useEffect(() => {
         editor.onChange();
     }, [hasFocus]);
@@ -120,6 +160,19 @@ export function TranslationSlateEditor({
         });
     }
 
+    const renderElement = useCallback(({attributes, children, element}) => {
+        switch (element.type) {
+            case "paragraph":
+                return <div {...attributes}>{children}</div>
+            case "diff":
+                return <span className={Styles.diff} {...attributes}>{children}</span>
+            case "add":
+                return <span className={Styles.diffAdd} {...attributes}>{children}</span>
+            case "remove":
+                return <span className={Styles.diffRemove} {...attributes}>{children}</span>
+        }
+    })
+
     const focus = () => {
         setHasFocus(true);
     }
@@ -133,7 +186,7 @@ export function TranslationSlateEditor({
         type: "paragraph",
         children: [{text: "Loading"}]
     }]} onChange={changeEvent}>
-        <Editable renderLeaf={Leaf} decorate={decorate} onBlur={blur}
+        <Editable renderLeaf={Leaf} decorate={decorate} onBlur={blur} renderElement={renderElement}
                   onFocus={focus} readOnly={readOnly}/>
     </Slate>
 }

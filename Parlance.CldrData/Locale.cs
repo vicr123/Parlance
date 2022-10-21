@@ -1,4 +1,6 @@
 using System.Collections.Concurrent;
+using System.Text;
+using System.Text.Json;
 using Sepia.Globalization;
 using Sepia.Globalization.Plurals;
 
@@ -28,6 +30,11 @@ public record Locale(string LanguageCode, string? CountryCode, string? Script)
         return string.Join('_', parts);
     }
 
+    public string ToDatabaseRepresentation()
+    {
+        return Encoding.UTF8.GetString(JsonSerializer.SerializeToUtf8Bytes(this));
+    }
+
     public IReadOnlyList<LocalePluralRule> PluralRules()
     {
         if (PluralCache.ContainsKey(this)) return PluralCache[this];
@@ -36,28 +43,29 @@ public record Locale(string LanguageCode, string? CountryCode, string? Script)
         var plural = Plural.Create(Sepia.Globalization.Locale.Create(LanguageCode == "de" ? "en" : ToUnderscored()));
 
         var result = Enumerable.Range(0, 201).Select(num =>
-        {
-            try
             {
-                return new
+                try
                 {
-                    Category = plural.Category(num),
-                    Number = num
-                };
-            }
-            catch
-            {
-                return new
+                    return new
+                    {
+                        Category = plural.Category(num),
+                        Number = num
+                    };
+                }
+                catch
                 {
-                    Category = "other",
-                    Number = num
-                };
-            }
-        })
-        .GroupBy(item => item.Category)
-        .Select((item, index) => new LocalePluralRule(item.Key, item.Select(x => x.Number).ToList(), item.Key == "other" ? 99 : index))
-        .OrderBy(item => item.Index)
-        .ToList();
+                    return new
+                    {
+                        Category = "other",
+                        Number = num
+                    };
+                }
+            })
+            .GroupBy(item => item.Category)
+            .Select((item, index) => new LocalePluralRule(item.Key, item.Select(x => x.Number).ToList(),
+                item.Key == "other" ? 99 : index))
+            .OrderBy(item => item.Index)
+            .ToList();
 
         PluralCache.TryAdd(this, result);
         return result;
