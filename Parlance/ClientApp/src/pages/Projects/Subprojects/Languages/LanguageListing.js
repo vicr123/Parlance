@@ -11,11 +11,14 @@ import Modal from "../../../../components/Modal";
 import {useTranslation} from "react-i18next";
 import ErrorModal from "../../../../components/modals/ErrorModal";
 import LoadingModal from "../../../../components/modals/LoadingModal";
+import {VerticalSpacer} from "../../../../components/Layouts";
+import BackButton from "../../../../components/BackButton";
 
-export default function (props) {
+export default function LanguageListing() {
     const [ignored, forceUpdate] = useReducer(x => x + 1, 0);
     const {project, subproject} = useParams();
     const [languages, setLanguages] = useState([]);
+    const [done, setDone] = useState(false);
     const navigate = useNavigate();
     const {t} = useTranslation();
 
@@ -24,6 +27,7 @@ export default function (props) {
     const updateProjects = async () => {
         let subprojectData = await Fetch.get(`/api/projects/${project}/${subproject}`);
         setLanguages(subprojectData.availableLanguages);
+        setDone(true);
     };
 
     useEffect(() => {
@@ -69,13 +73,15 @@ export default function (props) {
     }
 
     return <div>
+        <BackButton text={t("BACK_TO_SUBPROJECTS")} onClick={() => navigate("../..")}/>
+        <VerticalSpacer/>
         <Container>
             <PageHeading level={3}>{t("AVAILABLE_LANGUAGES")}</PageHeading>
-            <SelectableList items={showLanguages.map(p => ({
+            <SelectableList items={done ? showLanguages.map(p => ({
                 contents: <TranslationProgressIndicator title={i18n.humanReadableLocale(p.language)}
                                                         data={p.completionData}/>,
                 onClick: () => translationClicked(p.language)
-            }))}/>
+            })) : TranslationProgressIndicator.PreloadContents()}/>
         </Container>
     </div>
 }

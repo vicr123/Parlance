@@ -1,4 +1,4 @@
-import {useParams} from "react-router-dom";
+import {useNavigate, useParams} from "react-router-dom";
 import {useTranslation} from "react-i18next";
 import Container from "../../../../components/Container";
 import PageHeading from "../../../../components/PageHeading";
@@ -11,6 +11,7 @@ import Modal from "../../../../components/Modal";
 import LoadingModal from "../../../../components/modals/LoadingModal";
 import ErrorModal from "../../../../components/modals/ErrorModal";
 import {VerticalLayout, VerticalSpacer} from "../../../../components/Layouts";
+import BackButton from "../../../../components/BackButton";
 
 function Commit({commit}) {
     return <div className={Styles.commitContainer}>
@@ -23,6 +24,7 @@ export default function VersionControl() {
     const [vcsState, setVcsState] = useState();
     const {project} = useParams();
     const {t} = useTranslation();
+    const navigate = useNavigate();
 
     const cloneUrl = `${window.location.protocol}//${window.location.host}/git/${project}/`;
 
@@ -171,6 +173,8 @@ export default function VersionControl() {
     }
 
     return <div>
+        <BackButton text={t("BACK_TO_SUBPROJECTS")} onClick={() => navigate("..")}/>
+        <VerticalSpacer/>
         <Container>
             <PageHeading level={3}>{t("VCS_GIT")}</PageHeading>
             <div className={Styles.infoGrid}>

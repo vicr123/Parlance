@@ -1,5 +1,7 @@
 import Styles from "./TranslationProgressIndicator.module.css";
 import {useTranslation} from "react-i18next";
+import SelectableList from "./SelectableList";
+import React from "react";
 
 const percent = value => `${value * 100}%`;
 
@@ -64,3 +66,42 @@ export default function TranslationProgressIndicator({title, data}) {
         <TranslationProgressBar data={data} className={Styles.progress}/>
     </div>
 }
+
+TranslationProgressIndicator.Preloading = function () {
+    return <div className={Styles.root}>
+        <SelectableList.PreloadingBlock className={Styles.title}/>
+        <div className={Styles.metrics}>
+            <SelectableList.PreloadingBlock className={Styles.metric}>
+                <span className={Styles.metricValue}>20</span>
+                <span className={Styles.metricTitle}>TEXT</span>
+            </SelectableList.PreloadingBlock>
+            <SelectableList.PreloadingBlock className={Styles.metric}>
+                <span className={Styles.metricValue}>20</span>
+                <span className={Styles.metricTitle}>TEXT</span>
+            </SelectableList.PreloadingBlock>
+            <SelectableList.PreloadingBlock className={Styles.metric}>
+                <span className={Styles.metricValue}>20</span>
+                <span className={Styles.metricTitle}>TEXT</span>
+            </SelectableList.PreloadingBlock>
+            <SelectableList.PreloadingBlock className={Styles.metric}>
+                <span className={Styles.metricValue}>20</span>
+                <span className={Styles.metricTitle}>TEXT</span>
+            </SelectableList.PreloadingBlock>
+            <SelectableList.PreloadingBlock className={Styles.metric}>
+                <span className={Styles.metricValue}>20</span>
+                <span className={Styles.metricTitle}>TEXT</span>
+            </SelectableList.PreloadingBlock>
+        </div>
+        <SelectableList.PreloadingBlock className={Styles.progress}/>
+    </div>
+}
+
+TranslationProgressIndicator.PreloadContents = function (num = 3) {
+    let arr = [];
+    for (let i = 0; i < num; i++) {
+        arr.push({
+            contents: <TranslationProgressIndicator.Preloading/>
+        });
+    }
+    return arr;
+};
