@@ -20,8 +20,11 @@
 
 .sourceTranslationContainer {
     padding: 9px;
-    min-height: 100px;
     border-bottom: 1px solid var(--border-color);
+}
+
+.sourceTranslationContainerInner {
+    min-height: 100px;
 }
 
 .sourceTranslation {
@@ -133,4 +136,20 @@
 .navButtonSource {
     font-size: 10pt;
     color: var(--foreground-disabled-color);
+}
+
+.keyContainer {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+
+    font-size: 10pt;
+    color: var(--foreground-disabled-color);
+}
+
+.keyText {
+    display: inline-block;
+    max-width: 300px;
+    text-overflow: ellipsis;
+    overflow-x: hidden;
 }

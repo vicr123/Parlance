@@ -4,10 +4,11 @@ import {useTranslation} from "react-i18next";
 import i18n from "../../../../../../helpers/i18n";
 import {Fragment, useEffect, useState} from "react";
 import {checkTranslation} from "../../../../../../checks";
-import {VerticalLayout} from "../../../../../../components/Layouts";
+import {VerticalLayout, VerticalSpacer} from "../../../../../../components/Layouts";
 import {TranslationSlateEditor} from "./TranslationSlateEditor";
 import Button from "../../../../../../components/Button";
 import useTranslationEntries from "./EntryUtils";
+import KeyboardShortcut from "../../../../../../components/KeyboardShortcut";
 
 function TranslationPart({
                              entry,
@@ -87,16 +88,18 @@ function TranslationPart({
 }
 
 export default function TranslationArea({entries, translationDirection, translationFileType, onPushUpdate, canEdit}) {
-    const {key} = useParams();
     const {t} = useTranslation();
     const {
         entry,
+        prev,
+        next,
         nextUnfinished,
         prevUnfinished,
+        goToPrev,
+        goToNext,
         goToPrevUnfinished,
         goToNextUnfinished
     } = useTranslationEntries(entries);
-
 
     if (!entry) {
         return <div>Not Found!!!</div>
@@ -116,15 +119,21 @@ export default function TranslationArea({entries, translationDirection, translat
         <div className={Styles.translationAreaInner}>
             {statusAlerts}
             <div className={Styles.sourceTranslationContainer}>
-                <div
-                    className={Styles.sourceTranslationIndicator}>{t("TRANSLATION_AREA_SOURCE_TRANSLATION_TITLE")}</div>
-                <TranslationSlateEditor value={entry.source} diffWith={entry.oldSourceString}
-                                        translationFileType={translationFileType}
-                                        translationDirection={translationDirection} readOnly={true} onChange={() => {
-                }}/>
+                <div className={Styles.sourceTranslationContainerInner}>
+                    <div
+                        className={Styles.sourceTranslationIndicator}>{t("TRANSLATION_AREA_SOURCE_TRANSLATION_TITLE")}</div>
+                    <TranslationSlateEditor value={entry.source} diffWith={entry.oldSourceString}
+                                            translationFileType={translationFileType}
+                                            translationDirection={translationDirection} readOnly={true}
+                                            onChange={() => {
+                                            }}/>
+                </div>
+                <div className={Styles.keyContainer}>
+                    <span className={Styles.keyText}>{entry.key}</span>
+                </div>
             </div>
             {entry.translation.map((pform, idx) => {
-                const translationUpdate = (contents) => {
+                const translationUpdate = (contents, key) => {
                     onPushUpdate(key, {
                         translationStrings: entry.translation.map((pform2, idx2) => {
                             if (idx === idx2) {
@@ -152,6 +161,7 @@ export default function TranslationArea({entries, translationDirection, translat
                         <div className={Styles.navButtonContents}>
                             <span>{t("TRANSLATION_AREA_PREVIOUS_UNFINISHED")}</span>
                             <span className={Styles.navButtonSource}>{prevUnfinished?.source}</span>
+                            <KeyboardShortcut shortcut={["CTRL", "LEFT"]}/>
                         </div>
                     </Button>
                 </div>
@@ -160,6 +170,28 @@ export default function TranslationArea({entries, translationDirection, translat
                         <div className={Styles.navButtonContents}>
                             <span>{t("TRANSLATION_AREA_NEXT_UNFINISHED")}</span>
                             <span className={Styles.navButtonSource}>{nextUnfinished?.source}</span>
+                            <VerticalSpacer height={2}/>
+                            <KeyboardShortcut shortcut={["CTRL", "ENTER"]}/>
+                        </div>
+                    </Button>
+                </div>
+            </div>
+            <div className={Styles.controls}>
+                <div className={Styles.controlArea}>
+                    <Button onClick={goToPrev} disabled={!prev}>
+                        <div className={Styles.navButtonContents}>
+                            <span>{t("TRANSLATION_AREA_PREVIOUS")}</span>
+                            <span className={Styles.navButtonSource}>{prev?.source}</span>
+                            <KeyboardShortcut shortcut={["CTRL", "UP"]}/>
+                        </div>
+                    </Button>
+                </div>
+                <div className={Styles.controlArea}>
+                    <Button onClick={goToNext} disabled={!next}>
+                        <div className={Styles.navButtonContents}>
+                            <span>{t("TRANSLATION_AREA_NEXT")}</span>
+                            <span className={Styles.navButtonSource}>{next?.source}</span>
+                            <KeyboardShortcut shortcut={["CTRL", "DOWN"]}/>
                         </div>
                     </Button>
                 </div>

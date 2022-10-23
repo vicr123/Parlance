@@ -9,10 +9,10 @@ import {useUpdateManager} from "./UpdateManager";
 import i18n from "../../../../../../helpers/i18n";
 import Modal from "../../../../../../components/Modal";
 import {useTranslation} from "react-i18next";
-import {useHotkeys} from "react-hotkeys-hook";
 import useTranslationEntries from "./EntryUtils";
+import useHotkeys from "@reecelucas/react-use-hotkeys";
 
-export default function TranslationEditor(props) {
+export default function TranslationEditor() {
     const {project, subproject, language, key} = useParams();
     const [entries, setEntries] = useState([]);
     const [subprojectData, setSubprojectData] = useState({});
@@ -20,16 +20,27 @@ export default function TranslationEditor(props) {
     const [ready, setReady] = useState(false);
     const {
         goToPrevUnfinished,
-        goToNextUnfinished
+        goToNextUnfinished,
+        goToNext,
+        goToPrev
     } = useTranslationEntries(entries);
     const {t} = useTranslation();
 
-    useHotkeys("ctrl+enter", goToNextUnfinished, {
-        enableOnTags: ["INPUT", "TEXTAREA", "SELECT"],
+    useHotkeys("Control+Enter", goToNextUnfinished, {
         enableOnContentEditable: true
     });
-    useHotkeys("ctrl+up", goToPrevUnfinished);
-    useHotkeys("ctrl+down", goToNextUnfinished);
+    useHotkeys("Control+ArrowLeft", goToPrevUnfinished, {
+        enableOnContentEditable: true
+    });
+    useHotkeys("Control+ArrowRight", goToNextUnfinished, {
+        enableOnContentEditable: true
+    });
+    useHotkeys("Control+ArrowUp", goToPrev, {
+        enableOnContentEditable: true
+    });
+    useHotkeys("Control+ArrowDown", goToNext, {
+        enableOnContentEditable: true
+    });
 
     const updateManager = useUpdateManager();
     updateManager.on("outOfDate", () => {

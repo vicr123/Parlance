@@ -4,8 +4,8 @@ import {createEditor, Node, Transforms} from "slate";
 import Styles from "./TranslationSlateEditor.module.css";
 import Placeholders from "./Placeholders";
 import {useTranslation} from "react-i18next";
-import {useHotkeys} from "react-hotkeys-hook";
 import {diffWords} from "diff";
+import {useLocation, useParams} from "react-router-dom";
 
 function Placeholder({attributes, direction, hasFocus, preview, children}) {
     let contents = children;
@@ -46,20 +46,20 @@ export function TranslationSlateEditor({
                                            pluralExample,
                                            diffWith
                                        }) {
+    const {key} = useParams();
+    const [currentKey, setCurrentKey] = useState(null);
     const [editor] = useState(() => withReact(createEditor()));
     const [hasFocus, setHasFocus] = useState(false);
+    const location = useLocation();
 
     const forceSave = () => {
-        onTranslationUpdate(editor.children.map(n => Node.string(n)).join("\n"));
+        onTranslationUpdate?.(editor.children.map(n => Node.string(n)).join("\n"), currentKey);
     }
 
-    useHotkeys("ctrl+enter", () => {
-        forceSave();
-    }, {
-        enableOnTags: ["INPUT", "TEXTAREA", "SELECT"],
-        enableOnContentEditable: true,
-        filter: () => hasFocus
-    }, [onTranslationUpdate]);
+    useEffect(() => {
+        if (currentKey) forceSave();
+        setCurrentKey(key);
+    }, [location])
 
     useEffect(() => {
         if (diffWith) {

@@ -10,15 +10,27 @@ export default function useTranslationEntries(entries) {
 
     const entryIndex = entries.findIndex(entry => entry.key === key);
     const entry = entries[entryIndex];
+    const next = entries.find((entry, idx) => idx > entryIndex);
+    const prev = entries.findLast((entry, idx) => idx < entryIndex);
     const nextUnfinished = entries.find((entry, idx) => idx > entryIndex && entry.translation.every(translation => translation?.translationContent === ""));
     const prevUnfinished = entries.findLast((entry, idx) => idx < entryIndex && entry.translation.every(translation => translation?.translationContent === ""));
 
     return {
         entryIndex,
         entry,
+        next,
+        prev,
         nextUnfinished,
         prevUnfinished,
         goToEntry,
+        goToNext: () => {
+            if (!next) return;
+            goToEntry(next.key);
+        },
+        goToPrev: () => {
+            if (!prev) return;
+            goToEntry(prev.key);
+        },
         goToPrevUnfinished: () => {
             if (!prevUnfinished) return;
             goToEntry(prevUnfinished.key);

@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@reecelucas/react-use-hotkeys": "^2.0.0",
     "crypto-js": "^4.1.1",
     "diff": "^5.1.0",
     "eventemitter3": "^4.0.7",

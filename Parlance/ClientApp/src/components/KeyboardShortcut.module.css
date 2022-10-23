@@ -1,0 +1,13 @@
+.shortcutContainer {
+    display: flex;
+    flex-direction: row;
+    gap: 2px;
+}
+
+.shortcut {
+    font-size: 10pt;
+    background-color: var(--foreground-color);
+    color: var(--background-color);
+    padding: 2px;
+    border-radius: 2px;
+}
