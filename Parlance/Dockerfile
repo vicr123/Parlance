@@ -6,7 +6,7 @@ EXPOSE 443
 FROM archlinux AS build
 
 # Install Node.js
-RUN pacman -Sy --noconfirm nodejs dotnet-runtime dotnet-sdk aspnet-targeting-pack npm && rm -rf /var/lib/pacman/sync
+RUN pacman -Syu --noconfirm nodejs dotnet-runtime dotnet-sdk aspnet-targeting-pack npm && rm -rf /var/lib/pacman/sync
 
 WORKDIR /src
 COPY ["Parlance/Parlance.csproj", "Parlance/"]
