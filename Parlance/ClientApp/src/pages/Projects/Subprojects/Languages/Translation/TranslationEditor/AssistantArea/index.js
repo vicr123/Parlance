@@ -1,0 +1,69 @@
+import Styles from "./index.module.css";
+import {useParams} from "react-router-dom";
+import {VerticalLayout} from "../../../../../../../components/Layouts";
+import PageHeading from "../../../../../../../components/PageHeading";
+import {useTranslation} from "react-i18next";
+import MicrosoftEngine from "./MicrosoftEngine";
+import useTranslationEntries from "../EntryUtils";
+import {useEffect, useState} from "react";
+
+function SuggestedTranslation({suggestion}) {
+    const {t} = useTranslation();
+
+    let type;
+    switch (suggestion.type) {
+        case "microsoft":
+            type = t("Microsoft Terminology Collection")
+            break;
+    }
+
+    return <div className={Styles.suggestedTranslation}>
+        <div className={Styles.suggestedSource}>{suggestion.source}</div>
+        <div className={Styles.suggestedTranslationTranslation}>{suggestion.translation}</div>
+    </div>
+}
+
+export default function AssistantArea({entries}) {
+    const {project, subproject, language, key} = useParams();
+    const [suggested, setSuggested] = useState([]);
+    const {entry} = useTranslationEntries(entries);
+    const {t} = useTranslation();
+
+    useEffect(() => {
+        setSuggested([]);
+
+        let timeout = setTimeout(async () => {
+            let msTranslations = await MicrosoftEngine.findTranslations(entry.source, language);
+            setSuggested([...msTranslations]);
+        }, 500);
+
+        return () => clearTimeout(timeout);
+    }, [entry])
+
+    let suggestions = suggested.length === 0 ? <div>
+        {t("No suggestions found")}
+    </div> : suggested.map((result, i) => <SuggestedTranslation suggestion={result} key={i}/>)
+
+    return <div className={Styles.assistantArea}>
+        <div className={Styles.assistantAreaInner}>
+            <VerticalLayout className={Styles.pane}>
+                <div className={Styles.heading}>
+                    <PageHeading level={3}>{t("Assistant")}</PageHeading>
+                    <span>{t("The Assistant gives you helpful information to assist in creating translations.")}</span>
+                </div>
+            </VerticalLayout>
+            <VerticalLayout className={`${Styles.pane} ${Styles.heading}`}>
+                <PageHeading level={3}>{t("Suggested Translations")}</PageHeading>
+                {suggestions}
+            </VerticalLayout>
+            <VerticalLayout className={`${Styles.pane} ${Styles.heading}`}>
+                <PageHeading level={3}>{t("Resources")}</PageHeading>
+                <a href="https://www.microsoft.com/en-us/language" target={"_blank"}>Microsoft Terminology
+                    Collection</a>
+            </VerticalLayout>
+            <div className={Styles.disclaimer}>Microsoft Terminology Service API. © 2022 Microsoft Corporation. All
+                rights reserved.
+            </div>
+        </div>
+    </div>
+}

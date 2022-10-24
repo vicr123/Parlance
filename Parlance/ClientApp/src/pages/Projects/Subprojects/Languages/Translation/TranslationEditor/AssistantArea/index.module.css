@@ -1,0 +1,37 @@
+.assistantArea {
+    grid-area: extrasArea;
+}
+
+.assistantAreaInner {
+    position: sticky;
+    top: 0;
+}
+
+.pane {
+    border-bottom: 1px solid var(--border-color);
+}
+
+.heading {
+    padding: 9px;
+}
+
+.suggestedTranslation {
+    display: flex;
+    flex-direction: column;
+}
+
+.suggestedSource {
+    font-size: 10pt;
+    color: var(--foreground-disabled-color);
+}
+
+.suggestedTranslationTranslation {
+
+}
+
+.disclaimer {
+    padding: 9px;
+
+    font-size: 10pt;
+    color: var(--foreground-disabled-color);
+}

@@ -2,7 +2,7 @@ import Styles from "./index.module.css";
 import {useParams} from "react-router-dom";
 import EntryList from "./EntryList";
 import TranslationArea from "./TranslationArea";
-import ExtrasArea from "./ExtrasArea";
+import AssistantArea from "./AssistantArea";
 import {useEffect, useState} from "react";
 import Fetch from "../../../../../../helpers/Fetch";
 import {useUpdateManager} from "./UpdateManager";
@@ -115,7 +115,7 @@ export default function TranslationEditor() {
                        translationFileType={subprojectData.translationFileType}/>
             <TranslationArea onPushUpdate={pushUpdate} entries={entries} translationDirection={translationDirection}
                              translationFileType={subprojectData.translationFileType} canEdit={canEdit}/>
-            <ExtrasArea/>
+            <AssistantArea entries={entries}/>
         </div>
     } else {
         return <div className={Styles.root}>

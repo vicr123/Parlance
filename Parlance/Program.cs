@@ -16,6 +16,7 @@ using Parlance.VersionControl;
 using Parlance.VersionControl.Services;
 using Parlance.Vicr123Accounts;
 using Quartz;
+using ServiceReference;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -31,6 +32,7 @@ builder.Services.AddScoped<IProjectService, ProjectService>();
 builder.Services.AddScoped<ISuperuserService, SuperuserService>();
 builder.Services.AddScoped<IRemoteCommunicationService, RemoteCommunicationService>();
 builder.Services.AddScoped<IPermissionsService, PermissionsService>();
+builder.Services.AddSingleton<Terminology, TerminologyClient>();
 builder.Services.AddSingleton<IProjectUpdateQueue, ProjectUpdateQueue>();
 
 builder.Services.AddHostedService<ProjectUpdaterService>();

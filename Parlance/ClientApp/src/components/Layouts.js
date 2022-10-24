@@ -1,7 +1,7 @@
 import Styles from "./Layouts.module.css"
 
-export function VerticalLayout({children, gap = 6}) {
-    return <div className={Styles.verticalLayout} style={{
+export function VerticalLayout({children, gap = 6, className}) {
+    return <div className={`${className} ${Styles.verticalLayout}`} style={{
         gap: `${gap}px`
     }}>
         {children}

@@ -1,9 +1,6 @@
 .rootList {
     grid-area: entryList;
     border-right: 1px solid var(--border-color);
-
-    /*max-height: 100vh;*/
-    /*overflow-y: scroll;*/
 }
 
 .entryItem {
