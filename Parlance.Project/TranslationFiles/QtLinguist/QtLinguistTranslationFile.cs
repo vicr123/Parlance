@@ -62,9 +62,10 @@ public class QtLinguistTranslationFile : ParlanceTranslationFile, IParlanceDualT
                     }
                 },
             RequiresPluralisation = msg.Attribute("numerus")?.Value == "yes",
-            Locations = msg.Elements("location").Select(loc =>
-                new QtLinguistTranslationFileEntry.Location((string)loc.Attribute("filename")!,
-                    ((string)loc.Attribute("line"))!))
+            Locations = msg.Elements("location")
+                .Where(loc => loc.Attribute("filename") is not null && loc.Attribute("line") is not null).Select(loc =>
+                    new QtLinguistTranslationFileEntry.Location((string)loc.Attribute("filename")!,
+                        (string)loc.Attribute("line")!))
         }).Cast<IParlanceTranslationFileEntry>().ToList();
     }
 
