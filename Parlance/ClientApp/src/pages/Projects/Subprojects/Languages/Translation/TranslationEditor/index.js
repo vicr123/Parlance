@@ -1,9 +1,6 @@
 import Styles from "./index.module.css";
 import {useParams} from "react-router-dom";
-import EntryList from "./EntryList";
-import TranslationArea from "./TranslationArea";
-import AssistantArea from "./AssistantArea";
-import {useEffect, useState} from "react";
+import {lazy, Suspense, useEffect, useState} from "react";
 import Fetch from "../../../../../../helpers/Fetch";
 import {useUpdateManager} from "./UpdateManager";
 import i18n from "../../../../../../helpers/i18n";
@@ -11,6 +8,11 @@ import Modal from "../../../../../../components/Modal";
 import {useTranslation} from "react-i18next";
 import useTranslationEntries from "./EntryUtils";
 import useHotkeys from "@reecelucas/react-use-hotkeys";
+import Spinner from "../../../../../../components/Spinner";
+
+const EntryList = lazy(() => import("./EntryList"));
+const TranslationArea = lazy(() => import("./TranslationArea"));
+const AssistantArea = lazy(() => import("./AssistantArea"));
 
 export default function TranslationEditor() {
     const {project, subproject, language, key} = useParams();
@@ -110,16 +112,16 @@ export default function TranslationEditor() {
     };
 
     if (ready) {
-        return <div className={Styles.root}>
-            <EntryList entries={entries} translationDirection={translationDirection} updateManager={updateManager}
-                       translationFileType={subprojectData.translationFileType}/>
-            <TranslationArea onPushUpdate={pushUpdate} entries={entries} translationDirection={translationDirection}
-                             translationFileType={subprojectData.translationFileType} canEdit={canEdit}/>
-            <AssistantArea entries={entries}/>
-        </div>
+        return <Suspense fallback={<Spinner.Container/>}>
+            <div className={Styles.root}>
+                <EntryList entries={entries} translationDirection={translationDirection} updateManager={updateManager}
+                           translationFileType={subprojectData.translationFileType}/>
+                <TranslationArea onPushUpdate={pushUpdate} entries={entries} translationDirection={translationDirection}
+                                 translationFileType={subprojectData.translationFileType} canEdit={canEdit}/>
+                <AssistantArea entries={entries}/>
+            </div>
+        </Suspense>
     } else {
-        return <div className={Styles.root}>
-            Hang on...
-        </div>
+        return <Spinner.Container/>
     }
 }

@@ -15,7 +15,7 @@ import "./index.css";
 import Otp from "./Otp";
 import SecurityKeys from "./SecurityKeys";
 
-export default function () {
+export default function Account() {
     const [ignored, forceUpdate] = useReducer(x => x + 1, 0);
     const location = useLocation();
     const {t} = useTranslation();
@@ -61,7 +61,7 @@ export default function () {
                 key={location.pathname}
                 timeout={250}
                 classNames={"account-settings-lift"}>
-                <Routes location={useLocation()}>
+                <Routes location={location}>
                     <Route element={<AccountSettings/>} path={"/"}/>
                     <Route element={<UsernameChange/>} path={"/username"}/>
                     <Route element={<EmailChange/>} path={"/email"}/>

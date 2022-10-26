@@ -1,7 +1,7 @@
 import Container from "../components/Container";
 import PageHeading from "../components/PageHeading";
 
-export default function(props) {
+export default function UnknownPage() {
     return <div>
         <Container>
             <PageHeading level={1}>Are you lost?</PageHeading>

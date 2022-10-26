@@ -13,7 +13,7 @@ function SuggestedTranslation({suggestion}) {
     let type;
     switch (suggestion.type) {
         case "microsoft":
-            type = t("Microsoft Terminology Collection")
+            type = t("MICROSOFT_TERMINOLOGY_COLLECTION")
             break;
     }
 
@@ -41,25 +41,25 @@ export default function AssistantArea({entries}) {
     }, [entry])
 
     let suggestions = suggested.length === 0 ? <div>
-        {t("No suggestions found")}
+        {t("SUGGESTIONS_NO_SUGGESTIONS")}
     </div> : suggested.map((result, i) => <SuggestedTranslation suggestion={result} key={i}/>)
 
     return <div className={Styles.assistantArea}>
         <div className={Styles.assistantAreaInner}>
             <VerticalLayout className={Styles.pane}>
                 <div className={Styles.heading}>
-                    <PageHeading level={3}>{t("Assistant")}</PageHeading>
-                    <span>{t("The Assistant gives you helpful information to assist in creating translations.")}</span>
+                    <PageHeading level={3}>{t("ASSISTANT")}</PageHeading>
+                    <span>{t("ASSISTANT_DESCRIPTION")}</span>
                 </div>
             </VerticalLayout>
             <VerticalLayout className={`${Styles.pane} ${Styles.heading}`}>
-                <PageHeading level={3}>{t("Suggested Translations")}</PageHeading>
+                <PageHeading level={3}>{t("ASSISTANT_SUGGESTED_TRANSLATIONS")}</PageHeading>
                 {suggestions}
             </VerticalLayout>
             <VerticalLayout className={`${Styles.pane} ${Styles.heading}`}>
-                <PageHeading level={3}>{t("Resources")}</PageHeading>
-                <a href="https://www.microsoft.com/en-us/language" target={"_blank"}>Microsoft Terminology
-                    Collection</a>
+                <PageHeading level={3}>{t("ASSISTANT_RESOURCES")}</PageHeading>
+                <a href="https://www.microsoft.com/en-us/language"
+                   target={"_blank"}>{t("MICROSOFT_TERMINOLOGY_COLLECTION")}</a>
             </VerticalLayout>
             <div className={Styles.disclaimer}>Microsoft Terminology Service API. © 2022 Microsoft Corporation. All
                 rights reserved.

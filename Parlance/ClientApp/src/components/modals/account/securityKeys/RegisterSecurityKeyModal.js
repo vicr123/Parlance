@@ -88,11 +88,7 @@ function RequestBrowserRegisterSecurityKeyModal({nickname, type, password, onDon
     }, []);
     const {t} = useTranslation();
 
-    return <Modal buttons={[{
-        text: t("CANCEL"),
-        onClick: () => {
-        }
-    }]}>
+    return <Modal>
         {t("SECURITY_KEY_ADD_PROMPT")}
     </Modal>
 }

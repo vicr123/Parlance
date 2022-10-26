@@ -13,43 +13,41 @@ public class MicrosoftTerminologyServiceController : Controller
         _terminology = terminology;
     }
 
-    // GET
-    public async Task<IActionResult> Index()
-    {
-        var sources = new TranslationSources
-        {
-            TranslationSource.Terms,
-            TranslationSource.UiStrings
-        };
-
-        var matches = await _terminology.GetTranslationsAsync("start button", "en-us", "vi-vn",
-            SearchStringComparison.CaseInsensitive,
-            SearchOperator.Contains, sources, false, 20, true, null);
-
-        return Json(matches);
-    }
-
     [Route("languages")]
     public async Task<IActionResult> SupportedLanguages()
     {
-        return Json(await _terminology.GetLanguagesAsync());
+        try
+        {
+            return Json(await _terminology.GetLanguagesAsync());
+        }
+        catch (TimeoutException)
+        {
+            return StatusCode(504);
+        }
     }
 
     [HttpPost]
     [Route("translations")]
     public async Task<IActionResult> Translations([FromBody] TranslationsData data)
     {
-        var sources = new TranslationSources
+        try
         {
-            TranslationSource.Terms,
-            TranslationSource.UiStrings
-        };
+            var sources = new TranslationSources
+            {
+                TranslationSource.Terms,
+                TranslationSource.UiStrings
+            };
 
-        var matches = await _terminology.GetTranslationsAsync(data.Text, data.From, data.To,
-            SearchStringComparison.CaseInsensitive,
-            SearchOperator.Contains, sources, false, 20, true, null);
+            var matches = await _terminology.GetTranslationsAsync(data.Text, data.From, data.To,
+                SearchStringComparison.CaseInsensitive,
+                SearchOperator.Contains, sources, false, 20, true, null);
 
-        return Json(matches);
+            return Json(matches);
+        }
+        catch (TimeoutException)
+        {
+            return StatusCode(504);
+        }
     }
 
     public class TranslationsData

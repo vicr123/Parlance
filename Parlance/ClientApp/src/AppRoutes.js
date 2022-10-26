@@ -1,10 +1,11 @@
-import {Counter} from "./components/Counter";
-import {FetchData} from "./components/FetchData";
 import {Home} from "./pages/Home";
-import Administration from "./pages/Administration";
-import Account from "./pages/Account";
-import Projects from "./pages/Projects";
 import UnknownPage from "./pages/UnknownPage";
+import {lazy} from "react";
+import Spinner from "./components/Spinner";
+
+const Administration = lazy(() => import("./pages/Administration"));
+const Account = lazy(() => import("./pages/Account"));
+const Projects = lazy(() => import("./pages/Projects"));
 
 const AppRoutes = [
     {
@@ -13,19 +14,25 @@ const AppRoutes = [
     },
     {
         path: "/admin/*",
-        element: <Administration />
+        element: <Spinner.Suspense>
+            <Administration/>
+        </Spinner.Suspense>
     },
     {
         path: "/account/*",
-        element: <Account />
+        element: <Spinner.Suspense>
+            <Account/>
+        </Spinner.Suspense>
     },
     {
         path: "/projects/*",
-        element: <Projects />
+        element: <Spinner.Suspense>
+            <Projects/>
+        </Spinner.Suspense>
     },
     {
         path: "*",
-        element: <UnknownPage />
+        element: <UnknownPage/>
     }
 ];
 

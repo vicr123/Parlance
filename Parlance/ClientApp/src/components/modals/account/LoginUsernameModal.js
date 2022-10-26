@@ -33,7 +33,7 @@ export default function LoginUsernameModal() {
         <div style={{display: "flex", flexDirection: "column"}}>
             {t('LOG_IN_PROMPT')}
             <LineEdit placeholder={t('USERNAME')} value={username}
-                      onChange={e => setUsername(e.target.value)}/>
+                      onChange={e => setUsername(e.target.value)} autoComplete={"off"}/>
         </div>
     </Modal>;
 }

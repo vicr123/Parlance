@@ -88,6 +88,7 @@ function TranslationPart({
 }
 
 export default function TranslationArea({entries, translationDirection, translationFileType, onPushUpdate, canEdit}) {
+    const {key} = useParams();
     const {t} = useTranslation();
     const {
         entry,
@@ -102,7 +103,12 @@ export default function TranslationArea({entries, translationDirection, translat
     } = useTranslationEntries(entries);
 
     if (!entry) {
-        return <div>Not Found!!!</div>
+        if (key) {
+            return <div className={Styles.translationArea}>
+                {t("TRANSLATION_NOT_FOUND")}
+            </div>
+        }
+        return <div className={Styles.translationArea}/>
     }
 
     let statusAlerts = [];

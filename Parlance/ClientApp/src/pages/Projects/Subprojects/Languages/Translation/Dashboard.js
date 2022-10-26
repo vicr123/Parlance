@@ -7,6 +7,7 @@ import Overview from "./Overview";
 import ListPage from "../../../../../components/ListPage";
 import Hero from "../../../../../components/Hero";
 import BackButton from "../../../../../components/BackButton";
+import Spinner from "../../../../../components/Spinner";
 
 export default function Dashboard(props) {
     const {project, subproject, language} = useParams();
@@ -23,9 +24,7 @@ export default function Dashboard(props) {
     }, []);
 
     //TODO
-    if (!data) return <div>
-        Please wait
-    </div>
+    if (!data) return <Spinner.Container/>
 
     const items = [
         t("Dashboard"),

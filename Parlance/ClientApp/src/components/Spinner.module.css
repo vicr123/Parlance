@@ -1,0 +1,66 @@
+.spinner {
+    --spinner-dims: 48px;
+    --spinner-floor-height: 5px;
+    --spinner-bouncer-width: 10px;
+
+    width: var(--spinner-dims);
+    height: var(--spinner-dims);
+
+    display: grid;
+    grid-template-columns: 1fr var(--spinner-bouncer-width);
+    grid-template-rows: 1fr var(--spinner-floor-height);
+    gap: 0px 0px;
+    grid-template-areas: 
+    "trail bouncer"
+    "floor floor";
+
+    animation: ballAnimation 0.5s linear infinite normal;
+}
+
+.floor {
+    grid-area: floor;
+
+    background-color: var(--foreground-color);
+}
+
+.bouncer {
+    grid-area: bouncer;
+}
+
+.trail {
+    grid-area: trail;
+}
+
+@keyframes ballAnimation {
+    0% {
+        /*top: 0px;*/
+        transform: rotate(0deg);
+    }
+
+    100% {
+        /*top: calc(var(--spinner-dims) - var(--spinner-bouncer-width) - var(--spinner-floor-height));*/
+        transform: rotate(360deg);
+    }
+}
+
+.ball {
+    width: var(--spinner-bouncer-width);
+    height: var(--spinner-bouncer-width);
+    border-radius: calc(var(--spinner-bouncer-width) / 2);
+
+    background-color: var(--foreground-color);
+    position: relative;
+
+    animation: ballAnimation 0.5s ease-in infinite alternate;
+}
+
+.spinnerPath {
+    fill: var(--foreground-color);
+}
+
+.spinnerContainer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-grow: 1;
+}
