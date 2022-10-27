@@ -17,6 +17,7 @@
 .ModalContainer {
     background-color: var(--background-color);
     border: 1px solid var(--border-color);
+
     flex-basis: 600px;
 }
 
@@ -31,6 +32,13 @@
 .ModalText {
     padding: 20px;
     border-bottom: 1px solid var(--border-color);
+
+    overflow-y: auto;
+    overflow-x: auto;
+
+    box-sizing: border-box;
+    max-height: calc(100vh - 300px);
+    max-width: 100vw;
 }
 
 .ModalButtonContainer {
@@ -40,12 +48,12 @@
 .ModalButton {
     flex-grow: 1;
     flex-basis: 1px;
-    
+
     display: flex;
     text-align: center;
     justify-content: center;
     align-content: center;
-    
+
     padding: 15px;
 
     cursor: default;

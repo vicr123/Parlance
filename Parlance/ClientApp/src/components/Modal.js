@@ -18,10 +18,12 @@ class Modal extends React.Component {
                         if (typeof button === "object") {
                             let classes = [Styles.ModalButton];
                             if (button.destructive) classes.push(Styles.DestructiveModalButton);
-                            return <div onClick={button.onClick} className={classes.join(" ")} key={button.text}>{button.text}</div>
+                            return <div onClick={button.onClick} className={classes.join(" ")}
+                                        key={button.text}>{button.text}</div>
                         } else {
                             //deprecated
-                            return <div onClick={this.props.onButtonClick.bind(this, button)} className={Styles.ModalButton} key={button}>{button}</div>
+                            return <div onClick={this.props.onButtonClick.bind(this, button)}
+                                        className={Styles.ModalButton} key={button}>{button}</div>
                         }
                     })}
                 </div>

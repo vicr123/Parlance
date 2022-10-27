@@ -13,21 +13,27 @@ import ErrorModal from "../../../../components/modals/ErrorModal";
 import LoadingModal from "../../../../components/modals/LoadingModal";
 import {VerticalSpacer} from "../../../../components/Layouts";
 import BackButton from "../../../../components/BackButton";
+import ErrorCover from "../../../../components/ErrorCover";
 
 export default function LanguageListing() {
     const [ignored, forceUpdate] = useReducer(x => x + 1, 0);
     const {project, subproject} = useParams();
     const [languages, setLanguages] = useState([]);
     const [done, setDone] = useState(false);
+    const [error, setError] = useState();
     const navigate = useNavigate();
     const {t} = useTranslation();
 
     UserManager.on("currentUserChanged", forceUpdate);
 
     const updateProjects = async () => {
-        let subprojectData = await Fetch.get(`/api/projects/${project}/${subproject}`);
-        setLanguages(subprojectData.availableLanguages);
-        setDone(true);
+        try {
+            let subprojectData = await Fetch.get(`/api/projects/${project}/${subproject}`);
+            setLanguages(subprojectData.availableLanguages);
+            setDone(true);
+        } catch (err) {
+            setError(err);
+        }
     };
 
     useEffect(() => {
@@ -75,13 +81,15 @@ export default function LanguageListing() {
     return <div>
         <BackButton text={t("BACK_TO_SUBPROJECTS")} onClick={() => navigate("../..")}/>
         <VerticalSpacer/>
-        <Container>
-            <PageHeading level={3}>{t("AVAILABLE_LANGUAGES")}</PageHeading>
-            <SelectableList items={done ? showLanguages.map(p => ({
-                contents: <TranslationProgressIndicator title={i18n.humanReadableLocale(p.language)}
-                                                        data={p.completionData}/>,
-                onClick: () => translationClicked(p.language)
-            })) : TranslationProgressIndicator.PreloadContents()}/>
-        </Container>
+        <ErrorCover error={error}>
+            <Container>
+                <PageHeading level={3}>{t("AVAILABLE_LANGUAGES")}</PageHeading>
+                <SelectableList items={done ? showLanguages.map(p => ({
+                    contents: <TranslationProgressIndicator title={i18n.humanReadableLocale(p.language)}
+                                                            data={p.completionData}/>,
+                    onClick: () => translationClicked(p.language)
+                })) : TranslationProgressIndicator.PreloadContents()}/>
+            </Container>
+        </ErrorCover>
     </div>
 }

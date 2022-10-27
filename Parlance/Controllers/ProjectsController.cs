@@ -6,6 +6,7 @@ using Microsoft.Extensions.Primitives;
 using Parlance.CldrData;
 using Parlance.Helpers;
 using Parlance.Project;
+using Parlance.Project.Exceptions;
 using Parlance.Project.Index;
 using Parlance.Project.SourceStrings;
 using Parlance.Project.TranslationFiles;
@@ -38,14 +39,25 @@ public class ProjectsController : Controller
     public async Task<IActionResult> GetProjects()
     {
         var projects = (await _projectService.Projects()).ToList();
-        return Json(await Task.WhenAll(projects.Select(async project =>
+        return Json(await Task.WhenAll(projects.Select<Database.Models.Project, Task<object>>(async project =>
         {
-            var indexResults = await _indexingService.OverallResults(project.GetParlanceProject());
-            return new
+            try
             {
-                CompletionData = indexResults,
-                project.Name, project.SystemName
-            };
+                var parlanceProject = project.GetParlanceProject();
+                var indexResults = await _indexingService.OverallResults(parlanceProject);
+                return new
+                {
+                    CompletionData = indexResults,
+                    Name = parlanceProject.ReadableName, project.SystemName
+                };
+            }
+            catch (ParlanceJsonFileParseException)
+            {
+                return new
+                {
+                    project.Name, project.SystemName, Error = true
+                };
+            }
         })));
     }
 
@@ -115,6 +127,13 @@ public class ProjectsController : Controller
         {
             return NotFound();
         }
+        catch (ParlanceJsonFileParseException)
+        {
+            return StatusCode(500, new
+            {
+                Error = "ParlanceJsonFileParseError"
+            });
+        }
     }
 
 
@@ -147,6 +166,14 @@ public class ProjectsController : Controller
             var subproj = p.GetParlanceProject().SubprojectBySystemName(subproject);
 
             var indexResults = await _indexingService.OverallResults(subproj);
+
+            if (subproj.AvailableLanguages().All(x => x != subproj.BaseLang))
+                return StatusCode(500, new
+                {
+                    subproj.TranslationFileType,
+                    subproj.Name,
+                    Error = "InvalidBaseFile"
+                });
 
             return Json(new
             {

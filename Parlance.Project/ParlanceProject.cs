@@ -1,4 +1,5 @@
 using System.Text.Json;
+using Parlance.Project.Exceptions;
 
 namespace Parlance.Project;
 
@@ -17,14 +18,23 @@ public class ParlanceProject : IParlanceProject
     {
         _project = project;
         using var file = File.OpenRead(Path.Combine(project.VcsDirectory, ".parlance.json"));
-        var subprojectDefs = JsonSerializer.Deserialize<ParlanceJson>(file, Options);
 
-        if (subprojectDefs is null) throw new InvalidDataException("The Parlance project definition is invalid.");
+        try
+        {
+            var subprojectDefs = JsonSerializer.Deserialize<ParlanceJson>(file, Options);
 
-        ReadableName = subprojectDefs.Name;
-        Subprojects = subprojectDefs.Subprojects.Select(subproject => new ParlanceSubproject(this, subproject))
-            .ToList()
-            .AsReadOnly();
+            if (subprojectDefs is null)
+                throw new ParlanceJsonFileParseException("The Parlance project definition is invalid.");
+
+            ReadableName = subprojectDefs.Name;
+            Subprojects = subprojectDefs.Subprojects.Select(subproject => new ParlanceSubproject(this, subproject))
+                .ToList()
+                .AsReadOnly();
+        }
+        catch (JsonException ex)
+        {
+            throw new ParlanceJsonFileParseException("The Parlance project definition is invalid.", ex);
+        }
     }
 
     public string ReadableName { get; }

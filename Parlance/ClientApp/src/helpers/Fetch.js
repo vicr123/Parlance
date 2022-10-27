@@ -26,7 +26,8 @@ class Fetch {
      * @param {string} url endpoint for the API call
      * @param {function} resultCallback Callback to call when the result is ready containing raw fetch data
      */
-    static async performRequest(method, url, resultCallback = () => {}) {
+    static async performRequest(method, url, resultCallback = () => {
+    }) {
         let err = null;
         // Display loading animation for the user
         let headers = Fetch.headers();
@@ -41,8 +42,15 @@ class Fetch {
         });
 
         if (err) throw err;
-        if (result.status < 200 || result.status > 299) throw result;
-        
+        if (result.status < 200 || result.status > 299) {
+            try {
+                result.jsonBody = await result.json();
+            } catch {
+
+            }
+            throw result;
+        }
+
         resultCallback(result);
         if (result.status === 204) return {};
         return await result.json();
@@ -54,7 +62,8 @@ class Fetch {
      * @param {Object} data payload of information
      * @param {Object} headers Headers to include
      */
-    static async post(url, data, headers = {}, resultCallback = () => {}) {
+    static async post(url, data, headers = {}, resultCallback = () => {
+    }) {
         let err = null;
         let result = await fetch(url, {
             method: "POST",
@@ -66,12 +75,12 @@ class Fetch {
         }).catch((error) => {
             err = error;
         }).finally(() => {
-            
+
         });
 
         if (err) throw err;
         if (result.status < 200 || result.status > 299) throw result;
-        
+
         resultCallback(result);
         if (result.status === 204) return {};
         return await result.json();
@@ -104,7 +113,8 @@ class Fetch {
      * @param {string} url url to perform API request
      * @param {function} resultCallback Callback to call when the result is ready containing raw fetch data
      */
-    static get(url, resultCallback = () => {}) {
+    static get(url, resultCallback = () => {
+    }) {
         return Fetch.performRequest("GET", url, resultCallback);
     }
 
@@ -115,9 +125,9 @@ class Fetch {
     static delete(url) {
         return Fetch.performRequest("DELETE", url);
     }
-    
+
     //TODO: Implement caching
-    
+
     /**
      * Retrieves post based on postID
      * @param {number} id postID
@@ -128,6 +138,7 @@ class Fetch {
         }
         return posts[id];
     }
+
     /**
      * Get the user based on userID
      * @param {number} id userID from the backend
@@ -138,6 +149,7 @@ class Fetch {
         }
         return user[id];
     }
+
     /**
      * Remove garbage posts with an illegal ID
      * @param {number} id postID
@@ -153,6 +165,7 @@ class Fetch {
     static invalidateUser(id) {
         if (user.hasOwnProperty(id)) delete user[id];
     }
+
     /**
      * Reset objects
      */

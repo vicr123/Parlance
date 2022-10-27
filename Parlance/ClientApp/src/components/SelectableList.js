@@ -6,16 +6,16 @@ import {VerticalLayout} from "./Layouts";
 import LineEdit from "./LineEdit";
 import {useTranslation} from "react-i18next";
 
-export default function SelectableList(props) {
-    if (props.children) {
+export default function SelectableList({children, onClick, items}) {
+    if (children) {
         return <div className={Styles.listContainer}>
-            <div className={Styles.listItem} onClick={props.onClick}>{props.children}</div>
+            <div className={Styles.listItem} onClick={onClick}>{children}</div>
         </div>
     } else {
-        if (!props.items?.length) return null;
+        if (!items?.length) return null;
 
         return <div className={Styles.listContainer}>
-            {props.items.map((item, index) => {
+            {items.map((item, index) => {
                 if (typeof (item) === "string") {
                     return <div className={Styles.listSection}>{item}</div>
                 } else {
