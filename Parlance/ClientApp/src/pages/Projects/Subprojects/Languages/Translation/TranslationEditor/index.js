@@ -7,8 +7,8 @@ import i18n from "../../../../../../helpers/i18n";
 import Modal from "../../../../../../components/Modal";
 import {useTranslation} from "react-i18next";
 import useTranslationEntries from "./EntryUtils";
-import useHotkeys from "@reecelucas/react-use-hotkeys";
 import Spinner from "../../../../../../components/Spinner";
+import {KeyboardShortcuts, useKeyboardShortcut} from "./KeyboardShortcuts";
 
 const EntryList = lazy(() => import("./EntryList"));
 const TranslationArea = lazy(() => import("./TranslationArea"));
@@ -28,21 +28,10 @@ export default function TranslationEditor() {
     } = useTranslationEntries(entries);
     const {t} = useTranslation();
 
-    useHotkeys("Control+Enter", goToNextUnfinished, {
-        enableOnContentEditable: true
-    });
-    useHotkeys("Control+ArrowLeft", goToPrevUnfinished, {
-        enableOnContentEditable: true
-    });
-    useHotkeys("Control+ArrowRight", goToNextUnfinished, {
-        enableOnContentEditable: true
-    });
-    useHotkeys("Control+ArrowUp", goToPrev, {
-        enableOnContentEditable: true
-    });
-    useHotkeys("Control+ArrowDown", goToNext, {
-        enableOnContentEditable: true
-    });
+    useKeyboardShortcut(KeyboardShortcuts.NextUnfinished, goToNextUnfinished);
+    useKeyboardShortcut(KeyboardShortcuts.PreviousUnfinished, goToPrevUnfinished);
+    useKeyboardShortcut(KeyboardShortcuts.Next, goToNext);
+    useKeyboardShortcut(KeyboardShortcuts.Previous, goToPrev);
 
     const updateManager = useUpdateManager();
     updateManager.on("outOfDate", () => {

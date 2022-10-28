@@ -18,7 +18,7 @@ export default {
     i18next: [
         {
             name: PLACEHOLDER_TRANSLATION_STRING,
-            regex: /\{\{(?!count}})(.+)}}/g,
+            regex: /\{\{(?!count}})(.+?)}}/g,
             type: "placeholder"
         },
         {

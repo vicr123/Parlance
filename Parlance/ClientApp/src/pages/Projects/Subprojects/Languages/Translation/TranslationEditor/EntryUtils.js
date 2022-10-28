@@ -10,8 +10,8 @@ export default function useTranslationEntries(entries) {
 
     const entryIndex = entries.findIndex(entry => entry.key === key);
     const entry = entries[entryIndex];
-    const next = entries.find((entry, idx) => idx > entryIndex);
-    const prev = entries.findLast((entry, idx) => idx < entryIndex);
+    const next = entries.find((entry, idx) => idx > entryIndex) || entries[0];
+    const prev = entries.findLast((entry, idx) => idx < entryIndex) || entries[entries.length - 1];
     const nextUnfinished = entries.find((entry, idx) => idx > entryIndex && entry.translation.every(translation => translation?.translationContent === ""));
     const prevUnfinished = entries.findLast((entry, idx) => idx < entryIndex && entry.translation.every(translation => translation?.translationContent === ""));
 

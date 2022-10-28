@@ -133,7 +133,7 @@ public class I18NextJsonTranslationFile : ParlanceTranslationFile, IParlanceMono
 
     public override async Task Save()
     {
-        var obj = Entries.SelectMany(entry =>
+        var selectResult = Entries.SelectMany(entry =>
         {
             var jsonEntry = (I18NextJsonTranslationFileEntry)entry;
             return jsonEntry.Translation.Select(translation =>
@@ -142,7 +142,9 @@ public class I18NextJsonTranslationFile : ParlanceTranslationFile, IParlanceMono
                 if (jsonEntry.RequiresPluralisation) key += $"_{translation.PluralType}";
                 return (key, translation.TranslationContent);
             });
-        }).Aggregate(new JsonObject(), (acc, x) =>
+        });
+
+        var obj = selectResult.Aggregate(new JsonObject(), (acc, x) =>
         {
             acc.Add(x.Item1, x.Item2);
             return acc;
