@@ -74,7 +74,7 @@ export default function EntryList({entries, translationDirection, updateManager,
     }, {});
 
     return <div className={Styles.rootList}>
-        <BackButton text={t("Quit")} onClick={() => navigate("..")} inListPage={true}/>
+        <BackButton text={t("QUIT")} onClick={() => navigate("..")} inListPage={true}/>
         {Object.keys(contexts).map((context, idx) => <Fragment key={idx}>
             <div className={Styles.categoryHeader}>{context}</div>
             {contexts[context].map((entry, idx) => <EntryListItem entries={entries} entry={entry} key={idx}

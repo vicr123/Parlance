@@ -46,7 +46,7 @@ export function TranslationSlateEditor({
                                            pluralExample,
                                            diffWith
                                        }) {
-    const {key} = useParams();
+    const {language, key} = useParams();
     const [currentKey, setCurrentKey] = useState(null);
     const [editor] = useState(() => withReact(createEditor()));
     const [hasFocus, setHasFocus] = useState(false);
@@ -182,11 +182,12 @@ export function TranslationSlateEditor({
         setHasFocus(false);
     }
 
-    return <Slate dir={translationDirection} editor={editor} value={[{
+    return <div dir={translationDirection} lang={language.replace("_", "-")}><Slate editor={editor} value={[{
         type: "paragraph",
         children: [{text: "Loading"}]
     }]} onChange={changeEvent}>
         <Editable renderLeaf={Leaf} decorate={decorate} onBlur={blur} renderElement={renderElement}
                   onFocus={focus} readOnly={readOnly}/>
     </Slate>
+    </div>
 }

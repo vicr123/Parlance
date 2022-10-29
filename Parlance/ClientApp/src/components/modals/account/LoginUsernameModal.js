@@ -6,9 +6,11 @@ import {useTranslation} from "react-i18next";
 import LineEdit from "../../LineEdit";
 import CreateAccountModal from "./CreateAccountModal";
 import LoadingModal from "../LoadingModal";
+import Styles from "./LoginUsernameModal.module.css";
 
 export default function LoginUsernameModal() {
     const [username, setUsername] = useState(UserManager.loginDetail("username"));
+    const [password, setPassword] = useState("");
     const {t} = useTranslation();
 
     return <Modal heading={t("LOG_IN")} buttons={[
@@ -23,6 +25,7 @@ export default function LoginUsernameModal() {
                 try {
                     Modal.mount(<LoadingModal/>)
                     await UserManager.setUsername(username);
+                    if (password) await UserManager.setLoginDetail("prePassword", password);
                     Modal.mount(<LoginPasswordModal/>)
                 } catch {
                     Modal.mount(<LoginUsernameModal/>)
@@ -34,6 +37,10 @@ export default function LoginUsernameModal() {
             {t('LOG_IN_PROMPT')}
             <LineEdit placeholder={t('USERNAME')} value={username}
                       onChange={e => setUsername(e.target.value)} autoComplete={"off"}/>
+            <div className={Styles.password}>
+                <LineEdit placeholder={"Password"} password={true} value={password}
+                          onChange={e => setPassword(e.target.value)}/>
+            </div>
         </div>
     </Modal>;
 }

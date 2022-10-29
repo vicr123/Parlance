@@ -150,6 +150,7 @@
   "PROMOTE_PROMPT_1": "Promoting {{user}} to a superuser will allow them to have full control of the Parlance server, including being able to remove you as a superuser.",
   "PROMOTE_PROMPT_2": "Do you want to promote {{user}}?",
   "PROMOTE_TO_SUPERUSER": "Promote User to Superuser",
+  "QUIT": "Quit",
   "READ_ONLY_TRANSLATION_EXPLANATION": "You can't edit this translation file. You may not have the necessary permissions to edit it.",
   "REGENERATE_BACKUP_CODES": "Regenerate Backup Codes",
   "REGENERATE_BACKUP_CODES_PROMPT": "After regenerating your backup codes, your old backup codes will be invalidated and you'll only be able to use the new backup codes.",

@@ -1,5 +1,5 @@
 import Modal from "../../Modal";
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import LoginUsernameModal from "./LoginUsernameModal";
 import UserManager from "../../../helpers/UserManager";
 import {useTranslation} from "react-i18next";
@@ -7,8 +7,12 @@ import LineEdit from "../../LineEdit";
 import ModalList from "../../ModalList";
 
 export default function LoginPasswordModal() {
-    const [password, setPassword] = useState("");
+    const [password, setPassword] = useState(UserManager.loginDetail("prePassword"));
     const {t} = useTranslation();
+
+    useEffect(() => {
+        UserManager.setLoginDetail("prePassword");
+    }, []);
 
     const loginTypes = UserManager.loginTypes.map(type => {
         switch (type) {
@@ -21,8 +25,8 @@ export default function LoginPasswordModal() {
             case "fido":
                 //Ensure the browser supports webauthn
                 if (!window.PublicKeyCredential) return null;
-                
-                return <ModalList>
+
+                return <ModalList key={"fido"}>
                     {[
                         {
                             text: t("LOG_IN_USE_SECURITY_KEY_PROMPT"),
