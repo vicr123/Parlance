@@ -1,5 +1,5 @@
 .shortcutContainer {
-    display: flex;
+    display: inline-flex;
     flex-direction: row;
     gap: 2px;
 }

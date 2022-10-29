@@ -28,3 +28,7 @@
     background-color: rgba(200, 0, 0, 0.3);
     text-decoration: line-through;
 }
+
+.editor {
+    min-height: 100px;
+}

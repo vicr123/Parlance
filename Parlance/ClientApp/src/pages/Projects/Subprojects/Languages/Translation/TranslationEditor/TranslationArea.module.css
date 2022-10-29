@@ -14,6 +14,8 @@
     display: flex;
     flex-direction: column;
 
+    height: 100vh;
+
     position: sticky;
     top: 0;
 }
@@ -83,20 +85,44 @@
 }
 
 .checksContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding-top: 12px;
 }
 
 .checkItem {
-    padding: 9px;
+    display: flex;
+    gap: 6px;
+    align-items: center;
 }
 
 .checkWarn {
-    color: black;
-    background-color: rgb(255, 150, 0);
+    /*color: black;*/
+    /*background-color: rgb(255, 150, 0);*/
 }
 
 .checkError {
-    color: white;
-    background-color: rgb(200, 0, 0);
+    /*color: white;*/
+    /*background-color: rgb(200, 0, 0);*/
+}
+
+.checkIcon {
+    display: inline-flex;
+    align-items: center;
+}
+
+.checkIcon:before {
+    height: 16px;
+    width: 16px;
+}
+
+.checkWarn .checkIcon:before {
+    content: url("Images/warn.svg");
+}
+
+.checkError .checkIcon:before {
+    content: url("Images/stop.svg");
 }
 
 .translationPreview {
@@ -112,7 +138,7 @@
     flex-direction: row;
     justify-content: space-between;
 
-    border-bottom: 1px solid var(--border-color);
+    border-top: 1px solid var(--border-color);
 }
 
 .controlArea {
@@ -152,4 +178,25 @@
     max-width: 300px;
     text-overflow: ellipsis;
     overflow-x: hidden;
+}
+
+.controlsContainerWrapper {
+    height: 0;
+}
+
+.controlsContainer {
+    display: none;
+
+    position: absolute;
+    right: 0;
+    padding: 9px;
+    background-color: var(--background-color);
+    border-left: 1px solid var(--border-color);
+    border-bottom: 1px solid var(--border-color);
+
+    z-index: 500;
+}
+
+.translationContainer.focus .controlsContainer {
+    display: block;
 }

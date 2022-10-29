@@ -75,7 +75,8 @@ const Checks = {
     ],
     "i18next": [
         checki18nextPlaceholders,
-        checki18nextHtmlPlaceholders
+        checki18nextHtmlPlaceholders,
+        "common"
     ]
 }
 

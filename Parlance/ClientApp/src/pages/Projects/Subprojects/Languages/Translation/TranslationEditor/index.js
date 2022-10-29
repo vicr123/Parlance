@@ -9,6 +9,7 @@ import {useTranslation} from "react-i18next";
 import useTranslationEntries from "./EntryUtils";
 import Spinner from "../../../../../../components/Spinner";
 import {KeyboardShortcuts, useKeyboardShortcut} from "./KeyboardShortcuts";
+import {useTabIndex} from "react-tabindex";
 
 const EntryList = lazy(() => import("./EntryList"));
 const TranslationArea = lazy(() => import("./TranslationArea"));
@@ -27,6 +28,7 @@ export default function TranslationEditor() {
         goToPrev
     } = useTranslationEntries(entries);
     const {t} = useTranslation();
+    const tabIndex = useTabIndex(0);
 
     useKeyboardShortcut(KeyboardShortcuts.NextUnfinished, goToNextUnfinished);
     useKeyboardShortcut(KeyboardShortcuts.PreviousUnfinished, goToPrevUnfinished);
@@ -105,7 +107,8 @@ export default function TranslationEditor() {
             <div className={Styles.root}>
                 <EntryList entries={entries} translationDirection={translationDirection} updateManager={updateManager}
                            translationFileType={subprojectData.translationFileType}/>
-                <TranslationArea onPushUpdate={pushUpdate} entries={entries} translationDirection={translationDirection}
+                <TranslationArea tabIndex={tabIndex} onPushUpdate={pushUpdate} entries={entries}
+                                 translationDirection={translationDirection}
                                  translationFileType={subprojectData.translationFileType} canEdit={canEdit}/>
                 <AssistantArea entries={entries}/>
             </div>

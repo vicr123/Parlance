@@ -1,7 +1,7 @@
 import Styles from "./TranslationProgressIndicator.module.css";
 import {useTranslation} from "react-i18next";
-import SelectableList from "./SelectableList";
 import React from "react";
+import PreloadingBlock from "./PreloadingBlock";
 
 const percent = value => `${value * 100}%`;
 
@@ -69,30 +69,30 @@ export default function TranslationProgressIndicator({title, data}) {
 
 TranslationProgressIndicator.Preloading = function () {
     return <div className={Styles.root}>
-        <SelectableList.PreloadingBlock className={Styles.title}/>
+        <PreloadingBlock className={Styles.title}/>
         <div className={Styles.metrics}>
-            <SelectableList.PreloadingBlock className={Styles.metric}>
+            <PreloadingBlock className={Styles.metric}>
                 <span className={Styles.metricValue}>20</span>
                 <span className={Styles.metricTitle}>TEXT</span>
-            </SelectableList.PreloadingBlock>
-            <SelectableList.PreloadingBlock className={Styles.metric}>
+            </PreloadingBlock>
+            <PreloadingBlock className={Styles.metric}>
                 <span className={Styles.metricValue}>20</span>
                 <span className={Styles.metricTitle}>TEXT</span>
-            </SelectableList.PreloadingBlock>
-            <SelectableList.PreloadingBlock className={Styles.metric}>
+            </PreloadingBlock>
+            <PreloadingBlock className={Styles.metric}>
                 <span className={Styles.metricValue}>20</span>
                 <span className={Styles.metricTitle}>TEXT</span>
-            </SelectableList.PreloadingBlock>
-            <SelectableList.PreloadingBlock className={Styles.metric}>
+            </PreloadingBlock>
+            <PreloadingBlock className={Styles.metric}>
                 <span className={Styles.metricValue}>20</span>
                 <span className={Styles.metricTitle}>TEXT</span>
-            </SelectableList.PreloadingBlock>
-            <SelectableList.PreloadingBlock className={Styles.metric}>
+            </PreloadingBlock>
+            <PreloadingBlock className={Styles.metric}>
                 <span className={Styles.metricValue}>20</span>
                 <span className={Styles.metricTitle}>TEXT</span>
-            </SelectableList.PreloadingBlock>
+            </PreloadingBlock>
         </div>
-        <SelectableList.PreloadingBlock className={Styles.progress}/>
+        <PreloadingBlock className={Styles.progress}/>
     </div>
 }
 

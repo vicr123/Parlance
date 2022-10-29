@@ -4,10 +4,11 @@ const KeyboardShortcuts = {
     NextUnfinished: [["Control", "Enter"], ["Control", "L"]],
     PreviousUnfinished: [["Control", "H"]],
     Next: [["Control", "J"]],
-    Previous: [["Control", "K"]]
+    Previous: [["Control", "K"]],
+    CopySource: [["Control", "]"]]
 };
 
-function useKeyboardShortcut(shortcut, callback) {
+function useKeyboardShortcut(shortcut, callback, enabled = true) {
     const isMac = navigator.userAgent.toLowerCase().includes("mac");
 
     for (let item of shortcut) {
@@ -27,7 +28,8 @@ function useKeyboardShortcut(shortcut, callback) {
             e.preventDefault();
             callback(e);
         }, {
-            enableOnContentEditable: true
+            enableOnContentEditable: true,
+            enabled
         });
     }
 }

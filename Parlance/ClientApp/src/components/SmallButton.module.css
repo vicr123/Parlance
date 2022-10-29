@@ -1,8 +1,11 @@
 .smallButton {
+    display: flex;
+    gap: 6px;
+
     border: 1px solid var(--border-color);
     padding: 5px;
     border-radius: 4px;
-    
+
     cursor: default;
 }
 

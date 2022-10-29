@@ -2,14 +2,16 @@ import Styles from "./TranslationArea.module.css"
 import {useParams} from "react-router-dom";
 import {useTranslation} from "react-i18next";
 import i18n from "../../../../../../helpers/i18n";
-import {Fragment, useEffect, useState} from "react";
+import {Fragment, useEffect, useRef, useState} from "react";
 import {checkTranslation} from "../../../../../../checks";
 import {VerticalLayout, VerticalSpacer} from "../../../../../../components/Layouts";
 import {TranslationSlateEditor} from "./TranslationSlateEditor";
 import Button from "../../../../../../components/Button";
 import useTranslationEntries from "./EntryUtils";
 import KeyboardShortcut from "../../../../../../components/KeyboardShortcut";
-import {KeyboardShortcuts} from "./KeyboardShortcuts";
+import {KeyboardShortcuts, useKeyboardShortcut} from "./KeyboardShortcuts";
+import SmallButton from "../../../../../../components/SmallButton";
+import {Untabbable, useTabIndex} from "react-tabindex";
 
 function TranslationPart({
                              entry,
@@ -17,13 +19,18 @@ function TranslationPart({
                              sourceTranslation,
                              translationFileType,
                              onTranslationUpdate,
-                             canEdit
+                             canEdit,
+                             tabIndex
                          }) {
     const [translationContent, setTranslationContent] = useState(entry.translationContent);
     const [checkState, setCheckState] = useState([]);
     const [pluralExample, setPluralExample] = useState({});
+    const [hasFocus, setHasFocus] = useState(false);
     const {language} = useParams();
     const {t} = useTranslation();
+    const rootRef = useRef();
+    const editorRef = useRef();
+    tabIndex = useTabIndex(tabIndex);
 
     useEffect(() => setTranslationContent(entry.translationContent), [entry]);
     useEffect(() => setCheckState(checkTranslation(sourceTranslation, translationContent, translationFileType)), [sourceTranslation, translationContent, translationFileType]);
@@ -49,6 +56,13 @@ function TranslationPart({
         })();
     }, [sourceTranslation, language, entry.pluralType]);
 
+    const copySource = () => {
+        editorRef.current.setContents(sourceTranslation);
+        editorRef.current.forceSave();
+    }
+
+    useKeyboardShortcut(KeyboardShortcuts.CopySource, copySource, hasFocus);
+
     const textChange = (text) => {
         setTranslationContent(text);
     }
@@ -56,7 +70,18 @@ function TranslationPart({
     let headings = [t("TRANSLATION_AREA_TITLE", {lang: i18n.humanReadableLocale(language)})]
     if (pluralExample?.explanation) headings.push(pluralExample.explanation);
 
-    return <div className={Styles.translationContainer}>
+
+    const focus = () => {
+        setHasFocus(true);
+    }
+
+    const blur = e => {
+        if (!rootRef.current.contains(e.relatedTarget))
+            setHasFocus(false)
+    }
+
+    return <div className={`${Styles.translationContainer} ${hasFocus && Styles.focus}`} onBlur={blur} onFocus={focus}
+                ref={rootRef}>
         <div className={Styles.translationPart}>
             <div className={Styles.translationPartIndicator}>{headings.map((item, index) => {
                 if (index === 0) {
@@ -68,27 +93,43 @@ function TranslationPart({
                     </Fragment>
                 }
             })}</div>
-            <TranslationSlateEditor value={translationContent} translationFileType={translationFileType}
+            <TranslationSlateEditor ref={editorRef} tabIndex={tabIndex} hasFocus={hasFocus} value={translationContent}
+                                    translationFileType={translationFileType}
                                     translationDirection={translationDirection} readOnly={!canEdit}
                                     onTranslationUpdate={onTranslationUpdate} onChange={textChange}
                                     pluralExample={pluralExample?.number !== undefined ? i18n.number(language, pluralExample.number) : null}
             />
-        </div>
-        <div className={Styles.checksContainer}>
-            {checkState.map((check, idx) => {
-                let classes = [Styles.checkItem];
-                if (check.checkSeverity === "warn") classes.push(Styles.checkWarn);
-                if (check.checkSeverity === "error") classes.push(Styles.checkError);
+            {checkState.length > 0 && <div className={Styles.checksContainer}>
+                {checkState.map((check, idx) => {
+                    let classes = [Styles.checkItem];
+                    if (check.checkSeverity === "warn") classes.push(Styles.checkWarn);
+                    if (check.checkSeverity === "error") classes.push(Styles.checkError);
 
-                return <div className={classes.join(" ")} key={idx}>
-                    <div>{check.message}</div>
-                </div>
-            })}
+                    return <div className={classes.join(" ")} key={idx}>
+                        <span className={Styles.checkIcon}/>
+                        <span>{check.message}</span>
+                    </div>
+                })}
+            </div>}
+        </div>
+        <div className={Styles.controlsContainerWrapper}>
+            <div className={Styles.controlsContainer}>
+                <SmallButton tabIndex={-1}
+                             onClick={copySource}>{t("Copy Source")}<KeyboardShortcut
+                    shortcut={KeyboardShortcuts.CopySource}/></SmallButton>
+            </div>
         </div>
     </div>
 }
 
-export default function TranslationArea({entries, translationDirection, translationFileType, onPushUpdate, canEdit}) {
+export default function TranslationArea({
+                                            entries,
+                                            translationDirection,
+                                            translationFileType,
+                                            onPushUpdate,
+                                            canEdit,
+                                            tabIndex
+                                        }) {
     const {key} = useParams();
     const [translations, setTranslations] = useState([]);
     const {t} = useTranslation();
@@ -103,6 +144,7 @@ export default function TranslationArea({entries, translationDirection, translat
         goToPrevUnfinished,
         goToNextUnfinished
     } = useTranslationEntries(entries);
+    tabIndex = useTabIndex(tabIndex);
 
     if (!entry) {
         if (key) {
@@ -130,11 +172,14 @@ export default function TranslationArea({entries, translationDirection, translat
                 <div className={Styles.sourceTranslationContainerInner}>
                     <div
                         className={Styles.sourceTranslationIndicator}>{t("TRANSLATION_AREA_SOURCE_TRANSLATION_TITLE")}</div>
-                    <TranslationSlateEditor value={entry.source} diffWith={entry.oldSourceString}
-                                            translationFileType={translationFileType}
-                                            translationDirection={translationDirection} readOnly={true}
-                                            onChange={() => {
-                                            }}/>
+                    <Untabbable>
+                        <TranslationSlateEditor tabIndex={tabIndex} value={entry.source}
+                                                diffWith={entry.oldSourceString}
+                                                translationFileType={translationFileType}
+                                                translationDirection={translationDirection} readOnly={true}
+                                                onChange={() => {
+                                                }}/>
+                    </Untabbable>
                 </div>
                 <div className={Styles.keyContainer}>
                     <span className={Styles.keyText}>{entry.key}</span>
@@ -162,8 +207,10 @@ export default function TranslationArea({entries, translationDirection, translat
 
                 return <TranslationPart onTranslationUpdate={translationUpdate} entry={pform} key={idx}
                                         sourceTranslation={entry.source} translationFileType={translationFileType}
-                                        translationDirection={translationDirection} canEdit={canEdit}/>
+                                        translationDirection={translationDirection} canEdit={canEdit}
+                                        tabIndex={tabIndex}/>
             })}
+            <div style={{flexGrow: 1}}/>
             <div className={Styles.controls}>
                 <div className={Styles.controlArea}>
                     <Button onClick={goToPrevUnfinished} disabled={!prevUnfinished}>

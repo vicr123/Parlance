@@ -1,4 +1,4 @@
-import {useCallback, useEffect, useState} from "react";
+import React, {useCallback, useEffect} from "react";
 import {Editable, Slate, withReact} from "slate-react";
 import {createEditor, Node, Transforms} from "slate";
 import Styles from "./TranslationSlateEditor.module.css";
@@ -6,6 +6,7 @@ import Placeholders from "./Placeholders";
 import {useTranslation} from "react-i18next";
 import {diffWords} from "diff";
 import {useLocation, useParams} from "react-router-dom";
+import {useTabIndex} from "react-tabindex";
 
 function Placeholder({attributes, direction, hasFocus, preview, children}) {
     let contents = children;
@@ -36,30 +37,82 @@ function Leaf({attributes, children, leaf}) {
     }
 }
 
-export function TranslationSlateEditor({
-                                           value,
-                                           translationFileType,
-                                           translationDirection,
-                                           readOnly,
-                                           onTranslationUpdate,
-                                           onChange,
-                                           pluralExample,
-                                           diffWith
-                                       }) {
-    const {language, key} = useParams();
-    const [currentKey, setCurrentKey] = useState(null);
-    const [editor] = useState(() => withReact(createEditor()));
-    const [hasFocus, setHasFocus] = useState(false);
-    const location = useLocation();
+class TranslationSlateEditor extends React.Component {
+    constructor(props) {
+        super(props);
 
-    const forceSave = () => {
-        onTranslationUpdate?.(editor.children.map(n => Node.string(n)).join("\n"), currentKey);
+        this.state = {
+            editor: withReact(createEditor()),
+            currentKey: null
+        }
     }
+
+    setCurrentKey(currentKey) {
+        this.setState({
+            currentKey
+        });
+    }
+
+    setContents(text) {
+        while (this.state.editor.children.length !== 1) {
+            Transforms.removeNodes(this.state.editor, {
+                at: [0]
+            })
+        }
+
+        Transforms.insertNodes(this.state.editor, {
+            type: "paragraph",
+            children: [{text: text}]
+        }, {
+            at: [this.state.editor.children.length]
+        });
+
+        Transforms.removeNodes(this.state.editor, {
+            at: [0]
+        });
+    }
+
+    forceSave() {
+        this.props.onTranslationUpdate?.(this.state.editor.children.map(n => Node.string(n)).join("\n"), this.state.currentKey);
+    }
+
+    render() {
+        return <TranslationSlateEditorInner {...this.props} editor={this.state.editor}
+                                            forceSave={this.forceSave.bind(this)} currentKey={this.state.currentKey}
+                                            setCurrentKey={this.setCurrentKey.bind(this)}
+                                            setContents={this.setContents.bind(this)}/>
+    }
+}
+
+function TranslationSlateEditorInner({
+                                         value,
+                                         translationFileType,
+                                         translationDirection,
+                                         readOnly,
+                                         onTranslationUpdate,
+                                         onChange,
+                                         pluralExample,
+                                         diffWith,
+                                         hasFocus,
+                                         tabIndex,
+                                         forceSave,
+                                         editor,
+                                         currentKey,
+                                         setCurrentKey,
+                                         setContents
+                                     }) {
+    const {language, key} = useParams();
+    const location = useLocation();
+    tabIndex = useTabIndex(tabIndex);
 
     useEffect(() => {
         if (currentKey) forceSave();
         setCurrentKey(key);
     }, [location])
+
+    useEffect(() => {
+        if (currentKey && !hasFocus) forceSave();
+    }, [hasFocus]);
 
     useEffect(() => {
         if (diffWith) {
@@ -100,23 +153,7 @@ export function TranslationSlateEditor({
             });
         } else {
             if (value === editor.children.map(n => Node.string(n)).join("\n")) return;
-
-            while (editor.children.length !== 1) {
-                Transforms.removeNodes(editor, {
-                    at: [0]
-                })
-            }
-
-            Transforms.insertNodes(editor, {
-                type: "paragraph",
-                children: [{text: value}]
-            }, {
-                at: [editor.children.length]
-            });
-
-            Transforms.removeNodes(editor, {
-                at: [0]
-            });
+            setContents(value);
         }
     }, [value, diffWith])
     useEffect(() => {
@@ -173,21 +210,15 @@ export function TranslationSlateEditor({
         }
     })
 
-    const focus = () => {
-        setHasFocus(true);
-    }
-
-    const blur = () => {
-        forceSave();
-        setHasFocus(false);
-    }
-
-    return <div dir={translationDirection} lang={language.replace("_", "-")}><Slate editor={editor} value={[{
-        type: "paragraph",
-        children: [{text: "Loading"}]
-    }]} onChange={changeEvent}>
-        <Editable renderLeaf={Leaf} decorate={decorate} onBlur={blur} renderElement={renderElement}
-                  onFocus={focus} readOnly={readOnly}/>
-    </Slate>
+    return <div dir={translationDirection} lang={language.replace("_", "-")}>
+        <Slate editor={editor} value={[{
+            type: "paragraph",
+            children: [{text: "Loading"}]
+        }]} onChange={changeEvent}>
+            <Editable className={Styles.editor} tabIndex={tabIndex} renderLeaf={Leaf} decorate={decorate}
+                      renderElement={renderElement} readOnly={readOnly}/>
+        </Slate>
     </div>
 }
+
+export {TranslationSlateEditor};
