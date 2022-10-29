@@ -5,6 +5,7 @@ import i18n from "../helpers/i18n";
 import {VerticalLayout} from "./Layouts";
 import LineEdit from "./LineEdit";
 import {useTranslation} from "react-i18next";
+import PreloadingBlock from "./PreloadingBlock";
 
 export default function SelectableList({children, onClick, items}) {
     if (children) {
@@ -55,17 +56,11 @@ SelectableList.Locales = function Locales({locales, onLocaleSelected}) {
     </VerticalLayout>
 }
 
-SelectableList.PreloadingBlock = function ({className, children}) {
-    return <div className={`${className} ${Styles.preloadingBlock}`}>
-        {children}
-    </div>
-}
-
 SelectableList.PreloadingText = function (num = 3) {
     let arr = [];
     for (let i = 0; i < num; i++) {
         arr.push({
-            contents: <SelectableList.PreloadingBlock>Text</SelectableList.PreloadingBlock>
+            contents: <PreloadingBlock>Text</PreloadingBlock>
         });
     }
     return arr;

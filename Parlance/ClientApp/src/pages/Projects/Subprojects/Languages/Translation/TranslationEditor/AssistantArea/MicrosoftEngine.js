@@ -34,14 +34,20 @@ class MicrosoftEngine {
             to: msLang
         });
 
-        console.log(results);
-
-        return results.map(x => ({
+        let formattedResults = results.map(x => ({
             type: "microsoft",
             source: x.originalText,
             product: x.product,
             translation: x.translations.find(x => x.language === msLang).translatedText
-        })).splice(0, 5);
+        }));
+
+        let seenResults = [];
+
+        return formattedResults.filter(x => {
+            if (seenResults.some(old => old.source === x.source && old.translation === x.translation)) return false;
+            seenResults.push(x);
+            return true;
+        }).splice(0, 5);
     }
 }
 

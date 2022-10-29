@@ -20,7 +20,7 @@ function EntryListItem({entries, entry, updateManager, translationDirection, tra
         if (key === entry.key && ref.current) {
             ref.current.scrollIntoView({
                 behavior: "smooth",
-                block: "nearest"
+                block: "center"
             });
         }
     }, [key])

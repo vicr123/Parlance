@@ -16,17 +16,60 @@
 }
 
 .suggestedTranslation {
-    display: flex;
-    flex-direction: column;
+    display: grid;
+
+    grid-template-columns: 1fr;
+    grid-template-rows: 0px 1fr 1fr 0px;
+    gap: 0px 0px;
+    grid-template-areas: 
+        "border"
+        "meta"
+        "translation"
+        "controls";
 }
 
 .suggestedSource {
     font-size: 10pt;
     color: var(--foreground-disabled-color);
+    grid-area: meta;
 }
 
 .suggestedTranslationTranslation {
+    grid-area: translation;
+}
 
+.suggestedControlsContainer {
+    grid-area: controls;
+}
+
+.suggestedControls {
+    display: none;
+
+    position: absolute;
+    right: 0;
+    padding: 9px;
+
+    background-color: var(--background-color);
+    border-left: 1px solid var(--border-color);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.suggestedTranslation:not(.suggestedLoading):hover .suggestedControls {
+    display: block;
+}
+
+.suggestedBorder {
+    grid-area: border;
+    height: 1px;
+    position: absolute;
+    left: 0;
+    right: 0;
+    background-color: var(--border-color);
+    display: none;
+}
+
+.suggestedTranslation:not(.suggestedLoading):hover .suggestedBorder {
+    display: block;
 }
 
 .disclaimer {
@@ -34,4 +77,10 @@
 
     font-size: 10pt;
     color: var(--foreground-disabled-color);
+}
+
+.suggestionsContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
 }

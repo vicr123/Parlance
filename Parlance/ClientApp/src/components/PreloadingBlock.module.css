@@ -1,0 +1,17 @@
+@keyframes preloadingBlockKeyframe {
+    from {
+        background-position: 200% 0;
+    }
+
+    to {
+        background-position: 0 0;
+    }
+}
+
+div.preloadingBlock {
+    background-image: linear-gradient(to right, rgba(255, 255, 255, 0.3) 0%, rgba(255, 255, 255, 0.4) 10%, rgba(255, 255, 255, 0.3) 20%);
+    animation: preloadingBlockKeyframe 3s linear 0s infinite;
+    background-size: 200% 100%;
+    color: transparent;
+    user-select: none;
+}
