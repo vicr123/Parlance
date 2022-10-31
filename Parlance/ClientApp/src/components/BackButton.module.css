@@ -1,7 +1,7 @@
 .backButton {
     padding-top: 6px;
     padding-bottom: 6px;
-    
+
     cursor: default;
 }
 
@@ -18,6 +18,14 @@
     max-width: 600px;
 }
 
+.translationViewContainer {
+    border-bottom: 1px solid var(--border-color);
+}
+
 .listPageContainer.backButton {
+    padding-left: 6px;
+}
+
+.translationViewContainer.backButton {
     padding-left: 6px;
 }

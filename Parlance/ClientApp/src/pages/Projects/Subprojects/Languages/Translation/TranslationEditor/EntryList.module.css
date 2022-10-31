@@ -1,6 +1,8 @@
 .rootList {
     grid-area: entryList;
     border-right: 1px solid var(--border-color);
+
+    overflow-y: auto;
 }
 
 .entryItem {
@@ -78,4 +80,31 @@
     padding: 3px;
     background-color: var(--foreground-color);
     color: var(--background-color);
+}
+
+.scrim {
+    display: none;
+}
+
+@media (max-width: 1024px) {
+    .rootList {
+        border-right: none;
+    }
+
+    .scrim {
+        display: block;
+        position: absolute;
+        height: 100%;
+        width: 100%;
+        opacity: 0;
+        background-color: black;
+        pointer-events: none;
+
+        z-index: 1;
+    }
+
+    .scrim.haveKey {
+        opacity: 50%;
+        pointer-events: all;
+    }
 }

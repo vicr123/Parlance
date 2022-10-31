@@ -84,3 +84,10 @@
     flex-direction: column;
     gap: 6px;
 }
+
+
+@media (max-width: 1024px) {
+    .assistantArea {
+        display: none;
+    }
+}

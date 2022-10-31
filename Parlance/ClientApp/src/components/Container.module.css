@@ -9,6 +9,7 @@
     max-width: var(--content-width);
     padding-left: 9px;
     padding-right: 9px;
+    box-sizing: border-box;
 }
 
 .bottomBorder {

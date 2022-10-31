@@ -15,9 +15,16 @@
     max-width: var(--content-width);
     padding-left: 9px;
     /*padding-right: 9px;*/
+    box-sizing: border-box;
 
     display: flex;
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
+}
+
+@media (max-width: 1024px) {
+    .navbarInner {
+        padding-right: 9px;
+    }
 }

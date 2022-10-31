@@ -61,6 +61,7 @@ function EntryListItem({entries, entry, updateManager, translationDirection, tra
 }
 
 export default function EntryList({entries, translationDirection, updateManager, translationFileType}) {
+    const {key} = useParams();
     const {t} = useTranslation();
     const forceUpdate = useForceUpdate();
     const navigate = useNavigate();
@@ -74,7 +75,8 @@ export default function EntryList({entries, translationDirection, updateManager,
     }, {});
 
     return <div className={Styles.rootList}>
-        <BackButton text={t("QUIT")} onClick={() => navigate("..")} inListPage={true}/>
+        <div className={`${Styles.scrim} ${key && Styles.haveKey}`}/>
+        <BackButton text={t("QUIT")} onClick={() => navigate("..")} inTranslationView={true}/>
         {Object.keys(contexts).map((context, idx) => <Fragment key={idx}>
             <div className={Styles.categoryHeader}>{context}</div>
             {contexts[context].map((entry, idx) => <EntryListItem entries={entries} entry={entry} key={idx}

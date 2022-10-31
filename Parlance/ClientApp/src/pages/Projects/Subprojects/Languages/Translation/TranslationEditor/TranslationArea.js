@@ -1,5 +1,5 @@
 import Styles from "./TranslationArea.module.css"
-import {useParams} from "react-router-dom";
+import {useNavigate, useParams} from "react-router-dom";
 import {useTranslation} from "react-i18next";
 import i18n from "../../../../../../helpers/i18n";
 import {Fragment, useEffect, useRef, useState} from "react";
@@ -12,6 +12,7 @@ import KeyboardShortcut from "../../../../../../components/KeyboardShortcut";
 import {KeyboardShortcuts, useKeyboardShortcut} from "./KeyboardShortcuts";
 import SmallButton from "../../../../../../components/SmallButton";
 import {Untabbable, useTabIndex} from "react-tabindex";
+import BackButton from "../../../../../../components/BackButton";
 
 function TranslationPart({
                              entry,
@@ -144,6 +145,7 @@ export default function TranslationArea({
         goToPrevUnfinished,
         goToNextUnfinished
     } = useTranslationEntries(entries);
+    const navigate = useNavigate();
     tabIndex = useTabIndex(tabIndex);
 
     if (!entry) {
@@ -165,8 +167,10 @@ export default function TranslationArea({
         </div>);
     }
 
-    return <div className={Styles.translationArea}>
+    return <div className={`${Styles.translationArea} ${key && Styles.haveKey}`}>
         <div className={Styles.translationAreaInner}>
+            <BackButton className={Styles.backButton} text={t("BACK")} inTranslationView={true}
+                        onClick={() => navigate(`../translate`)}/>
             {statusAlerts}
             <div className={Styles.sourceTranslationContainer}>
                 <div className={Styles.sourceTranslationContainerInner}>
