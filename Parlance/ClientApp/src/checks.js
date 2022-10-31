@@ -62,6 +62,18 @@ function checki18nextHtmlPlaceholders(source, translation) {
     });
 }
 
+function checkResxPlaceholders(source, translation) {
+    return [...source.matchAll(/\{(\d+?)}/g)].flatMap(placeholder => {
+        let ph = placeholder[1];
+        if (!translation.includes(`{${ph}}`)) {
+            return {
+                checkSeverity: "error",
+                message: `Placeholder {${ph}} not present in translation`
+            }
+        }
+    });
+}
+
 const Checks = {
     "common": [
         checkDuplicate,
@@ -76,6 +88,10 @@ const Checks = {
     "i18next": [
         checki18nextPlaceholders,
         checki18nextHtmlPlaceholders,
+        "common"
+    ],
+    "resx": [
+        checkResxPlaceholders,
         "common"
     ]
 }

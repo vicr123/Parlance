@@ -32,5 +32,12 @@ export default {
             type: "placeholder",
             preview: ({pluralExample}) => pluralExample
         }
+    ],
+    resx: [
+        {
+            name: PLACEHOLDER_TRANSLATION_STRING,
+            regex: /\{(\d+?)}/g,
+            type: "placeholder"
+        },
     ]
 }

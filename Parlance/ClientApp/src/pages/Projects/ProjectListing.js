@@ -4,7 +4,6 @@ import React, {useEffect, useState} from "react";
 import Fetch from "../../helpers/Fetch";
 import SelectableList from "../../components/SelectableList";
 import {useNavigate} from "react-router-dom";
-import i18n from "../../helpers/i18n";
 import TranslationProgressIndicator from "../../components/TranslationProgressIndicator";
 import {useTranslation} from "react-i18next";
 import {VerticalSpacer} from "../../components/Layouts";
@@ -37,7 +36,7 @@ export default function ProjectListing() {
             <Container>
                 <PageHeading level={3}>{t("AVAILABLE PROJECTS")}</PageHeading>
                 <SelectableList items={done ? projects.map(p => ({
-                    contents: <TranslationProgressIndicator title={i18n.humanReadableLocale(p.name)}
+                    contents: <TranslationProgressIndicator title={p.name}
                                                             data={p.completionData}/>,
                     onClick: () => navigate(p.systemName)
                 })) : TranslationProgressIndicator.PreloadContents()}/>

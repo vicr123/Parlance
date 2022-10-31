@@ -167,7 +167,7 @@ public class ProjectsController : Controller
 
             var indexResults = await _indexingService.OverallResults(subproj);
 
-            if (subproj.AvailableLanguages().All(x => x != subproj.BaseLang))
+            if (!System.IO.File.Exists(subproj.BasePath))
                 return StatusCode(500, new
                 {
                     subproj.TranslationFileType,

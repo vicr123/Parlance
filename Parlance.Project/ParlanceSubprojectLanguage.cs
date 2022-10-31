@@ -39,7 +39,8 @@ public class ParlanceSubprojectLanguage : IParlanceSubprojectLanguage
 
     public async Task WriteNewTranslationFile(IParlanceIndexingService? indexingService)
     {
-        await using var baseFile = await CreateTranslationFile(indexingService, Subproject.BaseLang);
+        await using var baseFile =
+            await CreateTranslationFile(indexingService, Subproject.BaseLang, Subproject.BasePath);
         if (baseFile is null) throw new InvalidOperationException();
 
         var (_, attr) = ValidTypes().First();
@@ -62,18 +63,26 @@ public class ParlanceSubprojectLanguage : IParlanceSubprojectLanguage
     private async Task<ParlanceTranslationFile?> CreateTranslationFile(IParlanceIndexingService? indexingService,
         Locale locale)
     {
+        var (_, attr) = ValidTypes().First();
+
+        var translationFilePath = Path.Join(Subproject.Project.VcsDirectory,
+            Subproject.Path.Replace("{lang}", attr.FileNameFormat switch
+            {
+                ExpectedTranslationFileNameFormat.Dashed => locale.ToDashed(),
+                ExpectedTranslationFileNameFormat.Underscored => locale.ToUnderscored(),
+                _ => throw new ArgumentOutOfRangeException(
+                    $"Invalid value for FileNameFormat for attribute '{attr}'.")
+            }));
+
+        return await CreateTranslationFile(indexingService, locale, translationFilePath);
+    }
+
+    private async Task<ParlanceTranslationFile?> CreateTranslationFile(IParlanceIndexingService? indexingService,
+        Locale locale, string translationFilePath)
+    {
         try
         {
-            var (type, attr) = ValidTypes().First();
-
-            var translationFilePath = Path.Join(Subproject.Project.VcsDirectory,
-                Subproject.Path.Replace("{lang}", attr.FileNameFormat switch
-                {
-                    ExpectedTranslationFileNameFormat.Dashed => locale.ToDashed(),
-                    ExpectedTranslationFileNameFormat.Underscored => locale.ToUnderscored(),
-                    _ => throw new ArgumentOutOfRangeException(
-                        $"Invalid value for FileNameFormat for attribute '{attr}'.")
-                }));
+            var (type, _) = ValidTypes().First();
 
             if (type.GetInterface(nameof(IParlanceDualTranslationFile)) is not null)
             {
@@ -86,19 +95,10 @@ public class ParlanceSubprojectLanguage : IParlanceSubprojectLanguage
 
             if (type.GetInterface(nameof(IParlanceMonoTranslationFile)) is not null)
             {
-                var baseFilePath = Path.Join(Subproject.Project.VcsDirectory,
-                    Subproject.Path.Replace("{lang}", attr.FileNameFormat switch
-                    {
-                        ExpectedTranslationFileNameFormat.Dashed => Subproject.BaseLang.ToDashed(),
-                        ExpectedTranslationFileNameFormat.Underscored => Subproject.BaseLang.ToUnderscored(),
-                        _ => throw new ArgumentOutOfRangeException(
-                            $"Invalid value for FileNameFormat for attribute '{attr}'.")
-                    }));
-
                 var createMethod = type.GetMethod("CreateAsync");
                 return await (Task<ParlanceTranslationFile>)createMethod!.Invoke(null, new object?[]
                 {
-                    translationFilePath, locale, baseFilePath, Subproject.BaseLang, this, indexingService
+                    translationFilePath, locale, Subproject.BasePath, Subproject.BaseLang, this, indexingService
                 })!;
             }
 
@@ -118,10 +118,13 @@ public class ParlanceSubprojectLanguage : IParlanceSubprojectLanguage
 
     private IEnumerable<(Type, TranslationFileTypeAttribute)> ValidTypes()
     {
-        foreach (var type in TranslationFileTypes)
-        {
-            var attr = (TranslationFileTypeAttribute)type.GetCustomAttribute(typeof(TranslationFileTypeAttribute))!;
-            if (attr.HandlerFor == Subproject.TranslationFileType) yield return (type, attr);
-        }
+        return TranslationFileTypes
+            .Select(type => new
+            {
+                type,
+                attr = (TranslationFileTypeAttribute)type.GetCustomAttribute(typeof(TranslationFileTypeAttribute))!
+            })
+            .Where(t => t.attr.HandlerFor == Subproject.TranslationFileType)
+            .Select(t => (t.type, t.attr));
     }
 }
