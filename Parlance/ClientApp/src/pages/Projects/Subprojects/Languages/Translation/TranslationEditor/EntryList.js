@@ -6,6 +6,7 @@ import BackButton from "../../../../../../components/BackButton";
 import {useTranslation} from "react-i18next";
 import useTranslationEntries from "./EntryUtils";
 import {Fragment, useEffect, useRef} from "react";
+import {isEmptyTranslation} from "./EntryHelper";
 
 function EntryListItem({entries, entry, updateManager, translationDirection, translationFileType}) {
     const {project, subproject, language, key} = useParams();
@@ -29,7 +30,7 @@ function EntryListItem({entries, entry, updateManager, translationDirection, tra
     if (entry.key === key) classes.push(Styles.selected);
 
     const iconClasses = [Styles.entryIcon];
-    if (!updateManager.isPending(entry.key) && entry.translation.every(entry => entry.translationContent === "")) {
+    if (!updateManager.isPending(entry.key) && isEmptyTranslation(entry)) {
         iconClasses.push(Styles.iconIncomplete);
     } else {
         if (updateManager.isPending(entry.key)) {

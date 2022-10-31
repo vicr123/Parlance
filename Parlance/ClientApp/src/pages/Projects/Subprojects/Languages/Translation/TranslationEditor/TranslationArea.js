@@ -144,7 +144,7 @@ export default function TranslationArea({
         goToNext,
         goToPrevUnfinished,
         goToNextUnfinished
-    } = useTranslationEntries(entries);
+    } = useTranslationEntries(entries, onPushUpdate);
     const navigate = useNavigate();
     tabIndex = useTabIndex(tabIndex);
 
@@ -226,9 +226,9 @@ export default function TranslationArea({
                     </Button>
                 </div>
                 <div className={Styles.controlArea}>
-                    <Button onClick={goToNextUnfinished} disabled={!nextUnfinished}>
+                    <Button onClick={goToNextUnfinished} disabled={!nextUnfinished && !entry.oldSourceString}>
                         <div className={Styles.navButtonContents}>
-                            <span>{t("TRANSLATION_AREA_NEXT_UNFINISHED")}</span>
+                            <span>{entry.oldSourceString ? (nextUnfinished ? t("Save, Next Unfinished") : t("Mark as Complete")) : t("TRANSLATION_AREA_NEXT_UNFINISHED")}</span>
                             <span className={Styles.navButtonSource}>{nextUnfinished?.source}</span>
                             <VerticalSpacer height={2}/>
                             <KeyboardShortcut shortcut={KeyboardShortcuts.NextUnfinished}/>

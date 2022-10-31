@@ -21,12 +21,35 @@ export default function TranslationEditor() {
     const [subprojectData, setSubprojectData] = useState({});
     const [subprojectLanguageData, setSubprojectLanguageData] = useState({});
     const [ready, setReady] = useState(false);
+
+    const pushUpdate = async (key, update) => {
+        if (!canEdit) return;
+
+        if (!entries.some(entry => {
+            if (entry.key !== key) return false;
+            if (update.forceUpdate) return true;
+            return JSON.stringify(entry.translation) !== JSON.stringify(update.translationStrings);
+        })) return;
+
+        setEntries(entries => entries.map(entry => {
+            if (entry.key !== key) {
+                return entry;
+            }
+
+            entry.translation = update.translationStrings;
+            entry.oldSourceString = null;
+            return entry;
+        }));
+
+        updateManager.queueForUpdate(key, update);
+    };
+
     const {
         goToPrevUnfinished,
         goToNextUnfinished,
         goToNext,
         goToPrev
-    } = useTranslationEntries(entries);
+    } = useTranslationEntries(entries, pushUpdate);
     const {t} = useTranslation();
     const tabIndex = useTabIndex(0);
 
@@ -86,21 +109,6 @@ export default function TranslationEditor() {
             setReady(true);
         })();
     }, []);
-
-    const pushUpdate = async (key, update) => {
-        if (!canEdit) return;
-
-        setEntries(entries => entries.map(entry => {
-            if (entry.key !== key) {
-                return entry;
-            }
-
-            entry.translation = update.translationStrings;
-            return entry;
-        }));
-
-        updateManager.queueForUpdate(key, update);
-    };
 
     if (ready) {
         return <Suspense fallback={<Spinner.Container/>}>

@@ -1,6 +1,7 @@
 import {useNavigate, useParams} from "react-router-dom";
+import {isEmptyTranslation} from "./EntryHelper";
 
-export default function useTranslationEntries(entries) {
+export default function useTranslationEntries(entries, onPushUpdate) {
     const {project, subproject, language, key} = useParams();
     const navigate = useNavigate();
 
@@ -12,8 +13,8 @@ export default function useTranslationEntries(entries) {
     const entry = entries[entryIndex];
     const next = entries.find((entry, idx) => idx > entryIndex) || entries[0];
     const prev = entries.findLast((entry, idx) => idx < entryIndex) || entries[entries.length - 1];
-    const nextUnfinished = entries.find((entry, idx) => idx > entryIndex && entry.translation.every(translation => translation?.translationContent === ""));
-    const prevUnfinished = entries.findLast((entry, idx) => idx < entryIndex && entry.translation.every(translation => translation?.translationContent === ""));
+    const nextUnfinished = entries.find((entry, idx) => idx > entryIndex && isEmptyTranslation(entry));
+    const prevUnfinished = entries.findLast((entry, idx) => idx < entryIndex && isEmptyTranslation(entry));
 
     return {
         entryIndex,
@@ -36,6 +37,16 @@ export default function useTranslationEntries(entries) {
             goToEntry(prevUnfinished.key);
         },
         goToNextUnfinished: () => {
+            if (entry.oldSourceString) {
+                onPushUpdate(key, {
+                    translationStrings: entry.translation.map(pform2 => ({
+                        pluralType: pform2.pluralType,
+                        translationContent: pform2.translationContent
+                    })),
+                    forceUpdate: true
+                });
+            }
+
             if (!nextUnfinished) return;
             goToEntry(nextUnfinished.key);
         }

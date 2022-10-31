@@ -333,6 +333,12 @@ public class ProjectsController : Controller
             if (!Request.Headers.IfMatch.Contains(translationFile.Hash)) return StatusCode(412); //Precondition Failed
 
             var entry = translationFile.Entries.Single(entry => entry.Key == key);
+            if (!data.ForceUpdate && entry.Translation.SequenceEqual(data.TranslationStrings))
+            {
+                Response.Headers["X-Parlance-Hash"] = new StringValues(translationFile.Hash);
+                return NoContent();
+            }
+
             entry.Translation = data.TranslationStrings;
 
             //Record this edit in the database
@@ -341,7 +347,6 @@ public class ProjectsController : Controller
             await translationFile.Save();
 
             Response.Headers["X-Parlance-Hash"] = new StringValues(translationFile.Hash);
-
             return NoContent();
         }
         catch (SubprojectNotFoundException)
@@ -373,6 +378,9 @@ public class ProjectsController : Controller
             foreach (var (key, translationData) in data)
             {
                 var entry = translationFile.Entries.Single(entry => entry.Key == key);
+                if (!translationData.ForceUpdate &&
+                    entry.Translation.SequenceEqual(translationData.TranslationStrings)) continue;
+
                 entry.Translation = translationData.TranslationStrings;
 
                 //Record this edit in the database
@@ -381,9 +389,7 @@ public class ProjectsController : Controller
 
             await translationFile.Save();
 
-
             Response.Headers["X-Parlance-Hash"] = new StringValues(translationFile.Hash);
-
             return NoContent();
         }
         catch (SubprojectNotFoundException)
@@ -405,6 +411,7 @@ public class ProjectsController : Controller
 
     public class UpdateProjectEntryRequestData
     {
+        public bool ForceUpdate { get; set; }
         public IList<TranslationWithPluralType> TranslationStrings { get; set; } = null!;
     }
 }
