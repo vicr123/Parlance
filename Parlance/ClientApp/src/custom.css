@@ -36,11 +36,12 @@ body {
     --editor-placeholder-background: rgb(60, 60, 60);
 
     --fixed-font: 'JetBrains Mono', monospace;
+    --standard-font: 'Contemporary', sans-serif;
 
     background-color: var(--background-color);
     color: var(--foreground-color);
 
-    font-family: 'Contemporary', sans-serif;
+    font-family: var(--standard-font);
     font-size: 12pt;
 }
 

@@ -20,7 +20,7 @@ function SuggestedTranslation({suggestion, index}) {
     }
 
     return <div className={`${Styles.suggestedTranslation} ${Styles.suggestedLoading}`} style={{
-        zIndex: 500 - index
+        zIndex: 500 - (index || 0)
     }}>
         <div className={Styles.suggestedBorder}/>
         <div className={Styles.suggestedSource}>{suggestion?.source ||
@@ -36,11 +36,11 @@ function SuggestedTranslation({suggestion, index}) {
     </div>
 }
 
-export default function AssistantArea({entries}) {
+export default function AssistantArea({entries, searchParams}) {
     const {project, subproject, language, key} = useParams();
     const [suggested, setSuggested] = useState([]);
     const [loading, setLoading] = useState(false);
-    const {entry} = useTranslationEntries(entries);
+    const {entry} = useTranslationEntries(entries, searchParams);
     const {t} = useTranslation();
 
     useEffect(() => {
@@ -48,9 +48,13 @@ export default function AssistantArea({entries}) {
         setLoading(true);
 
         let timeout = setTimeout(async () => {
-            let msTranslations = await MicrosoftEngine.findTranslations(entry.source, language);
-            setSuggested([...msTranslations]);
-            setLoading(false);
+            try {
+                let msTranslations = await MicrosoftEngine.findTranslations(entry.source, language);
+                setSuggested([...msTranslations]);
+                setLoading(false);
+            } catch {
+                setLoading(false);
+            }
         }, 500);
 
         return () => clearTimeout(timeout);

@@ -2,7 +2,93 @@
     grid-area: entryList;
     border-right: 1px solid var(--border-color);
 
+    display: flex;
+    flex-direction: column;
+
     overflow-y: auto;
+}
+
+.entriesContainer {
+    overflow-y: auto;
+}
+
+input.searchBox {
+    border: none;
+    padding: 9px;
+    font-size: 12pt;
+}
+
+.topBox {
+    padding: 9px;
+    border-top: 1px solid var(--border-color);
+    border-bottom: 1px solid var(--border-color);
+
+    display: grid;
+    grid-template-columns: max-content 1fr;
+}
+
+.shownTypesSelect {
+    appearance: none;
+    background-color: var(--background-color);
+    border: none;
+
+    font: var(--standard-font);
+    outline: none;
+
+    grid-area: select;
+}
+
+.shownTypesSelectContainer {
+    border-top: 1px solid var(--border-color);
+
+    display: grid;
+    grid-template-areas: 
+         "icon select";
+    grid-template-columns: max-content 1fr;
+    grid-template-rows: 1fr;
+    gap: 6px;
+    padding: 9px;
+}
+
+.filterIcon {
+    grid-area: icon;
+    align-self: center;
+    justify-self: center;
+}
+
+.filterPath {
+    opacity: 1;
+    fill: var(--foreground-color);
+    fill-opacity: 1;
+    fill-rule: nonzero;
+    stroke: var(--foreground-color);
+    stroke-width: 1;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-miterlimit: 4;
+    stroke-dasharray: none;
+    stroke-dashoffset: 0;
+    stroke-opacity: 1
+}
+
+.selectDownArrow {
+    grid-area: select;
+    justify-self: end;
+    align-self: center;
+    pointer-events: none;
+}
+
+.selectDownArrowPath {
+    fill: var(--foreground-color);
+    fill-opacity: 1;
+    fill-rule: nonzero;
+    stroke: var(--foreground-color);
+    stroke-width: 1;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-miterlimit: 4;
+    stroke-dasharray: none;
+    stroke-opacity: 1
 }
 
 .entryItem {

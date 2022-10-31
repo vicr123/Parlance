@@ -20,7 +20,17 @@ export default function TranslationEditor() {
     const [entries, setEntries] = useState([]);
     const [subprojectData, setSubprojectData] = useState({});
     const [subprojectLanguageData, setSubprojectLanguageData] = useState({});
+    const [searchParams, setSearchParams] = useState({
+        query: "",
+        filter: "all"
+    });
     const [ready, setReady] = useState(false);
+
+    const setSearchParam = (key, value) => {
+        let params = {...searchParams};
+        params[key] = value;
+        setSearchParams(params);
+    }
 
     const pushUpdate = async (key, update) => {
         if (!canEdit) return;
@@ -49,7 +59,7 @@ export default function TranslationEditor() {
         goToNextUnfinished,
         goToNext,
         goToPrev
-    } = useTranslationEntries(entries, pushUpdate);
+    } = useTranslationEntries(entries, searchParams, subprojectData.translationFileType, pushUpdate);
     const {t} = useTranslation();
     const tabIndex = useTabIndex(0);
 
@@ -113,12 +123,14 @@ export default function TranslationEditor() {
     if (ready) {
         return <Suspense fallback={<Spinner.Container/>}>
             <div className={Styles.root}>
-                <EntryList entries={entries} translationDirection={translationDirection} updateManager={updateManager}
+                <EntryList searchParams={searchParams} setSearchParam={setSearchParam} entries={entries}
+                           translationDirection={translationDirection} updateManager={updateManager}
                            translationFileType={subprojectData.translationFileType}/>
                 <TranslationArea tabIndex={tabIndex} onPushUpdate={pushUpdate} entries={entries}
                                  translationDirection={translationDirection}
-                                 translationFileType={subprojectData.translationFileType} canEdit={canEdit}/>
-                <AssistantArea entries={entries}/>
+                                 translationFileType={subprojectData.translationFileType} canEdit={canEdit}
+                                 searchParams={searchParams}/>
+                <AssistantArea entries={entries} searchParams={searchParams}/>
             </div>
         </Suspense>
     } else {
