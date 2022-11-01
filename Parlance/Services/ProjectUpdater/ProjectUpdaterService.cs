@@ -44,6 +44,10 @@ public class ProjectUpdaterService : BackgroundService
                         await versionControlService.PublishSavedChangesToSource(project);
                 }
             }
+            catch (MergeConflictException)
+            {
+                //Log it somewhere!
+            }
             catch (LibGit2SharpException)
             {
                 //Log it somewhere!
