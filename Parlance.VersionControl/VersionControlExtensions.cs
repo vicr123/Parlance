@@ -1,5 +1,6 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Parlance.VersionControl.Services.PendingEdits;
 using Parlance.VersionControl.Services.SshKeyManagement;
 using Parlance.VersionControl.Services.VersionControl;
 
@@ -11,6 +12,7 @@ public static class VersionControlExtensions
     {
         services.AddScoped<ISshKeyManagementService, SshKeyManagementService>();
         services.AddScoped<IVersionControlService, GitVersionControlService>();
+        services.AddScoped<IPendingEditsService, PendingEditsService>();
         return services;
     }
 }

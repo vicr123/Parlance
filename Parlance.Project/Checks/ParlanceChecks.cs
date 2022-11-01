@@ -25,22 +25,30 @@ public class ParlanceChecks : IParlanceChecks
     {
         var checksModule = _jsEngine.ImportModule("checks");
         var checkTranslationFunction = checksModule.Get("checkTranslation").AsFunctionInstance();
-        var result = _jsEngine.Invoke(checkTranslationFunction, new JsString(source), new JsString(translation),
-            new JsString(checkSet));
-
-        return result.AsArray().Select(val =>
+        try
         {
-            var obj = val.AsObject();
-            return new CheckResult
+            var result = _jsEngine.Invoke(checkTranslationFunction, new JsString(source), new JsString(translation),
+                new JsString(checkSet));
+
+            return result.AsArray().Select(val =>
             {
-                CheckSeverity = obj.Get("checkSeverity").AsString() switch
+                var obj = val.AsObject();
+                return new CheckResult
                 {
-                    "warn" => CheckResult.Severity.Warning,
-                    "error" => CheckResult.Severity.Error,
-                    var s => throw new ArgumentOutOfRangeException($"Invalid severity value '{s}' from checker script.")
-                },
-                Message = obj.Get("message").AsString()
-            };
-        });
+                    CheckSeverity = obj.Get("checkSeverity").AsString() switch
+                    {
+                        "warn" => CheckResult.Severity.Warning,
+                        "error" => CheckResult.Severity.Error,
+                        var s => throw new ArgumentOutOfRangeException(
+                            $"Invalid severity value '{s}' from checker script.")
+                    },
+                    Message = obj.Get("message").AsString()
+                };
+            });
+        }
+        catch (Exception)
+        {
+            return Enumerable.Empty<CheckResult>();
+        }
     }
 }

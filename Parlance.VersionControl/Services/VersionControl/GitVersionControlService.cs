@@ -1,16 +1,20 @@
 using LibGit2Sharp;
 using Parlance.Project;
+using Parlance.VersionControl.Services.PendingEdits;
 
 namespace Parlance.VersionControl.Services.VersionControl;
 
 public class GitVersionControlService : IVersionControlService
 {
     private readonly Identity _identity = new("Parlance", "parlance@vicr123.com");
+    private readonly IPendingEditsService _pendingEditsService;
     private readonly IRemoteCommunicationService _remoteCommunicationService;
 
-    public GitVersionControlService(IRemoteCommunicationService remoteCommunicationService)
+    public GitVersionControlService(IRemoteCommunicationService remoteCommunicationService,
+        IPendingEditsService pendingEditsService)
     {
         _remoteCommunicationService = remoteCommunicationService;
+        _pendingEditsService = pendingEditsService;
     }
 
     public Task DownloadFromSource(string cloneUrl, string directory, string branch)
@@ -25,7 +29,7 @@ public class GitVersionControlService : IVersionControlService
 
     public Task<VersionControlCommit?> SaveChangesToVersionControl(IParlanceProject project)
     {
-        return Task.Run(() => SaveChangesToVersionControlCore(project));
+        return Task.Run(async () => await SaveChangesToVersionControlCore(project));
     }
 
     public Task PublishSavedChangesToSource(IParlanceProject project)
@@ -165,7 +169,7 @@ public class GitVersionControlService : IVersionControlService
         }
     }
 
-    private VersionControlCommit? SaveChangesToVersionControlCore(IParlanceProject project)
+    private async Task<VersionControlCommit?> SaveChangesToVersionControlCore(IParlanceProject project)
     {
         using var repo = new Repository(project.VcsDirectory);
         var status = repo.RetrieveStatus();
@@ -178,7 +182,21 @@ public class GitVersionControlService : IVersionControlService
         // TODO: Express actual translation authors through Author
         var signature = new Signature(_identity, DateTimeOffset.Now);
 
-        var commit = repo.Commit("Update Translations", signature, signature);
+        var pendingEdits = await _pendingEditsService.EditorsPendingEdits(project);
+        var pendingLocales = _pendingEditsService.LocalesPendingEdits(project).ToList();
+
+        var commitLines = new List<string>
+        {
+            pendingLocales.Any()
+                ? $"Update Translations - {string.Join(", ", pendingLocales.Select(x => x.ToUnderscored()))}"
+                : "Update Translations",
+            ""
+        };
+
+        commitLines.AddRange(pendingEdits.Select(x => $"Co-Authored-By: {x.Name} <{x.Email}>"));
+
+        var commit = repo.Commit(string.Join("\n", commitLines), signature, signature);
+        await _pendingEditsService.ClearPendingEdits(project);
         return new VersionControlCommit(commit);
     }
 

@@ -35,6 +35,11 @@ public record Locale(string LanguageCode, string? CountryCode, string? Script)
         return Encoding.UTF8.GetString(JsonSerializer.SerializeToUtf8Bytes(this));
     }
 
+    public static Locale? FromDatabaseRepresentation(string databaseRepresentation)
+    {
+        return JsonSerializer.Deserialize<Locale>(Encoding.UTF8.GetBytes(databaseRepresentation));
+    }
+
     public IReadOnlyList<LocalePluralRule> PluralRules()
     {
         if (PluralCache.ContainsKey(this)) return PluralCache[this];

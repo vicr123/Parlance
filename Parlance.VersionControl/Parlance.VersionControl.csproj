@@ -18,6 +18,7 @@
     <ItemGroup>
       <ProjectReference Include="..\Parlance.Database\Parlance.Database.csproj" />
       <ProjectReference Include="..\Parlance.Project\Parlance.Project.csproj" />
+      <ProjectReference Include="..\Parlance.Vicr123Accounts\Parlance.Vicr123Accounts.csproj" />
     </ItemGroup>
 
 </Project>

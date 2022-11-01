@@ -1,10 +1,10 @@
 using System.Security.Cryptography;
 using System.Text.Json;
-using accounts.DBus;
 using Fido2NetLib;
 using Microsoft.Extensions.Options;
+using Parlance.Vicr123Accounts.DBus;
 using Tmds.DBus;
-using IFido2 = accounts.DBus.IFido2;
+using IFido2 = Parlance.Vicr123Accounts.DBus.IFido2;
 
 namespace Parlance.Vicr123Accounts.Services;
 

@@ -1,6 +1,4 @@
-using Parlance.Vicr123Accounts.Services;
-
-namespace Parlance.Services.AttributionConsent;
+namespace Parlance.Vicr123Accounts.Services.AttributionConsent;
 
 public interface IAttributionConsentService
 {

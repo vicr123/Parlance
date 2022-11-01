@@ -12,7 +12,9 @@ using Parlance.Project.SourceStrings;
 using Parlance.Project.TranslationFiles;
 using Parlance.Services.Permissions;
 using Parlance.Services.Projects;
+using Parlance.VersionControl.Services.PendingEdits;
 using Parlance.Vicr123Accounts.Authentication;
+using Parlance.Vicr123Accounts.Services;
 
 namespace Parlance.Controllers;
 
@@ -20,19 +22,24 @@ namespace Parlance.Controllers;
 [Route("api/[controller]")]
 public class ProjectsController : Controller
 {
+    private readonly IVicr123AccountsService _accountsService;
     private readonly IParlanceIndexingService _indexingService;
+    private readonly IPendingEditsService _pendingEditsService;
     private readonly IPermissionsService _permissionsService;
     private readonly IProjectService _projectService;
     private readonly IParlanceSourceStringsService _sourceStringsService;
 
     public ProjectsController(IProjectService projectService,
         IPermissionsService permissionsService,
-        IParlanceIndexingService indexingService, IParlanceSourceStringsService sourceStringsService)
+        IParlanceIndexingService indexingService, IParlanceSourceStringsService sourceStringsService,
+        IPendingEditsService pendingEditsService, IVicr123AccountsService accountsService)
     {
         _projectService = projectService;
         _permissionsService = permissionsService;
         _indexingService = indexingService;
         _sourceStringsService = sourceStringsService;
+        _pendingEditsService = pendingEditsService;
+        _accountsService = accountsService;
     }
 
     [HttpGet]
@@ -324,6 +331,9 @@ public class ProjectsController : Controller
     {
         try
         {
+            var userId = ulong.Parse(HttpContext.User.Claims.First(claim => claim.Type == Claims.UserId).Value);
+            var user = await _accountsService.UserById(userId);
+
             var p = await _projectService.ProjectBySystemName(project);
             var subprojectLanguage = p.GetParlanceProject().SubprojectBySystemName(subproject)
                 .Language(language.ToLocale());
@@ -343,6 +353,7 @@ public class ProjectsController : Controller
 
             //Record this edit in the database
             await _sourceStringsService.RegisterSourceStringChange(subprojectLanguage, entry);
+            await _pendingEditsService.RecordPendingEdit(subprojectLanguage, user);
 
             await translationFile.Save();
 
@@ -367,6 +378,9 @@ public class ProjectsController : Controller
     {
         try
         {
+            var userId = ulong.Parse(HttpContext.User.Claims.First(claim => claim.Type == Claims.UserId).Value);
+            var user = await _accountsService.UserById(userId);
+
             var p = await _projectService.ProjectBySystemName(project);
             var subprojectLanguage = p.GetParlanceProject().SubprojectBySystemName(subproject)
                 .Language(language.ToLocale());
@@ -385,6 +399,7 @@ public class ProjectsController : Controller
 
                 //Record this edit in the database
                 await _sourceStringsService.RegisterSourceStringChange(subprojectLanguage, entry);
+                await _pendingEditsService.RecordPendingEdit(subprojectLanguage, user);
             }
 
             await translationFile.Save();

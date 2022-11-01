@@ -101,13 +101,13 @@ function checkTranslation(source, translation, checkSuite) {
 
     let suite = Checks[checkSuite];
     if (!suite) return [];
-    return suite.flatMap(check => {
+    return suite.map(check => {
         if (typeof (check) === "string") {
             return checkTranslation(source, translation, check);
         } else {
             return check(source, translation);
         }
-    }).filter(result => result);
+    }).flat().filter(result => result);
 }
 
 function mostSevereType(checks) {

@@ -14,7 +14,7 @@
 
     <ItemGroup>
       <PackageReference Include="JetBrains.Annotations" Version="2022.1.0" />
-      <PackageReference Include="Jint" Version="3.0.0-beta-2039" />
+      <PackageReference Include="Jint" Version="3.0.0-beta-2042" />
       <PackageReference Include="Microsoft.Extensions.FileSystemGlobbing" Version="6.0.0" />
     </ItemGroup>
 

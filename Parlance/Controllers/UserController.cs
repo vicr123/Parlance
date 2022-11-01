@@ -4,11 +4,11 @@ using Fido2NetLib;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Parlance.Helpers;
-using Parlance.Services.AttributionConsent;
 using Parlance.Services.Permissions;
 using Parlance.Services.Superuser;
 using Parlance.Vicr123Accounts.Authentication;
 using Parlance.Vicr123Accounts.Services;
+using Parlance.Vicr123Accounts.Services.AttributionConsent;
 using Tmds.DBus;
 
 // ReSharper disable UnusedAutoPropertyAccessor.Global

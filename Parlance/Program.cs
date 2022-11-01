@@ -7,7 +7,6 @@ using Parlance.CldrData;
 using Parlance.Database;
 using Parlance.Jobs;
 using Parlance.Project;
-using Parlance.Services.AttributionConsent;
 using Parlance.Services.Permissions;
 using Parlance.Services.Projects;
 using Parlance.Services.ProjectUpdater;
@@ -16,6 +15,7 @@ using Parlance.Services.Superuser;
 using Parlance.VersionControl;
 using Parlance.VersionControl.Services;
 using Parlance.Vicr123Accounts;
+using Parlance.Vicr123Accounts.Services.AttributionConsent;
 using Quartz;
 using ServiceReference;
 

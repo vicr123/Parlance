@@ -2,18 +2,20 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Parlance.Database;
 
 #nullable disable
 
-namespace Parlance.Migrations
+namespace Parlance.Database.Migrations
 {
     [DbContext(typeof(ParlanceContext))]
-    partial class ParlanceContextModelSnapshot : ModelSnapshot
+    [Migration("20221101093842_AttributionConsents")]
+    partial class AttributionConsents
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -62,35 +64,6 @@ namespace Parlance.Migrations
                         .IsUnique();
 
                     b.ToTable("AttributionConsents", (string)null);
-                });
-
-            modelBuilder.Entity("Parlance.Database.Models.EditsPending", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("Language")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("Project")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("Subproject")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<decimal>("UserId")
-                        .HasColumnType("numeric(20,0)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("UserId", "Project", "Subproject", "Language")
-                        .IsUnique();
-
-                    b.ToTable("EditsPending", (string)null);
                 });
 
             modelBuilder.Entity("Parlance.Database.Models.IndexItem", b =>
