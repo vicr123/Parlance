@@ -4,6 +4,7 @@ using Fido2NetLib;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Parlance.Helpers;
+using Parlance.Services.AttributionConsent;
 using Parlance.Services.Permissions;
 using Parlance.Services.Superuser;
 using Parlance.Vicr123Accounts.Authentication;
@@ -20,16 +21,18 @@ namespace Parlance.Controllers;
 public class UserController : Controller
 {
     private readonly IVicr123AccountsService _accountsService;
+    private readonly IAttributionConsentService _attributionConsentService;
 
     private readonly IPermissionsService _permissionsService;
     private readonly ISuperuserService _superuserService;
 
     public UserController(IVicr123AccountsService accountsService, ISuperuserService superuserService,
-        IPermissionsService permissionsService)
+        IPermissionsService permissionsService, IAttributionConsentService attributionConsentService)
     {
         _accountsService = accountsService;
         _superuserService = superuserService;
         _permissionsService = permissionsService;
+        _attributionConsentService = attributionConsentService;
     }
 
     [Authorize]
@@ -454,6 +457,38 @@ public class UserController : Controller
         return NoContent();
     }
 
+    [HttpGet]
+    [Authorize]
+    [Route("attribution/consent")]
+    public async Task<IActionResult> AttributionConsentStatus()
+    {
+        var userId = ulong.Parse(HttpContext.User.Claims.First(claim => claim.Type == Claims.UserId).Value);
+        var user = await _accountsService.UserById(userId);
+
+        return Json(new
+        {
+            ConsentProvided = _attributionConsentService.HaveConsent(user),
+            PreferredUserName = _attributionConsentService.PreferredUserName(user)
+        });
+    }
+
+    [HttpPost]
+    [Authorize]
+    [Route("attribution/consent")]
+    public async Task<IActionResult> UpdateAttributionConsent([FromBody] UpdateAttributionConsentRequestData data)
+    {
+        var userId = ulong.Parse(HttpContext.User.Claims.First(claim => claim.Type == Claims.UserId).Value);
+        var user = await _accountsService.UserById(userId);
+
+        if (!data.ConsentProvided && data.PreferredName is null)
+            return this.ClientError(ParlanceClientError.IncorrectParameters);
+
+        await _attributionConsentService.SetConsentStatus(user, data.ConsentProvided);
+        if (data.ConsentProvided) await _attributionConsentService.SetPreferredUserName(user, data.PreferredName);
+
+        return NoContent();
+    }
+
     public class CreateUserRequestData
     {
         public string Username { get; set; } = null!;
@@ -559,5 +594,11 @@ public class UserController : Controller
         public string Password { get; set; } = null!;
         public string Name { get; set; } = null!;
         public JsonElement Response { get; set; }
+    }
+
+    public class UpdateAttributionConsentRequestData
+    {
+        public bool ConsentProvided { get; set; }
+        public string? PreferredName { get; set; }
     }
 }

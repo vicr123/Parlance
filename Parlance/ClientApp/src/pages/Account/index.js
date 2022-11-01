@@ -14,6 +14,7 @@ import VerifyEmail from "./VerifyEmail";
 import "./index.css";
 import Otp from "./Otp";
 import SecurityKeys from "./SecurityKeys";
+import Attribution from "./Attribution";
 
 export default function Account() {
     const [ignored, forceUpdate] = useReducer(x => x + 1, 0);
@@ -69,6 +70,7 @@ export default function Account() {
                     <Route element={<VerifyEmail/>} path={"/verify"}/>
                     <Route element={<SecurityKeys/>} path={"/keys"}/>
                     <Route element={<Otp/>} path={"/otp"}/>
+                    <Route element={<Attribution/>} path={"/attribution"}/>
                 </Routes>
             </CSSTransition>
         </TransitionGroup>

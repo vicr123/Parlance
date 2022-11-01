@@ -7,6 +7,7 @@ using Parlance.CldrData;
 using Parlance.Database;
 using Parlance.Jobs;
 using Parlance.Project;
+using Parlance.Services.AttributionConsent;
 using Parlance.Services.Permissions;
 using Parlance.Services.Projects;
 using Parlance.Services.ProjectUpdater;
@@ -32,6 +33,7 @@ builder.Services.AddScoped<IProjectService, ProjectService>();
 builder.Services.AddScoped<ISuperuserService, SuperuserService>();
 builder.Services.AddScoped<IRemoteCommunicationService, RemoteCommunicationService>();
 builder.Services.AddScoped<IPermissionsService, PermissionsService>();
+builder.Services.AddScoped<IAttributionConsentService, AttributionConsentService>();
 builder.Services.AddSingleton<Terminology, TerminologyClient>();
 builder.Services.AddSingleton<IProjectUpdateQueue, ProjectUpdateQueue>();
 

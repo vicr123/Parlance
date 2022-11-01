@@ -77,3 +77,11 @@ input[type=text], input[type=password] {
     border: 1px solid var(--border-color);
     padding: 3px;
 }
+
+hr {
+    border-top: none;
+    border-left: none;
+    border-right: none;
+    border-bottom: 1px solid var(--border-color);
+    width: 100%;
+}

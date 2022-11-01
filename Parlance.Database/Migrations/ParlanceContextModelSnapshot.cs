@@ -44,6 +44,26 @@ namespace Parlance.Migrations
                     b.ToTable("Alerts", (string)null);
                 });
 
+            modelBuilder.Entity("Parlance.Database.Models.AttributionConsent", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("PreferredName")
+                        .HasColumnType("text");
+
+                    b.Property<decimal>("UserId")
+                        .HasColumnType("numeric(20,0)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId")
+                        .IsUnique();
+
+                    b.ToTable("AttributionConsents", (string)null);
+                });
+
             modelBuilder.Entity("Parlance.Database.Models.IndexItem", b =>
                 {
                     b.Property<Guid>("Id")

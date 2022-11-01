@@ -90,7 +90,7 @@ export default function EntryList({
     return <div className={Styles.rootList}>
         <div className={`${Styles.scrim} ${key && Styles.haveKey}`}/>
         <BackButton text={t("QUIT")} onClick={() => navigate("..")} inTranslationView={true}/>
-        <input type={"text"} className={Styles.searchBox} placeholder={t("Search")} value={searchParams.query}
+        <input type={"text"} className={Styles.searchBox} placeholder={t("SEARCH")} value={searchParams.query}
                onChange={e => setSearchParam("query", e.target.value)}/>
         <div className={Styles.shownTypesSelectContainer}>
             <svg className={Styles.filterIcon}

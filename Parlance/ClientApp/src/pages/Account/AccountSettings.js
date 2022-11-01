@@ -80,6 +80,11 @@ export default function AccountSettings() {
                 {
                     contents: t("ACCOUNT_SETTINGS_MANAGE_SECURITY_KEYS"),
                     onClick: () => navigate("keys")
+                },
+                t("ACCOUNT_SETTINGS_PRIVACY"),
+                {
+                    contents: t("ACCOUNT_SETTINGS_ATTRIBUTION"),
+                    onClick: () => navigate("attribution")
                 }
             ]}/>
         </Container>
