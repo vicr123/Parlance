@@ -12,8 +12,16 @@ import LoadingModal from "../../../../components/modals/LoadingModal";
 import ErrorModal from "../../../../components/modals/ErrorModal";
 import {VerticalLayout, VerticalSpacer} from "../../../../components/Layouts";
 import BackButton from "../../../../components/BackButton";
+import PreloadingBlock from "../../../../components/PreloadingBlock";
 
 function Commit({commit}) {
+    if (!commit) {
+        return <div className={Styles.commitContainer}>
+            <PreloadingBlock>COMMIT MESSAGE PLACEHOLDER ITEMS</PreloadingBlock>
+            <PreloadingBlock width={"auto"}><code>0000000</code></PreloadingBlock>
+        </div>
+    }
+
     return <div className={Styles.commitContainer}>
         <span className={Styles.commitMessage}>{commit.commitMessage.split("\n")[0]}</span>
         <code className={Styles.commitIdentifier}>{commit.commitIdentifier.substring(0, 7)}</code>
@@ -35,12 +43,6 @@ export default function VersionControl() {
     useEffect(() => {
         updateVcs();
     }, []);
-
-    if (!vcsState) {
-        return <div>
-
-        </div>
-    }
 
     const fetch = async () => {
         Modal.mount(<LoadingModal/>);
@@ -180,33 +182,35 @@ export default function VersionControl() {
             <div className={Styles.infoGrid}>
                 <span>{t("VCS_LAST_LOCAL_COMMIT")}</span>
                 <div className={Styles.commitAligner}>
-                    <Commit commit={vcsState.latestLocalCommit}/>
+                    <Commit commit={vcsState?.latestLocalCommit}/>
                 </div>
                 <div className={Styles.border}/>
 
                 <span>{t("VCS_LAST_REMOTE_COMMIT")}</span>
                 <div className={Styles.buttonBox}>
-                    <Commit commit={vcsState.latestRemoteCommit}/>
+                    <Commit commit={vcsState?.latestRemoteCommit}/>
                     <SmallButton onClick={fetch}>{t("VCS_FETCH")}</SmallButton>
                 </div>
                 <div className={Styles.border}/>
 
                 <span>{t("VCS_INCOMING_COMMITS")}</span>
                 <div className={Styles.buttonBox}>
-                    <SmallButton onClick={pull}>{t("VCS_INCOMING_COMMITS_PULL", {count: vcsState.behind})}</SmallButton>
+                    <SmallButton
+                        onClick={pull}>{t("VCS_INCOMING_COMMITS_PULL", {count: vcsState?.behind || 0})}</SmallButton>
                 </div>
                 <div className={Styles.border}/>
 
                 <span>{t("VCS_UNCOMMITTED_CHANGES")}</span>
                 <div className={Styles.buttonBox}>
                     <SmallButton
-                        onClick={commit}>{t("VCS_UNCOMMITTED_CHANGES_COMMIT", {count: vcsState.changedFiles.length})}</SmallButton>
+                        onClick={commit}>{t("VCS_UNCOMMITTED_CHANGES_COMMIT", {count: vcsState?.changedFiles.length || 0})}</SmallButton>
                 </div>
                 <div className={Styles.border}/>
 
                 <span>{t("VCS_OUTGOING_COMMITS")}</span>
                 <div className={Styles.buttonBox}>
-                    <SmallButton onClick={push}>{t("VCS_OUTGOING_COMMITS_PUSH", {count: vcsState.ahead})}</SmallButton>
+                    <SmallButton
+                        onClick={push}>{t("VCS_OUTGOING_COMMITS_PUSH", {count: vcsState?.ahead || 0})}</SmallButton>
                 </div>
                 <div className={Styles.border}/>
 
