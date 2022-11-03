@@ -6,7 +6,8 @@ using Parlance.Project.TranslationFiles;
 
 namespace Parlance.Project;
 
-public record SubprojectDefinition(string Name, string Type, string Path, string BaseLang, string? BasePath);
+public record SubprojectDefinition(string Name, string Type, string Path, string BaseLang, string? BasePath,
+    IDictionary<string, object> Options);
 
 public class ParlanceSubproject : IParlanceSubproject
 {
@@ -52,6 +53,8 @@ public class ParlanceSubproject : IParlanceSubproject
                                                                                         ArgumentOutOfRangeException(
                                                                                             "Invalid value for FileNameFormat.")
                                                                                 }));
+
+    public IDictionary<string, object> Options => _subproject.Options;
 
     public IEnumerable<Locale> AvailableLanguages()
     {

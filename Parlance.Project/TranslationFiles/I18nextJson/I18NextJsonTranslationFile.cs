@@ -12,6 +12,7 @@ namespace Parlance.Project.TranslationFiles.I18nextJson;
 [RequiresPreviewFeatures]
 public class I18NextJsonTranslationFile : ParlanceTranslationFile, IParlanceMonoTranslationFile
 {
+    private readonly bool _isMono = true;
     private string _baseFile = null!;
     private Locale _baseLocale = null!;
     private string _file = null!;
@@ -20,6 +21,8 @@ public class I18NextJsonTranslationFile : ParlanceTranslationFile, IParlanceMono
     public I18NextJsonTranslationFile(IParlanceSubprojectLanguage? subprojectLanguage,
         IParlanceIndexingService? indexingService) : base(subprojectLanguage, indexingService)
     {
+        if (subprojectLanguage?.Subproject?.Options?.ContainsKey("isDual") is true)
+            _isMono = !((JsonElement)subprojectLanguage.Subproject.Options["isDual"]).GetBoolean();
     }
 
     public override string Hash { get; internal set; } = null!;
@@ -122,8 +125,9 @@ public class I18NextJsonTranslationFile : ParlanceTranslationFile, IParlanceMono
 
             return new I18NextJsonTranslationFileEntry
             {
-                Key = key,
-                Source = bases[key][0].Value.GetString()!,
+                RealKey = key,
+                IsMono = _isMono,
+                Source = _isMono ? bases[key][0].Value.GetString()! : key,
                 Context = Path.GetFileName(file),
                 RequiresPluralisation = requiresPluralisation,
                 Translation = translationEntry
@@ -138,7 +142,7 @@ public class I18NextJsonTranslationFile : ParlanceTranslationFile, IParlanceMono
             var jsonEntry = (I18NextJsonTranslationFileEntry)entry;
             return jsonEntry.Translation.Select(translation =>
             {
-                var key = jsonEntry.Key;
+                var key = jsonEntry.RealKey;
                 if (jsonEntry.RequiresPluralisation) key += $"_{translation.PluralType}";
                 return (key, translation.TranslationContent);
             });

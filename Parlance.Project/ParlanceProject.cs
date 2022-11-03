@@ -7,7 +7,7 @@ internal record ParlanceJson(string Name, IEnumerable<SubprojectDefinition> Subp
 
 public class ParlanceProject : IParlanceProject
 {
-    private static readonly JsonSerializerOptions Options = new()
+    private static readonly JsonSerializerOptions JsonOptions = new()
     {
         PropertyNameCaseInsensitive = true
     };
@@ -21,7 +21,7 @@ public class ParlanceProject : IParlanceProject
 
         try
         {
-            var subprojectDefs = JsonSerializer.Deserialize<ParlanceJson>(file, Options);
+            var subprojectDefs = JsonSerializer.Deserialize<ParlanceJson>(file, JsonOptions);
 
             if (subprojectDefs is null)
                 throw new ParlanceJsonFileParseException("The Parlance project definition is invalid.");
