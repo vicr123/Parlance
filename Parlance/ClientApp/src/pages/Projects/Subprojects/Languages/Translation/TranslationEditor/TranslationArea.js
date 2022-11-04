@@ -181,7 +181,7 @@ export default function TranslationArea({
                         <TranslationSlateEditor tabIndex={tabIndex} value={entry.source}
                                                 diffWith={entry.oldSourceString}
                                                 translationFileType={translationFileType}
-                                                translationDirection={translationDirection} readOnly={true}
+                                                translationDirection={"ltr"} readOnly={true}
                                                 onChange={() => {
                                                 }}/>
                     </Untabbable>
