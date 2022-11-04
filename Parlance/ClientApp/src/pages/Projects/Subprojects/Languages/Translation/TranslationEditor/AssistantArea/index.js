@@ -9,7 +9,7 @@ import {useEffect, useState} from "react";
 import SmallButton from "../../../../../../../components/SmallButton";
 import PreloadingBlock from "../../../../../../../components/PreloadingBlock";
 
-function SuggestedTranslation({suggestion, index}) {
+function SuggestedTranslation({suggestion, index, translationDirection}) {
     const {t} = useTranslation();
 
     let type;
@@ -25,7 +25,7 @@ function SuggestedTranslation({suggestion, index}) {
         <div className={Styles.suggestedBorder}/>
         <div className={Styles.suggestedSource}>{suggestion?.source ||
             <PreloadingBlock width={30}>text</PreloadingBlock>}</div>
-        <div className={Styles.suggestedTranslationTranslation}>{suggestion?.translation ||
+        <div className={Styles.suggestedTranslationTranslation} dir={translationDirection}>{suggestion?.translation ||
             <PreloadingBlock>text</PreloadingBlock>}</div>
         <div className={Styles.suggestedControlsContainer}>
             <div className={Styles.suggestedBorder}/>
@@ -36,7 +36,7 @@ function SuggestedTranslation({suggestion, index}) {
     </div>
 }
 
-export default function AssistantArea({entries, searchParams}) {
+export default function AssistantArea({entries, searchParams, translationDirection}) {
     const {project, subproject, language, key} = useParams();
     const [suggested, setSuggested] = useState([]);
     const [loading, setLoading] = useState(false);
@@ -68,7 +68,8 @@ export default function AssistantArea({entries, searchParams}) {
         <SuggestedTranslation/>
     </> : (suggested.length === 0 ? <div>
         {t("SUGGESTIONS_NO_SUGGESTIONS")}
-    </div> : suggested.map((result, i) => <SuggestedTranslation index={i} suggestion={result} key={i}/>))
+    </div> : suggested.map((result, i) => <SuggestedTranslation index={i} suggestion={result} key={i}
+                                                                translationDirection={translationDirection}/>))
 
     return <div className={Styles.assistantArea}>
         <div className={Styles.assistantAreaInner}>

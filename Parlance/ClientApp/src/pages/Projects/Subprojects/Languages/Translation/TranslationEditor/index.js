@@ -130,7 +130,8 @@ export default function TranslationEditor() {
                                  translationDirection={translationDirection}
                                  translationFileType={subprojectData.translationFileType} canEdit={canEdit}
                                  searchParams={searchParams}/>
-                <AssistantArea entries={entries} searchParams={searchParams}/>
+                <AssistantArea entries={entries} searchParams={searchParams}
+                               translationDirection={translationDirection}/>
             </div>
         </Suspense>
     } else {

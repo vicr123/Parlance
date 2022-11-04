@@ -133,7 +133,6 @@ export default function TranslationArea({
                                             searchParams
                                         }) {
     const {key} = useParams();
-    const [translations, setTranslations] = useState([]);
     const {t} = useTranslation();
     const {
         entry,

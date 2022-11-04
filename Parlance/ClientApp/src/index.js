@@ -4,7 +4,13 @@ import {BrowserRouter} from 'react-router-dom';
 import App from './App';
 import * as serviceWorkerRegistration from './serviceWorkerRegistration';
 import reportWebVitals from './reportWebVitals';
-import i18n from './helpers/i18n';
+
+if (!Array.prototype.findLast) {
+    Array.prototype.findLast = function (delegate) {
+        const hits = this.filter(delegate);
+        return hits[hits.length - 1];
+    }
+}
 
 const baseUrl = document.getElementsByTagName('base')[0].getAttribute('href');
 const rootElement = document.getElementById('root');
