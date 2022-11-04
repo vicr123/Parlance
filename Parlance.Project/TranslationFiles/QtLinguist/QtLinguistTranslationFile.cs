@@ -42,30 +42,40 @@ public class QtLinguistTranslationFile : ParlanceTranslationFile, IParlanceDualT
         var pluralRules = locale.PluralRules().ToArray();
 
         var xmlDoc = XDocument.Parse(fileContents);
-        Entries = xmlDoc.Descendants("message").Select(msg => new QtLinguistTranslationFileEntry
+        Entries = xmlDoc.Descendants("message").Select(msg =>
         {
-            RealKey = (string)msg.Element("source")! + "-" + (string)msg.Parent!.Element("name")!,
-            Context = ((string)msg.Parent!.Element("name"))!,
-            Source = (string)msg.Element("source")!,
-            Translation = msg.Attribute("numerus")?.Value == "yes"
-                ? msg.Descendants("numerusform").Select((content, idx2) => new TranslationWithPluralType
-                {
-                    PluralType = pluralRules[idx2].Category,
-                    TranslationContent = (string)content
-                }).ToList()
-                : new List<TranslationWithPluralType>
-                {
-                    new()
+            var pluralDescendants = msg.Descendants("numerusform").ToList();
+            return new QtLinguistTranslationFileEntry
+            {
+                RealKey = (string)msg.Element("source")! + "-" + (string)msg.Parent!.Element("name")!,
+                Context = ((string)msg.Parent!.Element("name"))!,
+                Source = (string)msg.Element("source")!,
+                Translation = msg.Attribute("numerus")?.Value == "yes"
+                    // ? msg.Descendants("numerusform").Select((content, idx2) => new TranslationWithPluralType
+                    // {
+                    //     PluralType = pluralRules[idx2].Category,
+                    //     TranslationContent = (string)content
+                    // }).ToList()
+                    ? pluralRules.Select((rule, idx2) => new TranslationWithPluralType
                     {
-                        PluralType = "singular",
-                        TranslationContent = (string)msg.Element("translation")!
-                    }
-                },
-            RequiresPluralisation = msg.Attribute("numerus")?.Value == "yes",
-            Locations = msg.Elements("location")
-                .Where(loc => loc.Attribute("filename") is not null && loc.Attribute("line") is not null).Select(loc =>
-                    new QtLinguistTranslationFileEntry.Location((string)loc.Attribute("filename")!,
-                        (string)loc.Attribute("line")!))
+                        PluralType = rule.Category,
+                        TranslationContent = pluralDescendants.Count > idx2 ? (string)pluralDescendants[idx2] : ""
+                    }).ToList()
+                    : new List<TranslationWithPluralType>
+                    {
+                        new()
+                        {
+                            PluralType = "singular",
+                            TranslationContent = (string)msg.Element("translation")!
+                        }
+                    },
+                RequiresPluralisation = msg.Attribute("numerus")?.Value == "yes",
+                Locations = msg.Elements("location")
+                    .Where(loc => loc.Attribute("filename") is not null && loc.Attribute("line") is not null).Select(
+                        loc =>
+                            new QtLinguistTranslationFileEntry.Location((string)loc.Attribute("filename")!,
+                                (string)loc.Attribute("line")!))
+            };
         }).Cast<IParlanceTranslationFileEntry>().ToList();
     }
 
