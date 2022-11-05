@@ -78,13 +78,29 @@ export default function LanguageListing() {
         }
     }
 
+    const myLanguages = UserManager.currentUser?.languagePermissions && showLanguages.filter(lang => UserManager.currentUser.languagePermissions.includes(lang.language));
+    const otherLanguages = UserManager.currentUser?.languagePermissions ? showLanguages.filter(lang => !UserManager.currentUser.languagePermissions.includes(lang.language)) : showLanguages;
+
     return <div>
         <BackButton text={t("BACK_TO_SUBPROJECTS")} onClick={() => navigate("../..")}/>
         <VerticalSpacer/>
         <ErrorCover error={error}>
+            {myLanguages &&
+                <>
+                    <Container>
+                        <PageHeading level={3}>{t("MY_LANGUAGES")}</PageHeading>
+                        <SelectableList items={done ? myLanguages.map(p => ({
+                            contents: <TranslationProgressIndicator title={i18n.humanReadableLocale(p.language)}
+                                                                    data={p.completionData}/>,
+                            onClick: () => translationClicked(p.language)
+                        })) : TranslationProgressIndicator.PreloadContents()}/>
+                    </Container>
+                    <VerticalSpacer/>
+                </>
+            }
             <Container>
-                <PageHeading level={3}>{t("AVAILABLE_LANGUAGES")}</PageHeading>
-                <SelectableList items={done ? showLanguages.map(p => ({
+                <PageHeading level={3}>{myLanguages ? t("OTHER_LANGUAGES") : t("AVAILABLE_LANGUAGES")}</PageHeading>
+                <SelectableList items={done ? otherLanguages.map(p => ({
                     contents: <TranslationProgressIndicator title={i18n.humanReadableLocale(p.language)}
                                                             data={p.completionData}/>,
                     onClick: () => translationClicked(p.language)

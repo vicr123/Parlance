@@ -8,7 +8,7 @@ import UserModal from "./modals/account/UserModal";
 import {useTranslation} from "react-i18next";
 import {useNavigate} from "react-router-dom";
 
-export default function (props) {
+export default function NavMenu(props) {
     const [currentUser, setCurrentUser] = useState();
     const {t} = useTranslation();
     const navigate = useNavigate();
