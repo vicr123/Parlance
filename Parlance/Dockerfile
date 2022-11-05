@@ -3,11 +3,11 @@ WORKDIR /app
 EXPOSE 80
 EXPOSE 443
 
-RUN echo "Server=https://archive.archlinux.org/repos/2022/11/01/\$repo/os/\$arch" > /etc/mirrorlist
+RUN echo "Server=https://archive.archlinux.org/repos/2022/11/01/\$repo/os/\$arch" > /etc/pacman.d/mirrorlist
 
 FROM archlinux AS build
 
-RUN echo "Server=https://archive.archlinux.org/repos/2022/11/01/\$repo/os/\$arch" > /etc/mirrorlist
+RUN echo "Server=https://archive.archlinux.org/repos/2022/11/01/\$repo/os/\$arch" > /etc/pacman.d/mirrorlist
 
 # Install Node.js
 RUN pacman -Syyu --noconfirm nodejs dotnet-runtime dotnet-sdk aspnet-targeting-pack npm && rm -rf /var/lib/pacman/sync
