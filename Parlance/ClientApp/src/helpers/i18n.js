@@ -28,7 +28,8 @@ instance.use(initReactI18next).init({
     detection: {
         order: ['querystring', 'navigator']
     },
-    postProcess: ['pseudo']
+    postProcess: ['pseudo'],
+    returnEmptyString: false
 })
 
 i18n.humanReadableLocale = (locale) => {
@@ -75,7 +76,7 @@ i18n.pluralPatterns = async (locale) => {
     let promise;
     if (pluralPatternsCache[locale]) {
         promise = pluralPatternsCache[locale];
-        if (typeof(promise) !== "promise") {
+        if (typeof (promise) !== "promise") {
             return pluralPatternsCache[locale];
         }
     } else {
@@ -88,7 +89,7 @@ i18n.pluralPatterns = async (locale) => {
     for (let category of data) {
         categories[category.category] = category.examples;
     }
-    
+
     // let rules = new Intl.PluralRules(locale);
     // let categories = {};
     // for (let i = 0; i < 200; i++) {
@@ -101,7 +102,7 @@ i18n.pluralPatterns = async (locale) => {
     // if (locale.toLowerCase() === "pt-br") {
     //     categories["many"] = categories["other"];
     // }
-    
+
     pluralPatternsCache[locale] = categories;
     return categories;
 }

@@ -67,8 +67,12 @@
     background-color: var(--active-color);
 }
 
-.ModalButton:not(:last-child) {
+:global(.ltr) .ModalButton:not(:last-child) {
     border-right: 1px solid var(--border-color);
+}
+
+:global(.rtl) .ModalButton:not(:last-child) {
+    border-left: 1px solid var(--border-color);
 }
 
 .DestructiveModalButton {

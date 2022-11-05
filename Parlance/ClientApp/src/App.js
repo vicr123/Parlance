@@ -1,10 +1,11 @@
 import React, {Component} from 'react';
 import {Route, Routes} from 'react-router-dom';
 import AppRoutes from './AppRoutes';
-import {Layout} from './components/Layout';
+import Layout from './components/Layout';
 import './custom.css';
 import Styles from './App.module.css';
 import {useTranslation} from "react-i18next";
+import i18n from "./helpers/i18n";
 
 function ErrorIndicator({error}) {
     const {t} = useTranslation();
@@ -32,7 +33,7 @@ export default class App extends Component {
 
         return (
             <React.Suspense fallback={<div></div>}>
-                <Layout>
+                <Layout dir={i18n.dir()}>
                     <Routes>
                         {AppRoutes.map((route, index) => {
                             const {element, ...rest} = route;

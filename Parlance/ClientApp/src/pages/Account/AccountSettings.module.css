@@ -1,8 +1,8 @@
 .accountHeader {
     padding-top: 20px;
-    
+
     display: grid;
-    
+
     grid-template-columns: max-content 1fr;
     grid-template-rows: 1fr 1fr;
     grid-template-areas: 
@@ -28,7 +28,14 @@
     border-radius: 100px;
     aspect-ratio: 1 / 1;
     height: 70px;
+}
+
+:global(.ltr) .accountImage {
     margin-right: 20px;
+}
+
+:global(.rtl) .accountImage {
+    margin-left: 20px;
 }
 
 .verifyEmailPrompt {
@@ -44,5 +51,5 @@
 }
 
 .slideRightToLeft {
-    
+
 }

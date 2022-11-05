@@ -8,7 +8,7 @@ let root;
 
 class Modal extends React.Component {
     render() {
-        return <div className={Styles.ModalBackground}>
+        return <div className={`${Styles.ModalBackground} ${i18n.dir()}`} dir={i18n.dir()}>
             <div className={Styles.ModalContainer}>
                 {this.renderHeading()}
                 {this.renderModalText()}

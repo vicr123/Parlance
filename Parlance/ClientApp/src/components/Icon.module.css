@@ -2,6 +2,10 @@
     filter: invert();
 }
 
+:global(.rtl) .flipIcon {
+    transform: rotate(180deg);
+}
+
 @media (prefers-color-scheme: light) {
     .icon {
         filter: none;

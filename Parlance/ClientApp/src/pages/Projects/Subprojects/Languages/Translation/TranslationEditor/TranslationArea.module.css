@@ -5,9 +5,16 @@
 
 .translationArea {
     grid-area: translationArea;
-    border-right: 1px solid var(--border-color);
 
     display: flex;
+}
+
+:global(.ltr) .translationArea {
+    border-right: 1px solid var(--border-color);
+}
+
+:global(.rtl) .translationArea {
+    border-left: 1px solid var(--border-color);
 }
 
 .translationAreaInner {
@@ -147,12 +154,20 @@
     flex-direction: row;
 }
 
-.controlArea:first-child {
+:global(.ltr) .controlArea:first-child {
     border-right: 1px solid var(--border-color);
 }
 
-.controlArea:last-child {
+:global(.ltr) .controlArea:last-child {
     border-left: 1px solid var(--border-color);
+}
+
+:global(.rtl) .controlArea:first-child {
+    border-left: 1px solid var(--border-color);
+}
+
+:global(.rtl) .controlArea:last-child {
+    border-right: 1px solid var(--border-color);
 }
 
 .navButtonContents {

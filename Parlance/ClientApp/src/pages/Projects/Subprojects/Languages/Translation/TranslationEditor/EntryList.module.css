@@ -1,11 +1,18 @@
 .rootList {
     grid-area: entryList;
-    border-right: 1px solid var(--border-color);
 
     display: flex;
     flex-direction: column;
 
     overflow-y: auto;
+}
+
+:global(.ltr) .rootList {
+    border-right: 1px solid var(--border-color);
+}
+
+:global(.rtl) .rootList {
+    border-left: 1px solid var(--border-color);
 }
 
 .entriesContainer {

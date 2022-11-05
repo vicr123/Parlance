@@ -10,7 +10,7 @@ export default function BackButton({onClick, inListPage, inTranslationView, text
     if (!text) text = t("BACK");
 
     const child = <HorizontalLayout>
-        <Icon icon={"go-previous"}/>{text}
+        <Icon icon={"go-previous"} flip={true}/>{text}
     </HorizontalLayout>;
 
     if (inListPage) {
