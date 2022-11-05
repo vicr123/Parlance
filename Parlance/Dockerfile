@@ -3,10 +3,14 @@ WORKDIR /app
 EXPOSE 80
 EXPOSE 443
 
+RUN echo "Server=https://archive.archlinux.org/repos/2022/11/01/\$repo/os/\$arch" > /etc/mirrorlist
+
 FROM archlinux AS build
 
+RUN echo "Server=https://archive.archlinux.org/repos/2022/11/01/\$repo/os/\$arch" > /etc/mirrorlist
+
 # Install Node.js
-RUN pacman -Syu --noconfirm nodejs dotnet-runtime dotnet-sdk aspnet-targeting-pack npm && rm -rf /var/lib/pacman/sync
+RUN pacman -Syyu --noconfirm nodejs dotnet-runtime dotnet-sdk aspnet-targeting-pack npm && rm -rf /var/lib/pacman/sync
 
 WORKDIR /src
 COPY ["Parlance/Parlance.csproj", "Parlance/"]
@@ -21,7 +25,7 @@ RUN dotnet publish "Parlance.csproj" -c Release -o /app/publish
 FROM base AS final
 
 # Install libgit2
-RUN pacman -Sy --noconfirm libgit2 dotnet-runtime aspnet-runtime && rm -rf /var/lib/pacman/sync
+RUN pacman -Syy --noconfirm libgit2 dotnet-runtime aspnet-runtime && rm -rf /var/lib/pacman/sync
 
 WORKDIR /app
 COPY --from=publish /app/publish .
