@@ -107,4 +107,11 @@ i18n.pluralPatterns = async (locale) => {
     return categories;
 }
 
+const i18ndir = i18n.dir.bind(i18n);
+i18n.dir = () => {
+    const lng = i18n.resolvedLanguage || (i18n.languages && i18n.languages.length > 0 ? i18n.languages[0] : i18n.language);
+    if (!lng) return "ltr";
+    return i18ndir(lng);
+}
+
 export default i18n;
