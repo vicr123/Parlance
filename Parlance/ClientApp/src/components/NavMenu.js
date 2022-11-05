@@ -7,6 +7,7 @@ import UserManager from "../helpers/UserManager";
 import UserModal from "./modals/account/UserModal";
 import {useTranslation} from "react-i18next";
 import {useNavigate} from "react-router-dom";
+import ParlanceLogo from "../images/parlance.svg";
 
 export default function NavMenu(props) {
     const [currentUser, setCurrentUser] = useState();
@@ -36,10 +37,15 @@ export default function NavMenu(props) {
         <header className={Styles.navbarHeader}>
             <div className={Styles.navbarWrapper}>
                 <div className={Styles.navbarInner}>
-                    <div>
-                        <Button onClick={goHome}>Parlance</Button>
+                    <div className={Styles.navbarButtonContainer}>
+                        <Button onClick={goHome} style={{
+                            paddingTop: 0,
+                            paddingBottom: 0
+                        }}>
+                            <img src={ParlanceLogo} alt={"Parlance"}/>
+                        </Button>
                     </div>
-                    <div>
+                    <div className={Styles.navbarButtonContainer}>
                         <Button onClick={manageAccount}>{currentUser}</Button>
                     </div>
                 </div>

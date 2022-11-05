@@ -1,6 +1,10 @@
 .button {
     padding: 15px;
     cursor: default;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .button:not(.disabled):hover {
