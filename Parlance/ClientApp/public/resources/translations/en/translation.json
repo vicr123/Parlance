@@ -21,7 +21,7 @@
   "ACCOUNT_SETTINGS_TWO_FACTOR_DISABLE_PROMPT": "After turning off Two Factor Authentication, you'll only need to log in with your password.",
   "ACCOUNT_SETTINGS_TWO_FACTOR_ENABLED_PROMPT_1": "Two Factor Authentication is currently enabled for your account.",
   "ACCOUNT_SETTINGS_TWO_FACTOR_ENABLED_PROMPT_2": "Your backup codes are displayed below. Keep them in a safe place.",
-  "ACCOUNT_SETTINGS_TWO_FACTOR_ENABLED_PROMPT_3": "These backup codes can be used if you lose access to your Two Factor Authentication device, however, they can only be used once. You can generate mode backup codes as needed, but this will invalidate the old backup codes.",
+  "ACCOUNT_SETTINGS_TWO_FACTOR_ENABLED_PROMPT_3": "These backup codes can be used if you lose access to your Two Factor Authentication device, however, they can only be used once. You can generate more backup codes as needed, but this will invalidate the old backup codes.",
   "ACCOUNT_SETTINGS_TWO_FACTOR_PREAMBLE": "After setting up Two Factor Authentication, you'll need to provide both your password and a special one time code that's generated on your phone.",
   "ACCOUNT_SETTINGS_TWO_FACTOR_STEP_ONE": "Grab an authenticator app on your phone. Good apps that you can use include Authy and Google Authenticator.",
   "ACCOUNT_SETTINGS_TWO_FACTOR_STEP_THREE": "To finish setup, enter the code shown on the app.",
