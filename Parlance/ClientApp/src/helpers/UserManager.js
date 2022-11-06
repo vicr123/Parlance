@@ -25,6 +25,7 @@ class UserManager extends EventEmitter {
         this.#currentUser = null;
 
         this.updateDetails();
+        i18n.on("languageChanged", () => this.emit("currentUserChanged", this.#currentUser));
     }
 
     get isLoggedIn() {
