@@ -23,7 +23,7 @@ function SuggestedTranslation({suggestion, index, translationDirection}) {
         zIndex: 500 - (index || 0)
     }}>
         <div className={Styles.suggestedBorder}/>
-        <div className={Styles.suggestedSource}>{suggestion?.source ||
+        <div className={Styles.suggestedSource} dir={"ltr"}>{suggestion?.source ||
             <PreloadingBlock width={30}>text</PreloadingBlock>}</div>
         <div className={Styles.suggestedTranslationTranslation} dir={translationDirection}>{suggestion?.translation ||
             <PreloadingBlock>text</PreloadingBlock>}</div>

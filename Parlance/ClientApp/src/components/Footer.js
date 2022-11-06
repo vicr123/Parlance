@@ -8,7 +8,7 @@ import Modal from "./Modal";
 
 export default function Footer() {
     const {t} = useTranslation();
-    const match = useMatch("/projects/:project/:subproject/:language/translate");
+    const match = useMatch("/projects/:project/:subproject/:language/translate/*");
 
     const changeLanguage = () => {
         Modal.mount(<LanguageSelectionModal/>)
