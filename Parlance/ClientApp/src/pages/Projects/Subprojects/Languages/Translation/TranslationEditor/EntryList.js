@@ -62,7 +62,7 @@ function EntryListItem({
 
     return <div onClick={navigateToKey} className={classes.join(" ")} key={entry.key} ref={ref}>
         <div className={iconClasses.join(" ")}></div>
-        <div className={Styles.entrySource}>{entry.source}</div>
+        <div className={Styles.entrySource} dir={"ltr"}>{entry.source}</div>
         <div dir={translationDirection}
              className={Styles.entryTranslation}>{entry.translation[0]?.translationContent}</div>
     </div>
