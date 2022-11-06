@@ -19,20 +19,21 @@ import i18n from "../../helpers/i18n";
 
 function OtpBlock({otpState}) {
     return <div className={Styles.backupCodesContainer}>
-        {otpState.backupCodes.map(code => <span className={[Styles.backupCode, ...[code.used ? [Styles.backupCodeUsed] : []]].join(" ")}>{code.code.match(/.{1,4}/g).join(" ")}</span>)}
+        {otpState.backupCodes.map(code => <span dir={"ltr"}
+                                                className={[Styles.backupCode, ...[code.used ? [Styles.backupCodeUsed] : []]].join(" ")}>{code.code.match(/.{1,4}/g).join(" ")}</span>)}
     </div>
 }
 
 const PrintableOtpCodes = React.forwardRef(function PrintableOtpCodes({otpState}, ref) {
     const {t} = useTranslation();
-    
+
     return <div style={{display: "none"}}>
         <div ref={ref} className={Styles.printPage}>
             <VerticalLayout>
                 <span className={Styles.printHeader}>Parlance</span>
                 <span className={Styles.printSubtitle}>{t("BACKUP_CODES_PRINT_TITLE")}</span>
             </VerticalLayout>
-            <hr />
+            <hr/>
             <VerticalLayout>
                 <span>{t("BACKUP_CODES_PRINT_PROMPT_1")}</span>
                 <span>{t("BACKUP_CODES_PRINT_PROMPT_2")}</span>
@@ -42,9 +43,9 @@ const PrintableOtpCodes = React.forwardRef(function PrintableOtpCodes({otpState}
                         dateStyle: "full"
                     }).format(new Date()))
                 })}</span>
-                <OtpBlock otpState={otpState} />
+                <OtpBlock otpState={otpState}/>
             </VerticalLayout>
-            <VerticalSpacer height={20} />
+            <VerticalSpacer height={20}/>
             <VerticalLayout>
                 <PageHeading level={3}>{t("BACKUP_CODES_PRINT_PROMPT_5")}</PageHeading>
                 <span>{t("BACKUP_CODES_PRINT_PROMPT_6")}</span>
@@ -56,9 +57,9 @@ const PrintableOtpCodes = React.forwardRef(function PrintableOtpCodes({otpState}
 function OtpDisabledContent({otpState, onReload, password}) {
     const [otpCode, setOtpCode] = useState("");
     const {t} = useTranslation();
-    
+
     const performEnable = async () => {
-        Modal.mount(<LoadingModal />)
+        Modal.mount(<LoadingModal/>)
         try {
             await Fetch.post("/api/user/otp/enable", {
                 password: password,
@@ -66,10 +67,10 @@ function OtpDisabledContent({otpState, onReload, password}) {
             });
             onReload();
         } catch (error) {
-            Modal.mount(<ErrorModal error={error} /> )
+            Modal.mount(<ErrorModal error={error}/>)
         }
     }
-    
+
     return <>
         <Container style={{
             marginTop: "20px"
@@ -84,7 +85,7 @@ function OtpDisabledContent({otpState, onReload, password}) {
         }}>
             <div className={Styles.setupContainer}>
                 <span className={Styles.setupPrompt}>{t("ACCOUNT_SETTINGS_TWO_FACTOR_PREAMBLE")}</span>
-                
+
                 <span className={`${Styles.setupNumber} ${Styles.setupNumberOne}`}>1</span>
                 <span className={Styles.setupStepOne}>{t("ACCOUNT_SETTINGS_TWO_FACTOR_STEP_ONE")}</span>
 
@@ -92,7 +93,8 @@ function OtpDisabledContent({otpState, onReload, password}) {
                 <div className={Styles.setupStepTwo}>
                     <VerticalLayout>
                         <span>{t("ACCOUNT_SETTINGS_TWO_FACTOR_STEP_TWO_1")}</span>
-                        <QRCode className={Styles.setupQr} value={`otpauth://totp/Victor%20Tran?secret=${otpState.key}`} />
+                        <QRCode className={Styles.setupQr}
+                                value={`otpauth://totp/Victor%20Tran?secret=${otpState.key}`}/>
                         <span>{t("ACCOUNT_SETTINGS_TWO_FACTOR_STEP_TWO_2")}</span>
                         <span className={Styles.manualSetupKey}>{otpState.key.match(/.{1,4}/g).join(" ")}</span>
                     </VerticalLayout>
@@ -108,7 +110,8 @@ function OtpDisabledContent({otpState, onReload, password}) {
             <VerticalLayout>
                 <PageHeading level={3}>{t("ACCOUNT_SETTINGS_TWO_FACTOR_COMPLETE_SETUP")}</PageHeading>
                 <span>{t("ACCOUNT_SETTINGS_TWO_FACTOR_COMPLETE_SETUP_PROMPT")}</span>
-                <LineEdit placeholder={t("TWO_FACTOR_AUTHENTICATION_CODE")} value={otpCode} onChange={e => setOtpCode(e.target.value)} />
+                <LineEdit placeholder={t("TWO_FACTOR_AUTHENTICATION_CODE")} value={otpCode}
+                          onChange={e => setOtpCode(e.target.value)}/>
                 <SelectableList onClick={performEnable}>{t("ENABLE_TWO_FACTOR_AUTHENTICATION")}</SelectableList>
             </VerticalLayout>
         </Container>
@@ -122,7 +125,7 @@ function OtpEnabledContent({otpState, onReload, password}) {
     const handlePrint = useReactToPrint({
         content: () => printRef.current
     });
-    
+
     return <>
         <Container style={{
             marginTop: "20px"
@@ -131,11 +134,11 @@ function OtpEnabledContent({otpState, onReload, password}) {
                 <PageHeading level={3}>{t("ACCOUNT_SETTINGS_TWO_FACTOR")}</PageHeading>
                 <span>{t("ACCOUNT_SETTINGS_TWO_FACTOR_ENABLED_PROMPT_1")}</span>
                 <span>{t("ACCOUNT_SETTINGS_TWO_FACTOR_ENABLED_PROMPT_2")}</span>
-                <OtpBlock otpState={otpState} />
+                <OtpBlock otpState={otpState}/>
                 <span>{t("ACCOUNT_SETTINGS_TWO_FACTOR_ENABLED_PROMPT_3")}</span>
             </VerticalLayout>
         </Container>
-        <PrintableOtpCodes otpState={otpState} ref={printRef} />
+        <PrintableOtpCodes otpState={otpState} ref={printRef}/>
         <Container style={{
             marginTop: "20px"
         }}>
@@ -156,14 +159,14 @@ function OtpEnabledContent({otpState, onReload, password}) {
                                 {
                                     text: t("REGENERATE_BACKUP_CODES"),
                                     onClick: async () => {
-                                        Modal.mount(<LoadingModal />)
+                                        Modal.mount(<LoadingModal/>)
                                         try {
                                             await Fetch.post("/api/user/otp/regenerate", {
                                                 password: password
                                             });
                                             onReload();
                                         } catch (error) {
-                                            Modal.mount(<ErrorModal error={error} /> )
+                                            Modal.mount(<ErrorModal error={error}/>)
                                         }
                                     },
                                     destructive: true
@@ -181,7 +184,7 @@ function OtpEnabledContent({otpState, onReload, password}) {
                                 {
                                     text: t("ACCOUNT_SETTINGS_TWO_FACTOR_DISABLE"),
                                     onClick: async () => {
-                                        Modal.mount(<LoadingModal />)
+                                        Modal.mount(<LoadingModal/>)
                                         try {
                                             await Fetch.post("/api/user/otp/disable", {
                                                 password: password
@@ -189,7 +192,7 @@ function OtpEnabledContent({otpState, onReload, password}) {
                                             navigate("..");
                                             Modal.unmount();
                                         } catch (error) {
-                                            Modal.mount(<ErrorModal error={error} /> )
+                                            Modal.mount(<ErrorModal error={error}/>)
                                         }
                                     },
                                     destructive: true
@@ -200,7 +203,7 @@ function OtpEnabledContent({otpState, onReload, password}) {
                         },
                         type: "destructive"
                     }
-                ]} />
+                ]}/>
             </VerticalLayout>
         </Container>
     </>
@@ -211,7 +214,7 @@ export default function Otp(props) {
     const [otpState, setOtpState] = useState(null);
     const navigate = useNavigate();
     const {t} = useTranslation();
-    
+
     const requestPassword = () => {
         const accept = password => {
             setPassword(password);
@@ -222,13 +225,13 @@ export default function Otp(props) {
             Modal.unmount();
         }
 
-        Modal.mount(<PasswordConfirmModal onAccepted={accept} onRejected={reject} />)
+        Modal.mount(<PasswordConfirmModal onAccepted={accept} onRejected={reject}/>)
     }
-    
+
     const updateState = async () => {
         if (!password) return;
-        
-        Modal.mount(<LoadingModal />);
+
+        Modal.mount(<LoadingModal/>);
         try {
             setOtpState(await Fetch.post("/api/user/otp", {
                 password: password
@@ -241,21 +244,21 @@ export default function Otp(props) {
                 Modal.mount(<ErrorModal error={error} onContinue={() => {
                     navigate("..");
                     Modal.unmount();
-                }} />)
+                }}/>)
             }
         }
     };
-    
+
     useEffect(() => {
         updateState();
     }, [password]);
-    
+
     useEffect(() => {
         requestPassword();
     }, []);
-    
+
     let content;
-    
+
     if (otpState === null) {
         content = <Container style={{
             marginTop: "20px"
@@ -265,13 +268,13 @@ export default function Otp(props) {
             </VerticalLayout>
         </Container>
     } else if (otpState.enabled) {
-        content = <OtpEnabledContent password={password} onReload={updateState} otpState={otpState} />
+        content = <OtpEnabledContent password={password} onReload={updateState} otpState={otpState}/>
     } else {
-        content = <OtpDisabledContent password={password} onReload={updateState} otpState={otpState} />
+        content = <OtpDisabledContent password={password} onReload={updateState} otpState={otpState}/>
     }
-    
+
     return <div>
-        <BackButton onClick={() => navigate("..")} />
+        <BackButton onClick={() => navigate("..")}/>
         {content}
     </div>
 }
