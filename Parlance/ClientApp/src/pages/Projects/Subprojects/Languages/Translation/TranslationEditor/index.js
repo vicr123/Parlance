@@ -90,7 +90,7 @@ export default function TranslationEditor() {
         </Modal>)
     })
 
-    const translationDirection = (new Intl.Locale(language)).textInfo?.direction || "ltr";
+    const translationDirection = i18n.dir(language); //Intl textinfo not supported by Firefox //(new Intl.Locale(language)).textInfo?.direction || "ltr";
 
     const updateEntries = async () => {
         setEntries(await Fetch.get(`/api/Projects/${project}/${subproject}/${language}/entries`, result => {
