@@ -1,0 +1,27 @@
+.footerContainer {
+    grid-area: footer;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-top: 1px solid var(--border-color);
+}
+
+.footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    width: 100vw;
+    max-width: var(--content-width);
+
+}
+
+.hiddenFooter {
+    display: none;
+}
+
+.footerButtonContainer {
+    display: flex;
+}

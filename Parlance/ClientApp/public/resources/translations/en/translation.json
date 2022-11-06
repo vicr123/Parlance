@@ -137,6 +137,7 @@
   "OTHER_LANGUAGES": "Other Languages",
   "PARLANCE_ADMINISTRATION": "Parlance Administration",
   "PARLANCE_ADMINISTRATION_DESCRIPTION": "Configure the Parlance server",
+  "PARLANCE_ON_GIT": "Parlance on Git",
   "PASSWORD": "Password",
   "PASSWORD_CHANGE_CHECK_TITLE": "Check your password",
   "PASSWORD_CHANGE_ERROR_1": "Could not set password",

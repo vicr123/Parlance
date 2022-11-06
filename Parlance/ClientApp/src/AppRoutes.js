@@ -1,4 +1,4 @@
-import {Home} from "./pages/Home";
+import {Home} from "./pages/Home/index";
 import UnknownPage from "./pages/UnknownPage";
 import {lazy} from "react";
 import Spinner from "./components/Spinner";
