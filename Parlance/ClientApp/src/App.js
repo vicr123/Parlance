@@ -22,8 +22,15 @@ export default class App extends Component {
         super(props);
 
         this.state = {
-            error: null
+            error: null,
+            dir: i18n.dir()
         }
+
+        i18n.on("languageChanged", () => {
+            this.setState({
+                dir: i18n.dir()
+            });
+        });
     }
 
     render() {
@@ -33,7 +40,7 @@ export default class App extends Component {
 
         return (
             <React.Suspense fallback={<div></div>}>
-                <Layout dir={i18n.dir()}>
+                <Layout dir={this.state.dir}>
                     <Routes>
                         {AppRoutes.map((route, index) => {
                             const {element, ...rest} = route;

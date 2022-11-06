@@ -26,13 +26,14 @@ instance.use(initReactI18next).init({
         loadPath: "/resources/translations/{{lng}}/{{ns}}.json"
     },
     detection: {
-        order: ['querystring', 'navigator']
+        order: ['querystring', 'localStorage', 'navigator'],
+        lookupLocalStorage: "lang"
     },
     postProcess: ['pseudo'],
     returnEmptyString: false
 })
 
-i18n.humanReadableLocale = (locale) => {
+i18n.humanReadableLocale = (locale, selectedLanguage = i18n.language) => {
     try {
         let parts = locale.split("-");
 
@@ -41,19 +42,19 @@ i18n.humanReadableLocale = (locale) => {
         let script = parts.shift();
         let country = parts.shift();
 
-        if (language) readableParts.push((new Intl.DisplayNames([i18n.language], {type: "language"})).of(language));
+        if (language) readableParts.push((new Intl.DisplayNames([selectedLanguage], {type: "language"})).of(language));
 
         if (script) {
             //Ensure this is actually a script
             try {
-                readableParts.push(`(${(new Intl.DisplayNames([i18n.language], {type: "script"})).of(script)})`);
+                readableParts.push(`(${(new Intl.DisplayNames([selectedLanguage], {type: "script"})).of(script)})`);
             } catch {
                 //Probably a country then
                 country = script;
             }
         }
 
-        if (country) readableParts.push(`(${(new Intl.DisplayNames([i18n.language], {type: "region"})).of(country)})`);
+        if (country) readableParts.push(`(${(new Intl.DisplayNames([selectedLanguage], {type: "region"})).of(country)})`);
 
         return readableParts.join(" ");
     } catch {
@@ -108,8 +109,8 @@ i18n.pluralPatterns = async (locale) => {
 }
 
 const i18ndir = i18n.dir.bind(i18n);
-i18n.dir = () => {
-    const lng = i18n.resolvedLanguage || (i18n.languages && i18n.languages.length > 0 ? i18n.languages[0] : i18n.language);
+i18n.dir = (lng) => {
+    if (!lng) lng = i18n.resolvedLanguage || (i18n.languages && i18n.languages.length > 0 ? i18n.languages[0] : i18n.language);
     if (!lng) return "ltr";
     return i18ndir(lng);
 }

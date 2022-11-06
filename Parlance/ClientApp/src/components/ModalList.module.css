@@ -2,7 +2,7 @@
 
 .ModalList {
     border-bottom: 1px solid var(--border-color);
-    max-height: 70vh;
+    max-height: calc(100vh - 300px);
     overflow-y: auto;
 }
 

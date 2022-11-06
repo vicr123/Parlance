@@ -9,7 +9,8 @@ class ModalList extends React.Component {
             {this.props.children?.map((item, index) => {
                 let styles = [Styles.ModalListItem];
                 if (item.type === "destructive") styles.push(Styles.DestructiveListItem);
-                return <div key={index} className={styles.join(" ")} onClick={item.onClick}>{item.text}</div>;
+                return <div key={index} className={styles.join(" ")} onClick={item.onClick}
+                            dir={item.dir || "ltr"}>{item.text}</div>;
             })}
         </div>
     }
