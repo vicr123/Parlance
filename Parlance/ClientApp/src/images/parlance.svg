@@ -14,8 +14,8 @@
     <g
             id="layer1">
         <path
-                style="fill:#167ac3;stroke:none;stroke-width:0.264583px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;fill-opacity:1"
-                d="M 0.52916666,4.7624999 7.4083332,7.6729166 7.6729166,7.4083332 3.7041666,0.52916666 Z"
+                style="fill:#167ac3;fill-opacity:1;stroke:none;stroke-width:0.264583px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+                d="M 0.52916666,3.4395834 7.4083332,0.52916666 7.6729166,0.79375006 3.7041666,7.6729166 Z"
                 id="path3256"/>
         <path
                 id="rect236"

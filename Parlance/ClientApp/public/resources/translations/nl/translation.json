@@ -109,6 +109,8 @@
   "GENERIC_PROMPT": "Wat wil je doen?",
   "GIT_CLONE_URL": "Git Clone-URL",
   "HEADS_UP": "LET OP!",
+  "HOME_HERO_SUBTITLE": "",
+  "HOME_HERO_TITLE": "",
   "LANGUAGE_PERMISSIONS_ADD_NEW": "Nieuwe Taalbewerker Toevoegen",
   "LANGUAGE_PERMISSIONS_ADD_NEW_PROMPT": "Vul diens gebruikersnaam in om een gebruiker toe te staan om {{lang}} te bewerken.",
   "LANGUAGE_PERMISSIONS_PROMPT": "Deze gebruikers hebben rechten om {{lang}} vertalingsbestanden te bewerken.",

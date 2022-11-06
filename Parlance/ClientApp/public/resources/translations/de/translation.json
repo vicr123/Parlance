@@ -109,6 +109,8 @@
   "GENERIC_PROMPT": "Was willst du tun?",
   "GIT_CLONE_URL": "Git URL klonen",
   "HEADS_UP": "VORSICHT!",
+  "HOME_HERO_SUBTITLE": "",
+  "HOME_HERO_TITLE": "",
   "LANGUAGE_PERMISSIONS_ADD_NEW": "Neuen Sprachen Bearbeiter hinzufügen",
   "LANGUAGE_PERMISSIONS_ADD_NEW_PROMPT": "Um einen Nutzer zu erlauben {{lang}} zu bearbeiten, gibt deren Nutzernamen ein.",
   "LANGUAGE_PERMISSIONS_PROMPT": "Diese Nutzer haben Zugriff, um {{lang}} zu bearbeiten.",

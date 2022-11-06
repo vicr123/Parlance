@@ -109,6 +109,8 @@
   "GENERIC_PROMPT": "Bạn muốn làm gì?",
   "GIT_CLONE_URL": "Liên kết nhân bản Git",
   "HEADS_UP": "",
+  "HOME_HERO_SUBTITLE": "",
+  "HOME_HERO_TITLE": "",
   "LANGUAGE_PERMISSIONS_ADD_NEW": "Thêm người chỉnh sửa ngôn ngữ",
   "LANGUAGE_PERMISSIONS_ADD_NEW_PROMPT": "Để cấp quyền chỉnh sửa {{lang}} cho người dùng mới, vui lòng điền vào tên người dùng.",
   "LANGUAGE_PERMISSIONS_PROMPT": "Người dùng này có quyền chỉnh sửa tệp dịch {{lang}}",

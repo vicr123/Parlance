@@ -33,6 +33,10 @@ export default function NavMenu(props) {
         navigate("/");
     };
 
+    const goProjects = () => {
+        navigate("/projects");
+    };
+
     return (
         <header className={Styles.navbarHeader}>
             <div className={Styles.navbarWrapper}>
@@ -43,6 +47,9 @@ export default function NavMenu(props) {
                             paddingBottom: 0
                         }}>
                             <img src={ParlanceLogo} alt={"Parlance"}/>
+                        </Button>
+                        <Button onClick={goProjects}>
+                            {t("PROJECTS")}
                         </Button>
                     </div>
                     <div className={Styles.navbarButtonContainer}>

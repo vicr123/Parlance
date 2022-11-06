@@ -1,0 +1,56 @@
+.promoContainer {
+    height: 100%;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    background-image: url("../../images/spotlight.svg");
+    background-repeat: no-repeat;
+    background-size: 80%;
+    background-position: center;
+}
+
+.promo {
+    min-width: 800px;
+    max-width: calc(100vw - 200px);
+
+    display: flex;
+    flex-direction: column;
+    gap: 60px;
+}
+
+.buttonList {
+    display: flex;
+    font-size: 30pt;
+}
+
+.promoHeader {
+    font-size: 40pt;
+}
+
+.promoSub {
+    font-size: 30pt;
+}
+
+@media (max-width: 800px) {
+    .promo {
+        min-width: unset;
+        max-width: unset;
+        width: calc(100vw - 40px);
+    }
+
+    .buttonList {
+        display: flex;
+        font-size: 20pt;
+    }
+
+    .promoHeader {
+        font-size: 30pt;
+    }
+
+    .promoSub {
+        font-size: 20pt;
+    }
+}
