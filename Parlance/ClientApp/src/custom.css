@@ -35,6 +35,9 @@ body {
     --editor-placeholder-foreground: rgb(150, 150, 150);
     --editor-placeholder-background: rgb(60, 60, 60);
 
+    --preloading-block-color-1: rgba(255, 255, 255, 0.3);
+    --preloading-block-color-2: rgba(255, 255, 255, 0.4);
+
     --fixed-font: 'JetBrains Mono', monospace;
     --standard-font: 'Contemporary', sans-serif;
 
@@ -60,6 +63,10 @@ body {
 
         --editor-placeholder-foreground: rgb(150, 150, 150);
         --editor-placeholder-background: rgb(230, 230, 230);
+
+
+        --preloading-block-color-1: rgba(0, 0, 0, 0.3);
+        --preloading-block-color-2: rgba(0, 0, 0, 0.4);
     }
 }
 
