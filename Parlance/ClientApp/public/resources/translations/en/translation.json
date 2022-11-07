@@ -205,6 +205,7 @@
   "SERVER_SSH_KEY_GENERATE": "Generate SSH Key",
   "SERVER_SSH_KEY_INVALID_PROMPT": "In order to access repositories over SSH, generate an SSH key and provide the repository host with the generated key.",
   "SERVER_SSH_KEY_VALID_PROMPT": "Parlance will present servers with this SSH key when accessing repositories over SSH. In order to ensure Parlance has access to remote repositories, you will need to provide the repository host with this key.",
+  "SHOW_PLACEHOLDERS": "Show Placeholders",
   "SSH": "SSH",
   "SSH_KEYS": "SSH Keys",
   "START_NEW_TRANSLATION": "Start New Translation",

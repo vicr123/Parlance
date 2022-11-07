@@ -134,7 +134,7 @@ function TranslationPart({
                 <SmallButton tabIndex={-1}
                              onClick={copySource}>{t("COPY_SOURCE")}<KeyboardShortcut
                     shortcut={KeyboardShortcuts.CopySource}/></SmallButton>
-                {placeholders.length > 0 && <SmallButton tabIndex={-1}>{t("Show Placeholders")}<KeyboardShortcut
+                {placeholders.length > 0 && <SmallButton tabIndex={-1}>{t("SHOW_PLACEHOLDERS")}<KeyboardShortcut
                     shortcut={[["Alt"]]}/></SmallButton>}
             </div>
         </div>

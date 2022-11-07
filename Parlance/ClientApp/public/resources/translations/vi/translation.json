@@ -205,6 +205,7 @@
   "SERVER_SSH_KEY_GENERATE": "",
   "SERVER_SSH_KEY_INVALID_PROMPT": "",
   "SERVER_SSH_KEY_VALID_PROMPT": "",
+  "SHOW_PLACEHOLDERS": "",
   "SSH": "SSH",
   "SSH_KEYS": "Chìa khóa SSH",
   "START_NEW_TRANSLATION": "Bắt đầu bản dịch mới",

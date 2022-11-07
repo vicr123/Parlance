@@ -205,6 +205,7 @@
   "SERVER_SSH_KEY_GENERATE": "SSH-sleutel Genereren",
   "SERVER_SSH_KEY_INVALID_PROMPT": "Voor toegang tot repositories met SSH kun je een SSH-sleutel genereren en de gegenereerde sleutel doorgeven aan de host van de repository.",
   "SERVER_SSH_KEY_VALID_PROMPT": "Parlance geeft servers deze SSH-sleutel bij het ophalen van repositories met SSH. Om ervoor te zorgen dat Parlance toegang heeft tot remote repositories moet je de host van de repositories deze sleutel geven.",
+  "SHOW_PLACEHOLDERS": "",
   "SSH": "SSH",
   "SSH_KEYS": "SSH-sleutels",
   "START_NEW_TRANSLATION": "Nieuwe Vertaling Beginnen",
