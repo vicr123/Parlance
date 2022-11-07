@@ -210,11 +210,14 @@
     border-left: 1px solid var(--border-color);
     border-bottom: 1px solid var(--border-color);
 
+    flex-direction: row;
+    gap: 6px;
+
     z-index: 500;
 }
 
 .translationContainer.focus .controlsContainer {
-    display: block;
+    display: flex;
 }
 
 .backButton {

@@ -62,6 +62,7 @@
   "CLOSE": "Fechar",
   "CONFIRM_PASSWORD": "Confirmar senha",
   "CONFIRM_PASSWORD_PROMPT": "Confirme a senha para a sua conta",
+  "COPY_SOURCE": "",
   "CREATE_ACCOUNT": "Criar conta",
   "CREATE_ACCOUNT_PROMPT": "Faça uma conta de tipo {{type}} para editar traduções.",
   "DEMOTE": "Rebaixar",

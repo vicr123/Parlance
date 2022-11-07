@@ -2,7 +2,7 @@ import Styles from "./TranslationArea.module.css"
 import {useNavigate, useParams} from "react-router-dom";
 import {useTranslation} from "react-i18next";
 import i18n from "../../../../../../helpers/i18n";
-import {Fragment, useEffect, useRef, useState} from "react";
+import {Fragment, useEffect, useMemo, useRef, useState} from "react";
 import {checkTranslation} from "../../../../../../checks";
 import {VerticalLayout, VerticalSpacer} from "../../../../../../components/Layouts";
 import {TranslationSlateEditor} from "./TranslationSlateEditor";
@@ -13,6 +13,8 @@ import {KeyboardShortcuts, useKeyboardShortcut} from "./KeyboardShortcuts";
 import SmallButton from "../../../../../../components/SmallButton";
 import {Untabbable, useTabIndex} from "react-tabindex";
 import BackButton from "../../../../../../components/BackButton";
+import Placeholders from "./Placeholders";
+import {useForceUpdateOnUserChange} from "../../../../../../helpers/Hooks";
 
 function TranslationPart({
                              entry,
@@ -21,7 +23,8 @@ function TranslationPart({
                              translationFileType,
                              onTranslationUpdate,
                              canEdit,
-                             tabIndex
+                             tabIndex,
+                             placeholders
                          }) {
     const [translationContent, setTranslationContent] = useState(entry.translationContent);
     const [checkState, setCheckState] = useState([]);
@@ -32,6 +35,7 @@ function TranslationPart({
     const rootRef = useRef();
     const editorRef = useRef();
     tabIndex = useTabIndex(tabIndex);
+    useForceUpdateOnUserChange();
 
     useEffect(() => setTranslationContent(entry.translationContent), [entry]);
     useEffect(() => setCheckState(checkTranslation(sourceTranslation, translationContent, translationFileType)), [sourceTranslation, translationContent, translationFileType]);
@@ -64,13 +68,23 @@ function TranslationPart({
 
     useKeyboardShortcut(KeyboardShortcuts.CopySource, copySource, hasFocus);
 
+    for (let i = 0; i < KeyboardShortcuts.CopyPlaceholder.length; i++) {
+        const copyPlaceholder = () => {
+            let placeholder = placeholders.find(x => x.number === i);
+            if (!placeholder) return;
+            editorRef.current.insertText(placeholder.placeholder);
+        };
+
+        // eslint-disable-next-line react-hooks/rules-of-hooks
+        useKeyboardShortcut(KeyboardShortcuts.CopyPlaceholder[i], copyPlaceholder, hasFocus);
+    }
+
     const textChange = (text) => {
         setTranslationContent(text);
     }
 
     let headings = [t("TRANSLATION_AREA_TITLE", {lang: i18n.humanReadableLocale(language)})]
     if (pluralExample?.explanation) headings.push(pluralExample.explanation);
-
 
     const focus = () => {
         setHasFocus(true);
@@ -81,7 +95,8 @@ function TranslationPart({
             setHasFocus(false)
     }
 
-    return <div className={`${Styles.translationContainer} ${hasFocus && Styles.focus}`} onBlur={blur} onFocus={focus}
+    return <div className={`${Styles.translationContainer} ${hasFocus && canEdit && Styles.focus}`}
+                onBlur={blur} onFocus={focus}
                 ref={rootRef}>
         <div className={Styles.translationPart}>
             <div className={Styles.translationPartIndicator}>{headings.map((item, index) => {
@@ -99,6 +114,7 @@ function TranslationPart({
                                     translationDirection={translationDirection} readOnly={!canEdit}
                                     onTranslationUpdate={onTranslationUpdate} onChange={textChange}
                                     pluralExample={pluralExample?.number !== undefined ? i18n.number(language, pluralExample.number) : null}
+                                    showPlaceholders={false} placeholders={placeholders}
             />
             {checkState.length > 0 && <div className={Styles.checksContainer}>
                 {checkState.map((check, idx) => {
@@ -116,8 +132,10 @@ function TranslationPart({
         <div className={Styles.controlsContainerWrapper}>
             <div className={Styles.controlsContainer}>
                 <SmallButton tabIndex={-1}
-                             onClick={copySource}>{t("Copy Source")}<KeyboardShortcut
+                             onClick={copySource}>{t("COPY_SOURCE")}<KeyboardShortcut
                     shortcut={KeyboardShortcuts.CopySource}/></SmallButton>
+                {placeholders.length > 0 && <SmallButton tabIndex={-1}>{t("Show Placeholders")}<KeyboardShortcut
+                    shortcut={[["Alt"]]}/></SmallButton>}
             </div>
         </div>
     </div>
@@ -145,8 +163,43 @@ export default function TranslationArea({
         goToPrevUnfinished,
         goToNextUnfinished
     } = useTranslationEntries(entries, searchParams, translationFileType, onPushUpdate);
+    const [altDown, setAltDown] = useState(false);
     const navigate = useNavigate();
     tabIndex = useTabIndex(tabIndex);
+
+    const translationPlaceholders = useMemo(() => {
+        if (!entry) return [];
+
+        let highlights = Placeholders[translationFileType];
+        if (!highlights) highlights = [];
+
+        return highlights.flatMap(highlight => {
+            const matches = entry.source.match(highlight.regex);
+
+            return matches ? matches.map((match, number) => ({
+                number: number,
+                placeholder: match
+            })) : [];
+        });
+    }, [entry]);
+
+
+    const keyDownHandler = e => {
+        if (e.key === "Alt") setAltDown(true);
+    };
+
+    const keyUpHandler = e => {
+        if (e.key === "Alt") setAltDown(false);
+    };
+
+    useEffect(() => {
+        window.addEventListener("keydown", keyDownHandler);
+        window.addEventListener("keyup", keyUpHandler);
+        return () => {
+            window.removeEventListener("keydown", keyDownHandler);
+            window.removeEventListener("keyup", keyUpHandler);
+        }
+    }, [])
 
     if (!entry) {
         if (key) {
@@ -182,7 +235,8 @@ export default function TranslationArea({
                                                 translationFileType={translationFileType}
                                                 translationDirection={"ltr"} readOnly={true}
                                                 onChange={() => {
-                                                }}/>
+                                                }} showPlaceholders={altDown}
+                                                placeholders={translationPlaceholders}/>
                     </Untabbable>
                 </div>
                 <div className={Styles.keyContainer}>
@@ -212,7 +266,7 @@ export default function TranslationArea({
                 return <TranslationPart onTranslationUpdate={translationUpdate} entry={pform} key={idx}
                                         sourceTranslation={entry.source} translationFileType={translationFileType}
                                         translationDirection={translationDirection} canEdit={canEdit}
-                                        tabIndex={tabIndex}/>
+                                        tabIndex={tabIndex} placeholders={translationPlaceholders}/>
             })}
             <div style={{flexGrow: 1}}/>
             <div className={Styles.controls}>

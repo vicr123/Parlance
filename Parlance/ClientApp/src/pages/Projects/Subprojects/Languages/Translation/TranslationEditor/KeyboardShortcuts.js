@@ -5,7 +5,18 @@ const KeyboardShortcuts = {
     PreviousUnfinished: [["Control", "H"]],
     Next: [["Control", "J"]],
     Previous: [["Control", "K"]],
-    CopySource: [["Control", "]"]]
+    CopySource: [["Control", "]"]],
+    CopyPlaceholder: [
+        [["Alt", "1"], ["Alt", "¡"]],
+        [["Alt", "2"], ["Alt", "™"]],
+        [["Alt", "3"], ["Alt", "£"]],
+        [["Alt", "4"], ["Alt", "¢"]],
+        [["Alt", "5"], ["Alt", "∞"]],
+        [["Alt", "6"], ["Alt", "§"]],
+        [["Alt", "7"], ["Alt", "¶"]],
+        [["Alt", "8"], ["Alt", "•"]],
+        [["Alt", "9"], ["Alt", "ª"]]
+    ]
 };
 
 function useKeyboardShortcut(shortcut, callback, enabled = true) {
@@ -29,7 +40,10 @@ function useKeyboardShortcut(shortcut, callback, enabled = true) {
             callback(e);
         }, {
             enableOnContentEditable: true,
-            enabled
+            enabled,
+            eventListenerOptions: {
+                capture: true
+            }
         });
     }
 }

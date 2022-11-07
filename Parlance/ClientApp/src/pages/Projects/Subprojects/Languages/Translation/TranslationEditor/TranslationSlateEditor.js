@@ -7,6 +7,8 @@ import {useTranslation} from "react-i18next";
 import {diffWords} from "diff";
 import {useLocation, useParams} from "react-router-dom";
 import {useTabIndex} from "react-tabindex";
+import KeyboardShortcut from "../../../../../../components/KeyboardShortcut";
+import {KeyboardShortcuts} from "./KeyboardShortcuts";
 
 function Placeholder({attributes, direction, hasFocus, preview, children}) {
     let contents = children;
@@ -28,10 +30,14 @@ function Leaf({attributes, children, leaf}) {
 
     switch (leaf.decoration) {
         case "placeholder":
-            return <Placeholder attributes={attributes} direction={leaf.direction} hasFocus={leaf.hasFocus}
-                                preview={leaf.preview}>
-                {children}
-            </Placeholder>
+            return <>
+                <Placeholder attributes={attributes} direction={leaf.direction} hasFocus={leaf.hasFocus}
+                             preview={leaf.preview}>
+                    {children}
+                </Placeholder>
+                {leaf.showPlaceholders && leaf?.placeholderNumber < 10 &&
+                    <KeyboardShortcut shortcut={KeyboardShortcuts.CopyPlaceholder[leaf.placeholderNumber]}/>}
+            </>
         default:
             return <span {...attributes}>{children}</span>
     }
@@ -72,6 +78,10 @@ class TranslationSlateEditor extends React.Component {
         });
     }
 
+    insertText(text) {
+        Transforms.insertText(this.state.editor, text);
+    }
+
     forceSave() {
         this.props.onTranslationUpdate?.(this.state.editor.children.map(n => Node.string(n)).join("\n"), this.state.currentKey);
     }
@@ -99,7 +109,9 @@ function TranslationSlateEditorInner({
                                          editor,
                                          currentKey,
                                          setCurrentKey,
-                                         setContents
+                                         setContents,
+                                         placeholders,
+                                         showPlaceholders
                                      }) {
     const {language, key} = useParams();
     const location = useLocation();
@@ -156,6 +168,7 @@ function TranslationSlateEditorInner({
             setContents(value);
         }
     }, [value, diffWith])
+
     useEffect(() => {
         editor.onChange();
     }, [hasFocus]);
@@ -175,25 +188,25 @@ function TranslationSlateEditorInner({
             const matches = nodeText.match(highlight.regex);
             const locations = matches ? matches.map(m => [m.trim(), nodeText.indexOf(m.trim())]) : [];
 
-            return locations.map(([placeholder, index]) => {
-                return {
-                    anchor: {
-                        path,
-                        offset: index
-                    },
-                    focus: {
-                        path,
-                        offset: index + placeholder.length,
-                    },
-                    decoration: "placeholder",
-                    direction: translationDirection,
-                    label: highlight.name || "warning",
-                    hasFocus: hasFocus,
-                    preview: highlight.preview?.({
-                        pluralExample: pluralExample
-                    })
-                }
-            })
+            return locations.map(([placeholder, index], number) => ({
+                anchor: {
+                    path,
+                    offset: index
+                },
+                focus: {
+                    path,
+                    offset: index + placeholder.length,
+                },
+                decoration: "placeholder",
+                placeholderNumber: placeholders.find(x => x.placeholder === placeholder)?.number,
+                direction: translationDirection,
+                label: highlight.name || "warning",
+                hasFocus: hasFocus,
+                preview: highlight.preview?.({
+                    pluralExample: pluralExample
+                }),
+                showPlaceholders: showPlaceholders
+            }))
         });
     }
 

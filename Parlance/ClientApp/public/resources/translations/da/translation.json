@@ -69,6 +69,7 @@
   "CLOSE": "Luk",
   "CONFIRM_PASSWORD": "Bekræft adgangskode",
   "CONFIRM_PASSWORD_PROMPT": "Bekræft adgangskoden til din konto",
+  "COPY_SOURCE": "",
   "CREATE_ACCOUNT": "Opret konto",
   "CREATE_ACCOUNT_PROMPT": "Registrer en {{type}}-konto for at redigere oversættelser.",
   "DEMOTE": "Degrader",

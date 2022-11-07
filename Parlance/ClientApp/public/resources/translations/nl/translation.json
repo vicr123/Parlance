@@ -69,6 +69,7 @@
   "CLOSE": "Sluiten",
   "CONFIRM_PASSWORD": "Wachtwoord Bevestigen",
   "CONFIRM_PASSWORD_PROMPT": "Bevestig het wachtwoord voor je account",
+  "COPY_SOURCE": "",
   "CREATE_ACCOUNT": "Account Maken",
   "CREATE_ACCOUNT_PROMPT": "Registreer voor een {{type}}-account om vertalingen te bewerken.",
   "DEMOTE": "Degraderen",

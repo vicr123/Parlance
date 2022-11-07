@@ -69,6 +69,7 @@
   "CLOSE": "Schließen",
   "CONFIRM_PASSWORD": "Passwort bestätigen",
   "CONFIRM_PASSWORD_PROMPT": "Bestätige das Passwort für deinen Account",
+  "COPY_SOURCE": "",
   "CREATE_ACCOUNT": "Account erstellen",
   "CREATE_ACCOUNT_PROMPT": "Melde dich für einen {{type}} Account an, um Übersetzungen zu bearbeiten.",
   "DEMOTE": "Runterstufen",

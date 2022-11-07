@@ -10,6 +10,7 @@ import useTranslationEntries from "./EntryUtils";
 import Spinner from "../../../../../../components/Spinner";
 import {KeyboardShortcuts, useKeyboardShortcut} from "./KeyboardShortcuts";
 import {useTabIndex} from "react-tabindex";
+import UserManager from "../../../../../../helpers/UserManager";
 
 const EntryList = lazy(() => import("./EntryList"));
 const TranslationArea = lazy(() => import("./TranslationArea"));
@@ -108,17 +109,22 @@ export default function TranslationEditor() {
 
     const canEdit = subprojectLanguageData?.canEdit;
 
+    const updateData = async () => {
+        setReady(false);
+        await Promise.all([
+            updateEntries(),
+            updateSubproject(),
+            updateSubprojectLanguage(),
+            i18n.pluralPatterns(language)
+        ])
+        setReady(true);
+    }
+
     useEffect(() => {
-        (async () => {
-            await Promise.all([
-                updateEntries(),
-                updateSubproject(),
-                updateSubprojectLanguage(),
-                i18n.pluralPatterns(language)
-            ])
-            setReady(true);
-        })();
+        updateData();
     }, []);
+
+    UserManager.on("currentUserChanged", updateData);
 
     if (ready) {
         return <Suspense fallback={<Spinner.Container/>}>
