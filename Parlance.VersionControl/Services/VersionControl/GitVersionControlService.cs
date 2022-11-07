@@ -67,6 +67,32 @@ public class GitVersionControlService : IVersionControlService
         return new Repository(project.VcsDirectory);
     }
 
+    private void AbortPendingOperations(IRepository repo)
+    {
+        switch (repo.Info.CurrentOperation)
+        {
+            case CurrentOperation.Merge:
+                repo.Reset(ResetMode.Hard);
+                break;
+            case CurrentOperation.Rebase:
+            case CurrentOperation.RebaseInteractive:
+            case CurrentOperation.RebaseMerge:
+                repo.Rebase.Abort();
+                break;
+            case CurrentOperation.None:
+            case CurrentOperation.Revert:
+            case CurrentOperation.RevertSequence:
+            case CurrentOperation.CherryPick:
+            case CurrentOperation.CherryPickSequence:
+            case CurrentOperation.Bisect:
+            case CurrentOperation.ApplyMailbox:
+            case CurrentOperation.ApplyMailboxOrRebase:
+                break;
+            default:
+                throw new ArgumentOutOfRangeException();
+        }
+    }
+
     private void ReconcileRemoteWithLocalCore(IParlanceProject project)
     {
         using var repo = new Repository(project.VcsDirectory);
@@ -88,6 +114,8 @@ public class GitVersionControlService : IVersionControlService
 
     private void ReconcileRemoteWithLocalCoreRebase(IRepository repo)
     {
+        AbortPendingOperations(repo);
+
         var rebaseResult = repo.Rebase.Start(repo.Head, repo.Head.TrackedBranch, null, _identity, new RebaseOptions());
         if (rebaseResult.Status is RebaseStatus.Conflicts or RebaseStatus.Stop)
         {
@@ -98,6 +126,8 @@ public class GitVersionControlService : IVersionControlService
 
     private void ReconcileRemoteWithLocalCoreMerge(IRepository repo)
     {
+        AbortPendingOperations(repo);
+
         var tip = repo.Head.Tip;
         var mergeResult = repo.Merge(repo.Head.TrackedBranch, new Signature(_identity, DateTimeOffset.Now));
         if (mergeResult.Status == MergeStatus.Conflicts)
@@ -173,6 +203,8 @@ public class GitVersionControlService : IVersionControlService
     {
         using var repo = new Repository(project.VcsDirectory);
         var status = repo.RetrieveStatus();
+
+        AbortPendingOperations(repo);
 
         if (!status.IsDirty) return null;
 

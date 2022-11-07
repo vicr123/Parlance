@@ -1,6 +1,7 @@
 using System.Collections.Concurrent;
 using System.Text;
 using System.Text.Json;
+using System.Xml.XPath;
 using Sepia.Globalization;
 using Sepia.Globalization.Plurals;
 
@@ -44,16 +45,39 @@ public record Locale(string LanguageCode, string? CountryCode, string? Script)
     {
         if (PluralCache.ContainsKey(this)) return PluralCache[this];
 
+        var order = new List<string>
+        {
+            "zero",
+            "one",
+            "two",
+            "few",
+            "many",
+            "other"
+        };
+
         //HACK: For some reason German doesn't seem to be working correctly so hardcode the English rules
-        var plural = Plural.Create(Sepia.Globalization.Locale.Create(LanguageCode == "de" ? "en" : ToUnderscored()));
+        var locale = Sepia.Globalization.Locale.Create(ToUnderscored());
+        var plural = Plural.Create(locale);
+        var rules = Cldr.Instance.GetDocuments("common/supplemental/plurals.xml")
+            .Elements("supplementalData/plurals[@type='cardinal']/pluralRules[contains(@locales, '" +
+                      locale.Id.Language.ToLowerInvariant() + "')]/pluralRule").Select<XPathNavigator, Rule>(Rule.Parse)
+            .OrderBy(x => order.IndexOf(x.Category)).ToList();
 
         var result = Enumerable.Range(0, 201).Select(num =>
             {
                 try
                 {
+                    foreach (var rule in rules)
+                        if (rule.Matches(RuleContext.Create(num)))
+                            return new
+                            {
+                                rule.Category,
+                                Number = num
+                            };
+
                     return new
                     {
-                        Category = plural.Category(num),
+                        Category = "other",
                         Number = num
                     };
                 }

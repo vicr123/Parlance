@@ -92,27 +92,51 @@ public class I18NextJsonTranslationFile : ParlanceTranslationFile, IParlanceMono
 
         Entries = bases.Keys.Select(key =>
         {
-            var haveTranslationEntry = translationEntries.TryGetValue(key, out var jsonEntries);
+            var _ = translationEntries.TryGetValue(key, out var jsonEntries);
             var requiresPluralisation = !string.IsNullOrEmpty(SplitKey(bases[key][0].Name, baseLocale).Item2);
 
             List<TranslationWithPluralType> translationEntry;
-            if (haveTranslationEntry)
+            if (requiresPluralisation)
             {
-                translationEntry = jsonEntries!.Select(translation => new TranslationWithPluralType
+                translationEntry = locale.PluralRules().Select(rule =>
                 {
-                    PluralType = SplitKey(translation.Name, locale).Item2,
-                    TranslationContent = translation.Value.GetString() ?? string.Empty
+                    try
+                    {
+                        return new TranslationWithPluralType
+                        {
+                            PluralType = rule.Category,
+                            TranslationContent =
+                                jsonEntries?
+                                    .Single(translation =>
+                                        rule.Category == SplitKey(translation.Name, locale).Item2).Value
+                                    .GetString()!
+                        };
+                    }
+                    catch
+                    {
+                        return new TranslationWithPluralType
+                        {
+                            PluralType = rule.Category,
+                            TranslationContent = string.Empty
+                        };
+                    }
                 }).ToList();
             }
             else
             {
-                if (requiresPluralisation)
-                    translationEntry = locale.PluralRules().Select(rule => new TranslationWithPluralType
+                try
+                {
+                    translationEntry = new List<TranslationWithPluralType>
+                {
+                    new()
                     {
-                        PluralType = rule.Category,
-                        TranslationContent = string.Empty
-                    }).ToList();
-                else
+                        PluralType = "singular",
+                        TranslationContent = jsonEntries?.SingleOrDefault().Value.GetString() ?? string.Empty
+                    }
+                };
+                }
+                catch
+                {
                     translationEntry = new List<TranslationWithPluralType>
                     {
                         new()
@@ -121,6 +145,7 @@ public class I18NextJsonTranslationFile : ParlanceTranslationFile, IParlanceMono
                             TranslationContent = string.Empty
                         }
                     };
+                }
             }
 
             return new I18NextJsonTranslationFileEntry
