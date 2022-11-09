@@ -105,7 +105,7 @@ public class QtLinguistTranslationFile : ParlanceTranslationFile, IParlanceDualT
         var pluralRules = _locale.PluralRules().ToList();
 
         var doc = new XDocument(
-            new XElement("TS", new XAttribute("version", "2.1"),
+            new XElement("TS", new XAttribute("version", "2.1"), new XAttribute("language", _locale.ToUnderscored()),
                 Entries.GroupBy(entry => entry.Context).Select(context =>
                     new XElement("context",
                         new XElement("name", new XText(context.Key)),
