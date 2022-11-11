@@ -6,6 +6,14 @@ import PreloadingBlock from "./PreloadingBlock";
 const percent = value => `${value * 100}%`;
 
 function TranslationProgressMetric({value, title, className}) {
+    if (typeof (value) === "number") {
+        if (value > 10000) {
+            value = `${(value / 1000).toFixed(0)}k`
+        } else if (value > 1000) {
+            value = `${(value / 1000).toFixed(1)}k`
+        }
+    }
+
     return <div className={`${Styles.metric} ${className}`}>
         <span className={Styles.metricValue}>{value}</span>
         <span className={Styles.metricTitle}>{title}</span>
