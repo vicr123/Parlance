@@ -23,6 +23,7 @@ internal interface IManager : IDBusObject
 
     Task<ObjectPath> UserForTokenAsync(string Token);
     Task<ulong[]> AllUsersAsync();
+    Task<ObjectPath> CreateMailMessageAsync(string To);
 }
 
 [DBusInterface("com.vicr123.accounts.Fido2")]
@@ -96,6 +97,7 @@ internal interface IUser : IDBusObject
     Task<bool> VerifyPasswordAsync(string Password);
     Task ErasePasswordAsync();
     Task SetEmailVerifiedAsync(bool Verified);
+    Task<ObjectPath> CreateMailMessageAsync();
 
     Task<IDisposable> WatchUsernameChangedAsync(Action<(string oldUsername, string newUsername)> handler,
         Action<Exception> onError = null);
@@ -140,5 +142,71 @@ internal static class UserExtensions
     public static Task<bool> GetVerifiedAsync(this IUser o)
     {
         return o.GetAsync<bool>("Verified");
+    }
+}
+
+[DBusInterface("com.vicr123.accounts.MailMessage")]
+internal interface IMailMessage : IDBusObject
+{
+    Task SendAsync();
+    Task DiscardAsync();
+    Task<T> GetAsync<T>(string prop);
+    Task<MailMessageProperties> GetAllAsync();
+    Task SetAsync(string prop, object val);
+    Task<IDisposable> WatchPropertiesAsync(Action<PropertyChanges> handler);
+}
+
+[Dictionary]
+internal class MailMessageProperties
+{
+    public string Subject { get; set; } = default;
+
+    public (string, string) From { get; set; } = default;
+
+    public string TextContent { get; set; } = default;
+
+    public string HtmlContent { get; set; } = default;
+}
+
+internal static class MailMessageExtensions
+{
+    public static Task<string> GetSubjectAsync(this IMailMessage o)
+    {
+        return o.GetAsync<string>("Subject");
+    }
+
+    public static Task<(string, string)> GetFromAsync(this IMailMessage o)
+    {
+        return o.GetAsync<(string, string)>("From");
+    }
+
+    public static Task<string> GetTextContentAsync(this IMailMessage o)
+    {
+        return o.GetAsync<string>("TextContent");
+    }
+
+    public static Task<string> GetHtmlContentAsync(this IMailMessage o)
+    {
+        return o.GetAsync<string>("HtmlContent");
+    }
+
+    public static Task SetSubjectAsync(this IMailMessage o, string val)
+    {
+        return o.SetAsync("Subject", val);
+    }
+
+    public static Task SetFromAsync(this IMailMessage o, (string, string) val)
+    {
+        return o.SetAsync("From", val);
+    }
+
+    public static Task SetTextContentAsync(this IMailMessage o, string val)
+    {
+        return o.SetAsync("TextContent", val);
+    }
+
+    public static Task SetHtmlContentAsync(this IMailMessage o, string val)
+    {
+        return o.SetAsync("HtmlContent", val);
     }
 }
