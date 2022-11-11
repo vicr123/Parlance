@@ -224,6 +224,8 @@
   "TRANSLATION_AREA_SAVE_NEXT_UNFINISHED": "Speichern, nächstes unfertige",
   "TRANSLATION_AREA_SOURCE_TRANSLATION_TITLE": "Ursprungsübersetzung",
   "TRANSLATION_AREA_TITLE": "Übersetzen nach {{lang}}",
+  "TRANSLATION_FREEZE": "",
+  "TRANSLATION_FREEZE_PROMPT": "",
   "TRANSLATION_NOT_FOUND": "Übersetzung nicht gefunden",
   "TRANSLATION_OUT_OF_DATE": "Veraltet",
   "TRANSLATION_OUT_OF_DATE_PROMPT": "Tut uns leid, die Übersetzungsdatei wurde aktualisiert, deswegen musst du die Seite neu laden.",

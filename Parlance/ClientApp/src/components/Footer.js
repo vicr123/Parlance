@@ -5,6 +5,7 @@ import Button from "./Button";
 import {useTranslation} from "react-i18next";
 import LanguageSelectionModal from "./modals/LanguageSelectionModal";
 import Modal from "./Modal";
+import Icon from "./Icon";
 
 export default function Footer() {
     const {t} = useTranslation();
@@ -21,7 +22,8 @@ export default function Footer() {
                     onClick={() => window.open("https://www.github.com/vicr123/Parlance", "_blank")}>{t("PARLANCE_ON_GIT")}</Button>
             </div>
             <div className={Styles.footerButtonContainer}>
-                <Button onClick={changeLanguage}>{i18n.humanReadableLocale(i18n.resolvedLanguage)}</Button>
+                <Button onClick={changeLanguage}>
+                    <Icon icon={"map-globe"}/>&nbsp;{i18n.humanReadableLocale(i18n.resolvedLanguage)}</Button>
             </div>
         </div>
     </div>

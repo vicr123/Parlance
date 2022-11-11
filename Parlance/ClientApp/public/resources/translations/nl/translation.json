@@ -224,6 +224,8 @@
   "TRANSLATION_AREA_SAVE_NEXT_UNFINISHED": "Opslaan, Volgende Onafgeronde",
   "TRANSLATION_AREA_SOURCE_TRANSLATION_TITLE": "Bronvertaling",
   "TRANSLATION_AREA_TITLE": "Vertaling naar het {{lang}}",
+  "TRANSLATION_FREEZE": "",
+  "TRANSLATION_FREEZE_PROMPT": "",
   "TRANSLATION_NOT_FOUND": "Vertaling niet gevonden",
   "TRANSLATION_OUT_OF_DATE": "Verouderd",
   "TRANSLATION_OUT_OF_DATE_PROMPT": "Sorry, het vertalingsbestand is verouderd en je moet de pagina herladen.",

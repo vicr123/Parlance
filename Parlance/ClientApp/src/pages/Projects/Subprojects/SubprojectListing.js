@@ -10,6 +10,9 @@ import {useTranslation} from "react-i18next";
 import BackButton from "../../../components/BackButton";
 import {VerticalSpacer} from "../../../components/Layouts";
 import ErrorCover from "../../../components/ErrorCover";
+import Hero from "../../../components/Hero";
+import WallMessage from "../../../components/WallMessage";
+import {calculateDeadline} from "../../../helpers/Misc";
 
 export default function SubprojectListing() {
     const {project} = useParams();
@@ -32,7 +35,12 @@ export default function SubprojectListing() {
         updateProjects();
     }, []);
 
+    const deadlineInfo = calculateDeadline(projectData?.deadline);
+
     return <div>
+        <Hero heading={projectData?.name} buttons={[]}/>
+        {deadlineInfo.valid && <WallMessage title={t("TRANSLATION_FREEZE")}
+                                            message={t("TRANSLATION_FREEZE_PROMPT", {date: deadlineInfo.date})}/>}
         <BackButton text={t("BACK_TO_PROJECTS")} onClick={() => navigate("../..")}/>
         <VerticalSpacer/>
         <ErrorCover error={error}>

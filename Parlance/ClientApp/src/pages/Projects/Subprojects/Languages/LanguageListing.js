@@ -14,10 +14,12 @@ import LoadingModal from "../../../../components/modals/LoadingModal";
 import {VerticalSpacer} from "../../../../components/Layouts";
 import BackButton from "../../../../components/BackButton";
 import ErrorCover from "../../../../components/ErrorCover";
+import Hero from "../../../../components/Hero";
 
 export default function LanguageListing() {
     const [ignored, forceUpdate] = useReducer(x => x + 1, 0);
     const {project, subproject} = useParams();
+    const [subprojectData, setSubprojectData] = useState({});
     const [languages, setLanguages] = useState([]);
     const [done, setDone] = useState(false);
     const [error, setError] = useState();
@@ -29,6 +31,7 @@ export default function LanguageListing() {
     const updateProjects = async () => {
         try {
             let subprojectData = await Fetch.get(`/api/projects/${project}/${subproject}`);
+            setSubprojectData(subprojectData);
             setLanguages(subprojectData.availableLanguages);
             setDone(true);
         } catch (err) {
@@ -82,6 +85,7 @@ export default function LanguageListing() {
     const otherLanguages = UserManager.currentUser?.languagePermissions ? showLanguages.filter(lang => !UserManager.currentUser.languagePermissions.includes(lang.language)) : showLanguages;
 
     return <div>
+        <Hero heading={subprojectData?.projectName} subheading={subprojectData?.name} buttons={[]}/>
         <BackButton text={t("BACK_TO_SUBPROJECTS")} onClick={() => navigate("../..")}/>
         <VerticalSpacer/>
         <ErrorCover error={error}>

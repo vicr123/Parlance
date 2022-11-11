@@ -55,7 +55,7 @@ public class ProjectsController : Controller
                 return new
                 {
                     CompletionData = indexResults,
-                    Name = parlanceProject.ReadableName, project.SystemName
+                    Name = parlanceProject.ReadableName, project.SystemName, parlanceProject.Deadline
                 };
             }
             catch (ParlanceJsonFileParseException)
@@ -116,7 +116,7 @@ public class ProjectsController : Controller
             return Json(new
             {
                 CompletionData = indexResults,
-                p.Name,
+                p.Name, proj.Deadline,
                 Subprojects = await Task.WhenAll(proj.Subprojects.Select(async subproject =>
                 {
                     var subprojectIndexResults = await _indexingService.OverallResults(subproject);

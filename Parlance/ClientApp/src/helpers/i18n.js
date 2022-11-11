@@ -4,6 +4,8 @@ import LanguageDetector from 'i18next-browser-languagedetector';
 import {initReactI18next} from "react-i18next";
 import Pseudo from "i18next-pseudo";
 import Fetch from "./Fetch";
+import moment from "moment/moment";
+import 'moment/min/locales'
 
 let instance = i18n.use(HttpBackend);
 
@@ -32,6 +34,13 @@ instance.use(initReactI18next).init({
     postProcess: ['pseudo'],
     returnEmptyString: false
 })
+
+instance.on("languageChanged", language => {
+    moment.locale(language);
+});
+instance.on("initialized", options => {
+    moment.locale(i18n.resolvedLanguage);
+});
 
 i18n.humanReadableLocale = (locale, selectedLanguage = i18n.language) => {
     try {

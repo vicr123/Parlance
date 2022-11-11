@@ -8,6 +8,7 @@ import TranslationProgressIndicator from "../../components/TranslationProgressIn
 import {useTranslation} from "react-i18next";
 import {VerticalSpacer} from "../../components/Layouts";
 import ErrorCover from "../../components/ErrorCover";
+import {calculateDeadline} from "../../helpers/Misc";
 
 export default function ProjectListing() {
     const [projects, setProjects] = useState([]);
@@ -35,11 +36,12 @@ export default function ProjectListing() {
         <ErrorCover error={error}>
             <Container>
                 <PageHeading level={3}>{t("AVAILABLE PROJECTS")}</PageHeading>
-                <SelectableList items={done ? projects.map(p => ({
-                    contents: <TranslationProgressIndicator title={p.name}
-                                                            data={p.completionData}/>,
-                    onClick: () => navigate(p.systemName)
-                })) : TranslationProgressIndicator.PreloadContents()}/>
+                <SelectableList
+                    items={done ? projects.sort((a, b) => calculateDeadline(a.deadline).ms - calculateDeadline(b.deadline).ms).map(p => ({
+                        contents: <TranslationProgressIndicator title={p.name}
+                                                                data={p.completionData} deadline={p.deadline}/>,
+                        onClick: () => navigate(p.systemName)
+                    })) : TranslationProgressIndicator.PreloadContents()}/>
             </Container>
         </ErrorCover>
     </div>

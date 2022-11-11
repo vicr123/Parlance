@@ -3,7 +3,7 @@ using Parlance.Project.Exceptions;
 
 namespace Parlance.Project;
 
-internal record ParlanceJson(string Name, IEnumerable<SubprojectDefinition> Subprojects);
+internal record ParlanceJson(string Name, IEnumerable<SubprojectDefinition> Subprojects, ulong? Deadline);
 
 public class ParlanceProject : IParlanceProject
 {
@@ -30,6 +30,9 @@ public class ParlanceProject : IParlanceProject
             Subprojects = subprojectDefs.Subprojects.Select(subproject => new ParlanceSubproject(this, subproject))
                 .ToList()
                 .AsReadOnly();
+
+            if (subprojectDefs.Deadline.HasValue)
+                Deadline = DateTime.UnixEpoch.AddMilliseconds(subprojectDefs.Deadline.Value);
         }
         catch (JsonException ex)
         {
@@ -41,6 +44,7 @@ public class ParlanceProject : IParlanceProject
 
     public string Name => _project.Name;
     public string VcsDirectory => _project.VcsDirectory;
+    public DateTime? Deadline { get; }
     public IReadOnlyList<IParlanceSubproject> Subprojects { get; }
 
     public IParlanceSubproject SubprojectBySystemName(string systemName)

@@ -2,6 +2,7 @@ import Styles from "./TranslationProgressIndicator.module.css";
 import {useTranslation} from "react-i18next";
 import React from "react";
 import PreloadingBlock from "./PreloadingBlock";
+import {calculateDeadline} from "../helpers/Misc";
 
 const percent = value => `${value * 100}%`;
 
@@ -35,8 +36,9 @@ function TranslationProgressBar({data, className}) {
     }
 }
 
-export default function TranslationProgressIndicator({title, data}) {
+export default function TranslationProgressIndicator({title, data, deadline}) {
     const {t} = useTranslation();
+    const deadlineData = calculateDeadline(deadline);
 
     let metrics = [];
     if (data?.count == null) {
@@ -66,8 +68,13 @@ export default function TranslationProgressIndicator({title, data}) {
     let titleStyles = [Styles.title];
     if (data?.count == null) titleStyles.push(Styles.newTitle);
 
+    console.log(deadlineData)
+
     return <div className={Styles.root}>
         <span className={titleStyles.join(" ")}>{title}</span>
+        {deadlineData.valid && <TranslationProgressMetric key={"deadline"} value={deadlineData.text}
+                                                          title={t("TRANSLATION_PROGRESS_INDICATOR_REMAINING")}
+                                                          className={`${Styles.deadline} ${deadlineData.ms.asDays() <= 3 && Styles.errors}`}/>}
         <div className={Styles.metrics}>
             {metrics}
         </div>

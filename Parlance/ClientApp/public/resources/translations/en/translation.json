@@ -224,6 +224,8 @@
   "TRANSLATION_AREA_SAVE_NEXT_UNFINISHED": "Save, Next Unfinished",
   "TRANSLATION_AREA_SOURCE_TRANSLATION_TITLE": "Source Translation",
   "TRANSLATION_AREA_TITLE": "Translation into {{lang}}",
+  "TRANSLATION_FREEZE": "Translation Freeze",
+  "TRANSLATION_FREEZE_PROMPT": "A translation freeze is in place until {{date}}.",
   "TRANSLATION_NOT_FOUND": "Translation not found",
   "TRANSLATION_OUT_OF_DATE": "Out of date",
   "TRANSLATION_OUT_OF_DATE_PROMPT": "Sorry, the translation file was updated and you need to reload the page.",

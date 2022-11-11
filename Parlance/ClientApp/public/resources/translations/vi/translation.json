@@ -224,6 +224,8 @@
   "TRANSLATION_AREA_SAVE_NEXT_UNFINISHED": "Lưu, Bản dịch chưa hoàn thành tiếp",
   "TRANSLATION_AREA_SOURCE_TRANSLATION_TITLE": "Bản dịch nguồn",
   "TRANSLATION_AREA_TITLE": "Bản dịch sang {{lang}}",
+  "TRANSLATION_FREEZE": "",
+  "TRANSLATION_FREEZE_PROMPT": "",
   "TRANSLATION_NOT_FOUND": "Không thể tìm kiếm bản dịch",
   "TRANSLATION_OUT_OF_DATE": "Hết hạn",
   "TRANSLATION_OUT_OF_DATE_PROMPT": "Rất tiếc, tệp dịch đã bị cập nhật và bạn cần tải lại trang.",

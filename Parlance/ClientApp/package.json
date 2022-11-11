@@ -14,6 +14,7 @@
     "i18next-pseudo": "^2.2.1",
     "jquery": "^3.6.0",
     "merge": "^2.1.1",
+    "moment": "^2.29.4",
     "oidc-client": "^1.11.5",
     "react": "^18.1.0",
     "react-dom": "^18.1.0",
