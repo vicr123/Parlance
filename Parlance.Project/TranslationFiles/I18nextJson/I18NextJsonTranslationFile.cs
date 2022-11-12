@@ -169,21 +169,18 @@ public class I18NextJsonTranslationFile : ParlanceTranslationFile, IParlanceMono
             {
                 var key = jsonEntry.RealKey;
                 if (jsonEntry.RequiresPluralisation) key += $"_{translation.PluralType}";
-                return (key, translation.TranslationContent);
+                return (Key: key, translation.TranslationContent);
             });
         });
 
         var obj = selectResult.Aggregate(new JsonObject(), (acc, x) =>
         {
-            acc.Add(x.Item1, x.Item2);
+            acc.Add(x.Key, x.TranslationContent);
             return acc;
         });
 
         Directory.CreateDirectory(Path.GetDirectoryName(_file)!);
-        await File.WriteAllTextAsync(_file, obj.ToJsonString(new JsonSerializerOptions
-        {
-            WriteIndented = true
-        }), Encoding.UTF8);
+        await File.WriteAllTextAsync(_file, obj.ToJsonString(UnescapedJsonSerializerOptions));
         await LoadFile(_file, _locale, _baseFile, _baseLocale);
         await base.Save();
     }

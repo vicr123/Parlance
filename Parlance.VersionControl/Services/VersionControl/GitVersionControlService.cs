@@ -67,7 +67,7 @@ public class GitVersionControlService : IVersionControlService
         return new Repository(project.VcsDirectory);
     }
 
-    private void AbortPendingOperations(IRepository repo)
+    private static void AbortPendingOperations(IRepository repo)
     {
         switch (repo.Info.CurrentOperation)
         {
@@ -89,7 +89,7 @@ public class GitVersionControlService : IVersionControlService
             case CurrentOperation.ApplyMailboxOrRebase:
                 break;
             default:
-                throw new ArgumentOutOfRangeException();
+                throw new InvalidOperationException();
         }
     }
 

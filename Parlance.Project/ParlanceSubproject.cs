@@ -26,33 +26,20 @@ public class ParlanceSubproject : IParlanceSubproject
     public string TranslationFileType => _subproject.Type;
     public Locale BaseLang => _subproject.BaseLang.ToLocale();
 
-    public string BasePath => System.IO.Path.Join(Project.VcsDirectory, _subproject.BasePath ??
-                                                                        Path.Replace("{lang}",
-                                                                            typeof(ParlanceProjectExtensions).Assembly
-                                                                                    .GetTypes()
-                                                                                    .Where(t => t.IsDefined(
-                                                                                        typeof(
-                                                                                            TranslationFileTypeAttribute)))
-                                                                                    .Select(type =>
-                                                                                        (TranslationFileTypeAttribute)
-                                                                                        type.GetCustomAttribute(
-                                                                                            typeof(
-                                                                                                TranslationFileTypeAttribute))
-                                                                                        !)
-                                                                                    .Single(attr =>
-                                                                                        attr.HandlerFor ==
-                                                                                        TranslationFileType)
-                                                                                    .FileNameFormat switch
-                                                                                {
-                                                                                    ExpectedTranslationFileNameFormat
-                                                                                        .Dashed => BaseLang.ToDashed(),
-                                                                                    ExpectedTranslationFileNameFormat
-                                                                                        .Underscored => BaseLang
-                                                                                        .ToUnderscored(),
-                                                                                    _ => throw new
-                                                                                        ArgumentOutOfRangeException(
-                                                                                            "Invalid value for FileNameFormat.")
-                                                                                }));
+    public string BasePath => 
+        System.IO.Path.Join(Project.VcsDirectory, _subproject.BasePath ??
+                    Path.Replace("{lang}",
+                        typeof(ParlanceProjectExtensions).Assembly
+                        .GetTypes()
+                        .Where(t => t.IsDefined(typeof(TranslationFileTypeAttribute)))
+                        .Select(type => type.GetCustomAttribute<TranslationFileTypeAttribute>()!)
+                        .Single(attr => attr.HandlerFor == TranslationFileType).FileNameFormat
+                        switch
+                        {
+                            ExpectedTranslationFileNameFormat.Dashed => BaseLang.ToDashed(),
+                            ExpectedTranslationFileNameFormat.Underscored => BaseLang.ToUnderscored(),
+                            _ => throw new ArgumentOutOfRangeException("Invalid value for FileNameFormat.")
+                        }));
 
     public IDictionary<string, object> Options => _subproject.Options;
 

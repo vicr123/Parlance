@@ -1,6 +1,10 @@
 using Parlance.CldrData;
 using Parlance.Project.Index;
 
+using System.Text.Encodings.Web;
+using System.Text.Json;
+using System.Text.Unicode;
+
 namespace Parlance.Project.TranslationFiles;
 
 public abstract class ParlanceTranslationFile : IAsyncDisposable
@@ -15,6 +19,12 @@ public abstract class ParlanceTranslationFile : IAsyncDisposable
         _subprojectLanguage = subprojectLanguage;
         _indexingService = indexingService;
     }
+
+    protected static readonly JsonSerializerOptions UnescapedJsonSerializerOptions = new()
+    {
+        WriteIndented = true,
+        Encoder = JavaScriptEncoder.Create(UnicodeRanges.All)
+    };
 
     public abstract string Hash { get; internal set; }
     public abstract IList<IParlanceTranslationFileEntry> Entries { get; internal set; }

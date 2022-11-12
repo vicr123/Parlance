@@ -97,10 +97,7 @@ public class WebextensionJsonTranslationFile : ParlanceTranslationFile, IParlanc
         });
 
         Directory.CreateDirectory(Path.GetDirectoryName(_file)!);
-        await File.WriteAllTextAsync(_file, obj.ToJsonString(new JsonSerializerOptions
-        {
-            WriteIndented = true
-        }), Encoding.UTF8);
+        await File.WriteAllTextAsync(_file, obj.ToJsonString(UnescapedJsonSerializerOptions));
         await LoadFile(_file, _locale, _baseFile, _baseLocale);
         await base.Save();
     }
