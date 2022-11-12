@@ -38,7 +38,7 @@ export default function Dashboard(props) {
         <BackButton text={t("BACK_TO_LANGUAGES")} onClick={() => navigate("../..")}/>
         <Hero heading={i18n.humanReadableLocale(language)} subheading={data.subprojectName} buttons={[
             {
-                text: t("Translate"),
+                text: t("TRANSLATE"),
                 onClick: () => navigate("translate")
             }
         ]}/>
