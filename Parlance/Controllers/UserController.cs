@@ -3,6 +3,7 @@ using System.Text.Json.Serialization;
 using Fido2NetLib;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using Parlance.Helpers;
 using Parlance.Services.Permissions;
 using Parlance.Services.Superuser;
@@ -18,6 +19,7 @@ namespace Parlance.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[EnableRateLimiting("limiter")]
 public class UserController : Controller
 {
     private readonly IVicr123AccountsService _accountsService;
@@ -102,6 +104,7 @@ public class UserController : Controller
 
     [HttpPost]
     [Route("token")]
+    [EnableRateLimiting("login")]
     public async Task<IActionResult> GetUserToken([FromBody] UserTokenRequestData data)
     {
         try

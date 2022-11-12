@@ -1,3 +1,5 @@
+using System.Net;
+using System.Threading.RateLimiting;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Parlance;
@@ -7,6 +9,7 @@ using Parlance.CldrData;
 using Parlance.Database;
 using Parlance.Jobs;
 using Parlance.Project;
+using Parlance.RateLimiting;
 using Parlance.Services.Permissions;
 using Parlance.Services.Projects;
 using Parlance.Services.ProjectUpdater;
@@ -40,6 +43,7 @@ builder.Services.AddSingleton<IProjectUpdateQueue, ProjectUpdateQueue>();
 builder.Services.AddHostedService<ProjectUpdaterService>();
 
 builder.Services.Configure<ParlanceOptions>(builder.Configuration.GetSection("Parlance"));
+builder.Services.Configure<RateLimitingOptions>(builder.Configuration.GetSection("rateLimiting"));
 
 builder.Services.AddDbContext<ParlanceContext>(options =>
 {
@@ -74,6 +78,22 @@ builder.Services.AddAuthorizationCore(options =>
 
 builder.Services.AddResponseCompression(options => { options.EnableForHttps = true; });
 
+var ratelimitingOptions = new RateLimitingOptions();
+builder.Configuration.GetSection("rateLimiting").Bind(ratelimitingOptions);
+builder.Services.AddRateLimiter(x =>
+{
+    x.OnRejected = (context, cancellationToken) =>
+    {
+        if (context.Lease.TryGetMetadata(MetadataName.RetryAfter, out var retryAfter))
+            context.HttpContext.Response.Headers.RetryAfter = ((int)retryAfter.TotalSeconds).ToString();
+        context.HttpContext.Response.StatusCode = StatusCodes.Status429TooManyRequests;
+        return new ValueTask();
+    };
+
+    x.AddPolicy<IPAddress, StandardRateLimitingPolicy>("limiter");
+    x.AddPolicy<IPAddress, UserTokenRateLimitingPolicy>("login");
+});
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -94,16 +114,15 @@ app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.MapControllerRoute(
-    "default",
-    "{controller}/{action=Index}/{id?}");
-
 app.MapFallbackToFile("index.html");
+app.MapDefaultControllerRoute();
 
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
     await services.GetRequiredService<ParlanceContext>().Initialize();
 }
+
+app.UseRateLimiter();
 
 app.Run();

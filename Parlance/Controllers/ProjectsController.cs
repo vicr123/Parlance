@@ -2,6 +2,7 @@ using System.Globalization;
 using LibGit2Sharp;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.Extensions.Primitives;
 using Parlance.CldrData;
 using Parlance.Helpers;
@@ -20,6 +21,7 @@ namespace Parlance.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[EnableRateLimiting("limiter")]
 public class ProjectsController : Controller
 {
     private readonly IVicr123AccountsService _accountsService;

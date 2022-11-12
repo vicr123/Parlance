@@ -1,6 +1,7 @@
 using LibGit2Sharp;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using Parlance.Helpers;
 using Parlance.Project;
 using Parlance.Project.Index;
@@ -11,6 +12,7 @@ namespace Parlance.Controllers;
 
 [ApiController]
 [Route("api/projects/{project}")]
+[EnableRateLimiting("limiter")]
 public class ProjectVcsController : Controller
 {
     private readonly IParlanceIndexingService _indexingService;
