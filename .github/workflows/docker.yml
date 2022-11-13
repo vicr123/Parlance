@@ -1,7 +1,10 @@
 name: Publish to GitHub Container Registry
 
 on:
-  push
+  push:
+    branches:
+      - 'main'
+  pull_request:
 
 env:
   REGISTRY: ghcr.io
@@ -15,6 +18,12 @@ jobs:
       packages: write
 
     steps:
+      - uses: haya14busa/action-cond@v1
+        id: checkpr
+        with:
+          cond: ${{ github.event_name == 'pull_request' }}
+          if_true: false
+          if_false: true
       - name: Checkout repository
         uses: actions/checkout@v2
         with:
@@ -38,6 +47,6 @@ jobs:
         with:
           context: .
           file: Parlance/Dockerfile
-          push: true
+          push: ${{ steps.checkpr.outputs.value }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
