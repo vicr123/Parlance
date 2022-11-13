@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using Parlance.Project;
 using Parlance.Services.Projects;
 using Parlance.Services.ProjectUpdater;
@@ -8,6 +9,7 @@ namespace Parlance.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[EnableRateLimiting("limiter")]
 public class WebhookController : Controller
 {
     private readonly IProjectService _projectService;

@@ -3,6 +3,7 @@ using System.IO.Compression;
 using System.Text;
 using LibGit2Sharp;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using Parlance.Helpers;
 using Parlance.Project;
 using Parlance.Services.Projects;
@@ -12,6 +13,7 @@ namespace Parlance.Controllers;
 
 [ApiController]
 [Route("git/{project}")]
+[EnableRateLimiting("limiter")]
 public class ProjectVcsGitSmartHttpController : Controller
 {
     private readonly IProjectService _projectService;

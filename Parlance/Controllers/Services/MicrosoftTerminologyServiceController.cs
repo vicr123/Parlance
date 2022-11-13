@@ -1,9 +1,11 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using ServiceReference;
 
 namespace Parlance.Controllers.Services;
 
 [Route("api/services/microsoft")]
+[EnableRateLimiting("limiter")]
 public class MicrosoftTerminologyServiceController : Controller
 {
     private readonly Terminology _terminology;

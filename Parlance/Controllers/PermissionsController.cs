@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using Parlance.CldrData;
 using Parlance.Helpers;
 using Parlance.Services.Permissions;
@@ -9,6 +10,7 @@ namespace Parlance.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[EnableRateLimiting("limiter")]
 public class PermissionsController : Controller
 {
     private readonly IPermissionsService _permissionsService;
@@ -17,7 +19,7 @@ public class PermissionsController : Controller
     {
         _permissionsService = permissionsService;
     }
-    
+
 
     [Authorize(Policy = "Superuser")]
     [HttpGet]
@@ -40,9 +42,7 @@ public class PermissionsController : Controller
         catch (DBusException ex)
         {
             if (ex.ErrorName == "com.vicr123.accounts.Error.NoAccount")
-            {
                 return this.ClientError(ParlanceClientError.UnknownUser);
-            }
             throw;
         }
         catch (InvalidOperationException)
@@ -50,7 +50,7 @@ public class PermissionsController : Controller
             return this.ClientError(ParlanceClientError.PermissionAlreadyGranted);
         }
     }
-    
+
     [Authorize(Policy = "Superuser")]
     [HttpDelete]
     [Route("language/{language}/{username}")]

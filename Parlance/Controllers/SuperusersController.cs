@@ -1,11 +1,13 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using Parlance.Services.Superuser;
 
 namespace Parlance.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[EnableRateLimiting("limiter")]
 public class SuperusersController : Controller
 {
     private readonly ISuperuserService _superuserService;
@@ -22,11 +24,6 @@ public class SuperusersController : Controller
         return Json(await _superuserService.Superusers());
     }
 
-    public class AddSuperuserRequestData
-    {
-        public string Username { get; set; } = null!;
-    }
-
     [Authorize(Policy = "Superuser")]
     [HttpPost]
     public async Task<IActionResult> AddSuperuser([FromBody] AddSuperuserRequestData data)
@@ -34,7 +31,7 @@ public class SuperusersController : Controller
         await _superuserService.GrantSuperuserPermissions(data.Username);
         return NoContent();
     }
-    
+
     [Authorize(Policy = "Superuser")]
     [HttpDelete]
     [Route("{user}")]
@@ -43,5 +40,10 @@ public class SuperusersController : Controller
         if (!await _superuserService.IsSuperuser(user)) return NotFound();
         await _superuserService.RevokeSuperuserPermissions(user);
         return NoContent();
+    }
+
+    public class AddSuperuserRequestData
+    {
+        public string Username { get; set; } = null!;
     }
 }
