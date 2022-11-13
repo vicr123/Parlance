@@ -1,4 +1,4 @@
-﻿{
+{
   "ACCOUNT_DISABLED_PROMPT": "Tài khoản của bạn bị vô hiệu.",
   "ACCOUNT_DISABLED_TITLE": "Tài khoản của bạn bị vô hiệu.",
   "ACCOUNT_SETTINGS": "Cài đặt tài khoản",
@@ -32,7 +32,7 @@
   "ADD_PROJECT": "Thêm dự án mới",
   "ADD_PROJECT_ERROR": "Không thể thêm dự án",
   "ADD_PROJECT_PROMPT_1": "Điền vào dữ liệu để thêm dự án",
-  "ADD_PROJECT_PROMPT_2": "Đảm bảo rằng dự án này có tệp <1>.parlance.json</1> trong thư mục góc",
+  "ADD_PROJECT_PROMPT_2": "Đảm bảo rằng dự án này có tệp \u003C1\u003E.parlance.json\u003C/1\u003E trong thư mục góc",
   "APPLY_ATTRIBUTION_SETTINGS": "Áp dụng cài đặt Ghi nhận tác giả",
   "ASSISTANT": "Trợ lý",
   "ASSISTANT_DESCRIPTION": "Trợ lý cung cấp cho bạn thông tin hữu ích để giúp bạn tạo bản dịch.",
@@ -69,7 +69,7 @@
   "CLOSE": "Đóng",
   "CONFIRM_PASSWORD": "Xác nhận mật khẩu",
   "CONFIRM_PASSWORD_PROMPT": "Xác nhận mật khẩu cho tài khoản của bạn",
-  "COPY_SOURCE": "",
+  "COPY_SOURCE": "Chép nguồn",
   "CREATE_ACCOUNT": "Tạo tài khoản",
   "CREATE_ACCOUNT_PROMPT": "Đăng ký một tài khoản {{type}} để chỉnh sửa bản dịch.",
   "DEMOTE": "Xuống cấp",
@@ -215,6 +215,7 @@
   "SUPERUSERS": "Người dùng quản trị",
   "SUPERUSER_PROMOTE_PROMPT_1": "Điền vào tên của người dùng để thăng cấp lên người dùng quản trị.",
   "SUPERUSER_PROMPT_1": "Người quản trị có toàn quyền máy chủ Parlance và có thể thực hiện bất kỳ thay đổi quản trị nào.",
+  "TRANSLATE": "",
   "TRANSLATION_AREA_INDICATOR_PLURAL_FORM": "Dạng số nhiều {{numbers}}",
   "TRANSLATION_AREA_MARK_COMPLETE": "Đánh dấu là hoàn thành",
   "TRANSLATION_AREA_NEXT": "Tiếp",
