@@ -135,74 +135,40 @@ public class ParlanceIndexingService : IParlanceIndexingService
 
     public Task<IParlanceIndexingService.OverallIndexResults> OverallResults(IParlanceProject project)
     {
-        return Task.FromResult(new IParlanceIndexingService.OverallIndexResults(
-            _dbContext.Index.Count(item =>
-                item.Project == project.Name && item.RecordType == IndexItemType.TranslationString),
-            _dbContext.Index.Count(item => item.Project == project.Name && item.RecordType == IndexItemType.Complete),
-            _dbContext.Index.Count(item => item.Project == project.Name && item.RecordType == IndexItemType.Warning),
-            _dbContext.Index.Count(item => item.Project == project.Name && item.RecordType == IndexItemType.Error),
-            _dbContext.Index.Count(item =>
-                item.Project == project.Name && item.RecordType == IndexItemType.CumulativeWarning),
-            _dbContext.Index.Count(
-                item => item.Project == project.Name && item.RecordType == IndexItemType.PassedChecks),
-            _dbContext.Index.Count(item => item.Project == project.Name && item.RecordType == IndexItemType.OutOfDate)
-        ));
+        var types = _dbContext.Index.Where(item => item.Project == project.Name)
+            .GroupBy(item => item.RecordType, (key, results) => new { Key = key, Count = results.Count() })
+            .ToDictionary(x => x.Key, x => x.Count);
+
+        return Task.FromResult(new IParlanceIndexingService.OverallIndexResults(types.GetValueOrDefault(IndexItemType.TranslationString),
+            types.GetValueOrDefault(IndexItemType.Complete), types.GetValueOrDefault(IndexItemType.Warning),
+            types.GetValueOrDefault(IndexItemType.Error), types.GetValueOrDefault(IndexItemType.CumulativeWarning),
+            types.GetValueOrDefault(IndexItemType.PassedChecks), types.GetValueOrDefault(IndexItemType.OutOfDate)));
     }
 
     public Task<IParlanceIndexingService.OverallIndexResults> OverallResults(IParlanceSubproject subproject)
     {
-        return Task.FromResult(new IParlanceIndexingService.OverallIndexResults(
-            _dbContext.Index.Count(item =>
-                item.Project == subproject.Project.Name && item.Subproject == subproject.Name &&
-                item.RecordType == IndexItemType.TranslationString),
-            _dbContext.Index.Count(item =>
-                item.Project == subproject.Project.Name && item.Subproject == subproject.Name &&
-                item.RecordType == IndexItemType.Complete),
-            _dbContext.Index.Count(item =>
-                item.Project == subproject.Project.Name && item.Subproject == subproject.Name &&
-                item.RecordType == IndexItemType.Warning),
-            _dbContext.Index.Count(item =>
-                item.Project == subproject.Project.Name && item.Subproject == subproject.Name &&
-                item.RecordType == IndexItemType.Error),
-            _dbContext.Index.Count(item =>
-                item.Project == subproject.Project.Name && item.Subproject == subproject.Name &&
-                item.RecordType == IndexItemType.CumulativeWarning),
-            _dbContext.Index.Count(item =>
-                item.Project == subproject.Project.Name && item.Subproject == subproject.Name &&
-                item.RecordType == IndexItemType.PassedChecks),
-            _dbContext.Index.Count(item =>
-                item.Project == subproject.Project.Name && item.Subproject == subproject.Name &&
-                item.RecordType == IndexItemType.OutOfDate)
-        ));
+        var types = _dbContext.Index
+            .Where(item => item.Project == subproject.Project.Name && item.Subproject == subproject.Name)
+            .GroupBy(item => item.RecordType, (key, results) => new { Key = key, Count = results.Count() })
+            .ToDictionary(x => x.Key, x => x.Count);
+
+        return Task.FromResult(new IParlanceIndexingService.OverallIndexResults(types.GetValueOrDefault(IndexItemType.TranslationString),
+            types.GetValueOrDefault(IndexItemType.Complete), types.GetValueOrDefault(IndexItemType.Warning),
+            types.GetValueOrDefault(IndexItemType.Error), types.GetValueOrDefault(IndexItemType.CumulativeWarning),
+            types.GetValueOrDefault(IndexItemType.PassedChecks), types.GetValueOrDefault(IndexItemType.OutOfDate)));
     }
 
     public Task<IParlanceIndexingService.OverallIndexResults> OverallResults(IParlanceSubprojectLanguage file)
     {
-        return Task.FromResult(new IParlanceIndexingService.OverallIndexResults(
-            _dbContext.Index.Count(item =>
+        var types = _dbContext.Index.Where(item =>
                 item.Project == file.Subproject.Project.Name && item.Subproject == file.Subproject.Name &&
-                item.Language == file.Locale.ToDatabaseRepresentation() &&
-                item.RecordType == IndexItemType.TranslationString),
-            _dbContext.Index.Count(item =>
-                item.Project == file.Subproject.Project.Name && item.Subproject == file.Subproject.Name &&
-                item.Language == file.Locale.ToDatabaseRepresentation() && item.RecordType == IndexItemType.Complete),
-            _dbContext.Index.Count(item =>
-                item.Project == file.Subproject.Project.Name && item.Subproject == file.Subproject.Name &&
-                item.Language == file.Locale.ToDatabaseRepresentation() && item.RecordType == IndexItemType.Warning),
-            _dbContext.Index.Count(item =>
-                item.Project == file.Subproject.Project.Name && item.Subproject == file.Subproject.Name &&
-                item.Language == file.Locale.ToDatabaseRepresentation() && item.RecordType == IndexItemType.Error),
-            _dbContext.Index.Count(item =>
-                item.Project == file.Subproject.Project.Name && item.Subproject == file.Subproject.Name &&
-                item.Language == file.Locale.ToDatabaseRepresentation() &&
-                item.RecordType == IndexItemType.CumulativeWarning),
-            _dbContext.Index.Count(item =>
-                item.Project == file.Subproject.Project.Name && item.Subproject == file.Subproject.Name &&
-                item.Language == file.Locale.ToDatabaseRepresentation() &&
-                item.RecordType == IndexItemType.PassedChecks),
-            _dbContext.Index.Count(item =>
-                item.Project == file.Subproject.Project.Name && item.Subproject == file.Subproject.Name &&
-                item.Language == file.Locale.ToDatabaseRepresentation() && item.RecordType == IndexItemType.OutOfDate)
-        ));
+                item.Language == file.Locale.ToDatabaseRepresentation())
+            .GroupBy(item => item.RecordType, (key, results) => new { Key = key, Count = results.Count() })
+            .ToDictionary(x => x.Key, x => x.Count);
+
+        return Task.FromResult(new IParlanceIndexingService.OverallIndexResults(types.GetValueOrDefault(IndexItemType.TranslationString),
+            types.GetValueOrDefault(IndexItemType.Complete), types.GetValueOrDefault(IndexItemType.Warning),
+            types.GetValueOrDefault(IndexItemType.Error), types.GetValueOrDefault(IndexItemType.CumulativeWarning),
+            types.GetValueOrDefault(IndexItemType.PassedChecks), types.GetValueOrDefault(IndexItemType.OutOfDate)));
     }
 }
