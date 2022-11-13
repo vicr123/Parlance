@@ -1,0 +1,27 @@
+{
+  "image": "mcr.microsoft.com/dotnet/sdk:7.0-jammy",
+  "features": {
+  },
+  "onCreateCommand": [
+    "./.codespaces-setup.sh"
+  ],
+  "postStartCommand": [
+	"./.codespaces-run.sh"
+  ],
+
+	// Configure tool-specific properties.
+	"customizations": {
+		// Configure properties specific to VS Code.
+		"vscode": {
+			// Add the IDs of extensions you want installed when the container is created.
+			"extensions": [
+				"ms-dotnettools.csharp"
+			],
+			"settings": {
+				"omnisharp.enableRoslynAnalyzers": true,
+				"omnisharp.enableEditorConfigSupport": true,
+				"omnisharp.enableAsyncCompletion": true
+			}
+		}
+	}
+}
