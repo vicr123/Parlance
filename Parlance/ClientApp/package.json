@@ -66,8 +66,8 @@
   },
   "scripts": {
     "prestart": "node aspnetcore-https && node aspnetcore-react",
-    "start": "./genlangindex.js && rimraf ./build && react-scripts start",
-    "build": "./genlangindex.js && react-scripts build",
+    "start": "node genlangindex.js && rimraf ./build && react-scripts start",
+    "build": "node genlangindex.js && react-scripts build",
     "test": "cross-env CI=true react-scripts test --env=jsdom",
     "eject": "react-scripts eject",
     "lint": "eslint ./src/"
