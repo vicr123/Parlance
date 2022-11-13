@@ -1,6 +1,7 @@
 using System.Net;
 using System.Threading.RateLimiting;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Parlance;
 using Parlance.Authorization.LanguageEditor;
@@ -45,11 +46,21 @@ builder.Services.AddHostedService<ProjectUpdaterService>();
 builder.Services.Configure<ParlanceOptions>(builder.Configuration.GetSection("Parlance"));
 builder.Services.Configure<RateLimitingOptions>(builder.Configuration.GetSection("rateLimiting"));
 
+SqliteConnection? connection = null;
+
 builder.Services.AddDbContext<ParlanceContext>(options =>
-{
-    options.UseNpgsql(builder.Configuration.GetSection("Parlance")["DatabaseConnectionString"],
-        optionsBuilder => { optionsBuilder.EnableRetryOnFailure(); });
-});
+    {
+        if (builder.Configuration.GetSection("Parlance").GetValue("UseInMemoryDatabase", defaultValue: false))
+        {
+            connection ??= new SqliteConnection("Data Source=:memory:");
+            connection.Open();
+            options.UseSqlite(connection);
+        }
+        else
+        {
+            options.UseNpgsql(builder.Configuration.GetSection("Parlance")["DatabaseConnectionString"], optionsBuilder => optionsBuilder.EnableRetryOnFailure());
+        }
+    });
 
 builder.Services.AddScoped<IAuthorizationHandler, LanguageEditorHandler>();
 builder.Services.AddScoped<IAuthorizationHandler, SuperuserHandler>();
@@ -65,7 +76,7 @@ builder.Services.AddQuartz(q =>
         )
     );
 });
-builder.Services.AddQuartzServer(options => { options.WaitForJobsToComplete = true; });
+builder.Services.AddQuartzServer(options => options.WaitForJobsToComplete = true);
 
 builder.Services.AddAuthorizationCore(options =>
 {
@@ -76,7 +87,7 @@ builder.Services.AddAuthorizationCore(options =>
     options.AddPolicy("ProjectManager", policy => policy.Requirements.Add(new SuperuserRequirement()));
 });
 
-builder.Services.AddResponseCompression(options => { options.EnableForHttps = true; });
+builder.Services.AddResponseCompression(options => options.EnableForHttps = true);
 
 var ratelimitingOptions = new RateLimitingOptions();
 builder.Configuration.GetSection("rateLimiting").Bind(ratelimitingOptions);
