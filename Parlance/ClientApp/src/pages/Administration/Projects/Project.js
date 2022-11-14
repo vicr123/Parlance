@@ -35,7 +35,7 @@ export default function Project(props) {
                     <ModalList>
                         {[
                             {
-                                text: t("Remove as Project Maintainer"),
+                                text: t("PROJECT_MAINTAINER_REMOVE"),
                                 type: "destructive",
                                 onClick: async () => {
                                     Modal.mount(<LoadingModal/>);
@@ -106,17 +106,18 @@ export default function Project(props) {
         <BackButton inListPage={true} onClick={() => navigate("..")}/>
         <ListPageBlock>
             <VerticalLayout>
-                <PageHeading level={3}>{t("Project Maintainers")}</PageHeading>
-                <span>{t("Project Maintainers have permissions to manage the project. They will be able to control the Git repository and will be notified when a source string is flagged for review.")}</span>
+                <PageHeading level={3}>{t("PROJECT_MAINTAINERS")}</PageHeading>
+                <span>{t("PROJECT_MAINTAINERS_PROMPT")}</span>
                 {maintainers.length > 0 && <>
                     <SelectableList items={maintainers}/>
                     <VerticalSpacer/>
                 </>}
-                <span>{t("To add a user as a project maintainer, enter their username.")}</span>
+                <span>{t("PROJECT_MAINTAINERS_ADD_PROMPT")}</span>
                 <LineEdit placeholder={t("USERNAME")} value={addingUser} style={{
                     marginBottom: "9px"
                 }} onChange={e => setAddingUser(e.target.value)}/>
-                <SelectableList onClick={addMaintainer} type={"destructive"}>{t("Add New Maintainer")}</SelectableList>
+                <SelectableList onClick={addMaintainer}
+                                type={"destructive"}>{t("PROJECT_MAINTAINERS_ADD")}</SelectableList>
             </VerticalLayout>
         </ListPageBlock>
         <ListPageBlock>

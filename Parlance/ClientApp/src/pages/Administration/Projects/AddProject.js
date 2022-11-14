@@ -11,16 +11,16 @@ import Fetch from "../../../helpers/Fetch";
 import LoadingModal from "../../../components/modals/LoadingModal";
 import Modal from "../../../components/Modal";
 
-export default function(props) {
+export default function (props) {
     const [projectName, setProjectName] = useState("");
     const [cloneUrl, setCloneUrl] = useState("");
     const [branch, setBranch] = useState("main");
     const navigate = useNavigate();
     const {t} = useTranslation();
-    
+
     const addProject = async () => {
-        Modal.mount(<LoadingModal />);
-        
+        Modal.mount(<LoadingModal/>);
+
         try {
             await Fetch.post("/api/projects", {
                 cloneUrl: cloneUrl,
@@ -30,7 +30,7 @@ export default function(props) {
             Modal.unmount();
             navigate("..");
         } catch (ex) {
-            let message = t("Couldn't add the project. Try again later.");
+            let message = t("ADD_PROJECT_ERROR_PROMPT");
             if (ex.status === 400) {
                 message = (await ex.json()).extraData;
             }
@@ -39,18 +39,21 @@ export default function(props) {
             </Modal>)
         }
     };
-    
+
     return <div>
         <BackButton inListPage={true} onClick={() => navigate("..")}/>
         <ListPageBlock>
             <VerticalLayout>
                 <PageHeading level={3}>{t("ADD_PROJECT")}</PageHeading>
                 <span>{t("ADD_PROJECT_PROMPT_1")}</span>
-                <LineEdit value={projectName} onChange={e => setProjectName(e.target.value)} placeholder={t("PROJECT_NAME")} />
-                <LineEdit value={cloneUrl} onChange={e => setCloneUrl(e.target.value)} placeholder={t("GIT_CLONE_URL")} />
-                <LineEdit value={branch} onChange={e => setBranch(e.target.value)} placeholder={t("BRANCH")} />
+                <LineEdit value={projectName} onChange={e => setProjectName(e.target.value)}
+                          placeholder={t("PROJECT_NAME")}/>
+                <LineEdit value={cloneUrl} onChange={e => setCloneUrl(e.target.value)}
+                          placeholder={t("GIT_CLONE_URL")}/>
+                <LineEdit value={branch} onChange={e => setBranch(e.target.value)} placeholder={t("BRANCH")}/>
                 <span>
-                    <Trans i18nKey={"ADD_PROJECT_PROMPT_2"} t={t}>Ensure that the project contains a <code>.parlance.json</code> file in the root.</Trans>
+                    <Trans i18nKey={"ADD_PROJECT_PROMPT_2"}
+                           t={t}>Ensure that the project contains a <code>.parlance.json</code> file in the root.</Trans>
                 </span>
                 <SelectableList onClick={addProject}>{t("ADD_PROJECT")}</SelectableList>
             </VerticalLayout>
