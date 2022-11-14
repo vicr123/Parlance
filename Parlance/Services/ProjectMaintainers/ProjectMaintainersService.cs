@@ -1,5 +1,6 @@
 using Parlance.Database;
 using Parlance.Database.Models;
+using Parlance.Services.Superuser;
 using Parlance.Vicr123Accounts.Services;
 
 namespace Parlance.Services.ProjectMaintainers;
@@ -8,11 +9,14 @@ public class ProjectMaintainersService : IProjectMaintainersService
 {
     private readonly IVicr123AccountsService _accountsService;
     private readonly ParlanceContext _dbContext;
+    private readonly ISuperuserService _superuserService;
 
-    public ProjectMaintainersService(ParlanceContext dbContext, IVicr123AccountsService accountsService)
+    public ProjectMaintainersService(ParlanceContext dbContext, IVicr123AccountsService accountsService,
+        ISuperuserService superuserService)
     {
         _dbContext = dbContext;
         _accountsService = accountsService;
+        _superuserService = superuserService;
     }
 
     public async Task AddProjectMaintainer(string user, Database.Models.Project? project)
@@ -47,5 +51,16 @@ public class ProjectMaintainersService : IProjectMaintainersService
             var user = await _accountsService.UserById(maintainer.UserId);
             yield return user.Username;
         }
+    }
+
+    public async Task<bool> IsProjectMaintainer(string? user, Database.Models.Project project)
+    {
+        if (user is null) return false;
+
+        if (await _superuserService.IsSuperuser(user)) return true;
+
+        var userId = (await _accountsService.UserByUsername(user)).Id;
+        return _dbContext.ProjectMaintainers.Any(maintainer =>
+            maintainer.UserId == userId && maintainer.Project == project);
     }
 }

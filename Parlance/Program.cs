@@ -5,6 +5,7 @@ using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Parlance;
 using Parlance.Authorization.LanguageEditor;
+using Parlance.Authorization.ProjectAdministrator;
 using Parlance.Authorization.Superuser;
 using Parlance.CldrData;
 using Parlance.Database;
@@ -67,6 +68,7 @@ builder.Services.AddDbContext<ParlanceContext>(options =>
 
 builder.Services.AddScoped<IAuthorizationHandler, LanguageEditorHandler>();
 builder.Services.AddScoped<IAuthorizationHandler, SuperuserHandler>();
+builder.Services.AddScoped<IAuthorizationHandler, ProjectManagerHandler>();
 
 builder.Services.AddQuartz(q =>
 {
@@ -85,9 +87,7 @@ builder.Services.AddAuthorizationCore(options =>
 {
     options.AddPolicy("LanguageEditor", policy => policy.Requirements.Add(new LanguageEditorRequirement()));
     options.AddPolicy("Superuser", policy => policy.Requirements.Add(new SuperuserRequirement()));
-
-    //TODO
-    options.AddPolicy("ProjectManager", policy => policy.Requirements.Add(new SuperuserRequirement()));
+    options.AddPolicy("ProjectManager", policy => policy.Requirements.Add(new ProjectManagerRequirement()));
 });
 
 builder.Services.AddResponseCompression(options => options.EnableForHttps = true);

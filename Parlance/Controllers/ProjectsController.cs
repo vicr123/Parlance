@@ -124,6 +124,7 @@ public class ProjectsController : Controller
             {
                 CompletionData = indexResults,
                 p.Name, proj.Deadline,
+                IsProjectManager = await _projectMaintainersService.IsProjectMaintainer(username, p),
                 Subprojects = await Task.WhenAll(proj.Subprojects.Select(async subproject =>
                 {
                     var subprojectIndexResults = await _indexingService.OverallResults(subproject);
