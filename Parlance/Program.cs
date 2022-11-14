@@ -12,6 +12,7 @@ using Parlance.Jobs;
 using Parlance.Project;
 using Parlance.RateLimiting;
 using Parlance.Services.Permissions;
+using Parlance.Services.ProjectMaintainers;
 using Parlance.Services.Projects;
 using Parlance.Services.ProjectUpdater;
 using Parlance.Services.RemoteCommunication;
@@ -38,6 +39,7 @@ builder.Services.AddScoped<ISuperuserService, SuperuserService>();
 builder.Services.AddScoped<IRemoteCommunicationService, RemoteCommunicationService>();
 builder.Services.AddScoped<IPermissionsService, PermissionsService>();
 builder.Services.AddScoped<IAttributionConsentService, AttributionConsentService>();
+builder.Services.AddScoped<IProjectMaintainersService, ProjectMaintainersService>();
 builder.Services.AddSingleton<Terminology, TerminologyClient>();
 builder.Services.AddSingleton<IProjectUpdateQueue, ProjectUpdateQueue>();
 
@@ -49,18 +51,19 @@ builder.Services.Configure<RateLimitingOptions>(builder.Configuration.GetSection
 SqliteConnection? connection = null;
 
 builder.Services.AddDbContext<ParlanceContext>(options =>
+{
+    if (builder.Configuration.GetSection("Parlance").GetValue("UseInMemoryDatabase", false))
     {
-        if (builder.Configuration.GetSection("Parlance").GetValue("UseInMemoryDatabase", defaultValue: false))
-        {
-            connection ??= new SqliteConnection("Data Source=:memory:");
-            connection.Open();
-            options.UseSqlite(connection);
-        }
-        else
-        {
-            options.UseNpgsql(builder.Configuration.GetSection("Parlance")["DatabaseConnectionString"], optionsBuilder => optionsBuilder.EnableRetryOnFailure());
-        }
-    });
+        connection ??= new SqliteConnection("Data Source=:memory:");
+        connection.Open();
+        options.UseSqlite(connection);
+    }
+    else
+    {
+        options.UseNpgsql(builder.Configuration.GetSection("Parlance")["DatabaseConnectionString"],
+            optionsBuilder => optionsBuilder.EnableRetryOnFailure());
+    }
+});
 
 builder.Services.AddScoped<IAuthorizationHandler, LanguageEditorHandler>();
 builder.Services.AddScoped<IAuthorizationHandler, SuperuserHandler>();
