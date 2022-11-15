@@ -3,6 +3,8 @@ using Npgsql;
 using Parlance.CldrData;
 using Parlance.Database;
 using Parlance.Database.Models;
+using Parlance.Services.ProjectMaintainers;
+using Parlance.Services.Projects;
 using Parlance.Services.Superuser;
 using Parlance.Vicr123Accounts.Services;
 
@@ -11,16 +13,22 @@ namespace Parlance.Services.Permissions;
 public class PermissionsService : IPermissionsService
 {
     private const string LocalePermissionType = "locale";
-    
-    private readonly ParlanceContext _dbContext;
-    private readonly ISuperuserService _superuserService;
     private readonly IVicr123AccountsService _accountsService;
 
-    public PermissionsService(ParlanceContext dbContext, ISuperuserService superuserService, IVicr123AccountsService accountsService)
+    private readonly ParlanceContext _dbContext;
+    private readonly IProjectMaintainersService _projectMaintainersService;
+    private readonly IProjectService _projectService;
+    private readonly ISuperuserService _superuserService;
+
+    public PermissionsService(ParlanceContext dbContext, ISuperuserService superuserService,
+        IVicr123AccountsService accountsService, IProjectMaintainersService projectMaintainersService,
+        IProjectService projectService)
     {
         _dbContext = dbContext;
         _superuserService = superuserService;
         _accountsService = accountsService;
+        _projectMaintainersService = projectMaintainersService;
+        _projectService = projectService;
     }
 
     public async Task GrantLocalePermission(string user, Locale locale)
@@ -36,7 +44,10 @@ public class PermissionsService : IPermissionsService
 
             await _dbContext.SaveChangesAsync();
         }
-        catch (DbUpdateException ex) when (ex.InnerException is PostgresException { SqlState: PostgresErrorCodes.UniqueViolation })
+        catch (DbUpdateException ex) when (ex.InnerException is PostgresException
+                                           {
+                                               SqlState: PostgresErrorCodes.UniqueViolation
+                                           })
         {
             throw new InvalidOperationException();
         }
@@ -45,7 +56,7 @@ public class PermissionsService : IPermissionsService
     public async Task RevokeLocalePermission(string user, Locale locale)
     {
         var userId = (await _accountsService.UserByUsername(user)).Id;
-        
+
         var permission = _dbContext.Permissions.Single(permission =>
             permission.UserId == userId && permission.PermissionType == LocalePermissionType &&
             permission.SpecificPermission == locale.ToDashed());
@@ -81,6 +92,9 @@ public class PermissionsService : IPermissionsService
     {
         if (user is null) return false;
         if (await _superuserService.IsSuperuser(user)) return true;
+
+        var p = await _projectService.ProjectBySystemName(project);
+        if (await _projectMaintainersService.IsProjectMaintainer(user, p)) return true;
         if (await HasLocalePermission(user, locale)) return true;
         return false;
     }
@@ -99,9 +113,6 @@ public class PermissionsService : IPermissionsService
         var permissions = _dbContext.Permissions.Where(permission =>
             permission.PermissionType == LocalePermissionType && permission.UserId == userId);
 
-        foreach (var permission in permissions)
-        {
-            yield return permission.SpecificPermission.ToLocale();
-        }
+        foreach (var permission in permissions) yield return permission.SpecificPermission.ToLocale();
     }
 }

@@ -12,10 +12,12 @@ using Parlance.Project.Index;
 using Parlance.Project.SourceStrings;
 using Parlance.Project.TranslationFiles;
 using Parlance.Services.Permissions;
+using Parlance.Services.ProjectMaintainers;
 using Parlance.Services.Projects;
 using Parlance.VersionControl.Services.PendingEdits;
 using Parlance.Vicr123Accounts.Authentication;
 using Parlance.Vicr123Accounts.Services;
+using Tmds.DBus;
 
 namespace Parlance.Controllers;
 
@@ -28,13 +30,15 @@ public class ProjectsController : Controller
     private readonly IParlanceIndexingService _indexingService;
     private readonly IPendingEditsService _pendingEditsService;
     private readonly IPermissionsService _permissionsService;
+    private readonly IProjectMaintainersService _projectMaintainersService;
     private readonly IProjectService _projectService;
     private readonly IParlanceSourceStringsService _sourceStringsService;
 
     public ProjectsController(IProjectService projectService,
         IPermissionsService permissionsService,
         IParlanceIndexingService indexingService, IParlanceSourceStringsService sourceStringsService,
-        IPendingEditsService pendingEditsService, IVicr123AccountsService accountsService)
+        IPendingEditsService pendingEditsService, IVicr123AccountsService accountsService,
+        IProjectMaintainersService projectMaintainersService)
     {
         _projectService = projectService;
         _permissionsService = permissionsService;
@@ -42,6 +46,7 @@ public class ProjectsController : Controller
         _sourceStringsService = sourceStringsService;
         _pendingEditsService = pendingEditsService;
         _accountsService = accountsService;
+        _projectMaintainersService = projectMaintainersService;
     }
 
     [HttpGet]
@@ -119,6 +124,7 @@ public class ProjectsController : Controller
             {
                 CompletionData = indexResults,
                 p.Name, proj.Deadline,
+                IsProjectManager = await _projectMaintainersService.IsProjectMaintainer(username, p),
                 Subprojects = await Task.WhenAll(proj.Subprojects.Select(async subproject =>
                 {
                     var subprojectIndexResults = await _indexingService.OverallResults(subproject);
@@ -162,6 +168,59 @@ public class ProjectsController : Controller
         catch (ProjectNotFoundException)
         {
             return NotFound();
+        }
+    }
+
+    [Authorize(Policy = "Superuser")]
+    [HttpGet]
+    [Route("{project}/maintainers")]
+    public async Task<IActionResult> GetProjectMaintainers(string project)
+    {
+        var p = await _projectService.ProjectBySystemName(project);
+
+        return Json(await _projectMaintainersService.ProjectMaintainers(p).ToListAsync());
+    }
+
+    [Authorize(Policy = "Superuser")]
+    [HttpPost]
+    [Route("{project}/maintainers")]
+    public async Task<IActionResult> AddProjectMaintainer(string project, [FromBody] AddProjectMaintainerData data)
+    {
+        try
+        {
+            var p = await _projectService.ProjectBySystemName(project);
+            await _projectMaintainersService.AddProjectMaintainer(data.Name, p);
+
+            return NoContent();
+        }
+        catch (DBusException ex) when (ex.ErrorName == "com.vicr123.accounts.Error.NoAccount")
+        {
+            return this.ClientError(ParlanceClientError.UnknownUser);
+        }
+        catch (InvalidOperationException)
+        {
+            return this.ClientError(ParlanceClientError.PermissionAlreadyGranted);
+        }
+    }
+
+    [Authorize(Policy = "Superuser")]
+    [HttpDelete]
+    [Route("{project}/maintainers/{username}")]
+    public async Task<IActionResult> RemoveProjectMaintainers(string project, string username)
+    {
+        try
+        {
+            var p = await _projectService.ProjectBySystemName(project);
+            await _projectMaintainersService.RemoveProjectMaintainer(username, p);
+            return NoContent();
+        }
+        catch (DBusException ex) when (ex.ErrorName == "com.vicr123.accounts.Error.NoAccount")
+        {
+            return this.ClientError(ParlanceClientError.UnknownUser);
+        }
+        catch (InvalidOperationException)
+        {
+            return BadRequest();
         }
     }
 
@@ -424,6 +483,11 @@ public class ProjectsController : Controller
         public string CloneUrl { get; set; } = null!;
         public string Name { get; set; } = null!;
         public string Branch { get; set; } = null!;
+    }
+
+    public class AddProjectMaintainerData
+    {
+        public string Name { get; set; } = null!;
     }
 
     public class UpdateProjectEntryRequestData

@@ -4,7 +4,7 @@ import ListPageBlock from "../../../components/ListPageBlock";
 import {VerticalLayout} from "../../../components/Layouts";
 import PageHeading from "../../../components/PageHeading";
 import LineEdit from "../../../components/LineEdit";
-import {Trans, useTranslation} from "react-i18next";
+import {useTranslation} from "react-i18next";
 import SelectableList from "../../../components/SelectableList";
 import i18n from "../../../helpers/i18n";
 import {useEffect, useState} from "react";
@@ -20,7 +20,7 @@ export default function LocaleSettings(props) {
     const {locale} = useParams();
     const navigate = useNavigate();
     const {t} = useTranslation();
-    
+
     const updateUsers = async () => {
         let users = await Fetch.get(`/api/permissions/language/${locale}`);
         setUsers(users.map(x => ({
@@ -34,15 +34,14 @@ export default function LocaleSettings(props) {
                                 text: t("LANGUAGE_PERMISSION_REVOKE_BUTTON", {lang: i18n.humanReadableLocale(locale)}),
                                 type: "destructive",
                                 onClick: async () => {
-                                    Modal.mount(<LoadingModal />);
+                                    Modal.mount(<LoadingModal/>);
                                     try {
                                         await Fetch.delete(`/api/permissions/language/${locale}/${encodeURIComponent(x)}`, {});
                                         await updateUsers();
 
                                         Modal.unmount();
-                                    } catch {
-                                        //TODO: Error message
-                                        Modal.unmount();
+                                    } catch (error) {
+                                        Modal.mount(<ErrorModal error={error}/>)
                                     }
                                 }
                             }
@@ -52,15 +51,15 @@ export default function LocaleSettings(props) {
             }
         })));
     };
-    
+
     useEffect(() => {
         updateUsers();
     }, []);
-    
+
     const addUser = async () => {
         if (addingUser === "") return;
-        
-        Modal.mount(<LoadingModal />);
+
+        Modal.mount(<LoadingModal/>);
         try {
             await Fetch.post(`/api/permissions/language/${locale}/${encodeURIComponent(addingUser)}`, {});
             await updateUsers();
@@ -68,17 +67,17 @@ export default function LocaleSettings(props) {
             setAddingUser("");
             Modal.unmount();
         } catch (error) {
-            Modal.mount(<ErrorModal error={error} />)
+            Modal.mount(<ErrorModal error={error}/>)
         }
     }
-    
+
     return <div>
         <BackButton inListPage={true} onClick={() => navigate("..")}/>
         <ListPageBlock>
             <VerticalLayout>
                 <PageHeading level={3}>{i18n.humanReadableLocale(locale)}</PageHeading>
                 <span>{t("LANGUAGE_PERMISSIONS_PROMPT", {lang: i18n.humanReadableLocale(locale)})}</span>
-                <SelectableList items={users} />
+                <SelectableList items={users}/>
             </VerticalLayout>
         </ListPageBlock>
         <ListPageBlock>
@@ -87,7 +86,7 @@ export default function LocaleSettings(props) {
                 <span>{t("translation:LANGUAGE_PERMISSIONS_ADD_NEW_PROMPT", {lang: i18n.humanReadableLocale(locale)})}</span>
                 <LineEdit placeholder={t("USERNAME")} value={addingUser} style={{
                     marginBottom: "9px"
-                }} onChange={e => setAddingUser(e.target.value)} />
+                }} onChange={e => setAddingUser(e.target.value)}/>
                 <SelectableList onClick={addUser}>{t("LANGUAGE_PERMISSIONS_ADD_NEW")}</SelectableList>
             </VerticalLayout>
         </ListPageBlock>

@@ -1,6 +1,6 @@
 import BackButton from "../../../components/BackButton";
 import ListPageBlock from "../../../components/ListPageBlock";
-import {VerticalLayout} from "../../../components/Layouts";
+import {VerticalLayout, VerticalSpacer} from "../../../components/Layouts";
 import PageHeading from "../../../components/PageHeading";
 import SelectableList from "../../../components/SelectableList";
 import {useNavigate, useParams} from "react-router-dom";
@@ -10,34 +10,70 @@ import ErrorModal from "../../../components/modals/ErrorModal";
 import Fetch from "../../../helpers/Fetch";
 import LoadingModal from "../../../components/modals/LoadingModal";
 import {useEffect, useState} from "react";
+import LineEdit from "../../../components/LineEdit";
+import ModalList from "../../../components/ModalList";
 
 export default function Project(props) {
     const [projectInfo, setProjectInfo] = useState({});
+    const [maintainers, setMaintainers] = useState([]);
+    const [addingUser, setAddingUser] = useState("");
     const {project} = useParams();
     const navigate = useNavigate();
     const {t} = useTranslation();
-    
+
     const updateProjectInfo = async () => {
-        setProjectInfo(await Fetch.get(`/api/projects/${project}`));
+        const [projectInfo, maintainers] = await Promise.all([
+            await Fetch.get(`/api/projects/${project}`),
+            await Fetch.get(`/api/projects/${project}/maintainers`)
+        ]);
+        setProjectInfo(projectInfo);
+        setMaintainers(maintainers.map(x => ({
+            contents: x,
+            onClick: () => {
+                Modal.mount(<Modal heading={t("USER_PERMISSIONS_TITLE", {user: x})} buttons={[Modal.CancelButton]}>
+                    <span>{t("GENERIC_PROMPT")}</span>
+                    <ModalList>
+                        {[
+                            {
+                                text: t("PROJECT_MAINTAINER_REMOVE"),
+                                type: "destructive",
+                                onClick: async () => {
+                                    Modal.mount(<LoadingModal/>);
+                                    try {
+                                        await Fetch.delete(`/api/projects/${project}/maintainers/${encodeURIComponent(x)}`, {});
+                                        await updateProjectInfo();
+
+                                        Modal.unmount();
+                                    } catch (error) {
+                                        Modal.mount(<ErrorModal error={error}/>)
+                                    }
+                                }
+                            }
+                        ]}
+                    </ModalList>
+                </Modal>)
+            }
+        })))
     }
-    
+
     useEffect(() => {
         updateProjectInfo();
     }, [])
-    
+
     const deleteProject = () => {
         Modal.mount(<Modal heading={t("PROJECT_DELETE")} buttons={[
             Modal.CancelButton,
             {
                 text: t("PROJECT_DELETE"),
+                destructive: true,
                 onClick: async () => {
-                    Modal.mount(<LoadingModal />)
+                    Modal.mount(<LoadingModal/>)
                     try {
                         await Fetch.delete(`/api/projects/${project}`);
                         navigate("..");
                         Modal.unmount();
                     } catch (error) {
-                        Modal.mount(<ErrorModal error={error} />)
+                        Modal.mount(<ErrorModal error={error}/>)
                     }
                 },
                 type: "destructive"
@@ -48,9 +84,42 @@ export default function Project(props) {
             </VerticalLayout>
         </Modal>)
     }
-    
+
+    const addMaintainer = async () => {
+        if (addingUser === "") return;
+
+        Modal.mount(<LoadingModal/>);
+        try {
+            await Fetch.post(`/api/projects/${project}/maintainers`, {
+                name: addingUser
+            });
+            await updateProjectInfo();
+
+            setAddingUser("");
+            Modal.unmount();
+        } catch (error) {
+            Modal.mount(<ErrorModal error={error}/>)
+        }
+    }
+
     return <div>
         <BackButton inListPage={true} onClick={() => navigate("..")}/>
+        <ListPageBlock>
+            <VerticalLayout>
+                <PageHeading level={3}>{t("PROJECT_MAINTAINERS")}</PageHeading>
+                <span>{t("PROJECT_MAINTAINERS_PROMPT")}</span>
+                {maintainers.length > 0 && <>
+                    <SelectableList items={maintainers}/>
+                    <VerticalSpacer/>
+                </>}
+                <span>{t("PROJECT_MAINTAINERS_ADD_PROMPT")}</span>
+                <LineEdit placeholder={t("USERNAME")} value={addingUser} style={{
+                    marginBottom: "9px"
+                }} onChange={e => setAddingUser(e.target.value)}/>
+                <SelectableList onClick={addMaintainer}
+                                type={"destructive"}>{t("PROJECT_MAINTAINERS_ADD")}</SelectableList>
+            </VerticalLayout>
+        </ListPageBlock>
         <ListPageBlock>
             <VerticalLayout>
                 <PageHeading level={3}>{t("PROJECT_DELETE")}</PageHeading>

@@ -13,6 +13,7 @@ import ErrorCover from "../../../components/ErrorCover";
 import Hero from "../../../components/Hero";
 import WallMessage from "../../../components/WallMessage";
 import {calculateDeadline} from "../../../helpers/Misc";
+import {useUserUpdateEffect} from "../../../helpers/Hooks";
 
 export default function SubprojectListing() {
     const {project} = useParams();
@@ -35,6 +36,8 @@ export default function SubprojectListing() {
         updateProjects();
     }, []);
 
+    useUserUpdateEffect(updateProjects, []);
+
     const deadlineInfo = calculateDeadline(projectData?.deadline);
 
     return <div>
@@ -54,12 +57,14 @@ export default function SubprojectListing() {
             </Container>
             <VerticalSpacer/>
         </ErrorCover>
-        <Container>
-            <PageHeading level={3}>{t("ACTIONS")}</PageHeading>
-            <SelectableList items={[{
-                contents: t("MANAGE_VCS_REPOSITORY"),
-                onClick: () => navigate("vcs")
-            }]}/>
-        </Container>
+        {projectData?.isProjectManager &&
+            <Container>
+                <PageHeading level={3}>{t("ACTIONS")}</PageHeading>
+                <SelectableList items={[{
+                    contents: t("MANAGE_VCS_REPOSITORY"),
+                    onClick: () => navigate("vcs")
+                }]}/>
+            </Container>
+        }
     </div>
 }

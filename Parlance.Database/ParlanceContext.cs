@@ -19,6 +19,7 @@ public class ParlanceContext : DbContext
     public DbSet<SourceStrings> SourceStrings { get; set; } = null!;
     public DbSet<AttributionConsent> AttributionConsents { get; set; } = null!;
     public DbSet<EditsPending> EditsPending { get; set; } = null!;
+    public DbSet<ProjectMaintainer> ProjectMaintainers { get; set; } = null!;
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -33,6 +34,7 @@ public class ParlanceContext : DbContext
         modelBuilder.Entity<SourceStrings>().ToTable("SourceStrings");
         modelBuilder.Entity<AttributionConsent>().ToTable("AttributionConsents");
         modelBuilder.Entity<EditsPending>().ToTable("EditsPending");
+        modelBuilder.Entity<ProjectMaintainer>().ToTable("ProjectMaintainers");
     }
 }
 
