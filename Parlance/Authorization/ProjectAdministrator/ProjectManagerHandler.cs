@@ -21,13 +21,13 @@ public class ProjectManagerHandler : AuthorizationHandler<ProjectManagerRequirem
     {
         if (context.Resource is not HttpContext httpContext) return;
 
-        var username = httpContext.User.Claims.FirstOrDefault(claim => claim.Type == Claims.Username)?.Value;
+        var username = httpContext.User.FindFirst(Claims.Username)?.Value;
         if (username is null) return;
 
         var routeData = httpContext.GetRouteData();
-        if (!routeData.Values.ContainsKey("project")) return;
+        if (!routeData.Values.TryGetValue("project", out var projectName)) return;
 
-        var p = await _projectService.ProjectBySystemName((string)routeData.Values["project"]!);
+        var p = await _projectService.ProjectBySystemName((string)projectName!);
 
         if (await _projectMaintainersService.IsProjectMaintainer(username, p)) context.Succeed(requirement);
     }

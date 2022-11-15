@@ -193,11 +193,9 @@ public class ProjectsController : Controller
 
             return NoContent();
         }
-        catch (DBusException ex)
+        catch (DBusException ex) when (ex.ErrorName == "com.vicr123.accounts.Error.NoAccount")
         {
-            if (ex.ErrorName == "com.vicr123.accounts.Error.NoAccount")
-                return this.ClientError(ParlanceClientError.UnknownUser);
-            throw;
+            return this.ClientError(ParlanceClientError.UnknownUser);
         }
         catch (InvalidOperationException)
         {
