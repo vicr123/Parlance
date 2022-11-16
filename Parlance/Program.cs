@@ -48,6 +48,7 @@ builder.Services.AddHostedService<ProjectUpdaterService>();
 
 builder.Services.Configure<ParlanceOptions>(builder.Configuration.GetSection("Parlance"));
 builder.Services.Configure<RateLimitingOptions>(builder.Configuration.GetSection("rateLimiting"));
+builder.Services.Configure<ForwardedHeadersOptions>(builder.Configuration.GetSection("ForwardedHeaders"));
 
 SqliteConnection? connection = null;
 
@@ -119,6 +120,8 @@ if (!app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+app.UseForwardedHeaders();
 
 app.UseHttpsRedirection();
 app.UseResponseCompression();
