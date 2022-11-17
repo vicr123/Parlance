@@ -224,6 +224,24 @@
     display: none;
 }
 
+.commentsButton {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    padding: 6px;
+    border-bottom: 1px solid var(--border-color);
+    cursor: default;
+}
+
+.commentsButton:hover {
+    background-color: var(--hover-color);
+}
+
+.commentsButton:active {
+    background-color: var(--active-color);
+}
+
 @media (max-width: 1024px) {
     .translationArea {
         position: fixed;

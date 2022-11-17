@@ -4,7 +4,7 @@ import {useTranslation} from "react-i18next";
 import i18n from "../../../../../../helpers/i18n";
 import {Fragment, useEffect, useMemo, useRef, useState} from "react";
 import {checkTranslation} from "../../../../../../checks";
-import {VerticalLayout, VerticalSpacer} from "../../../../../../components/Layouts";
+import {HorizontalLayout, VerticalLayout, VerticalSpacer} from "../../../../../../components/Layouts";
 import {TranslationSlateEditor} from "./TranslationSlateEditor";
 import Button from "../../../../../../components/Button";
 import useTranslationEntries from "./EntryUtils";
@@ -15,6 +15,9 @@ import {Untabbable, useTabIndex} from "react-tabindex";
 import BackButton from "../../../../../../components/BackButton";
 import Placeholders from "./Placeholders";
 import {useForceUpdateOnUserChange} from "../../../../../../helpers/Hooks";
+import Icon from "../../../../../../components/Icon";
+import Modal from "../../../../../../components/Modal";
+import CommentsModal from "./Comments/CommentsModal";
 
 function TranslationPart({
                              entry,
@@ -150,7 +153,7 @@ export default function TranslationArea({
                                             tabIndex,
                                             searchParams
                                         }) {
-    const {key} = useParams();
+    const {project, subproject, language, key} = useParams();
     const {t} = useTranslation();
     const {
         entry,
@@ -220,6 +223,10 @@ export default function TranslationArea({
         </div>);
     }
 
+    const openComments = () => {
+        Modal.mount(<CommentsModal project={project} subproject={subproject} language={language} tkey={key}/>)
+    };
+
     return <div className={`${Styles.translationArea} ${key && Styles.haveKey}`}>
         <div className={Styles.translationAreaInner}>
             <BackButton className={Styles.backButton} text={t("BACK")} inTranslationView={true}
@@ -242,6 +249,16 @@ export default function TranslationArea({
                 <div className={Styles.keyContainer}>
                     <span className={Styles.keyText}>{entry.key}</span>
                 </div>
+            </div>
+            <div className={Styles.commentsButton} onClick={openComments}>
+                <HorizontalLayout>
+                    <Icon icon={"edit-comment"}/>
+                    {/* TODO: Change to "n comments" when there are comments */}
+                    <span>{t("Add Comment")}</span>
+                </HorizontalLayout>
+                <HorizontalLayout>
+                    <Icon icon={"go-next"} flip={true}/>
+                </HorizontalLayout>
             </div>
             {entry.translation.map((pform, idx) => {
                 const translationUpdate = (contents, key) => {

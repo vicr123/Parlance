@@ -3,13 +3,16 @@ import Styles from './Modal.module.css';
 import {createRoot} from "react-dom/client";
 import {withTranslation} from "react-i18next";
 import i18n from "../helpers/i18n";
+import Icon from "./Icon";
 
 let root;
 
 class Modal extends React.Component {
     render() {
-        return <div className={`${Styles.ModalBackground} ${i18n.dir()}`} dir={i18n.dir()}>
-            <div className={Styles.ModalContainer}>
+        return <div
+            className={`${Styles.ModalBackground} ${i18n.dir()} ${this.props.popover && Styles.PopoverBackground}`}
+            dir={i18n.dir()}>
+            <div className={`${Styles.ModalContainer} ${this.props.popover && Styles.PopoverContainer}`}>
                 {this.renderHeading()}
                 {this.renderModalText()}
                 {this.renderModalList()}
@@ -48,7 +51,10 @@ class Modal extends React.Component {
     renderHeading() {
         if (this.props.heading) {
             return <div className={Styles.ModalHeading}>
-                {this.props.heading}
+                {this.props.popover &&
+                    <div className={Styles.BackButton} onClick={this.props.onBackClicked}><Icon icon={"go-previous"}
+                                                                                                flip={true}/></div>}
+                <span className={Styles.HeadingText}>{this.props.heading}</span>
             </div>
         }
         return null;
