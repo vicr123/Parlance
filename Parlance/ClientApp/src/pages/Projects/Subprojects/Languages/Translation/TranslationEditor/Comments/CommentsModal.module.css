@@ -1,0 +1,7 @@
+.headingPadding {
+    padding: 6px;
+}
+
+.threadsContainer {
+    border-bottom: 1px solid var(--border-color);
+}
