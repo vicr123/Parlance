@@ -9,24 +9,49 @@ namespace Parlance.CldrData;
 
 public record LocalePluralRule(string Category, IList<int> Examples, int Index);
 
-public record Locale(string LanguageCode, string? CountryCode, string? Script)
+public record Locale
 {
     private static readonly ConcurrentDictionary<Locale, IReadOnlyList<LocalePluralRule>> PluralCache = new();
 
+    public Locale(string languageCode, string? countryCode, string? script)
+    {
+        LanguageCode = languageCode.ToLower();
+        CountryCode = countryCode?.ToLower();
+        Script = script?.ToLower();
+    }
+
+    public string LanguageCode { get; init; }
+    public string? CountryCode { get; init; }
+    public string? Script { get; init; }
+
     public string ToDashed()
     {
-        var parts = new List<string> { LanguageCode };
-        if (Script is not null) parts.Add(Script);
-        if (CountryCode is not null) parts.Add(CountryCode);
+        var parts = new List<string> { LanguageCode.ToLower() };
+        if (Script is not null)
+        {
+            parts.Add(Script.ToLower());
+        }
+
+        if (CountryCode is not null)
+        {
+            parts.Add(CountryCode.ToUpper());
+        }
 
         return string.Join('-', parts);
     }
 
     public string ToUnderscored()
     {
-        var parts = new List<string> { LanguageCode };
-        if (Script is not null) parts.Add(Script);
-        if (CountryCode is not null) parts.Add(CountryCode.ToUpper());
+        var parts = new List<string> { LanguageCode.ToLower() };
+        if (Script is not null)
+        {
+            parts.Add(Script.ToLower());
+        }
+
+        if (CountryCode is not null)
+        {
+            parts.Add(CountryCode.ToUpper());
+        }
 
         return string.Join('_', parts);
     }
@@ -43,7 +68,10 @@ public record Locale(string LanguageCode, string? CountryCode, string? Script)
 
     public IReadOnlyList<LocalePluralRule> PluralRules()
     {
-        if (PluralCache.ContainsKey(this)) return PluralCache[this];
+        if (PluralCache.ContainsKey(this))
+        {
+            return PluralCache[this];
+        }
 
         var order = new List<string>
         {
@@ -68,12 +96,16 @@ public record Locale(string LanguageCode, string? CountryCode, string? Script)
                 try
                 {
                     foreach (var rule in rules)
+                    {
                         if (rule.Matches(RuleContext.Create(num)))
+                        {
                             return new
                             {
                                 rule.Category,
                                 Number = num
                             };
+                        }
+                    }
 
                     return new
                     {
@@ -104,5 +136,12 @@ public record Locale(string LanguageCode, string? CountryCode, string? Script)
     {
         var dir = new DirectoryInfo(Path.Combine(Cldr.Instance.Repositories[0], "common/main"));
         return dir.EnumerateFiles().Select(info => Path.GetFileNameWithoutExtension(info.Name).ToLocale()).Distinct();
+    }
+
+    public void Deconstruct(out string LanguageCode, out string? CountryCode, out string? Script)
+    {
+        LanguageCode = this.LanguageCode;
+        CountryCode = this.CountryCode;
+        Script = this.Script;
     }
 }

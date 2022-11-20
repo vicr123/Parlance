@@ -1,0 +1,34 @@
+.commentItem {
+    display: grid;
+    grid-template-columns: max-content 1fr;
+    grid-template-rows: 1fr 1fr 1fr;
+    gap: 6px 6px;
+    grid-template-areas: 
+    "authorIcon authorDetails"
+    ". commentText"
+    ". commentDetails";
+    align-items: center;
+
+    padding: 9px;
+
+    border-bottom: 1px solid var(--border-color);
+}
+
+.commentText {
+    grid-area: commentText;
+}
+
+.authorDetails {
+    grid-area: authorDetails;
+    color: var(--foreground-disabled-color);
+}
+
+.authorIcon {
+    grid-area: authorIcon;
+    width: 32px;
+    border-radius: 16px;
+}
+
+.authorName {
+    color: var(--foreground-color);
+}

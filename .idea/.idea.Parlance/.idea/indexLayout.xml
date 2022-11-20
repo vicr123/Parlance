@@ -4,6 +4,8 @@
     <attachedFolders />
     <explicitIncludes>
       <Path>Parlance/Authorization/ProjectAdministrator/ProjectManagerHandler.cs</Path>
+      <Path>Parlance/ClientApp/src/pages/Projects/Subprojects/Languages/Translation/TranslationEditor/Comments/ThreadReplyArea.js</Path>
+      <Path>Parlance/ClientApp/src/pages/Projects/Subprojects/Languages/Translation/TranslationEditor/Comments/ThreadReplyArea.module.css</Path>
     </explicitIncludes>
     <explicitExcludes />
   </component>

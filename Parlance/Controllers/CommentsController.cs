@@ -1,3 +1,5 @@
+using System.Security.Cryptography;
+using System.Text;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
@@ -110,7 +112,7 @@ public class CommentsController : Controller
 
         return Json(new
         {
-            ThreadId = thread.Id
+            thread.Id, thread.Title
         });
     }
 
@@ -118,19 +120,45 @@ public class CommentsController : Controller
     [Route("{id:guid}")]
     public async Task<IActionResult> GetCommentsInThread(Guid id)
     {
+        var comments = new List<object>();
+        var dbComments = _databaseContext.Comments.Where(x => x.ThreadId == id)
+            .OrderBy(x => x.Date);
+        if (!dbComments.Any())
+        {
+            return NotFound();
+        }
+
+        foreach (var comment in dbComments)
+        {
+            comments.Add(new
+            {
+                comment.Text, comment.Date, Author = await GetAuthor(comment.UserId)
+            });
+        }
+
+        return Json(comments);
+    }
+
+    [HttpPost]
+    [Route("{threadId:guid}")]
+    [Authorize(Policy = "LanguageEditor")]
+    public async Task<IActionResult> ReplyToThread(Guid threadId, [FromBody] ReplyToThreadRequestData data)
+    {
         try
         {
-            var comments = new List<object>();
-            foreach (var comment in _databaseContext.CommentThreads.Single(x => x.Id == id).Comments
-                         .OrderBy(x => x.Date))
-            {
-                comments.Add(new
-                {
-                    comment.Text, comment.Date, Author = await GetAuthor(comment.UserId)
-                });
-            }
+            var userId = ulong.Parse(HttpContext.User.Claims.First(claim => claim.Type == Claims.UserId).Value);
 
-            return Json(comments);
+            _databaseContext.Comments.Add(new()
+            {
+                Thread = _databaseContext.CommentThreads.Single(x => x.Id == threadId),
+                Text = data.Body,
+                Date = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(),
+                UserId = userId
+            });
+
+            await _databaseContext.SaveChangesAsync();
+
+            return await GetCommentsInThread(threadId);
         }
         catch (InvalidOperationException)
         {
@@ -143,13 +171,20 @@ public class CommentsController : Controller
         var user = await _accountsService.UserById(userId);
         return new
         {
-            user.Username
+            user.Username,
+            Picture =
+                $"https://www.gravatar.com/avatar/{Convert.ToHexString(MD5.HashData(new UTF8Encoding(false).GetBytes(user.Email.Trim().ToLower()))).ToLower()}"
         };
     }
 
     public class CreateNewCommentThreadRequestData
     {
         public string Title { get; set; } = null!;
+        public string Body { get; set; } = null!;
+    }
+
+    public class ReplyToThreadRequestData
+    {
         public string Body { get; set; } = null!;
     }
 }
