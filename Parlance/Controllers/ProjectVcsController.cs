@@ -155,4 +155,29 @@ public class ProjectVcsController : Controller
             return NotFound();
         }
     }
+
+    [HttpDelete]
+    [Authorize(Policy = "ProjectManager")]
+    [Route("vcs/uncommitted")]
+    public async Task<IActionResult> DeleteUncommitedFromVcs(string project)
+    {
+        try
+        {
+            var p = await _projectService.ProjectBySystemName(project);
+            var proj = p.GetParlanceProject();
+
+            await _versionControlService.DeleteUnpublishedChanges(proj);
+
+            return NoContent();
+        }
+        catch (LibGit2SharpException ex)
+        {
+            return this.ClientError(ParlanceClientError.GitError, ex.Message);
+        }
+        catch (ProjectNotFoundException)
+        {
+            return NotFound();
+        }
+    }
+
 }
