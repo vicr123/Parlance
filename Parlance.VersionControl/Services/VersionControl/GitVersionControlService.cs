@@ -242,4 +242,11 @@ public class GitVersionControlService : IVersionControlService
             CertificateCheck = _remoteCommunicationService.CertificateCheckHandler
         });
     }
+
+    public Task DeleteUnpublishedChanges(IParlanceProject project)
+    {
+        using var repo = new Repository(project.VcsDirectory);
+        repo.Reset(ResetMode.Hard, repo.Head.Tip);
+        return Task.CompletedTask;
+    }
 }

@@ -68,9 +68,7 @@ export default function VersionControl() {
                     Modal.CancelButton,
                     {
                         text: t("VCS_DISCARD_UNCOMMITTED_CHANGES"),
-                        onClick: () => {
-
-                        },
+                        onClick: discardUncommittedChanges,
                         destructive: true
                     },
                     {
@@ -170,6 +168,34 @@ export default function VersionControl() {
         </Modal>)
     }
 
+    const discardUncommittedChanges = () => {
+        Modal.mount(<Modal heading={t("VCS_DISCARD_UNCOMMITTED_CHANGES")} buttons={[
+            Modal.CancelButton,
+            {
+                text: t("VCS_DISCARD"),
+                onClick: async () => {
+                    Modal.mount(<LoadingModal />);
+                    try {
+                        await Fetch.delete(`/api/projects/${project}/vcs/uncommitted`);
+                        await updateVcs();
+                        Modal.unmount();
+                    } catch (err) {
+                        Modal.mount(<ErrorModal error={err} />)
+                    }
+                },
+                destructive: true
+            }
+        ]}>
+            <VerticalLayout>
+                <span>{t("VCS_DISCARD_UNCOMMITTED_CHANGES_PROMPT", { count: vcsState.changedFiles.length })}</span>
+                <VerticalLayout>
+                    {vcsState.changedFiles.map(file => <span key={file}
+                        className={Styles.commitFileChange}>{file}</span>)}
+                </VerticalLayout>
+            </VerticalLayout>
+        </Modal>)
+    }
+
     const copyCloneUrl = () => {
         navigator.clipboard.writeText(cloneUrl);
     }
@@ -240,6 +266,10 @@ export default function VersionControl() {
                 {
                     contents: t("VCS_PUSH"),
                     onClick: push
+                },
+                {
+                    contents: t("VCS_DISCARD_UNCOMMITTED_CHANGES"),
+                    onClick: discardUncommittedChanges
                 }
             ]}/>
         </Container>
