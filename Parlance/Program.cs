@@ -54,15 +54,16 @@ SqliteConnection? connection = null;
 
 builder.Services.AddDbContext<ParlanceContext>(options =>
 {
-    if (builder.Configuration.GetSection("Parlance").GetValue("UseInMemoryDatabase", false))
+    var parlanceOptions = builder.Configuration.GetRequiredSection("Parlance").Get<ParlanceOptions>()!;
+    if (parlanceOptions.UseSqliteDatabase)
     {
-        connection ??= new SqliteConnection("Data Source=:memory:");
+        connection ??= new SqliteConnection($"Data Source=\"{Path.Join(parlanceOptions.RepositoryDirectory, "Parlance.db")}\"");
         connection.Open();
         options.UseSqlite(connection);
     }
     else
     {
-        options.UseNpgsql(builder.Configuration.GetSection("Parlance")["DatabaseConnectionString"],
+        options.UseNpgsql(parlanceOptions.DatabaseConnectionString,
             optionsBuilder => optionsBuilder.EnableRetryOnFailure());
     }
 });
@@ -93,8 +94,6 @@ builder.Services.AddAuthorizationCore(options =>
 
 builder.Services.AddResponseCompression(options => options.EnableForHttps = true);
 
-var ratelimitingOptions = new RateLimitingOptions();
-builder.Configuration.GetSection("rateLimiting").Bind(ratelimitingOptions);
 builder.Services.AddRateLimiter(x =>
 {
     x.OnRejected = (context, cancellationToken) =>

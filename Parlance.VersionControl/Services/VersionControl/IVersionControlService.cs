@@ -37,6 +37,7 @@ public interface IVersionControlService
     Task DownloadFromSource(string sourceUrl, string directory, string branch);
     Task UpdateVersionControlMetadata(IParlanceProject project);
     Task<VersionControlCommit?> SaveChangesToVersionControl(IParlanceProject project);
+    Task DeleteUnpublishedChanges(IParlanceProject project);
     Task PublishSavedChangesToSource(IParlanceProject project);
     Task ReconcileRemoteWithLocal(IParlanceProject project);
     VersionControlStatus VersionControlStatus(IParlanceProject project);
