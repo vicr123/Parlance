@@ -53,13 +53,17 @@ public class CommentsController : Controller
             return NotFound();
         }
 
-        return Json(_databaseContext.CommentThreads.Where(x =>
+        var threads = _databaseContext.CommentThreads.Where(x =>
             x.Project == project && x.Subproject == subproject &&
-            x.Language == language.ToLocale().ToDatabaseRepresentation() && x.Key == key).ToList().Select(x =>
+            x.Language == language.ToLocale().ToDatabaseRepresentation() && x.Key == key).ToList();
+        var result = new List<object>();
+        foreach (var thread in threads)
         {
-            var headComment = _databaseContext.Comments.Where(c => c.ThreadId == x.Id).OrderBy(c => c.Date).First();
-            return GetJsonThread(x, headComment);
-        }));
+            var headComment = _databaseContext.Comments.Where(c => c.ThreadId == thread.Id && c.Event == null).OrderBy(c => c.Date).Last();
+            result.Add(await GetJsonThread(thread, headComment));
+        }
+
+        return Json(result);
     }
 
     [HttpPost]
@@ -119,7 +123,7 @@ public class CommentsController : Controller
 
         await _databaseContext.SaveChangesAsync();
 
-        return Json(GetJsonThread(thread, headComment));
+        return Json(await GetJsonThread(thread, headComment));
     }
 
     [HttpGet]
@@ -196,12 +200,12 @@ public class CommentsController : Controller
 
             await _databaseContext.SaveChangesAsync();
 
-            var headComment = _databaseContext.Comments.Where(c => c.ThreadId == thread.Id).OrderBy(c => c.Date)
-                .First();
+            var headComment = _databaseContext.Comments.Where(c => c.ThreadId == thread.Id && c.Event == null).OrderBy(c => c.Date)
+                .Last();
 
             return Json(new
             {
-                Thread = GetJsonThread(thread, headComment),
+                Thread = await GetJsonThread(thread, headComment),
                 Comments = await CommentsInThread(threadId)
             });
         }
@@ -240,12 +244,12 @@ public class CommentsController : Controller
 
             await _databaseContext.SaveChangesAsync();
 
-            var headComment = _databaseContext.Comments.Where(c => c.ThreadId == thread.Id).OrderBy(c => c.Date)
-                .First();
+            var headComment = _databaseContext.Comments.Where(c => c.ThreadId == thread.Id && c.Event == null).OrderBy(c => c.Date)
+                .Last();
 
             return Json(new
             {
-                Thread = GetJsonThread(thread, headComment),
+                Thread = await GetJsonThread(thread, headComment),
                 Comments = await CommentsInThread(threadId)
             });
         }
@@ -266,11 +270,11 @@ public class CommentsController : Controller
         };
     }
 
-    private object GetJsonThread(CommentThread thread, Comment headComment)
+    private async Task<object> GetJsonThread(CommentThread thread, Comment headComment)
     {
         return new
         {
-            thread.Id, thread.Title, thread.IsClosed, thread.IsFlagged, Author = GetAuthor(headComment.UserId),
+            thread.Id, thread.Title, thread.IsClosed, thread.IsFlagged, Author = await GetAuthor(headComment.UserId),
             HeadCommentBody = headComment.Text
         };
     }

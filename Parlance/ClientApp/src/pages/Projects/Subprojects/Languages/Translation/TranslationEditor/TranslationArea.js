@@ -18,6 +18,8 @@ import {useForceUpdateOnUserChange} from "../../../../../../helpers/Hooks";
 import Icon from "../../../../../../components/Icon";
 import Modal from "../../../../../../components/Modal";
 import CommentsModal from "./Comments/CommentsModal";
+import Fetch from "../../../../../../helpers/Fetch";
+import PreloadingBlock from "../../../../../../components/PreloadingBlock";
 
 function TranslationPart({
                              entry,
@@ -167,6 +169,8 @@ export default function TranslationArea({
         goToNextUnfinished
     } = useTranslationEntries(entries, searchParams, translationFileType, onPushUpdate);
     const [altDown, setAltDown] = useState(false);
+    const [commentThreads, setCommentThreads] = useState([]);
+    const [loadingComments, setLoadingComments] = useState(true);
     const navigate = useNavigate();
     tabIndex = useTabIndex(tabIndex);
 
@@ -186,6 +190,22 @@ export default function TranslationArea({
         });
     }, [entry]);
 
+    const openComments = useMemo(() => commentThreads.filter(x => !x.isClosed).length, [commentThreads]);
+
+    const updateThreads = async () => {
+        const currentKey = key;
+        setLoadingComments(true);
+
+        const results = await Fetch.get(`/api/comments/${project}/${subproject}/${language}/${key}`);
+        if (key === currentKey) {
+            setCommentThreads(results);
+            setLoadingComments(false);
+        }
+    };
+
+    useEffect(() => {
+        updateThreads();
+    }, [key])
 
     const keyDownHandler = e => {
         if (e.key === "Alt") setAltDown(true);
@@ -223,8 +243,9 @@ export default function TranslationArea({
         </div>);
     }
 
-    const openComments = () => {
-        Modal.mount(<CommentsModal project={project} subproject={subproject} language={language} tkey={key}/>)
+    const openCommentsModal = () => {
+        Modal.mount(<CommentsModal threads={commentThreads} onUpdateThreads={updateThreads} project={project}
+                                   subproject={subproject} language={language} tkey={key}/>)
     };
 
     return <div className={`${Styles.translationArea} ${key && Styles.haveKey}`}>
@@ -250,11 +271,12 @@ export default function TranslationArea({
                     <span className={Styles.keyText}>{entry.key}</span>
                 </div>
             </div>
-            <div className={Styles.commentsButton} onClick={openComments}>
+            <div className={Styles.commentsButton} onClick={openCommentsModal}>
                 <HorizontalLayout>
                     <Icon icon={"edit-comment"}/>
                     {/* TODO: Change to "n comments" when there are comments */}
-                    <span>{t("Add Comment")}</span>
+                    {loadingComments ? <PreloadingBlock>Text</PreloadingBlock> :
+                        <span>{openComments > 0 ? t("{{count}} open threads", {count: openComments}) : t("Add Comment")}</span>}
                 </HorizontalLayout>
                 <HorizontalLayout>
                     <Icon icon={"go-next"} flip={true}/>
