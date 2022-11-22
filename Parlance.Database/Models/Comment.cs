@@ -13,6 +13,7 @@ public class Comment
 
     public long Date { get; set; }
     public ulong UserId { get; set; }
+    public string? Event { get; set; }
 
     public Guid ThreadId { get; set; }
     public CommentThread Thread { get; set; } = null!;

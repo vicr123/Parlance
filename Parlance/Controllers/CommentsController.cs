@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.RateLimiting;
 using Parlance.CldrData;
 using Parlance.Database;
 using Parlance.Database.Models;
+using Parlance.Helpers;
 using Parlance.Project;
 using Parlance.Project.Index;
 using Parlance.Services.Projects;
@@ -54,9 +55,10 @@ public class CommentsController : Controller
 
         return Json(_databaseContext.CommentThreads.Where(x =>
             x.Project == project && x.Subproject == subproject &&
-            x.Language == language.ToLocale().ToDatabaseRepresentation() && x.Key == key).Select(x => new
+            x.Language == language.ToLocale().ToDatabaseRepresentation() && x.Key == key).ToList().Select(x =>
         {
-            x.Id, x.Title
+            var headComment = _databaseContext.Comments.Where(c => c.ThreadId == x.Id).OrderBy(c => c.Date).First();
+            return GetJsonThread(x, headComment);
         }));
     }
 
@@ -81,6 +83,11 @@ public class CommentsController : Controller
             return NotFound();
         }
 
+        if (string.IsNullOrWhiteSpace(data.Title) || string.IsNullOrWhiteSpace(data.Body))
+        {
+            return this.ClientError(ParlanceClientError.IncorrectParameters);
+        }
+
         var userId = ulong.Parse(HttpContext.User.Claims.First(claim => claim.Type == Claims.UserId).Value);
 
         var thread = new CommentThread
@@ -95,13 +102,15 @@ public class CommentsController : Controller
         };
         _databaseContext.CommentThreads.Add(thread);
 
-        _databaseContext.Comments.Add(new()
+        var headComment = new Comment
         {
             Thread = thread,
             Text = data.Body,
             Date = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(),
             UserId = userId
-        });
+        };
+
+        _databaseContext.Comments.Add(headComment);
         _databaseContext.CommentThreadSubscriptions.Add(new()
         {
             Thread = thread,
@@ -110,30 +119,17 @@ public class CommentsController : Controller
 
         await _databaseContext.SaveChangesAsync();
 
-        return Json(new
-        {
-            thread.Id, thread.Title
-        });
+        return Json(GetJsonThread(thread, headComment));
     }
 
     [HttpGet]
     [Route("{id:guid}")]
     public async Task<IActionResult> GetCommentsInThread(Guid id)
     {
-        var comments = new List<object>();
-        var dbComments = _databaseContext.Comments.Where(x => x.ThreadId == id)
-            .OrderBy(x => x.Date);
-        if (!dbComments.Any())
+        var comments = await CommentsInThread(id);
+        if (comments is null)
         {
             return NotFound();
-        }
-
-        foreach (var comment in dbComments)
-        {
-            comments.Add(new
-            {
-                comment.Text, comment.Date, Author = await GetAuthor(comment.UserId)
-            });
         }
 
         return Json(comments);
@@ -147,6 +143,11 @@ public class CommentsController : Controller
         try
         {
             var userId = ulong.Parse(HttpContext.User.Claims.First(claim => claim.Type == Claims.UserId).Value);
+
+            if (string.IsNullOrWhiteSpace(data.Body))
+            {
+                return this.ClientError(ParlanceClientError.IncorrectParameters);
+            }
 
             _databaseContext.Comments.Add(new()
             {
@@ -166,6 +167,94 @@ public class CommentsController : Controller
         }
     }
 
+    [HttpPost]
+    [Route("{threadId:guid}/close")]
+    [Authorize(Policy = "LanguageEditor")]
+    public async Task<IActionResult> CloseThread(Guid threadId)
+    {
+        try
+        {
+            var userId = ulong.Parse(HttpContext.User.Claims.First(claim => claim.Type == Claims.UserId).Value);
+
+            var thread = _databaseContext.CommentThreads.Single(x => x.Id == threadId);
+            if (thread.IsClosed)
+            {
+                return StatusCode(StatusCodes.Status405MethodNotAllowed);
+            }
+
+            thread.IsClosed = true;
+            _databaseContext.Update(thread);
+
+            _databaseContext.Comments.Add(new()
+            {
+                Thread = thread,
+                Text = "Closed Thread",
+                Date = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(),
+                UserId = userId,
+                Event = "closed"
+            });
+
+            await _databaseContext.SaveChangesAsync();
+
+            var headComment = _databaseContext.Comments.Where(c => c.ThreadId == thread.Id).OrderBy(c => c.Date)
+                .First();
+
+            return Json(new
+            {
+                Thread = GetJsonThread(thread, headComment),
+                Comments = await CommentsInThread(threadId)
+            });
+        }
+        catch (InvalidOperationException)
+        {
+            return NotFound();
+        }
+    }
+
+    [HttpDelete]
+    [Route("{threadId:guid}/close")]
+    [Authorize(Policy = "LanguageEditor")]
+    public async Task<IActionResult> ReopenThread(Guid threadId)
+    {
+        try
+        {
+            var userId = ulong.Parse(HttpContext.User.Claims.First(claim => claim.Type == Claims.UserId).Value);
+
+            var thread = _databaseContext.CommentThreads.Single(x => x.Id == threadId);
+            if (!thread.IsClosed)
+            {
+                return StatusCode(StatusCodes.Status405MethodNotAllowed);
+            }
+
+            thread.IsClosed = false;
+            _databaseContext.Update(thread);
+
+            _databaseContext.Comments.Add(new()
+            {
+                Thread = thread,
+                Text = "Reopened Thread",
+                Date = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(),
+                UserId = userId,
+                Event = "reopened"
+            });
+
+            await _databaseContext.SaveChangesAsync();
+
+            var headComment = _databaseContext.Comments.Where(c => c.ThreadId == thread.Id).OrderBy(c => c.Date)
+                .First();
+
+            return Json(new
+            {
+                Thread = GetJsonThread(thread, headComment),
+                Comments = await CommentsInThread(threadId)
+            });
+        }
+        catch (InvalidOperationException)
+        {
+            return NotFound();
+        }
+    }
+
     private async Task<object> GetAuthor(ulong userId)
     {
         var user = await _accountsService.UserById(userId);
@@ -175,6 +264,36 @@ public class CommentsController : Controller
             Picture =
                 $"https://www.gravatar.com/avatar/{Convert.ToHexString(MD5.HashData(new UTF8Encoding(false).GetBytes(user.Email.Trim().ToLower()))).ToLower()}"
         };
+    }
+
+    private object GetJsonThread(CommentThread thread, Comment headComment)
+    {
+        return new
+        {
+            thread.Id, thread.Title, thread.IsClosed, thread.IsFlagged, Author = GetAuthor(headComment.UserId),
+            HeadCommentBody = headComment.Text
+        };
+    }
+
+    private async Task<IEnumerable<object>?> CommentsInThread(Guid threadId)
+    {
+        var comments = new List<object>();
+        var dbComments = _databaseContext.Comments.Where(x => x.ThreadId == threadId)
+            .OrderBy(x => x.Date);
+        if (!dbComments.Any())
+        {
+            return null;
+        }
+
+        foreach (var comment in dbComments)
+        {
+            comments.Add(new
+            {
+                comment.Text, comment.Date, Author = await GetAuthor(comment.UserId), comment.Event
+            });
+        }
+
+        return comments;
     }
 
     public class CreateNewCommentThreadRequestData

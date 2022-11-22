@@ -41,9 +41,10 @@ export default function CommentsModal({project, subproject, language, tkey}) {
     };
 
     return <Modal popover={true} heading={currentThread?.title || t("Comments")} onBackClicked={goBack}>
-        {currentThread ? <ThreadView thread={currentThread}/> :
+        {currentThread ? <ThreadView thread={currentThread} onCurrentThreadChanged={setCurrentThread}
+                                     onReloadThreads={updateThreads}/> :
             <>
-                <VerticalLayout className={Styles.threadsContainer}>
+                <VerticalLayout className={Styles.threadsContainer} gap={0}>
                     <div className={Styles.headingPadding}>
                         <PageHeading level={3}>{t("Threads")}</PageHeading>
                     </div>

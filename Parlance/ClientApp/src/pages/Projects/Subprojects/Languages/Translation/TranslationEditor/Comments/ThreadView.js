@@ -5,6 +5,7 @@ import ThreadReplyArea from "./ThreadReplyArea";
 
 import Styles from "./ThreadView.module.css";
 import moment from "moment";
+import {useTranslation} from "react-i18next";
 
 function ThreadComment({data}) {
     return <div className={Styles.commentItem}>
@@ -15,7 +16,26 @@ function ThreadComment({data}) {
     </div>
 }
 
-export default function ThreadView({thread}) {
+function EventName({event}) {
+    const {t} = useTranslation();
+    const events = {
+        "closed": t("closed the thread"),
+        "reopened": t("reopened the thread")
+    };
+
+    return <b className={Styles.eventName}>{events[event]}</b>;
+}
+
+function ThreadEvent({data}) {
+    return <div className={Styles.eventItem}>
+        <img className={Styles.authorIcon} src={data.author.picture}/>
+        <span className={Styles.authorDetails}><span
+            className={Styles.authorName}>{data.author.username}</span> <EventName
+            event={data.event}/> {moment(data.date).fromNow()}</span>
+    </div>
+}
+
+export default function ThreadView({thread, onCurrentThreadChanged, onReloadThreads}) {
     const [threadData, setThreadData] = useState([]);
 
     const updateThreadData = async () => {
@@ -26,8 +46,9 @@ export default function ThreadView({thread}) {
         updateThreadData();
     }, []);
 
-    return <VerticalLayout>
-        {threadData.map((x, i) => <ThreadComment key={i} data={x}/>)}
-        <ThreadReplyArea thread={thread} onThreadDataChanged={setThreadData}/>
+    return <VerticalLayout gap={0}>
+        {threadData.map((x, i) => x.event ? <ThreadEvent key={i} data={x}/> : <ThreadComment key={i} data={x}/>)}
+        <ThreadReplyArea thread={thread} onThreadDataChanged={setThreadData}
+                         onCurrentThreadChanged={onCurrentThreadChanged} onReloadThreads={onReloadThreads}/>
     </VerticalLayout>
 }

@@ -32,3 +32,21 @@
 .authorName {
     color: var(--foreground-color);
 }
+
+.eventName {
+    color: var(--foreground-color);
+}
+
+.eventItem {
+    display: grid;
+    grid-template-columns: max-content 1fr;
+    grid-template-rows: 1fr;
+    gap: 6px 6px;
+    grid-template-areas: 
+    "authorIcon authorDetails";
+    align-items: center;
+
+    padding: 9px;
+
+    border-bottom: 1px solid var(--border-color);
+}

@@ -37,6 +37,11 @@ input.titleBox {
 }
 
 .buttonContainerInner {
+    display: flex;
+    flex-direction: row;
+}
+
+.buttonContainerInner div {
     border-left: 1px solid var(--border-color);
 }
 
