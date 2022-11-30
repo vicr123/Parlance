@@ -30,7 +30,7 @@ export default function ThreadReplyArea({
                     body: body
                 }));
             } catch {
-                setError(t("Unable to send the comment"))
+                setError(t("COMMENT_SEND_FAILURE_PROMPT"))
                 return;
             }
         } else {
@@ -41,7 +41,7 @@ export default function ThreadReplyArea({
                     body: body
                 });
             } catch {
-                setError(t("Unable to create the thread"))
+                setError(t("THREAD_CREATE_FAILURE_PROMPT"))
                 return;
             }
             onReloadThreads();
@@ -58,14 +58,14 @@ export default function ThreadReplyArea({
             try {
                 ({comments, thread: newThread} = await Fetch.delete(`/api/comments/${thread.id}/close`));
             } catch {
-                setError(t("Unable to reopen the thread"))
+                setError(t("THREAD_REOPEN_FAILURE_PROMPT"))
                 return;
             }
         } else {
             try {
                 ({comments, thread: newThread} = await Fetch.post(`/api/comments/${thread.id}/close`));
             } catch {
-                setError(t("Unable to close the thread"))
+                setError(t("THREAD_CLOSE_FAILURE_PROMPT"))
                 return;
             }
         }
@@ -76,22 +76,22 @@ export default function ThreadReplyArea({
     }
 
     return <div className={Styles.wrapper}>
-        {!threadId && <input value={title} type={"text"} className={Styles.titleBox} placeholder={t("Thread title")}
+        {!threadId && <input value={title} type={"text"} className={Styles.titleBox} placeholder={t("THREAD_TITLE")}
                              onChange={e => setTitle(e.target.value)}/>}
-        <textarea value={body} className={Styles.bodyBox} placeholder={t("Write a comment...")}
+        <textarea value={body} className={Styles.bodyBox} placeholder={t("WRITE_COMMENT_PLACEHOLDER")}
                   onChange={e => setBody(e.target.value)}/>
         {error && <div className={Styles.buttonContainer}>
             <span>{error}</span>
         </div>}
         <div className={Styles.buttonContainer}>
             <div className={Styles.postingPrompt}>
-                {t("Posting as {{user}}", {user: UserManager.currentUser.username})}
+                {t("COMMENT_POSTING_AS_PROMPT", {user: UserManager.currentUser.username})}
             </div>
             <div className={Styles.buttonContainerInner}>
                 {threadId && <>
-                    <Button onClick={toggleClosed}>{thread.isClosed ? t("Reopen Thread") : t("Close Thread")}</Button>
+                    <Button onClick={toggleClosed}>{thread.isClosed ? t("THREAD_REOPEN") : t("THREAD_CLOSE")}</Button>
                 </>}
-                <Button onClick={createThread}>{threadId ? t("Post Comment") : t("Create Thread")}</Button>
+                <Button onClick={createThread}>{threadId ? t("COMMENT_POST") : t("THREAD_CREATE")}</Button>
             </div>
         </div>
     </div>

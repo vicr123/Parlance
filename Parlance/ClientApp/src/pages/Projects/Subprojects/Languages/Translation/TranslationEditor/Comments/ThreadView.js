@@ -19,8 +19,8 @@ function ThreadComment({data}) {
 function EventName({event}) {
     const {t} = useTranslation();
     const events = {
-        "closed": t("closed the thread"),
-        "reopened": t("reopened the thread")
+        "closed": t("THREAD_CLOSED_ACTION"),
+        "reopened": t("THREAD_REOPENED_ACTION")
     };
 
     return <b className={Styles.eventName}>{events[event]}</b>;

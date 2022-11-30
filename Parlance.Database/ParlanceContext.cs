@@ -7,6 +7,7 @@ public class ParlanceContext : DbContext
 {
     public ParlanceContext(DbContextOptions options) : base(options)
     {
+        
     }
 
     public DbSet<SshKey> SshKeys { get; set; } = null!;

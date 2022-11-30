@@ -30,20 +30,20 @@ export default function CommentsModal({project, subproject, language, tkey, thre
         }
     };
 
-    return <Modal popover={true} heading={currentThread?.title || t("Comments")} onBackClicked={goBack}>
+    return <Modal popover={true} heading={currentThread?.title || t("COMMENTS")} onBackClicked={goBack}>
         {currentThread ? <ThreadView thread={currentThread} onCurrentThreadChanged={setCurrentThread}
                                      onReloadThreads={onUpdateThreads}/> :
             <>
                 <VerticalLayout className={Styles.threadsContainer} gap={0}>
                     <div className={Styles.headingPadding}>
-                        <PageHeading level={3}>{t("Threads")}</PageHeading>
+                        <PageHeading level={3}>{t("THREADS")}</PageHeading>
                     </div>
                     {threads.map((x, i) => <ThreadItem key={i} item={x}
-                                                       onCurrentThreadChanged={setCurrentThread}/>) || t("No threads")}
+                                                       onCurrentThreadChanged={setCurrentThread}/>) || t("THREADS_NO_THREADS")}
                 </VerticalLayout>
                 <VerticalLayout>
                     <div className={Styles.headingPadding}>
-                        <PageHeading level={3}>{t("Create New Thread")}</PageHeading>
+                        <PageHeading level={3}>{t("THREADS_NEW_THREAD")}</PageHeading>
                     </div>
                     <ThreadReplyArea project={project} subproject={subproject} language={language} tkey={tkey}
                                      onReloadThreads={onUpdateThreads} onCurrentThreadChanged={setCurrentThread}/>

@@ -276,7 +276,7 @@ export default function TranslationArea({
                     <Icon icon={"edit-comment"}/>
                     {/* TODO: Change to "n comments" when there are comments */}
                     {loadingComments ? <PreloadingBlock>Text</PreloadingBlock> :
-                        <span>{openComments > 0 ? t("{{count}} open threads", {count: openComments}) : t("Add Comment")}</span>}
+                        <span>{openComments > 0 ? t("COMMENT_OPEN_THREADS", {count: openComments}) : t("COMMENT_ADD")}</span>}
                 </HorizontalLayout>
                 <HorizontalLayout>
                     <Icon icon={"go-next"} flip={true}/>
