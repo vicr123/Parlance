@@ -56,7 +56,7 @@ public class AppleStringsTranslationFile : ParlanceTranslationFile, IParlanceMon
         var baseFileContents = await File.ReadAllLinesAsync(baseFile);
         Hash = Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(fileContents)));
 
-        var baseDocKeys = baseFileContents.Select(x =>
+        var baseDocKeys = baseFileContents.Where(l => !string.IsNullOrWhitespace(l)).Select(x =>
         {
             if (!x.EndsWith(";")) throw new("No trailing ; in Apple Strings file");
             var splitter = x.IndexOf("=", StringComparison.Ordinal);
