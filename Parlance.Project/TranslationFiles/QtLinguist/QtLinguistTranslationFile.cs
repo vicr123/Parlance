@@ -8,7 +8,6 @@ using Parlance.Project.Index;
 namespace Parlance.Project.TranslationFiles.QtLinguist;
 
 [TranslationFileType("qt", ExpectedTranslationFileNameFormat.Underscored)]
-[RequiresPreviewFeatures]
 public class QtLinguistTranslationFile : ParlanceTranslationFile, IParlanceDualTranslationFile
 {
     private string _file = null!;
