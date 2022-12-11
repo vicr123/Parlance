@@ -1,0 +1,53 @@
+.wrapper {
+    display: flex;
+    flex-direction: column;
+}
+
+input.titleBox {
+    border: none;
+    outline: none;
+    /*border-top: none;*/
+    /*border-right: none;*/
+    /*border-left: none;*/
+    /*border-bottom: 1px solid var(--border-color);*/
+
+    padding: 6px;
+    font-size: 15pt;
+}
+
+.bodyBox {
+    padding: 6px;
+
+    border-top: none;
+    border-right: none;
+    border-left: none;
+    border-bottom: 1px solid var(--border-color);
+    outline: none;
+    min-height: 100px;
+
+    background-color: var(--background-color);
+}
+
+.buttonContainer {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+
+    border-bottom: 1px solid var(--border-color);
+}
+
+.buttonContainerInner {
+    display: flex;
+    flex-direction: row;
+}
+
+.buttonContainerInner div {
+    border-left: 1px solid var(--border-color);
+}
+
+.postingPrompt {
+    display: flex;
+    align-items: center;
+    padding: 9px;
+    gap: 6px;
+}

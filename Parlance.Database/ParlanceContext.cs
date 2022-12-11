@@ -7,6 +7,7 @@ public class ParlanceContext : DbContext
 {
     public ParlanceContext(DbContextOptions options) : base(options)
     {
+        
     }
 
     public DbSet<SshKey> SshKeys { get; set; } = null!;
@@ -20,6 +21,9 @@ public class ParlanceContext : DbContext
     public DbSet<AttributionConsent> AttributionConsents { get; set; } = null!;
     public DbSet<EditsPending> EditsPending { get; set; } = null!;
     public DbSet<ProjectMaintainer> ProjectMaintainers { get; set; } = null!;
+    public DbSet<CommentThread> CommentThreads { get; set; } = null!;
+    public DbSet<CommentThreadSubscription> CommentThreadSubscriptions { get; set; } = null!;
+    public DbSet<Comment> Comments { get; set; } = null!;
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -35,6 +39,9 @@ public class ParlanceContext : DbContext
         modelBuilder.Entity<AttributionConsent>().ToTable("AttributionConsents");
         modelBuilder.Entity<EditsPending>().ToTable("EditsPending");
         modelBuilder.Entity<ProjectMaintainer>().ToTable("ProjectMaintainers");
+        modelBuilder.Entity<CommentThread>().ToTable("CommentThreads");
+        modelBuilder.Entity<CommentThreadSubscription>().ToTable("CommentThreadSubscriptions");
+        modelBuilder.Entity<Comment>().ToTable("Comments");
     }
 }
 

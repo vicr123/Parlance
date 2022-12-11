@@ -4,7 +4,7 @@ import {useTranslation} from "react-i18next";
 import i18n from "../../../../../../helpers/i18n";
 import {Fragment, useEffect, useMemo, useRef, useState} from "react";
 import {checkTranslation} from "../../../../../../checks";
-import {VerticalLayout, VerticalSpacer} from "../../../../../../components/Layouts";
+import {HorizontalLayout, VerticalLayout, VerticalSpacer} from "../../../../../../components/Layouts";
 import {TranslationSlateEditor} from "./TranslationSlateEditor";
 import Button from "../../../../../../components/Button";
 import useTranslationEntries from "./EntryUtils";
@@ -15,6 +15,11 @@ import {Untabbable, useTabIndex} from "react-tabindex";
 import BackButton from "../../../../../../components/BackButton";
 import Placeholders from "./Placeholders";
 import {useForceUpdateOnUserChange} from "../../../../../../helpers/Hooks";
+import Icon from "../../../../../../components/Icon";
+import Modal from "../../../../../../components/Modal";
+import CommentsModal from "./Comments/CommentsModal";
+import Fetch from "../../../../../../helpers/Fetch";
+import PreloadingBlock from "../../../../../../components/PreloadingBlock";
 
 function TranslationPart({
                              entry,
@@ -150,7 +155,7 @@ export default function TranslationArea({
                                             tabIndex,
                                             searchParams
                                         }) {
-    const {key} = useParams();
+    const {project, subproject, language, key} = useParams();
     const {t} = useTranslation();
     const {
         entry,
@@ -164,6 +169,8 @@ export default function TranslationArea({
         goToNextUnfinished
     } = useTranslationEntries(entries, searchParams, translationFileType, onPushUpdate);
     const [altDown, setAltDown] = useState(false);
+    const [commentThreads, setCommentThreads] = useState([]);
+    const [loadingComments, setLoadingComments] = useState(true);
     const navigate = useNavigate();
     tabIndex = useTabIndex(tabIndex);
 
@@ -183,6 +190,22 @@ export default function TranslationArea({
         });
     }, [entry]);
 
+    const openComments = useMemo(() => commentThreads.filter(x => !x.isClosed).length, [commentThreads]);
+
+    const updateThreads = async () => {
+        const currentKey = key;
+        setLoadingComments(true);
+
+        const results = await Fetch.get(`/api/comments/${project}/${subproject}/${language}/${key}`);
+        if (key === currentKey) {
+            setCommentThreads(results);
+            setLoadingComments(false);
+        }
+    };
+
+    useEffect(() => {
+        updateThreads();
+    }, [key])
 
     const keyDownHandler = e => {
         if (e.key === "Alt") setAltDown(true);
@@ -220,6 +243,11 @@ export default function TranslationArea({
         </div>);
     }
 
+    const openCommentsModal = () => {
+        Modal.mount(<CommentsModal threads={commentThreads} onUpdateThreads={updateThreads} project={project}
+                                   subproject={subproject} language={language} tkey={key}/>)
+    };
+
     return <div className={`${Styles.translationArea} ${key && Styles.haveKey}`}>
         <div className={Styles.translationAreaInner}>
             <BackButton className={Styles.backButton} text={t("BACK")} inTranslationView={true}
@@ -242,6 +270,17 @@ export default function TranslationArea({
                 <div className={Styles.keyContainer}>
                     <span className={Styles.keyText}>{entry.key}</span>
                 </div>
+            </div>
+            <div className={Styles.commentsButton} onClick={openCommentsModal}>
+                <HorizontalLayout>
+                    <Icon icon={"edit-comment"}/>
+                    {/* TODO: Change to "n comments" when there are comments */}
+                    {loadingComments ? <PreloadingBlock>Text</PreloadingBlock> :
+                        <span>{openComments > 0 ? t("COMMENT_OPEN_THREADS", {count: openComments}) : t("COMMENT_ADD")}</span>}
+                </HorizontalLayout>
+                <HorizontalLayout>
+                    <Icon icon={"go-next"} flip={true}/>
+                </HorizontalLayout>
             </div>
             {entry.translation.map((pform, idx) => {
                 const translationUpdate = (contents, key) => {

@@ -14,6 +14,13 @@
     z-index: 1000;
 }
 
+
+.PopoverBackground {
+    justify-content: flex-end;
+    align-items: stretch;
+    border-top: none;
+}
+
 .ModalContainer {
     background-color: var(--background-color);
     border: 1px solid var(--border-color);
@@ -21,12 +28,47 @@
     flex-basis: 600px;
 }
 
+.PopoverContainer {
+    border-top: none;
+    border-bottom: none;
+    border-right: none;
+
+    display: grid;
+    grid-template-rows: max-content 1fr;
+    grid-template-areas: "heading" "body";
+}
+
 .ModalHeading {
     margin: 0;
     font-size: 20pt;
     font-weight: normal;
-    padding: 10px;
     border-bottom: 1px solid var(--border-color);
+
+    grid-area: heading;
+
+    display: flex;
+    align-items: stretch;
+}
+
+.BackButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 10px;
+    border-right: 1px solid var(--border-color);
+}
+
+.BackButton:hover {
+    background-color: var(--hover-color);
+}
+
+.BackButton:active {
+    background-color: var(--active-color);
+}
+
+.HeadingText {
+    margin: 10px;
 }
 
 .ModalText {
@@ -39,6 +81,14 @@
     box-sizing: border-box;
     max-height: calc(100vh - 300px);
     max-width: 100vw;
+
+    grid-area: body;
+}
+
+.PopoverContainer .ModalText {
+    padding: 0;
+    max-height: unset;
+    border-bottom: none;
 }
 
 .ModalButtonContainer {

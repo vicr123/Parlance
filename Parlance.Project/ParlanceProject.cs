@@ -38,6 +38,10 @@ public class ParlanceProject : IParlanceProject
         {
             throw new ParlanceJsonFileParseException("The Parlance project definition is invalid.", ex);
         }
+        catch (DirectoryNotFoundException ex)
+        {
+            throw new ParlanceJsonFileParseException("Unable to find the .parlance.json file.", ex);
+        }
     }
 
     public string ReadableName { get; }
