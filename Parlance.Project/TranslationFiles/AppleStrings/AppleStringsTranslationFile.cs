@@ -32,7 +32,7 @@ public class AppleStringsTranslationFile : ParlanceTranslationFile, IParlanceMon
 
     private string UnescapeString(string str)
     {
-        if (str.StartsWith("\"") && str.EndsWith("\""))
+        if (str.StartsWith('"') && str.EndsWith('"'))
         {
             str = str[1..^1];
         }
