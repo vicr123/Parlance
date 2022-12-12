@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Security.Cryptography;
 using System.Text;
 using Parlance.CldrData;
@@ -56,7 +57,7 @@ public class AppleStringsTranslationFile : ParlanceTranslationFile, IParlanceMon
         var baseFileContents = await File.ReadAllLinesAsync(baseFile);
         Hash = Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(fileContents)));
 
-        var baseDocKeys = baseFileContents.Where(l => !string.IsNullOrWhitespace(l)).Select(x =>
+        var baseDocKeys = baseFileContents.Where(l => !string.IsNullOrWhiteSpace(l)).Select(x =>
         {
             if (!x.EndsWith(";")) throw new("No trailing ; in Apple Strings file");
             var split = x.Split('=', StringSplitOptions.TrimEntries);
