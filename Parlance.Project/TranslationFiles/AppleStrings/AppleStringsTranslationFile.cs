@@ -59,8 +59,9 @@ public class AppleStringsTranslationFile : ParlanceTranslationFile, IParlanceMon
         var baseDocKeys = baseFileContents.Where(l => !string.IsNullOrWhitespace(l)).Select(x =>
         {
             if (!x.EndsWith(";")) throw new("No trailing ; in Apple Strings file");
-            var splitter = x.IndexOf("=", StringComparison.Ordinal);
-            return (UnescapeString(x[..splitter].Trim()), UnescapeString(x[(splitter + 1)..^1].Trim()));
+            var split = x.Split('=', StringSplitOptions.TrimEntries);
+            Debug.Assert(split.Length == 2);
+            return (Key: UnescapeString(split[0]), Source: UnescapeString(split[1][..^1].TrimEnd()));
         });
         var translationDocKeys = fileContents.Split("\n", StringSplitOptions.RemoveEmptyEntries).Select(x =>
         {
@@ -71,8 +72,8 @@ public class AppleStringsTranslationFile : ParlanceTranslationFile, IParlanceMon
 
         Entries = baseDocKeys.Select(x => new AppleStringsTranslationFileEntry()
         {
-            Key = x.Item1,
-            Source = x.Item2,
+            Key = x.Key,
+            Source = x.Source,
             Context = Path.GetFileName(file),
             RequiresPluralisation = false,
             Translation = new List<TranslationWithPluralType>
@@ -80,7 +81,7 @@ public class AppleStringsTranslationFile : ParlanceTranslationFile, IParlanceMon
                 new()
                 {
                     PluralType = "singular",
-                    TranslationContent = translationDocKeys.ContainsKey(x.Item1) ? translationDocKeys[x.Item1] : ""
+                    TranslationContent = translationDocKeys.ContainsKey(x.Key) ? translationDocKeys[x.Key] : ""
                 }
             }
         }).Cast<IParlanceTranslationFileEntry>().ToList();
