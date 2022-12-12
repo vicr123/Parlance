@@ -8,7 +8,6 @@ using Parlance.Project.Index;
 namespace Parlance.Project.TranslationFiles.DotNetResources;
 
 [TranslationFileType("resx", ExpectedTranslationFileNameFormat.Underscored)]
-[RequiresPreviewFeatures]
 public class DotNetResourcesTranslationFile : ParlanceTranslationFile, IParlanceMonoTranslationFile
 {
     private string _baseFile;
