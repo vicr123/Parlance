@@ -104,6 +104,10 @@ public class ParlanceSubprojectLanguage : IParlanceSubprojectLanguage
 
             return null;
         }
+        catch (DirectoryNotFoundException)
+        {
+            return null;
+        }
         catch (InvalidOperationException)
         {
             return null;
