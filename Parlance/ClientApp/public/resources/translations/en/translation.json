@@ -121,6 +121,7 @@
   "HEADS_UP": "HEADS UP!",
   "HOME_HERO_SUBTITLE": "Whether you're looking to translate {{serverName}} or check up on the status of translations, you've landed in the right place.",
   "HOME_HERO_TITLE": "Take {{serverName}} to the world",
+  "LANGUAGES": "Languages",
   "LANGUAGE_PERMISSIONS_ADD_NEW": "Add New Language Editor",
   "LANGUAGE_PERMISSIONS_ADD_NEW_PROMPT": "To allow a user to edit {{lang}}, enter their username.",
   "LANGUAGE_PERMISSIONS_PROMPT": "These users have permissions to edit {{lang}} translation files.",

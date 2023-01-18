@@ -1,22 +1,22 @@
 import {useNavigate, useParams} from "react-router-dom";
 import React, {useEffect, useReducer, useState} from "react";
-import Fetch from "../../../helpers/Fetch";
-import Container from "../../../components/Container";
-import PageHeading from "../../../components/PageHeading";
-import SelectableList from "../../../components/SelectableList";
-import i18n from "../../../helpers/i18n";
-import TranslationProgressIndicator from "../../../components/TranslationProgressIndicator";
-import UserManager from "../../../helpers/UserManager";
-import Modal from "../../../components/Modal";
+import Fetch from "../../helpers/Fetch";
+import Container from "../../components/Container";
+import PageHeading from "../../components/PageHeading";
+import SelectableList from "../../components/SelectableList";
+import i18n from "../../helpers/i18n";
+import TranslationProgressIndicator from "../../components/TranslationProgressIndicator";
+import UserManager from "../../helpers/UserManager";
+import Modal from "../../components/Modal";
 import {useTranslation} from "react-i18next";
-import ErrorModal from "../../../components/modals/ErrorModal";
-import LoadingModal from "../../../components/modals/LoadingModal";
-import {VerticalSpacer} from "../../../components/Layouts";
-import BackButton from "../../../components/BackButton";
-import ErrorCover from "../../../components/ErrorCover";
-import Hero from "../../../components/Hero";
-import PreloadingBlock from "../../../components/PreloadingBlock";
-import LoginUsernameModal from "../../../components/modals/account/LoginUsernameModal";
+import ErrorModal from "../../components/modals/ErrorModal";
+import LoadingModal from "../../components/modals/LoadingModal";
+import {VerticalSpacer} from "../../components/Layouts";
+import BackButton from "../../components/BackButton";
+import ErrorCover from "../../components/ErrorCover";
+import Hero from "../../components/Hero";
+import PreloadingBlock from "../../components/PreloadingBlock";
+import LoginUsernameModal from "../../components/modals/account/LoginUsernameModal";
 
 export default function ServerLanguageProjectListing() {
     const [ignored, forceUpdate] = useReducer(x => x + 1, 0);
@@ -46,7 +46,7 @@ export default function ServerLanguageProjectListing() {
 
     const translationClicked = (project, subproject) => {
         if (subproject.completionData) {
-            navigate(`../../${project.systemName}/${subproject.systemName}/${language}`);
+            navigate(`../../projects/${project.systemName}/${subproject.systemName}/${language}`);
         } else {
             if (!UserManager.isLoggedIn) {
                 Modal.mount(<Modal heading={t("NOT_LOGGED_IN")} buttons={[

@@ -120,6 +120,7 @@
   "HEADS_UP": "ATENÇÃO!",
   "HOME_HERO_SUBTITLE": "Se você deseja traduzir {{serverName}} ou verificar o status das traduções, você chegou ao lugar certo.",
   "HOME_HERO_TITLE": "Leve {{serverName}} ao mundo",
+  "LANGUAGES": "",
   "LANGUAGE_PERMISSIONS_ADD_NEW": "Adicionar novo editor de linguagem",
   "LANGUAGE_PERMISSIONS_ADD_NEW_PROMPT": "Para permitir que um usuário edite {{lang}}, insira seu nome de usuário.",
   "LANGUAGE_PERMISSIONS_PROMPT": "Esses usuários têm permissões para editar arquivos de tradução para {{lang}}.",

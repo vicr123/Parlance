@@ -1,18 +1,18 @@
-import {useNavigate, useParams} from "react-router-dom";
+import {useNavigate} from "react-router-dom";
 import React, {useEffect, useReducer, useState} from "react";
-import Hero from "../../../components/Hero";
-import BackButton from "../../../components/BackButton";
-import {VerticalSpacer} from "../../../components/Layouts";
-import ErrorCover from "../../../components/ErrorCover";
-import PageHeading from "../../../components/PageHeading";
-import SelectableList from "../../../components/SelectableList";
+import Hero from "../../components/Hero";
+import BackButton from "../../components/BackButton";
+import {VerticalSpacer} from "../../components/Layouts";
+import ErrorCover from "../../components/ErrorCover";
+import PageHeading from "../../components/PageHeading";
+import SelectableList from "../../components/SelectableList";
 import {useTranslation} from "react-i18next";
-import UserManager from "../../../helpers/UserManager";
-import Fetch from "../../../helpers/Fetch";
-import i18n from "../../../helpers/i18n";
-import Modal from "../../../components/Modal";
-import TranslationProgressIndicator from "../../../components/TranslationProgressIndicator";
-import Container from "../../../components/Container";
+import UserManager from "../../helpers/UserManager";
+import Fetch from "../../helpers/Fetch";
+import i18n from "../../helpers/i18n";
+import Modal from "../../components/Modal";
+import TranslationProgressIndicator from "../../components/TranslationProgressIndicator";
+import Container from "../../components/Container";
 
 export default function ServerLanguageListing() {
     const [ignored, forceUpdate] = useReducer(x => x + 1, 0);

@@ -120,6 +120,7 @@
   "HEADS_UP": "BẠN ƠI!",
   "HOME_HERO_SUBTITLE": "Nếu bạn đang muốn dịch {{serverName}} hoạc chỉ kiểm tra trạng thái của bản dịch, bạn đã đến đúng nơi.",
   "HOME_HERO_TITLE": "Chì đường {{serverName}} đến với thế giới",
+  "LANGUAGES": "",
   "LANGUAGE_PERMISSIONS_ADD_NEW": "Thêm người chỉnh sửa ngôn ngữ",
   "LANGUAGE_PERMISSIONS_ADD_NEW_PROMPT": "Để cấp quyền chỉnh sửa {{lang}} cho người dùng mới, vui lòng điền vào tên người dùng.",
   "LANGUAGE_PERMISSIONS_PROMPT": "Người dùng này có quyền chỉnh sửa tệp dịch {{lang}}",

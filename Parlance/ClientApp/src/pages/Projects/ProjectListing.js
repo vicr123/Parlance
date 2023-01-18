@@ -35,14 +35,6 @@ export default function ProjectListing() {
         <VerticalSpacer/>
         <ErrorCover error={error}>
             <Container>
-                <PageHeading level={3}>{t("ACTIONS")}</PageHeading>
-                <SelectableList items={[
-                    {
-                        contents: t("translation:AVAILABLE_LANGUAGES"),
-                        onClick: () => navigate("languages")
-                    }
-                ]}/>
-                <VerticalSpacer/>
                 <PageHeading level={3}>{t("AVAILABLE_PROJECTS")}</PageHeading>
                 <SelectableList
                     items={done ? projects.sort((a, b) => calculateDeadline(a.deadline).ms - calculateDeadline(b.deadline).ms).map(p => ({

@@ -6,6 +6,7 @@ import Spinner from "./components/Spinner";
 const Administration = lazy(() => import("./pages/Administration"));
 const Account = lazy(() => import("./pages/Account"));
 const Projects = lazy(() => import("./pages/Projects"));
+const Languages = lazy(() => import("./pages/Languages"));
 
 const AppRoutes = [
     {
@@ -28,6 +29,12 @@ const AppRoutes = [
         path: "/projects/*",
         element: <Spinner.Suspense>
             <Projects/>
+        </Spinner.Suspense>
+    },
+    {
+        path: "/languages/*",
+        element: <Spinner.Suspense>
+            <Languages/>
         </Spinner.Suspense>
     },
     {
