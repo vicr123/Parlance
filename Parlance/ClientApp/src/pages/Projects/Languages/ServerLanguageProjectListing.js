@@ -96,7 +96,9 @@ export default function ServerLanguageProjectListing() {
                         <PageHeading level={3}>{project.name}</PageHeading>
                         <SelectableList items={project.subprojects.map(sp => ({
                             contents: <TranslationProgressIndicator title={sp.name}
-                                                                    data={sp.completionData}/>,
+                                                                    data={sp.completionData}
+                                                                    deadline={project.deadline}
+                            />,
                             onClick: () => translationClicked(project, sp)
                         }))}/>
                     </Container>
