@@ -74,6 +74,64 @@ public class ProjectsController : Controller
             }
         })));
     }
+    
+    
+    [HttpGet]
+    [Route("languages")]
+    public async Task<IActionResult> GetUsedLanguages()
+    {
+        var languages = (await _projectService.Projects()).SelectMany(project => project.GetParlanceProject().Subprojects.SelectMany(subproject => subproject.AvailableLanguages()));
+
+        return Json(await Task.WhenAll(languages.Distinct().Select(async lang =>
+        {
+            var languageIndexResults = await _indexingService.OverallResults(lang);
+            return new
+            {
+                CompletionData = languageIndexResults,
+                Language = lang.ToDashed(),
+                LanguageName = new CultureInfo(lang.ToDashed()).DisplayName
+            };
+        })));
+    }
+    
+    
+    [HttpGet]
+    [Route("languages/{language}")]
+    public async Task<IActionResult> GetSubprojectsWithLanguage(string language)
+    {
+        var locale = language.ToLocale();
+        var projects = await _projectService.Projects();
+
+        return Json(await Task.WhenAll(projects.Select(async project =>
+        {
+            var parlanceProject = project.GetParlanceProject();
+            return new
+            {
+                Name = parlanceProject.ReadableName,
+                parlanceProject.Deadline, project.SystemName,
+                Subprojects = await Task.WhenAll(parlanceProject.Subprojects.Select(async subproject =>
+                    {
+                        if (!subproject.AvailableLanguages().Contains(locale))
+                        {
+                            return (object)new
+                            {
+                                subproject.SystemName, subproject.Name
+                            };
+                        }
+
+                        var subprojectIndexResults =
+                            await _indexingService.OverallResults(subproject.Language(locale));
+
+                        return new
+                        {
+                            CompletionData = subprojectIndexResults,
+                            subproject.SystemName, subproject.Name
+                        };
+
+                    }))
+            };
+        })));
+    }
 
     [Authorize(Policy = "Superuser")]
     [HttpPost]
@@ -273,7 +331,7 @@ public class ProjectsController : Controller
         }
     }
 
-
+    [Authorize(Policy = "LanguageEditor")]
     [HttpPost]
     [Route("{project}/{subproject}/{language}")]
     public async Task<IActionResult> CreateProjectLanguage(string project, string subproject, string language)

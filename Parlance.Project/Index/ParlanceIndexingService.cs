@@ -1,3 +1,4 @@
+using Parlance.CldrData;
 using Parlance.Database;
 using Parlance.Database.Models;
 using Parlance.Project.Checks;
@@ -132,33 +133,35 @@ public class ParlanceIndexingService : IParlanceIndexingService
             // ignored
         }
     }
-
-    public Task<IParlanceIndexingService.OverallIndexResults> OverallResults(IParlanceProject project)
+    
+    private static Task<IParlanceIndexingService.OverallIndexResults> IndexData(Dictionary<IndexItemType, int> types)
     {
-        var types = _dbContext.Index.Where(item => item.Project == project.Name)
-            .GroupBy(item => item.RecordType, (key, results) => new { Key = key, Count = results.Count() })
-            .ToDictionary(x => x.Key, x => x.Count);
-
         return Task.FromResult(new IParlanceIndexingService.OverallIndexResults(types.GetValueOrDefault(IndexItemType.TranslationString),
             types.GetValueOrDefault(IndexItemType.Complete), types.GetValueOrDefault(IndexItemType.Warning),
             types.GetValueOrDefault(IndexItemType.Error), types.GetValueOrDefault(IndexItemType.CumulativeWarning),
             types.GetValueOrDefault(IndexItemType.PassedChecks), types.GetValueOrDefault(IndexItemType.OutOfDate)));
     }
 
-    public Task<IParlanceIndexingService.OverallIndexResults> OverallResults(IParlanceSubproject subproject)
+    public async Task<IParlanceIndexingService.OverallIndexResults> OverallResults(IParlanceProject project)
+    {
+        var types = _dbContext.Index.Where(item => item.Project == project.Name)
+            .GroupBy(item => item.RecordType, (key, results) => new { Key = key, Count = results.Count() })
+            .ToDictionary(x => x.Key, x => x.Count);
+
+        return await IndexData(types);
+    }
+    
+    public async Task<IParlanceIndexingService.OverallIndexResults> OverallResults(IParlanceSubproject subproject)
     {
         var types = _dbContext.Index
             .Where(item => item.Project == subproject.Project.Name && item.Subproject == subproject.Name)
             .GroupBy(item => item.RecordType, (key, results) => new { Key = key, Count = results.Count() })
             .ToDictionary(x => x.Key, x => x.Count);
 
-        return Task.FromResult(new IParlanceIndexingService.OverallIndexResults(types.GetValueOrDefault(IndexItemType.TranslationString),
-            types.GetValueOrDefault(IndexItemType.Complete), types.GetValueOrDefault(IndexItemType.Warning),
-            types.GetValueOrDefault(IndexItemType.Error), types.GetValueOrDefault(IndexItemType.CumulativeWarning),
-            types.GetValueOrDefault(IndexItemType.PassedChecks), types.GetValueOrDefault(IndexItemType.OutOfDate)));
+        return await IndexData(types);
     }
 
-    public Task<IParlanceIndexingService.OverallIndexResults> OverallResults(IParlanceSubprojectLanguage file)
+    public async Task<IParlanceIndexingService.OverallIndexResults> OverallResults(IParlanceSubprojectLanguage file)
     {
         var types = _dbContext.Index.Where(item =>
                 item.Project == file.Subproject.Project.Name && item.Subproject == file.Subproject.Name &&
@@ -166,9 +169,15 @@ public class ParlanceIndexingService : IParlanceIndexingService
             .GroupBy(item => item.RecordType, (key, results) => new { Key = key, Count = results.Count() })
             .ToDictionary(x => x.Key, x => x.Count);
 
-        return Task.FromResult(new IParlanceIndexingService.OverallIndexResults(types.GetValueOrDefault(IndexItemType.TranslationString),
-            types.GetValueOrDefault(IndexItemType.Complete), types.GetValueOrDefault(IndexItemType.Warning),
-            types.GetValueOrDefault(IndexItemType.Error), types.GetValueOrDefault(IndexItemType.CumulativeWarning),
-            types.GetValueOrDefault(IndexItemType.PassedChecks), types.GetValueOrDefault(IndexItemType.OutOfDate)));
+        return await IndexData(types);
+    }
+
+    public async Task<IParlanceIndexingService.OverallIndexResults> OverallResults(Locale locale)
+    {
+        var types = _dbContext.Index.Where(item => item.Language == locale.ToDatabaseRepresentation())
+            .GroupBy(item => item.RecordType, (key, results) => new { Key = key, Count = results.Count() })
+            .ToDictionary(x => x.Key, x => x.Count);
+
+        return await IndexData(types);
     }
 }

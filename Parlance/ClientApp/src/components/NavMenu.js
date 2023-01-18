@@ -36,6 +36,10 @@ export default function NavMenu(props) {
     const goProjects = () => {
         navigate("/projects");
     };
+    
+    const goLanguages = () => {
+        navigate("/languages");
+    };
 
     return (
         <header className={Styles.navbarHeader}>
@@ -50,6 +54,9 @@ export default function NavMenu(props) {
                         </Button>
                         <Button onClick={goProjects}>
                             {t("PROJECTS")}
+                        </Button>
+                        <Button onClick={goLanguages}>
+                            {t("LANGUAGES")}
                         </Button>
                     </div>
                     <div className={Styles.navbarButtonContainer}>
