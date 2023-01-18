@@ -16,6 +16,7 @@ import BackButton from "../../../components/BackButton";
 import ErrorCover from "../../../components/ErrorCover";
 import Hero from "../../../components/Hero";
 import PreloadingBlock from "../../../components/PreloadingBlock";
+import LoginUsernameModal from "../../../components/modals/account/LoginUsernameModal";
 
 export default function ServerLanguageProjectListing() {
     const [ignored, forceUpdate] = useReducer(x => x + 1, 0);
@@ -47,6 +48,21 @@ export default function ServerLanguageProjectListing() {
         if (subproject.completionData) {
             navigate(`../../${project.systemName}/${subproject.systemName}/${language}`);
         } else {
+            if (!UserManager.isLoggedIn) {
+                Modal.mount(<Modal heading={t("NOT_LOGGED_IN")} buttons={[
+                    {
+                        text: t("LOG_IN"),
+                        onClick: () => {
+                            Modal.mount(<LoginUsernameModal />)
+                        }
+                    },
+                    Modal.OkButton
+                ]}>
+                    {t("START_NEW_TRANSLATION_LOGIN_REQUIRED")}
+                </Modal>)
+                return;
+            }
+
             Modal.mount(<Modal heading={t("START_NEW_TRANSLATION")} buttons={[
                 Modal.CancelButton,
                 {

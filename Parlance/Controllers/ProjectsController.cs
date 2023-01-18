@@ -331,7 +331,7 @@ public class ProjectsController : Controller
         }
     }
 
-
+    [Authorize(Policy = "LanguageEditor")]
     [HttpPost]
     [Route("{project}/{subproject}/{language}")]
     public async Task<IActionResult> CreateProjectLanguage(string project, string subproject, string language)

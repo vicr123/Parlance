@@ -226,6 +226,7 @@
   "START_NEW_TRANSLATION": "Start New Translation",
   "START_NEW_TRANSLATION_CREATE_TRANSLATION_FILE": "Create Translation File",
   "START_NEW_TRANSLATION_GUIDE": "In order to start a new translation, use the projects view in order to select a subproject to start the translation in.",
+  "START_NEW_TRANSLATION_LOGIN_REQUIRED": "In order to start a new translation, log into Parlance.",
   "START_NEW_TRANSLATION_PROMPT": "Create a translation file for {{lang}}?",
   "START_NEW_TRANSLATION_WRONG_VIEW": "In order to start a new translation, use the projects view in order to select a subproject to start the translation in.",
   "SUGGESTIONS_NO_SUGGESTIONS": "No suggestions found",
