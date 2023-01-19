@@ -108,7 +108,7 @@ public class I18NextJsonTranslationFile : ParlanceTranslationFile, IParlanceMono
                                 jsonEntries?
                                     .Single(translation =>
                                         rule.Category == SplitKey(translation.Name, locale).Item2).Value
-                                    .GetString()!
+                                    .GetString() ?? string.Empty
                         };
                     }
                     catch

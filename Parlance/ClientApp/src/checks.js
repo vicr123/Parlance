@@ -105,7 +105,15 @@ function checkTranslation(source, translation, checkSuite) {
         if (typeof (check) === "string") {
             return checkTranslation(source, translation, check);
         } else {
-            return check(source, translation);
+            try {
+                return check(source, translation);
+            } catch (ex) {
+                console?.log?.(ex);
+                return {
+                    checkSeverity: "error",
+                    message: `Unable to run the check`
+                }
+            }
         }
     }).flat().filter(result => result);
 }
