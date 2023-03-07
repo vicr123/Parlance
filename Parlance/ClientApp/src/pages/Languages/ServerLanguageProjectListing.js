@@ -92,16 +92,18 @@ export default function ServerLanguageProjectListing() {
         <ErrorCover error={error}>
             {done ? subprojectData.map(project =>
                 <>
-                    <Container>
-                        <PageHeading level={3}>{project.name}</PageHeading>
-                        <SelectableList items={project.subprojects.map(sp => ({
-                            contents: <TranslationProgressIndicator title={sp.name}
-                                                                    data={sp.completionData}
-                                                                    deadline={project.deadline}
-                            />,
-                            onClick: () => translationClicked(project, sp)
-                        }))}/>
-                    </Container>
+                    <ErrorCover error={project.error}>
+                        <Container>
+                            <PageHeading level={3}>{project.name}</PageHeading>
+                            <SelectableList items={project.subprojects.map(sp => ({
+                                contents: <TranslationProgressIndicator title={sp.name}
+                                                                        data={sp.completionData}
+                                                                        deadline={project.deadline}
+                                />,
+                                onClick: () => translationClicked(project, sp)
+                            }))}/>
+                        </Container>
+                    </ErrorCover>
                     <VerticalSpacer/>
                 </>
             ) : [1, 2, 3].map(() => <Container>

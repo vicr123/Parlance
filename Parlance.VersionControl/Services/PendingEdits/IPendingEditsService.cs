@@ -13,7 +13,7 @@ public class Editor
 public interface IPendingEditsService
 {
     public Task RecordPendingEdit(IParlanceSubprojectLanguage parlanceSubprojectLanguage, User user);
-    public Task<IEnumerable<Editor>> EditorsPendingEdits(IParlanceProject project);
-    public IEnumerable<Locale> LocalesPendingEdits(IParlanceProject project);
-    public Task ClearPendingEdits(IParlanceProject project);
+    public Task<IEnumerable<Editor>> EditorsPendingEdits(Database.Models.Project project);
+    public IEnumerable<Locale> LocalesPendingEdits(Database.Models.Project project);
+    public Task ClearPendingEdits(Database.Models.Project project);
 }

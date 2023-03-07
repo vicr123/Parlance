@@ -1,5 +1,7 @@
 using LibGit2Sharp;
 using Parlance.Database;
+using Parlance.Project;
+using Parlance.Project.Exceptions;
 using Parlance.Project.Index;
 using Parlance.VersionControl.Services.VersionControl;
 
@@ -38,7 +40,16 @@ public class ProjectUpdaterService : BackgroundService
                 if (!versionControlService.VersionControlStatus(project).ChangedFiles.Any())
                 {
                     await versionControlService.ReconcileRemoteWithLocal(project);
-                    await indexingService.IndexProject(project);
+
+                    try
+                    {
+                        var proj = project.GetParlanceProject();
+                        await indexingService.IndexProject(proj);
+                    }
+                    catch (ParlanceJsonFileParseException)
+                    {
+                        // ignored
+                    }
 
                     if (versionControlService.VersionControlStatus(project).Ahead > 0)
                         await versionControlService.PublishSavedChangesToSource(project);

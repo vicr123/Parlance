@@ -28,6 +28,9 @@ export default function SubprojectListing() {
             setProjectData(await Fetch.get(`/api/projects/${project}`));
             setDone(true);
         } catch (err) {
+            setProjectData({
+                isProjectManager: err.jsonBody.isProjectManager
+            });
             setError(err);
         }
     };

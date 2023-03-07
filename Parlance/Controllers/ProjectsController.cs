@@ -102,14 +102,16 @@ public class ProjectsController : Controller
         var locale = language.ToLocale();
         var projects = await _projectService.Projects();
 
-        return Json(await Task.WhenAll(projects.Select(async project =>
+        return Json(await Task.WhenAll(projects.Select<Database.Models.Project, Task<object>>(async project =>
         {
-            var parlanceProject = project.GetParlanceProject();
-            return new
+            try
             {
-                Name = parlanceProject.ReadableName,
-                parlanceProject.Deadline, project.SystemName,
-                Subprojects = await Task.WhenAll(parlanceProject.Subprojects.Select(async subproject =>
+                var parlanceProject = project.GetParlanceProject();
+                return new
+                {
+                    Name = parlanceProject.ReadableName,
+                    parlanceProject.Deadline, project.SystemName,
+                    Subprojects = await Task.WhenAll(parlanceProject.Subprojects.Select(async subproject =>
                     {
                         if (!subproject.AvailableLanguages().Contains(locale))
                         {
@@ -127,9 +129,19 @@ public class ProjectsController : Controller
                             CompletionData = subprojectIndexResults,
                             subproject.SystemName, subproject.Name
                         };
-
                     }))
-            };
+                };
+            }
+            catch (Exception)
+            {
+                return new
+                {
+                    project.Name,
+                    project.SystemName,
+                    Error = true,
+                    Subprojects = Enumerable.Empty<object>()
+                };
+            }
         })));
     }
 
@@ -169,43 +181,47 @@ public class ProjectsController : Controller
     [Route("{project}")]
     public async Task<IActionResult> GetSubprojects(string project)
     {
+        var username = HttpContext.User.Claims.FirstOrDefault(claim => claim.Type == Claims.Username)?.Value;
         try
         {
             var p = await _projectService.ProjectBySystemName(project);
-            var proj = p.GetParlanceProject();
-
-            var indexResults = await _indexingService.OverallResults(proj);
-
-            var username = HttpContext.User.Claims.FirstOrDefault(claim => claim.Type == Claims.Username)?.Value;
-
-            return Json(new
+            try
             {
-                CompletionData = indexResults,
-                p.Name, proj.Deadline,
-                IsProjectManager = await _projectMaintainersService.IsProjectMaintainer(username, p),
-                Subprojects = await Task.WhenAll(proj.Subprojects.Select(async subproject =>
-                {
-                    var subprojectIndexResults = await _indexingService.OverallResults(subproject);
+                var proj = p.GetParlanceProject();
 
-                    return new
+                var indexResults = await _indexingService.OverallResults(proj);
+
+
+                return Json(new
+                {
+                    CompletionData = indexResults,
+                    p.Name, proj.Deadline,
+                    IsProjectManager = await _projectMaintainersService.IsProjectMaintainer(username, p),
+                    Subprojects = await Task.WhenAll(proj.Subprojects.Select(async subproject =>
                     {
-                        CompletionData = subprojectIndexResults,
-                        subproject.SystemName, subproject.Name
-                    };
-                })),
-                CanManage = await _permissionsService.HasManageProjectPermission(username, project)
-            });
+                        var subprojectIndexResults = await _indexingService.OverallResults(subproject);
+
+                        return new
+                        {
+                            CompletionData = subprojectIndexResults,
+                            subproject.SystemName, subproject.Name
+                        };
+                    })),
+                    CanManage = await _permissionsService.HasManageProjectPermission(username, project)
+                });
+            }
+            catch (ParlanceJsonFileParseException)
+            {
+                return StatusCode(500, new
+                {
+                    Error = "ParlanceJsonFileParseError",
+                    IsProjectManager = await _projectMaintainersService.IsProjectMaintainer(username, p),
+                });
+            }
         }
         catch (ProjectNotFoundException)
         {
             return NotFound();
-        }
-        catch (ParlanceJsonFileParseException)
-        {
-            return StatusCode(500, new
-            {
-                Error = "ParlanceJsonFileParseError"
-            });
         }
     }
 
