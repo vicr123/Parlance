@@ -36,7 +36,7 @@ function TranslationProgressBar({data, className}) {
     }
 }
 
-export default function TranslationProgressIndicator({title, data, deadline}) {
+export default function TranslationProgressIndicator({title, data, deadline, badges = []}) {
     const {t} = useTranslation();
     const deadlineData = calculateDeadline(deadline);
 
@@ -67,11 +67,14 @@ export default function TranslationProgressIndicator({title, data, deadline}) {
 
     let titleStyles = [Styles.title];
     if (data?.count == null) titleStyles.push(Styles.newTitle);
-
-    console.log(deadlineData)
-
+    
     return <div className={Styles.root}>
-        <span className={titleStyles.join(" ")}>{title}</span>
+        <div className={titleStyles.join(" ")}>
+            <div className={Styles.titleContainer}>
+                <span className={Styles.titleText}>{title}</span>
+                {badges.map((text, i) => <span className={Styles.badge} key={i}>{text}</span>)}
+            </div>
+        </div>
         {deadlineData.valid && <TranslationProgressMetric key={"deadline"} value={deadlineData.text}
                                                           title={t("TRANSLATION_PROGRESS_INDICATOR_REMAINING")}
                                                           className={`${Styles.deadline} ${deadlineData.ms.asDays() <= 3 && Styles.errors}`}/>}

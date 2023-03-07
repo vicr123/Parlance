@@ -186,6 +186,7 @@
   "READ_ONLY_TRANSLATION_EXPLANATION": "Je kunt dit vertalingsbestand niet bewerken. Misschien heb je de nodige rechten om hem te bewerken niet.",
   "REGENERATE_BACKUP_CODES": "Backup-codes Opnieuw Genereren",
   "REGENERATE_BACKUP_CODES_PROMPT": "Na het opnieuw genereren van je backup-codes worden je oude backup-codes ongeldig en kun je alleen de nieuwe gebruiken.",
+  "REGION_AGNOSTIC": "",
   "RELOAD": "Herladen",
   "RESET_PASSWORD": "Wachtwoord Resetten",
   "RESET_PASSWORD_PROMPT": "Je moet je wachtwoord resetten.",

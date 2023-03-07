@@ -117,6 +117,10 @@ i18n.pluralPatterns = async (locale) => {
     return categories;
 }
 
+i18n.isRegionAgnostic = locale => {
+    return locale.length === 2;
+};
+
 const i18ndir = i18n.dir.bind(i18n);
 i18n.dir = (lng) => {
     if (!lng) lng = i18n.resolvedLanguage || (i18n.languages && i18n.languages.length > 0 ? i18n.languages[0] : i18n.language);

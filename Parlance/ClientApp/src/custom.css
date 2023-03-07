@@ -15,6 +15,8 @@ body {
     --foreground-color: white;
     --background-color: rgb(40, 40, 40);
 
+    --badge-background-color: rgba(20, 20, 20, 0.7);
+
     --foreground-disabled-color: rgba(255, 255, 255, 0.5);
 
     --active-color: #0064c8;
@@ -54,6 +56,8 @@ body {
         --foreground-color: black;
         --background-color: white;
 
+        --badge-background-color: rgba(235, 235, 235, 0.7);
+
         --foreground-disabled-color: rgba(0, 0, 0, 0.5);
 
         --active-color: #00c8ff;
@@ -63,7 +67,6 @@ body {
 
         --editor-placeholder-foreground: rgb(150, 150, 150);
         --editor-placeholder-background: rgb(230, 230, 230);
-
 
         --preloading-block-color-1: rgba(0, 0, 0, 0.3);
         --preloading-block-color-2: rgba(0, 0, 0, 0.4);

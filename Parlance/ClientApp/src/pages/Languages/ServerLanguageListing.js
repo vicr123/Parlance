@@ -67,7 +67,6 @@ export default function ServerLanguageListing() {
 
     return <div>
         <Hero heading={t("AVAILABLE_LANGUAGES")} buttons={[]}/>
-        <BackButton text={t("BACK_TO_PROJECTS")} onClick={() => navigate("../..")}/>
         <VerticalSpacer/>
         <ErrorCover error={error}>
             {myLanguages &&

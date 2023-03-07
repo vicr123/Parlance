@@ -46,7 +46,7 @@ export default function ServerLanguageProjectListing() {
 
     const translationClicked = (project, subproject) => {
         if (subproject.completionData) {
-            navigate(`../../projects/${project.systemName}/${subproject.systemName}/${language}`);
+            navigate(`../../projects/${project.systemName}/${subproject.systemName}/${subproject.realLocale}`);
         } else {
             if (!UserManager.isLoggedIn) {
                 Modal.mount(<Modal heading={t("NOT_LOGGED_IN")} buttons={[
@@ -71,8 +71,8 @@ export default function ServerLanguageProjectListing() {
                         Modal.mount(<LoadingModal/>);
 
                         try {
-                            await Fetch.post(`/api/projects/${project.systemName}/${subproject.systemName}/${language}`, {});
-                            navigate(`../../${project.systemName}/${subproject.systemName}/${language}`);
+                            await Fetch.post(`/api/projects/${project.systemName}/${subproject.systemName}/${subproject.realLocale}`, {});
+                            navigate(`../../projects/${project.systemName}/${subproject.systemName}/${subproject.realLocale}`);
                             Modal.unmount();
                         } catch (error) {
                             Modal.mount(<ErrorModal error={error}/>)
@@ -80,7 +80,7 @@ export default function ServerLanguageProjectListing() {
                     }
                 }
             ]}>
-                {t("START_NEW_TRANSLATION_PROMPT", {lang: i18n.humanReadableLocale(language)})}
+                {t("START_NEW_TRANSLATION_PROMPT", {lang: i18n.humanReadableLocale(subproject.realLocale)})}
             </Modal>)
         }
     }
@@ -98,12 +98,12 @@ export default function ServerLanguageProjectListing() {
                             <SelectableList items={project.subprojects.map(sp => ({
                                 contents: <TranslationProgressIndicator title={sp.name}
                                                                         data={sp.completionData}
-                                                                        deadline={project.deadline}
-                                />,
-                                onClick: () => translationClicked(project, sp)
-                            }))}/>
-                        </Container>
-                    </ErrorCover>
+                                                                        badges={language !== sp.realLocale ? [t("REGION_AGNOSTIC")] : []}
+                                                                    deadline={project.deadline}
+                            />,
+                            onClick: () => translationClicked(project, sp)
+                        }))}/>
+                    </Container></ErrorCover>
                     <VerticalSpacer/>
                 </>
             ) : [1, 2, 3].map(() => <Container>
