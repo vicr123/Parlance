@@ -39,7 +39,7 @@ public class PendingEditsService : IPendingEditsService
         await _parlanceContext.SaveChangesAsync();
     }
 
-    public async Task<IEnumerable<Editor>> EditorsPendingEdits(IParlanceProject project)
+    public async Task<IEnumerable<Editor>> EditorsPendingEdits(Database.Models.Project project)
     {
         var users = await Task.WhenAll(_parlanceContext.EditsPending.Where(x => x.Project == project.Name)
             .AsEnumerable()
@@ -56,14 +56,14 @@ public class PendingEditsService : IPendingEditsService
         return users.Where(x => x is not null).Cast<Editor>();
     }
 
-    public IEnumerable<Locale> LocalesPendingEdits(IParlanceProject project)
+    public IEnumerable<Locale> LocalesPendingEdits(Database.Models.Project project)
     {
         return _parlanceContext.EditsPending.Where(x => x.Project == project.Name).AsEnumerable()
             .DistinctBy(x => x.Language).Select(x => Locale.FromDatabaseRepresentation(x.Language))
             .Where(x => x is not null).Cast<Locale>();
     }
 
-    public async Task ClearPendingEdits(IParlanceProject project)
+    public async Task ClearPendingEdits(Database.Models.Project project)
     {
         _parlanceContext.EditsPending.RemoveRange(_parlanceContext.EditsPending.Where(x => x.Project == project.Name));
         await _parlanceContext.SaveChangesAsync();

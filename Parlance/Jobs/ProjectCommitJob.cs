@@ -1,5 +1,6 @@
 using JetBrains.Annotations;
 using Parlance.Project;
+using Parlance.Project.Exceptions;
 using Parlance.Services.Projects;
 using Parlance.Services.ProjectUpdater;
 using Parlance.VersionControl.Services.VersionControl;
@@ -27,13 +28,19 @@ public class ProjectCommitJob : IJob
     {
         try
         {
-            foreach (var dbProject in await _projectService.Projects())
+            foreach (var project in await _projectService.Projects())
             {
-                var project = dbProject.GetParlanceProject();
-                if (_versionControlService.VersionControlStatus(project).ChangedFiles.Any())
-                    await _versionControlService.SaveChangesToVersionControl(project);
+                try
+                {
+                    if (_versionControlService.VersionControlStatus(project).ChangedFiles.Any())
+                        await _versionControlService.SaveChangesToVersionControl(project);
 
-                await _projectUpdateQueue.Queue(project);
+                    await _projectUpdateQueue.Queue(project);
+                }
+                catch (ParlanceJsonFileParseException)
+                {
+                    // ignored
+                }
             }
         }
         catch (Exception e)

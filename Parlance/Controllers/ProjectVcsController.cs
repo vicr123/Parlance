@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
 using Parlance.Helpers;
 using Parlance.Project;
+using Parlance.Project.Exceptions;
 using Parlance.Project.Index;
 using Parlance.Services.Projects;
 using Parlance.VersionControl.Services.VersionControl;
@@ -35,8 +36,7 @@ public class ProjectVcsController : Controller
         try
         {
             var p = await _projectService.ProjectBySystemName(project);
-            var proj = p.GetParlanceProject();
-            return Json(_versionControlService.VersionControlStatus(proj));
+            return Json(_versionControlService.VersionControlStatus(p));
         }
         catch (ProjectNotFoundException)
         {
@@ -52,9 +52,7 @@ public class ProjectVcsController : Controller
         try
         {
             var p = await _projectService.ProjectBySystemName(project);
-            var proj = p.GetParlanceProject();
-
-            await _versionControlService.UpdateVersionControlMetadata(proj);
+            await _versionControlService.UpdateVersionControlMetadata(p);
 
             return NoContent();
         }
@@ -77,11 +75,19 @@ public class ProjectVcsController : Controller
         try
         {
             var p = await _projectService.ProjectBySystemName(project);
-            var proj = p.GetParlanceProject();
 
-            await _versionControlService.UpdateVersionControlMetadata(proj);
-            await _versionControlService.ReconcileRemoteWithLocal(proj);
-            await _indexingService.IndexProject(proj);
+            await _versionControlService.UpdateVersionControlMetadata(p);
+            await _versionControlService.ReconcileRemoteWithLocal(p);
+
+            try
+            {
+                var proj = p.GetParlanceProject();
+                await _indexingService.IndexProject(proj);
+            }
+            catch (ParlanceJsonFileParseException)
+            {
+                // ignored                
+            }
 
             return NoContent();
         }
@@ -111,9 +117,7 @@ public class ProjectVcsController : Controller
         try
         {
             var p = await _projectService.ProjectBySystemName(project);
-            var proj = p.GetParlanceProject();
-
-            await _versionControlService.PublishSavedChangesToSource(proj);
+            await _versionControlService.PublishSavedChangesToSource(p);
 
             return NoContent();
         }
@@ -139,9 +143,7 @@ public class ProjectVcsController : Controller
         try
         {
             var p = await _projectService.ProjectBySystemName(project);
-            var proj = p.GetParlanceProject();
-
-            var commit = await _versionControlService.SaveChangesToVersionControl(proj);
+            var commit = await _versionControlService.SaveChangesToVersionControl(p);
             if (commit is null) return BadRequest();
 
             return Json(commit);
@@ -164,9 +166,7 @@ public class ProjectVcsController : Controller
         try
         {
             var p = await _projectService.ProjectBySystemName(project);
-            var proj = p.GetParlanceProject();
-
-            await _versionControlService.DeleteUnpublishedChanges(proj);
+            await _versionControlService.DeleteUnpublishedChanges(p);
 
             return NoContent();
         }

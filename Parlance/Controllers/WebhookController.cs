@@ -31,7 +31,7 @@ public class WebhookController : Controller
         if (!Request.Headers["X-GitHub-Event"].Contains("push")) return NoContent();
 
         var projects = await _projectService.Projects();
-        var hitProjects = projects.Select(x => x.GetParlanceProject()).Where(x =>
+        var hitProjects = projects.Where(x =>
             string.Equals(_versionControlService.CloneUrl(x), data.Repository.Clone_Url,
                 StringComparison.InvariantCultureIgnoreCase) ||
             string.Equals(_versionControlService.CloneUrl(x), data.Repository.Ssh_Url,

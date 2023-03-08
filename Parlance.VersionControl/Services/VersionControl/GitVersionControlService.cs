@@ -22,27 +22,27 @@ public class GitVersionControlService : IVersionControlService
         return Task.Run(() => DownloadFromSourceCore(cloneUrl, directory, branch));
     }
 
-    public Task UpdateVersionControlMetadata(IParlanceProject project)
+    public Task UpdateVersionControlMetadata(Database.Models.Project project)
     {
         return Task.Run(() => UpdateVersionControlMetadataCore(project));
     }
 
-    public Task<VersionControlCommit?> SaveChangesToVersionControl(IParlanceProject project)
+    public Task<VersionControlCommit?> SaveChangesToVersionControl(Database.Models.Project project)
     {
         return Task.Run(async () => await SaveChangesToVersionControlCore(project));
     }
 
-    public Task PublishSavedChangesToSource(IParlanceProject project)
+    public Task PublishSavedChangesToSource(Database.Models.Project project)
     {
         return Task.Run(() => PublishSavedChangesToSourceCore(project));
     }
 
-    public Task ReconcileRemoteWithLocal(IParlanceProject project)
+    public Task ReconcileRemoteWithLocal(Database.Models.Project project)
     {
         return Task.Run(() => ReconcileRemoteWithLocalCore(project));
     }
 
-    public VersionControlStatus VersionControlStatus(IParlanceProject project)
+    public VersionControlStatus VersionControlStatus(Database.Models.Project project)
     {
         using var repo = new Repository(project.VcsDirectory);
 
@@ -54,6 +54,12 @@ public class GitVersionControlService : IVersionControlService
             Behind = repo.Head.TrackingDetails.BehindBy.GetValueOrDefault(),
             ChangedFiles = repo.RetrieveStatus().Select(x => x.FilePath)
         };
+    }
+
+    public string CloneUrl(Database.Models.Project project)
+    {
+        using var repo = new Repository(project.VcsDirectory);
+        return repo.Network.Remotes["origin"].Url;
     }
 
     public string CloneUrl(IParlanceProject project)
@@ -93,7 +99,7 @@ public class GitVersionControlService : IVersionControlService
         }
     }
 
-    private void ReconcileRemoteWithLocalCore(IParlanceProject project)
+    private void ReconcileRemoteWithLocalCore(Database.Models.Project project)
     {
         using var repo = new Repository(project.VcsDirectory);
         if (repo.RetrieveStatus().IsDirty) throw new DirtyWorkingTreeException();
@@ -137,7 +143,7 @@ public class GitVersionControlService : IVersionControlService
         }
     }
 
-    private void UpdateVersionControlMetadataCore(IParlanceProject project)
+    private void UpdateVersionControlMetadataCore(Database.Models.Project project)
     {
         using var repo = new Repository(project.VcsDirectory);
         repo.Network.Fetch("origin",
@@ -199,7 +205,7 @@ public class GitVersionControlService : IVersionControlService
         }
     }
 
-    private async Task<VersionControlCommit?> SaveChangesToVersionControlCore(IParlanceProject project)
+    private async Task<VersionControlCommit?> SaveChangesToVersionControlCore(Database.Models.Project project)
     {
         using var repo = new Repository(project.VcsDirectory);
         var status = repo.RetrieveStatus();
@@ -232,7 +238,7 @@ public class GitVersionControlService : IVersionControlService
         return new VersionControlCommit(commit);
     }
 
-    private void PublishSavedChangesToSourceCore(IParlanceProject project)
+    private void PublishSavedChangesToSourceCore(Database.Models.Project project)
     {
         var repo = new Repository(project.VcsDirectory);
         var branch = repo.Head;
@@ -243,7 +249,7 @@ public class GitVersionControlService : IVersionControlService
         });
     }
 
-    public Task DeleteUnpublishedChanges(IParlanceProject project)
+    public Task DeleteUnpublishedChanges(Database.Models.Project project)
     {
         using var repo = new Repository(project.VcsDirectory);
         repo.Reset(ResetMode.Hard, repo.Head.Tip);

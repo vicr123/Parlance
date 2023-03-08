@@ -35,11 +35,12 @@ public class VersionControlStatus
 public interface IVersionControlService
 {
     Task DownloadFromSource(string sourceUrl, string directory, string branch);
-    Task UpdateVersionControlMetadata(IParlanceProject project);
-    Task<VersionControlCommit?> SaveChangesToVersionControl(IParlanceProject project);
-    Task DeleteUnpublishedChanges(IParlanceProject project);
-    Task PublishSavedChangesToSource(IParlanceProject project);
-    Task ReconcileRemoteWithLocal(IParlanceProject project);
-    VersionControlStatus VersionControlStatus(IParlanceProject project);
+    Task UpdateVersionControlMetadata(Database.Models.Project project);
+    Task<VersionControlCommit?> SaveChangesToVersionControl(Database.Models.Project project);
+    Task DeleteUnpublishedChanges(Database.Models.Project project);
+    Task PublishSavedChangesToSource(Database.Models.Project project);
+    Task ReconcileRemoteWithLocal(Database.Models.Project project);
+    VersionControlStatus VersionControlStatus(Database.Models.Project project);
+    string CloneUrl(Database.Models.Project project);
     string CloneUrl(IParlanceProject project);
 }

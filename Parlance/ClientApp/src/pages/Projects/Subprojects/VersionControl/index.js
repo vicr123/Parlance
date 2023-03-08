@@ -13,6 +13,7 @@ import ErrorModal from "../../../../components/modals/ErrorModal";
 import {VerticalLayout, VerticalSpacer} from "../../../../components/Layouts";
 import BackButton from "../../../../components/BackButton";
 import PreloadingBlock from "../../../../components/PreloadingBlock";
+import ErrorCover from "../../../../components/ErrorCover";
 
 function Commit({commit}) {
     if (!commit) {
@@ -30,6 +31,7 @@ function Commit({commit}) {
 
 export default function VersionControl() {
     const [vcsState, setVcsState] = useState();
+    const [error, setError] = useState();
     const {project} = useParams();
     const {t} = useTranslation();
     const navigate = useNavigate();
@@ -37,7 +39,11 @@ export default function VersionControl() {
     const cloneUrl = `${window.location.protocol}//${window.location.host}/git/${project}/`;
 
     const updateVcs = async () => {
-        setVcsState(await Fetch.get(`/api/Projects/${project}/vcs`));
+        try {
+            setVcsState(await Fetch.get(`/api/Projects/${project}/vcs`));
+        } catch (err) {
+            setError(err);
+        }
     };
 
     useEffect(() => {
@@ -203,51 +209,53 @@ export default function VersionControl() {
     return <div>
         <BackButton text={t("BACK_TO_SUBPROJECTS")} onClick={() => navigate("..")}/>
         <VerticalSpacer/>
-        <Container>
-            <PageHeading level={3}>{t("VCS_GIT")}</PageHeading>
-            <div className={Styles.infoGrid}>
-                <span>{t("VCS_LAST_LOCAL_COMMIT")}</span>
-                <div className={Styles.commitAligner}>
-                    <Commit commit={vcsState?.latestLocalCommit}/>
+        <ErrorCover error={error}>
+            <Container>
+                <PageHeading level={3}>{t("VCS_GIT")}</PageHeading>
+                <div className={Styles.infoGrid}>
+                    <span>{t("VCS_LAST_LOCAL_COMMIT")}</span>
+                    <div className={Styles.commitAligner}>
+                        <Commit commit={vcsState?.latestLocalCommit}/>
+                    </div>
+                    <div className={Styles.border}/>
+    
+                    <span>{t("VCS_LAST_REMOTE_COMMIT")}</span>
+                    <div className={Styles.buttonBox}>
+                        <Commit commit={vcsState?.latestRemoteCommit}/>
+                        <SmallButton onClick={fetch}>{t("VCS_FETCH")}</SmallButton>
+                    </div>
+                    <div className={Styles.border}/>
+    
+                    <span>{t("VCS_INCOMING_COMMITS")}</span>
+                    <div className={Styles.buttonBox}>
+                        <SmallButton
+                            onClick={pull}>{t("VCS_INCOMING_COMMITS_PULL", {count: vcsState?.behind || 0})}</SmallButton>
+                    </div>
+                    <div className={Styles.border}/>
+    
+                    <span>{t("VCS_UNCOMMITTED_CHANGES")}</span>
+                    <div className={Styles.buttonBox}>
+                        <SmallButton
+                            onClick={commit}>{t("VCS_UNCOMMITTED_CHANGES_COMMIT", {count: vcsState?.changedFiles.length || 0})}</SmallButton>
+                    </div>
+                    <div className={Styles.border}/>
+    
+                    <span>{t("VCS_OUTGOING_COMMITS")}</span>
+                    <div className={Styles.buttonBox}>
+                        <SmallButton
+                            onClick={push}>{t("VCS_OUTGOING_COMMITS_PUSH", {count: vcsState?.ahead || 0})}</SmallButton>
+                    </div>
+                    <div className={Styles.border}/>
+    
+                    <span>{t("Clone URL")}</span>
+                    <div className={Styles.buttonBox}>
+                        <code>{cloneUrl}</code>
+                        <SmallButton onClick={copyCloneUrl}>{t("Copy")}</SmallButton>
+                    </div>
+                    <div className={Styles.border}/>
                 </div>
-                <div className={Styles.border}/>
-
-                <span>{t("VCS_LAST_REMOTE_COMMIT")}</span>
-                <div className={Styles.buttonBox}>
-                    <Commit commit={vcsState?.latestRemoteCommit}/>
-                    <SmallButton onClick={fetch}>{t("VCS_FETCH")}</SmallButton>
-                </div>
-                <div className={Styles.border}/>
-
-                <span>{t("VCS_INCOMING_COMMITS")}</span>
-                <div className={Styles.buttonBox}>
-                    <SmallButton
-                        onClick={pull}>{t("VCS_INCOMING_COMMITS_PULL", {count: vcsState?.behind || 0})}</SmallButton>
-                </div>
-                <div className={Styles.border}/>
-
-                <span>{t("VCS_UNCOMMITTED_CHANGES")}</span>
-                <div className={Styles.buttonBox}>
-                    <SmallButton
-                        onClick={commit}>{t("VCS_UNCOMMITTED_CHANGES_COMMIT", {count: vcsState?.changedFiles.length || 0})}</SmallButton>
-                </div>
-                <div className={Styles.border}/>
-
-                <span>{t("VCS_OUTGOING_COMMITS")}</span>
-                <div className={Styles.buttonBox}>
-                    <SmallButton
-                        onClick={push}>{t("VCS_OUTGOING_COMMITS_PUSH", {count: vcsState?.ahead || 0})}</SmallButton>
-                </div>
-                <div className={Styles.border}/>
-
-                <span>{t("Clone URL")}</span>
-                <div className={Styles.buttonBox}>
-                    <code>{cloneUrl}</code>
-                    <SmallButton onClick={copyCloneUrl}>{t("Copy")}</SmallButton>
-                </div>
-                <div className={Styles.border}/>
-            </div>
-        </Container>
+            </Container>
+        </ErrorCover>
         <Container>
             <PageHeading level={3}>{t("ACTIONS")}</PageHeading>
             <SelectableList items={[
