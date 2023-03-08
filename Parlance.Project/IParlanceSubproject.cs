@@ -16,7 +16,9 @@ public interface IParlanceSubproject
     public Locale BaseLang { get; }
     public string BasePath { get; }
     public IDictionary<string, object> Options { get; }
+    bool PreferRegionAgnosticLanguage { get; }
 
     public IEnumerable<Locale> AvailableLanguages();
     public IParlanceSubprojectLanguage Language(Locale language);
+    Locale CalculatePreferredLocale(Locale locale);
 }

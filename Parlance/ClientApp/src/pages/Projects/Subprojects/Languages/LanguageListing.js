@@ -95,6 +95,7 @@ export default function LanguageListing() {
                         <PageHeading level={3}>{t("MY_LANGUAGES")}</PageHeading>
                         <SelectableList items={done ? myLanguages.map(p => ({
                             contents: <TranslationProgressIndicator title={i18n.humanReadableLocale(p.language)}
+                                                                    badges={subprojectData.preferRegionAgnosticLanguage && i18n.isRegionAgnostic(p.language) ? [t("PREFERRED")] : []}
                                                                     data={p.completionData}/>,
                             onClick: () => translationClicked(p.language)
                         })) : TranslationProgressIndicator.PreloadContents()}/>
@@ -106,6 +107,7 @@ export default function LanguageListing() {
                 <PageHeading level={3}>{myLanguages ? t("OTHER_LANGUAGES") : t("AVAILABLE_LANGUAGES")}</PageHeading>
                 <SelectableList items={done ? otherLanguages.map(p => ({
                     contents: <TranslationProgressIndicator title={i18n.humanReadableLocale(p.language)}
+                                                            badges={subprojectData.preferRegionAgnosticLanguage && i18n.isRegionAgnostic(p.language) ? [t("PREFERRED")] : []}
                                                             data={p.completionData}/>,
                     onClick: () => translationClicked(p.language)
                 })) : TranslationProgressIndicator.PreloadContents()}/>

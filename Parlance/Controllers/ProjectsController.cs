@@ -112,22 +112,27 @@ public class ProjectsController : Controller
                     Name = parlanceProject.ReadableName,
                     parlanceProject.Deadline, project.SystemName,
                     Subprojects = await Task.WhenAll(parlanceProject.Subprojects.Select(async subproject =>
-                    {
-                        if (!subproject.AvailableLanguages().Contains(locale))
+                {
+                        var preferredLocale = subproject.CalculatePreferredLocale(locale);
+                        if (!subproject.AvailableLanguages().Contains(preferredLocale))
                         {
                             return (object)new
                             {
-                                subproject.SystemName, subproject.Name
+                                subproject.SystemName, subproject.Name,
+                                subproject.PreferRegionAgnosticLanguage,
+                                RealLocale = preferredLocale.ToDashed()
                             };
                         }
 
                         var subprojectIndexResults =
-                            await _indexingService.OverallResults(subproject.Language(locale));
+                            await _indexingService.OverallResults(subproject.Language(preferredLocale));
 
                         return new
                         {
                             CompletionData = subprojectIndexResults,
-                            subproject.SystemName, subproject.Name
+                            subproject.SystemName, subproject.Name,
+                            subproject.PreferRegionAgnosticLanguage,
+                            RealLocale = preferredLocale.ToDashed()
                         };
                     }))
                 };
@@ -322,6 +327,7 @@ public class ProjectsController : Controller
                 CompletionData = indexResults,
                 subproj.TranslationFileType,
                 subproj.Name,
+                subproj.PreferRegionAgnosticLanguage,
                 ProjectName = subproj.Project.Name,
                 AvailableLanguages = await Task.WhenAll(subproj.AvailableLanguages().Select(async lang =>
                 {
