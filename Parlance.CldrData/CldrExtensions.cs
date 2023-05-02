@@ -28,9 +28,7 @@ public static class CldrExtensions
         
     public static async Task<IServiceCollection> AddCldrAsync(this IServiceCollection services, IConfiguration configuration)
     {
-        // await Cldr.Instance.DownloadLatestAsync();
-        await Cldr.Instance.DownloadAsync(new Version(42, 0));
-
+        await Cldr.Instance.DownloadLatestAsync();
         return services;
     }
 
