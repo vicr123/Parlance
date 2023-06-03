@@ -105,7 +105,7 @@
   "ERROR_PARLANCE_JSON_FILE_PARSE_TEXT": "קןבץ ה-.parlance.json אינו חוקי",
   "ERROR_PARLANCE_JSON_FILE_PARSE_TITLE": "קובץ Parlance JSON אינו חוקי",
   "ERROR_PERMISSION_ALREADY_GRANTED": "ההרשאות כבר ניתנו למשתמש זה.",
-  "ERROR_PROMPT": "מצטערים, קרתה שגיאה.",
+  "ERROR_PROMPT": "מצטערים, אירעה שגיאה.",
   "ERROR_TWO_FACTOR_ALREADY_DISABLED": "אימות דו-גורמי כבר מושבת",
   "ERROR_TWO_FACTOR_ALREADY_ENABLED": "אימות דו-גורמי כבר מופעל",
   "ERROR_TWO_FACTOR_INCORRECT": "מצטערים, קוד האימות הדו-גורמי שגוי.",
