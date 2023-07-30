@@ -217,7 +217,6 @@
   "SECURITY_KEY_OTHER_SECURITY_KEYS_PROMPT": "Deze beveiligingssleutels zijn geregistreerd voor je account met andere applicaties verbonden met je Victor Tran-account. Je kunt ze hier beheren, maar niet gebruiken totdat je ze hieronder registreert.",
   "SECURITY_KEY_REGISTERED_SECURITY_KEYS": "Geregistreerde Beveiligingssleutels",
   "SECURITY_KEY_REGISTERED_SECURITY_KEYS_PROMPT": "Je kunt al deze sleutels gebruiken om in te loggen bij Parlance.",
-  "SECURITY_KEY_REGISTER_BIOMETRIC": "Nieuwe Biometrie Registreren",
   "SECURITY_KEY_REGISTER_SECURITY_KEY": "Nieuwe Beveiligingssleutel Registreren",
   "SECURITY_KEY_RETRY_LOGIN": "Beveiligingssleutel Opnieuw Proberen",
   "SECURITY_KEY_RETRY_REGISTRATION": "Registratie Opnieuw Proberen",

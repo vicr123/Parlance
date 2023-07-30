@@ -216,7 +216,6 @@
   "SECURITY_KEY_OTHER_SECURITY_KEYS_PROMPT": "Dieser Sicherheitsschlüssel wurde in einer anderen Applikation für deinen Account hinzugefügt. Du kannst sie hier konfigurieren, aber du kannst sie nicht mit Parlance benutzen, bis du sie unten hinzufügst.",
   "SECURITY_KEY_REGISTERED_SECURITY_KEYS": "Registrierte Sicherheitsschlüssel",
   "SECURITY_KEY_REGISTERED_SECURITY_KEYS_PROMPT": "Du kannst diese Schlüssel benutzen, um dich bei Parlance anzumelden.",
-  "SECURITY_KEY_REGISTER_BIOMETRIC": "Neue biometrische Daten registrieren",
   "SECURITY_KEY_REGISTER_SECURITY_KEY": "Neuen Sicherheitsschlüssel hinzufügen",
   "SECURITY_KEY_RETRY_LOGIN": "Sicherheitsschlüssel erneut versuchen",
   "SECURITY_KEY_RETRY_REGISTRATION": "Registrierung erneut versuchen",

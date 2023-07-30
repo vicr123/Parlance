@@ -218,7 +218,6 @@
   "SECURITY_KEY_OTHER_SECURITY_KEYS_PROMPT": "מפתחות אבטחה אלה נרשמו עבור חשבונך תחת יישומים אחרים המחוברים לחשבון ה-Victor Tran שלך. אתה יכול לנהל אותם כאן, אבל אתה לא יכול להשתמש בהם ב-Parlance עד שאתה רושם אותם למטה.",
   "SECURITY_KEY_REGISTERED_SECURITY_KEYS": "מפתחות אבטחה רשומים",
   "SECURITY_KEY_REGISTERED_SECURITY_KEYS_PROMPT": "אתה יכול להשתמש במפתחות אלה כדי להיכנס ל-Parlance.",
-  "SECURITY_KEY_REGISTER_BIOMETRIC": "רשום מפתח ביומטרי חדש",
   "SECURITY_KEY_REGISTER_SECURITY_KEY": "רשום מפתח אבטחה חדש",
   "SECURITY_KEY_RETRY_LOGIN": "נסה את מבטח האבטחה שוב",
   "SECURITY_KEY_RETRY_REGISTRATION": "נסה להירשם שוב",

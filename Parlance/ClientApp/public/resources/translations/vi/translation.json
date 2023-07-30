@@ -216,7 +216,6 @@
   "SECURITY_KEY_OTHER_SECURITY_KEYS_PROMPT": "Khóa bảo mật này đã bị đăng ký cho tài khoản của bạn trong ứng dụng kết nối với tài khoản Victor Tran khác. Bạn có thể quản lý nó tại đây, nhưng bạn không thể sử dụng với Parlance cho đến khi bạn đăng ký nó dưới đây.",
   "SECURITY_KEY_REGISTERED_SECURITY_KEYS": "Khóa bảo mật đã đăng ký",
   "SECURITY_KEY_REGISTERED_SECURITY_KEYS_PROMPT": "Bạn có thể sử dụng bất kỳ khoá bảo mật nào trong danh sách này để đăng nhập vào Parlance.",
-  "SECURITY_KEY_REGISTER_BIOMETRIC": "Đăng ký sinh trắc học mới",
   "SECURITY_KEY_REGISTER_SECURITY_KEY": "Đăng ký khóa bảo mật mới",
   "SECURITY_KEY_RETRY_LOGIN": "Thử lại khóa bảo mật",
   "SECURITY_KEY_RETRY_REGISTRATION": "Thử lại đăng ký",

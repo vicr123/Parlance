@@ -217,7 +217,6 @@
   "SECURITY_KEY_OTHER_SECURITY_KEYS_PROMPT": "These passkeys have been registered for your account under other applications connected to your Victor Tran account. You can manage them here, but you can't use them with Parlance until you register them below.",
   "SECURITY_KEY_REGISTERED_SECURITY_KEYS": "Registered Passkeys",
   "SECURITY_KEY_REGISTERED_SECURITY_KEYS_PROMPT": "You can use any of these passkeys to log into Parlance.",
-  "SECURITY_KEY_REGISTER_BIOMETRIC": "Register New Biometric",
   "SECURITY_KEY_REGISTER_SECURITY_KEY": "Register New Passkey",
   "SECURITY_KEY_RETRY_LOGIN": "Retry Passkey",
   "SECURITY_KEY_RETRY_REGISTRATION": "Retry Registration",

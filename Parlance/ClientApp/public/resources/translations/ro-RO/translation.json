@@ -216,7 +216,6 @@
   "SECURITY_KEY_OTHER_SECURITY_KEYS_PROMPT": "Aceste chei de securitate au fost înregistrate în cont din alte aplicații conectate la contul tău Victor Tran. Poți să le gestionezi de-aici, însă nu poți să le folosești în Parlance până nu le înregistrezi mai jos.",
   "SECURITY_KEY_REGISTERED_SECURITY_KEYS": "Chei de securitate înregistrate",
   "SECURITY_KEY_REGISTERED_SECURITY_KEYS_PROMPT": "Poți folosi oricare dintre aceste chei pentru a te conecta la Parlance.",
-  "SECURITY_KEY_REGISTER_BIOMETRIC": "Înregistrează date biometrice",
   "SECURITY_KEY_REGISTER_SECURITY_KEY": "Înregistrează o cheie de securitate nouă",
   "SECURITY_KEY_RETRY_LOGIN": "Reîncearcă cheia de securitate",
   "SECURITY_KEY_RETRY_REGISTRATION": "Reîncearcă înregistrarea",
