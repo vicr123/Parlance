@@ -106,10 +106,6 @@ function SecurityKeysUi({password, onUpdateKeys, keys}) {
                     {
                         contents: t("SECURITY_KEY_REGISTER_SECURITY_KEY"),
                         onClick: () => registerKey("cross-platform")
-                    },
-                    {
-                        contents: t("SECURITY_KEY_REGISTER_BIOMETRIC"),
-                        onClick: () => registerKey("platform")
                     }
                 ]}/>
             </VerticalLayout>

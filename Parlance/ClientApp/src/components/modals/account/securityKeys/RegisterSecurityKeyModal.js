@@ -73,10 +73,10 @@ function RequestBrowserRegisterSecurityKeyModal({nickname, type, password, onDon
                         type: credential.type
                     }
                 });
+                
+                Modal.unmount();
 
                 await onDone();
-
-                Modal.unmount();
             } catch (e) {
                 console.log(e);
                 Modal.mount(<BrowserRegisterSecurityKeyModalFailure nickname={nickname} type={type}

@@ -33,7 +33,7 @@
   "ADD_PROJECT_ERROR": "Không thể thêm dự án",
   "ADD_PROJECT_ERROR_PROMPT": "",
   "ADD_PROJECT_PROMPT_1": "Điền vào dữ liệu để thêm dự án",
-  "ADD_PROJECT_PROMPT_2": "Đảm bảo rằng dự án này có tệp \u003C1\u003E.parlance.json\u003C/1\u003E trong thư mục góc",
+  "ADD_PROJECT_PROMPT_2": "Đảm bảo rằng dự án này có tệp <1>.parlance.json</1> trong thư mục góc",
   "APPLY_ATTRIBUTION_SETTINGS": "Áp dụng cài đặt Ghi nhận tác giả",
   "ASSISTANT": "Trợ lý",
   "ASSISTANT_DESCRIPTION": "Trợ lý cung cấp cho bạn thông tin hữu ích để giúp bạn tạo bản dịch.",
