@@ -5,6 +5,8 @@ import ModalList from "../../../ModalList";
 import RegisterSecurityKeyModal from "./RegisterSecurityKeyModal";
 import moment from "moment";
 
+import Styles from "./RegisterSecurityKeyAdvertisement.module.css"
+
 function SecurityKeySetupCompleteModal() {
     const {t} = useTranslation();
 
@@ -21,6 +23,13 @@ function SecurityKeySetupCompleteModal() {
     </Modal>
 }
 
+function FeatureBox({heading, children}) {
+    return <div className={Styles.FeatureBox}>
+        <span className={Styles.FeatureBoxHeading}>{heading}</span>
+        <span className={Styles.FeatureBoxContent}>{children}</span>
+    </div>
+}
+
 export function RegisterSecurityKeyAdvertisement({password}) {
     const {t} = useTranslation();
     
@@ -34,8 +43,20 @@ export function RegisterSecurityKeyAdvertisement({password}) {
             destructive: true
         }]}>
         {t("SECURITY_KEY_ADVERTISEMENT")}
-        <br />
-        <br />
+        <div className={Styles.FeaturesContainer}>
+            <FeatureBox heading={t("SECURITY_KEY_ADVERTISEMENT_FEATURE_1_HEADING")}>
+                {t("SECURITY_KEY_ADVERTISEMENT_FEATURE_1_CONTENT")}
+            </FeatureBox>
+            <FeatureBox heading={t("SECURITY_KEY_ADVERTISEMENT_FEATURE_2_HEADING")}>
+                {t("SECURITY_KEY_ADVERTISEMENT_FEATURE_2_CONTENT")}
+            </FeatureBox>
+            <FeatureBox heading={t("SECURITY_KEY_ADVERTISEMENT_FEATURE_3_HEADING")}>
+                {t("SECURITY_KEY_ADVERTISEMENT_FEATURE_3_CONTENT")}
+            </FeatureBox>
+            <FeatureBox heading={t("SECURITY_KEY_ADVERTISEMENT_FEATURE_4_HEADING")}>
+                {t("SECURITY_KEY_ADVERTISEMENT_FEATURE_4_CONTENT")}
+            </FeatureBox>
+        </div>
         {t("SECURITY_KEY_ADVERTISEMENT_2")}
         <ModalList>
             {[
