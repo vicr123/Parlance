@@ -1,6 +1,6 @@
 {
   "ACCOUNT_DISABLED_PROMPT": "החשבון שלך מושבת.",
-  "ACCOUNT_DISABLED_TITLE": "החשבון שלך מושבת.",
+  "ACCOUNT_DISABLED_TITLE": "חשבונך מושבת",
   "ACCOUNT_SETTINGS": "הגדרות חשבן",
   "ACCOUNT_SETTINGS_ATTRIBUTION": "שיוך",
   "ACCOUNT_SETTINGS_CHANGE_EMAIL_ADDRESS": "שנה כתובת דואר אלקטרוני",
@@ -210,7 +210,7 @@
   "SECURITY_KEY_REGISTER_BIOMETRIC": "רשום מפתח ביומטרי חדש",
   "SECURITY_KEY_REGISTER_SECURITY_KEY": "רשום מפתח אבטחה חדש",
   "SECURITY_KEY_RETRY_LOGIN": "נסה את מבטח האבטחה שוב",
-  "SECURITY_KEY_RETRY_REGISTRATION": "נשה להירשם שוב",
+  "SECURITY_KEY_RETRY_REGISTRATION": "נסה להירשם שוב",
   "SECURITY_KEY_UNSUPPORTED_BROWSER_PROMPT": "כדי לרשום מבטח אבטחה, עליך להשתמש בדפדפן נתמך. דפדפנים טובים בהם אתה יכול להשתמש כוללים:",
   "SECURITY_KEY_USE_PASSWORD_INSTEAD": "השתמש בסיסמה במקום זאת",
   "SELECT_LANGUAGE": "בחר שפה",
