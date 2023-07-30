@@ -436,7 +436,12 @@ public class UserController : Controller
         if (!await _accountsService.VerifyUserPassword(user, data.Password)) return Forbid();
 
         var response =
-            await _accountsService.PrepareRegisterFidoKey(user, data.AuthenticatorAttachmentType == "cross-platform");
+            await _accountsService.PrepareRegisterFidoKey(user, data.AuthenticatorAttachmentType switch
+            {
+                "cross-platform" => IVicr123AccountsService.CrossPlatformAttachmentCrossPlatform,
+                "platform" => IVicr123AccountsService.CrossPlatformAttachmentPlatform,
+                _ => IVicr123AccountsService.CrossPlatformAttachmentAny
+            });
 
         return Json(new
         {

@@ -66,7 +66,7 @@ export function RegisterSecurityKeyAdvertisement({password}) {
                         const onDone = () => {
                             Modal.mount(<SecurityKeySetupCompleteModal />)
                         }
-                        Modal.mount(<RegisterSecurityKeyModal type={"cross-platform"} password={password} onDone={onDone} initialName={t("SECURITY_KEY_ADVERTISEMENT_INITIAL_NAME", {
+                        Modal.mount(<RegisterSecurityKeyModal type={""} password={password} onDone={onDone} initialName={t("SECURITY_KEY_ADVERTISEMENT_INITIAL_NAME", {
                             date: moment().format("L")
                         })} />)
                     }

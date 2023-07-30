@@ -105,7 +105,7 @@ function SecurityKeysUi({password, onUpdateKeys, keys}) {
                 <SelectableList items={[
                     {
                         contents: t("SECURITY_KEY_REGISTER_SECURITY_KEY"),
-                        onClick: () => registerKey("cross-platform")
+                        onClick: () => registerKey("")
                     }
                 ]}/>
             </VerticalLayout>

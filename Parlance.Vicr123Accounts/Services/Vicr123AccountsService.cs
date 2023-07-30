@@ -186,12 +186,12 @@ public class Vicr123AccountsService : IVicr123AccountsService
         await tfProxy.RegenerateBackupKeysAsync();
     }
 
-    public async Task<string> PrepareRegisterFidoKey(User user, bool crossPlatformAttachment)
+    public async Task<string> PrepareRegisterFidoKey(User user, int crossPlatformAttachment)
     {
         var objectPath = await _manager.UserByIdAsync(user.Id);
         var fidoProxy = _connection.CreateProxy<IFido2>(_serviceName, objectPath);
         return await fidoProxy.PrepareRegisterAsync(_applicationName, _fidoOptions.Value.ServerDomain,
-            crossPlatformAttachment ? 1 : 0);
+            crossPlatformAttachment);
     }
 
     public async Task FinishRegisterFidoKey(User user, JsonElement response, string name)
