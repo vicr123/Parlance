@@ -57,6 +57,10 @@ public class FidoKey
 
 public interface IVicr123AccountsService
 {
+    public const int CrossPlatformAttachmentPlatform = 0;
+    public const int CrossPlatformAttachmentCrossPlatform = 1;
+    public const int CrossPlatformAttachmentAny = 2;
+    
     public Task<string> ProvisionTokenAsync(ProvisionTokenParameters parameters);
     public Task<string> ForceProvisionTokenAsync(ulong userId);
     public Task<User> UserByToken(string token);
@@ -77,7 +81,7 @@ public interface IVicr123AccountsService
     public Task<IEnumerable<OtpBackupCode>> OtpBackupCodes(User user);
     public Task RegenerateBackupCodes(User user);
 
-    public Task<string> PrepareRegisterFidoKey(User user, bool crossPlatformAttachment);
+    public Task<string> PrepareRegisterFidoKey(User user, int crossPlatformAttachment);
     public Task FinishRegisterFidoKey(User user, JsonElement response, string name);
     public Task<IEnumerable<string>> LoginMethods(string username);
 

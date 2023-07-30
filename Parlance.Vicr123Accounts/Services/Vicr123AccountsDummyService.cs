@@ -121,7 +121,7 @@ public class Vicr123AccountsDummyService : IVicr123AccountsService
         throw new NotSupportedException();
     }
 
-    public Task<string> PrepareRegisterFidoKey(User user, bool crossPlatformAttachment)
+    public Task<string> PrepareRegisterFidoKey(User user, int crossPlatformAttachment)
     {
         throw new NotSupportedException();
     }

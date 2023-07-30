@@ -73,10 +73,10 @@ function RequestBrowserRegisterSecurityKeyModal({nickname, type, password, onDon
                         type: credential.type
                     }
                 });
+                
+                Modal.unmount();
 
                 await onDone();
-
-                Modal.unmount();
             } catch (e) {
                 console.log(e);
                 Modal.mount(<BrowserRegisterSecurityKeyModalFailure nickname={nickname} type={type}
@@ -93,8 +93,8 @@ function RequestBrowserRegisterSecurityKeyModal({nickname, type, password, onDon
     </Modal>
 }
 
-export default function RegisterSecurityKeyModal({type, password, onDone}) {
-    const [securityKeyName, setSecurityKeyName] = useState("");
+export default function RegisterSecurityKeyModal({type, password, onDone, initialName = ""}) {
+    const [securityKeyName, setSecurityKeyName] = useState(initialName);
     const {t} = useTranslation();
 
 

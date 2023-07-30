@@ -1,0 +1,28 @@
+.FeatureBox {
+    display: grid;
+    grid-template-areas: "icon heading"
+                         ". content";
+    grid-template-columns: max-content 1fr;
+    
+    background: var(--border-color);
+    padding: 9px;
+    border-radius: 9px;
+}
+
+.FeatureBoxHeading {
+    grid-area: heading;
+    text-transform: uppercase;
+    font-weight: bold;
+}
+
+.FeatureBoxContent {
+    grid-area: content;
+}
+
+.FeaturesContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
