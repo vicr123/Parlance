@@ -3,11 +3,12 @@ import Modal from "../../Modal";
 import LoginUsernameModal from "./LoginUsernameModal";
 import {VerticalLayout, VerticalSpacer} from "../../Layouts";
 import LineEdit from "../../LineEdit";
-import {useState} from "react";
+import React, {useState} from "react";
 import LoadingModal from "../LoadingModal";
 import ErrorModal from "../ErrorModal";
 import UserManager from "../../../helpers/UserManager";
 import Fetch from "../../../helpers/Fetch";
+import {RegisterSecurityKeyAdvertisement} from "./securityKeys/RegisterSecurityKeyAdvertisement";
 
 export default function CreateAccountModal(props) {
     const [username, setUsername] = useState("");
@@ -35,6 +36,12 @@ export default function CreateAccountModal(props) {
                     });
                     
                     await UserManager.setToken(result.token);
+                    
+                    if (window.PublicKeyCredential && !localStorage.getItem("passkey-advertisement-never-ask")) {
+                        Modal.mount(<RegisterSecurityKeyAdvertisement password={password} />)
+                        return;
+                    }
+                    
                     Modal.unmount();
                 } catch (error) {
                     Modal.mount(<ErrorModal error={error} onContinue={() => Modal.mount(modal)} />);
