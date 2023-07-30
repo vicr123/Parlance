@@ -11,7 +11,7 @@ public class UserTokenRateLimitingPolicy : IRateLimiterPolicy<IPAddress>
         return RateLimitPartition.GetSlidingWindowLimiter(httpContext.Connection.RemoteIpAddress, _ =>
             new SlidingWindowRateLimiterOptions
             {
-                PermitLimit = 5,
+                PermitLimit = 50,
                 Window = TimeSpan.FromMinutes(10),
                 SegmentsPerWindow = 10,
                 QueueProcessingOrder = QueueProcessingOrder.OldestFirst,

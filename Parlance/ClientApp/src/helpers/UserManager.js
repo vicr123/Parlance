@@ -13,6 +13,9 @@ import React from "react";
 import LoginSecurityKeyModal from "../components/modals/account/LoginSecurityKeyModal";
 import LoginSecurityKeyFailureModal from "../components/modals/account/LoginSecurityKeyFailureModal";
 import {decode, encode} from "./Base64";
+import {
+    RegisterSecurityKeyAdvertisement
+} from "../components/modals/account/securityKeys/RegisterSecurityKeyAdvertisement";
 
 class UserManager extends EventEmitter {
     #loginSessionDetails;
@@ -92,6 +95,12 @@ class UserManager extends EventEmitter {
         try {
             let response = await Fetch.post(`/api/user/token`, this.#loginSessionDetails);
             await this.setToken(response.token);
+            
+            if (!fido2Details && window.PublicKeyCredential && !localStorage.getItem("passkey-advertisement-never-ask")) {
+                Modal.mount(<RegisterSecurityKeyAdvertisement password={this.#loginSessionDetails.newPassword || this.#loginSessionDetails.password} />)
+                return;
+            }
+            
             Modal.unmount();
         } catch (e) {
             let json = await e.json();

@@ -93,8 +93,8 @@ function RequestBrowserRegisterSecurityKeyModal({nickname, type, password, onDon
     </Modal>
 }
 
-export default function RegisterSecurityKeyModal({type, password, onDone}) {
-    const [securityKeyName, setSecurityKeyName] = useState("");
+export default function RegisterSecurityKeyModal({type, password, onDone, initialName = ""}) {
+    const [securityKeyName, setSecurityKeyName] = useState(initialName);
     const {t} = useTranslation();
 
 
