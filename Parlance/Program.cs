@@ -9,6 +9,7 @@ using Parlance.Authorization.ProjectAdministrator;
 using Parlance.Authorization.Superuser;
 using Parlance.CldrData;
 using Parlance.Database;
+using Parlance.Glossary;
 using Parlance.Jobs;
 using Parlance.Project;
 using Parlance.RateLimiting;
@@ -33,6 +34,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddVicr123Accounts(builder.Configuration);
 builder.Services.AddVersionControl(builder.Configuration);
 builder.Services.AddParlanceProjects(builder.Configuration);
+builder.Services.AddGlossary(builder.Configuration);
 await builder.Services.AddCldrAsync(builder.Configuration);
 
 builder.Services.AddScoped<IProjectService, ProjectService>();
