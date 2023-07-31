@@ -9,7 +9,7 @@ public class Comment
     [Key]
     public Guid Id { get; set; }
 
-    public string Text { get; set; }
+    public string Text { get; set; } = null!;
 
     public long Date { get; set; }
     public ulong UserId { get; set; }

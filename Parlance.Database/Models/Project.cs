@@ -16,4 +16,6 @@ public class Project
     public string SystemName { get; set; } = null!;
 
     public List<ProjectMaintainer> Maintainers { get; set; } = null!;
+
+    public List<Glossary> Glossaries { get; set; } = new();
 }

@@ -24,6 +24,8 @@ public class ParlanceContext : DbContext
     public DbSet<CommentThread> CommentThreads { get; set; } = null!;
     public DbSet<CommentThreadSubscription> CommentThreadSubscriptions { get; set; } = null!;
     public DbSet<Comment> Comments { get; set; } = null!;
+    public DbSet<Glossary> Glossaries { get; set; } = null!;
+    public DbSet<GlossaryItem> GlossaryItems { get; set; } = null!;
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -42,6 +44,8 @@ public class ParlanceContext : DbContext
         modelBuilder.Entity<CommentThread>().ToTable("CommentThreads");
         modelBuilder.Entity<CommentThreadSubscription>().ToTable("CommentThreadSubscriptions");
         modelBuilder.Entity<Comment>().ToTable("Comments");
+        modelBuilder.Entity<Glossary>().ToTable("Glossaries");
+        modelBuilder.Entity<GlossaryItem>().ToTable("GlossaryItems");
     }
 }
 

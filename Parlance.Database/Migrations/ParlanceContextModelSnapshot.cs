@@ -22,6 +22,21 @@ namespace Parlance.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("GlossaryProject", b =>
+                {
+                    b.Property<Guid>("GlossariesId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("ProjectsId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("GlossariesId", "ProjectsId");
+
+                    b.HasIndex("ProjectsId");
+
+                    b.ToTable("GlossaryProject");
+                });
+
             modelBuilder.Entity("Parlance.Database.Models.Alert", b =>
                 {
                     b.Property<Guid>("Id")
@@ -177,6 +192,55 @@ namespace Parlance.Migrations
                         .IsUnique();
 
                     b.ToTable("EditsPending", (string)null);
+                });
+
+            modelBuilder.Entity("Parlance.Database.Models.Glossary", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset>("CreatedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Name")
+                        .IsUnique();
+
+                    b.ToTable("Glossaries", (string)null);
+                });
+
+            modelBuilder.Entity("Parlance.Database.Models.GlossaryItem", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("GlossaryId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Language")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Term")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Translation")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("GlossaryId");
+
+                    b.ToTable("GlossaryItems", (string)null);
                 });
 
             modelBuilder.Entity("Parlance.Database.Models.IndexItem", b =>
@@ -354,6 +418,21 @@ namespace Parlance.Migrations
                     b.ToTable("Superusers", (string)null);
                 });
 
+            modelBuilder.Entity("GlossaryProject", b =>
+                {
+                    b.HasOne("Parlance.Database.Models.Glossary", null)
+                        .WithMany()
+                        .HasForeignKey("GlossariesId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Parlance.Database.Models.Project", null)
+                        .WithMany()
+                        .HasForeignKey("ProjectsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("Parlance.Database.Models.Comment", b =>
                 {
                     b.HasOne("Parlance.Database.Models.CommentThread", "Thread")
@@ -376,6 +455,17 @@ namespace Parlance.Migrations
                     b.Navigation("Thread");
                 });
 
+            modelBuilder.Entity("Parlance.Database.Models.GlossaryItem", b =>
+                {
+                    b.HasOne("Parlance.Database.Models.Glossary", "Glossary")
+                        .WithMany("GlossaryItems")
+                        .HasForeignKey("GlossaryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Glossary");
+                });
+
             modelBuilder.Entity("Parlance.Database.Models.ProjectMaintainer", b =>
                 {
                     b.HasOne("Parlance.Database.Models.Project", "Project")
@@ -390,6 +480,11 @@ namespace Parlance.Migrations
                     b.Navigation("Comments");
 
                     b.Navigation("Subscriptions");
+                });
+
+            modelBuilder.Entity("Parlance.Database.Models.Glossary", b =>
+                {
+                    b.Navigation("GlossaryItems");
                 });
 
             modelBuilder.Entity("Parlance.Database.Models.Project", b =>
