@@ -63,7 +63,11 @@ export default function TranslationProgressIndicator({title, data, deadline, bad
                                                                   title={t("TRANSLATION_PROGRESS_INDICATOR_ERRORS")}
                                                                   className={Styles.errors}/>);
 
-    metrics = metrics.flat();
+    if (deadlineData.valid) metrics.push(<TranslationProgressMetric key={"deadline"} value={deadlineData.text}
+                                                                    title={t("TRANSLATION_PROGRESS_INDICATOR_REMAINING")}
+                                                                    className={`${deadlineData.ms.asDays() <= 3 && Styles.errors}`}/>)
+    
+    metrics = metrics.flat().reverse();
 
     let titleStyles = [Styles.title];
     if (data?.count == null) titleStyles.push(Styles.newTitle);
@@ -75,9 +79,6 @@ export default function TranslationProgressIndicator({title, data, deadline, bad
                 {badges.map((text, i) => <span className={Styles.badge} key={i}>{text}</span>)}
             </div>
         </div>
-        {deadlineData.valid && <TranslationProgressMetric key={"deadline"} value={deadlineData.text}
-                                                          title={t("TRANSLATION_PROGRESS_INDICATOR_REMAINING")}
-                                                          className={`${Styles.deadline} ${deadlineData.ms.asDays() <= 3 && Styles.errors}`}/>}
         <div className={Styles.metrics}>
             {metrics}
         </div>

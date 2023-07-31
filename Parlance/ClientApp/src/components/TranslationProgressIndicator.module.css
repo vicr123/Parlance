@@ -1,11 +1,11 @@
 .root {
     display: grid;
-    grid-template-columns: 1fr max-content max-content 50%;
+    grid-template-columns: 1fr max-content max-content;
     grid-template-rows: max-content max-content;
     gap: 6px 6px;
     grid-template-areas: 
-    "title . deadline metrics"
-    "progress progress progress progress";
+    "title . metrics"
+    "progress progress progress";
 }
 
 .title {
@@ -21,7 +21,9 @@
 
 .metrics {
     display: flex;
-    flex-direction: row-reverse;
+    flex-direction: row;
+    justify-content: space-around;
+    flex-wrap: wrap;
     gap: 18px;
 
     grid-area: metrics;
@@ -75,10 +77,6 @@
     background-color: var(--translation-progress-indicator-warning);
 }
 
-.deadline {
-    grid-area: deadline;
-}
-
 .titleContainer {
     display: flex;
     align-items: center;
@@ -94,4 +92,15 @@
     padding: 2px;
     background-color: var(--badge-background-color);
     border-radius: 5px;
+}
+
+@media (max-width: 700px) {
+    .root {
+        grid-template-areas: 
+            "title"
+            "metrics"
+            "progress";
+        grid-template-columns: 1fr;
+        grid-template-rows: max-content max-content max-content;
+    }
 }
