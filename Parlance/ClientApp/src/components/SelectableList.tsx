@@ -42,7 +42,7 @@ export default function SelectableList({children, onClick, items} : SelectableLi
 
 SelectableList.Locales = function Locales({locales, onLocaleSelected}) {
     const [query, setQuery] = useState("");
-    const [availableLocales, setAvailableLocales] = useState([]);
+    const [availableLocales, setAvailableLocales] = useState<string[]>([]);
     const {t} = useTranslation();
 
     useEffect(() => {
@@ -64,13 +64,15 @@ SelectableList.Locales = function Locales({locales, onLocaleSelected}) {
         .sort((a, b) => new Intl.Collator(i18n.language).compare(a.contents, b.contents))
 
     return <VerticalLayout>
-        <LineEdit placeholder={t("Search")} value={query} onChange={(e) => setQuery(e.target.value)}/>
+        <LineEdit placeholder={t("Search")} value={query} onChange={(e) => setQuery((e.target as HTMLInputElement).value)}/>
         <SelectableList items={items}/>
     </VerticalLayout>
 }
 
 SelectableList.PreloadingText = function (num = 3) {
-    let arr = [];
+    let arr: {
+        contents: ReactNode
+    }[] = [];
     for (let i = 0; i < num; i++) {
         arr.push({
             contents: <PreloadingBlock>Text</PreloadingBlock>

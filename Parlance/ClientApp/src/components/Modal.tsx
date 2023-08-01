@@ -1,11 +1,11 @@
 import React, {ReactNode} from 'react';
 import Styles from './Modal.module.css';
-import {createRoot} from "react-dom/client";
+import {createRoot, Root} from "react-dom/client";
 import {WithTranslation, withTranslation} from "react-i18next";
 import i18n from "../helpers/i18n";
 import Icon from "./Icon";
 
-let root;
+let root: Root | null;
 
 interface ModalButton {
     destructive?: boolean
@@ -29,7 +29,7 @@ interface ModalState {
     
 }
 
-type ModalComponentExportType = new(ModalProps) => React.Component<ModalExportProps, ModalState>;
+type ModalComponentExportType = new(ModalProps: any) => React.Component<ModalExportProps, ModalState>;
 
 interface ModalExportButtons {
     CancelButton: ModalButton;
@@ -64,7 +64,7 @@ class Modal extends React.Component<ModalProps, ModalState> {
                                         key={button.text}>{button.text}</div>
                         } else {
                             //deprecated
-                            return <div onClick={this.props.onButtonClick.bind(this, button)}
+                            return <div onClick={this.props.onButtonClick?.bind(this, button)}
                                         className={Styles.ModalButton} key={button}>{button}</div>
                         }
                     })}
@@ -126,14 +126,14 @@ i18n.on("loaded", setStandardButtons);
 let ExportProperty = withTranslation()(Modal) as ModalExports;
 ExportProperty.mount = (modal) => {
     if (root) ExportProperty.unmount();
-    root = createRoot(document.getElementById('modalContainer'));
+    root = createRoot(document.getElementById('modalContainer')!);
     root.render(
         <React.StrictMode>
             {modal}
         </React.StrictMode>);
 }
 ExportProperty.unmount = () => {
-    root.unmount();
+    root?.unmount();
     root = null;
 }
 ExportProperty.ModalProgressSpinner = ModalProgressSpinner;
