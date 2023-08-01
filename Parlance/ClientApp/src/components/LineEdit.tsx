@@ -1,13 +1,17 @@
 import Styles from "./LineEdit.module.css";
-import {useId} from "react";
+import {HTMLProps, useId} from "react";
 
-export default function LineEdit(props) {
+interface LineEditProps extends HTMLProps<HTMLInputElement> {
+    password?: boolean;
+}
+
+export default function LineEdit(props: LineEditProps) {
     const id = useId();
 
     let inputProps = {...props};
     inputProps.placeholder = "";
     inputProps.style = {};
-    inputProps.password = "";
+    inputProps.password = false;
 
     return <div style={props.style}>
         <div className={Styles.container}>

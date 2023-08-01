@@ -1,8 +1,5 @@
-import React from 'react';
-
 let posts = {};
 let user = {};
-
 
 // Fetch is a custom wrapper around the fetch API.
 class Fetch {
@@ -26,8 +23,7 @@ class Fetch {
      * @param {string} url endpoint for the API call
      * @param {function} resultCallback Callback to call when the result is ready containing raw fetch data
      */
-    static async performRequest(method, url, resultCallback = () => {
-    }) {
+    static async performRequest<T>(method, url, resultCallback = (result: WebFetchResponse) => {}) : Promise<FetchResponse<T>> {
         let err = null;
         // Display loading animation for the user
         let headers = Fetch.headers();
@@ -39,7 +35,7 @@ class Fetch {
             err = error;
         }).finally(() => {
 
-        });
+        }) as WebFetchResponse;
 
         if (err) throw err;
         if (result.status < 200 || result.status > 299) {
@@ -53,7 +49,7 @@ class Fetch {
 
         resultCallback(result);
         if (result.status === 204) return {};
-        return await result.json();
+        return await result.json() as T;
     }
 
     /**
@@ -61,9 +57,9 @@ class Fetch {
      * @param {string} url endpoint for fetch request
      * @param {Object} data payload of information
      * @param {Object} headers Headers to include
+     * @param resultCallback Callback to call after result is available but before the JSON is retrieved
      */
-    static async post(url, data, headers = {}, resultCallback = () => {
-    }) {
+    static async post<T>(url, data, headers = {}, resultCallback = (result: WebFetchResponse) => {}): Promise<T> {
         let err = null;
         let result = await fetch(url, {
             method: "POST",
@@ -76,13 +72,13 @@ class Fetch {
             err = error;
         }).finally(() => {
 
-        });
+        }) as WebFetchResponse;
 
         if (err) throw err;
         if (result.status < 200 || result.status > 299) throw result;
 
         resultCallback(result);
-        if (result.status === 204) return {};
+        if (result.status === 204) return {} as T;
         return await result.json();
     }
 
@@ -91,7 +87,7 @@ class Fetch {
      * @param {string} url API endpoint to access
      * @param {Object} data Payload to patch with
      */
-    static async patch(url, data) {
+    static async patch<T>(url, data): Promise<FetchResponse<T>> {
         let err = null;
         let result = await fetch(`/api${url}`, {
             method: "PATCH",
@@ -100,7 +96,7 @@ class Fetch {
         }).catch((error) => {
             err = error;
         }).finally(() => {
-        });
+        }) as WebFetchResponse;
 
         if (err) throw err;
         if (result.status === 204) return {};
@@ -113,20 +109,20 @@ class Fetch {
      * @param {string} url url to perform API request
      * @param {function} resultCallback Callback to call when the result is ready containing raw fetch data
      */
-    static get(url, resultCallback = () => {
-    }) {
-        return Fetch.performRequest("GET", url, resultCallback);
+    static get<T>(url, resultCallback = () => {}) : Promise<T> {
+        return Fetch.performRequest("GET", url, resultCallback) as Promise<T>;
     }
 
     /**
      * DELETE request to specified url
      * @param {string} url url to perform API request
      */
-    static delete(url) {
-        return Fetch.performRequest("DELETE", url);
+    static delete<T>(url): Promise<T> {
+        return Fetch.performRequest("DELETE", url) as Promise<T>;
     }
 
     //TODO: Implement caching
+    //TODO: Types
 
     /**
      * Retrieves post based on postID
