@@ -86,4 +86,20 @@ public class GlossaryService : IGlossaryService
         _parlanceContext.GlossaryItems.Remove(item);
         await _parlanceContext.SaveChangesAsync();
     }
+
+    public IEnumerable<GlossaryItem> SearchGlossaryByProject(Project project, Locale locale, string? term)
+    {
+        return _parlanceContext.Projects.Include(x => x.Glossaries).ThenInclude(x => x.GlossaryItems).Single(x => x.Id == project.Id).Glossaries.SelectMany(glossary => glossary.GlossaryItems)
+            .Where(glossaryItem =>
+            {
+                if (!string.IsNullOrEmpty(term))
+                {
+                    if (glossaryItem.Term.Contains(term, StringComparison.InvariantCultureIgnoreCase) ||
+                        glossaryItem.Translation.Contains(term, StringComparison.InvariantCultureIgnoreCase)) return true;
+                }
+                
+                return Locale.FromDatabaseRepresentation(glossaryItem.Language)?.IsSupersetOf(locale) is true;
+            })
+            .DistinctBy(x => x.Id);
+    }
 }
