@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Parlance.CldrData;
 using Parlance.Database;
 using Parlance.Database.Models;
 
@@ -16,6 +17,11 @@ public class GlossaryService : IGlossaryService
     public Database.Models.Glossary GlossaryById(Guid id)
     {
         return _parlanceContext.Glossaries.Include(x => x.Projects).Single(x => x.Id == id);
+    }
+
+    public GlossaryItem GlossaryItemById(Guid id)
+    {
+        return _parlanceContext.GlossaryItems.Single(x => x.Id == id);
     }
 
     public IEnumerable<Database.Models.Glossary> Glossaries => _parlanceContext.Glossaries;
@@ -53,6 +59,31 @@ public class GlossaryService : IGlossaryService
         }
 
         _parlanceContext.Glossaries.Update(glossary);
+        await _parlanceContext.SaveChangesAsync();
+    }
+
+    public async Task Define(Database.Models.Glossary glossary, string term, string translation, Locale locale)
+    {
+        var glossaryItem = new GlossaryItem
+        {
+            Language = locale.ToDatabaseRepresentation(),
+            Term = term,
+            Translation = translation,
+            Glossary = glossary
+        };
+        _parlanceContext.GlossaryItems.Add(glossaryItem);
+        await _parlanceContext.SaveChangesAsync();
+    }
+
+    public IEnumerable<GlossaryItem> GetTerms(Database.Models.Glossary glossary, Locale locale)
+    {
+        return _parlanceContext.GlossaryItems.Where(item =>
+            item.GlossaryId == glossary.Id && item.Language == locale.ToDatabaseRepresentation());
+    }
+
+    public async Task RemoveDefinition(GlossaryItem item)
+    {
+        _parlanceContext.GlossaryItems.Remove(item);
         await _parlanceContext.SaveChangesAsync();
     }
 }
