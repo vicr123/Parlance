@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 using Npgsql;
+using Parlance.CldrData;
 using Parlance.Glossary.Services;
 
 namespace Parlance.Controllers;
@@ -61,9 +62,77 @@ public class GlossaryManagerController : Controller
             return NotFound();
         }
     }
+    
+    [HttpGet]
+    [Route("{glossary:guid}/{language}")]
+    public Task<IActionResult> GetTerms(Guid glossary, string language)
+    {
+        try
+        {
+            var g = _glossaryService.GlossaryById(glossary);
+            var locale = language.ToLocale();
+
+            return Task.FromResult<IActionResult>(Json(_glossaryService.GetTerms(g, locale).Select(term => new
+            {
+                term.Id,
+                term.Term,
+                term.Translation
+            })));
+        }
+        catch (InvalidOperationException)
+        {
+            return Task.FromResult<IActionResult>(NotFound());
+        }
+    }
+    
+    [Authorize(Policy = "LanguageEditor")]
+    [HttpPost]
+    [Route("{glossary:guid}/{language}")]
+    public async Task<IActionResult> DefineTerm(Guid glossary, string language, [FromBody] DefineTermRequestData data)
+    {
+        try
+        {
+            var g = _glossaryService.GlossaryById(glossary);
+            var locale = language.ToLocale();
+            await _glossaryService.Define(g, data.Term, data.Translation, locale);
+            return NoContent();
+        }
+        catch (InvalidOperationException)
+        {
+            return NotFound();
+        }
+    }
+    
+    [Authorize(Policy = "LanguageEditor")]
+    [HttpDelete]
+    [Route("{glossary:guid}/{language}/{term:guid}")]
+    public async Task<IActionResult> DefineTerm(Guid glossary, string language, Guid term)
+    {
+        try
+        {
+            var glossaryItem = _glossaryService.GlossaryItemById(term);
+            if (glossaryItem.GlossaryId != glossary || language.ToLocale().ToDatabaseRepresentation() != glossaryItem.Language)
+            {
+                return NotFound();
+            }
+            
+            await _glossaryService.RemoveDefinition(_glossaryService.GlossaryItemById(term));
+            return NoContent();
+        }
+        catch (InvalidOperationException)
+        {
+            return NotFound();
+        }
+    }
 
     public class AddGlossaryRequestData
     {
         public required string Name { get; set; }
+    }
+
+    public class DefineTermRequestData
+    {
+        public required string Term { get; set; }
+        public required string Translation { get; set; }
     }
 }

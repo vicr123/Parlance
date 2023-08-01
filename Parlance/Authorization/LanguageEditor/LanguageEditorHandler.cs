@@ -32,7 +32,7 @@ public class LanguageEditorHandler : AuthorizationHandler<LanguageEditorRequirem
         }
 
         var routeData = httpContext.GetRouteData();
-        string project;
+        string? project = null;
         Locale language;
         if (routeData.Values.ContainsKey("threadId"))
         {
@@ -53,16 +53,30 @@ public class LanguageEditorHandler : AuthorizationHandler<LanguageEditorRequirem
         {
             project = routeData.Values["project"]!.ToString()!;
             language = routeData.Values["language"]!.ToString()!.ToLocale();
+        } else if (routeData.Values.ContainsKey("language"))
+        {
+            language = routeData.Values["language"]!.ToString()!.ToLocale();
         }
         else
         {
             return;
         }
 
-        if (await _permissionsService.CanEditProjectLocale(username, project,
-                language))
+        if (project is null)
         {
-            context.Succeed(requirement);
+            if (await _permissionsService.HasLocalePermission(username,
+                    language))
+            {
+                context.Succeed(requirement);
+            }
+        }
+        else
+        {
+            if (await _permissionsService.CanEditProjectLocale(username, project,
+                    language))
+            {
+                context.Succeed(requirement);
+            }
         }
     }
 }
