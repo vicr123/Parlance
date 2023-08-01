@@ -9,7 +9,9 @@
       {
         "name": "typescript-plugin-css-modules"
       }
-    ]
+    ],
+    "strict": true,
+    "noImplicitAny": false
   },
   "typeAcquisition": {
     "enable": true
