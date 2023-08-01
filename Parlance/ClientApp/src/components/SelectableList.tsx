@@ -1,5 +1,5 @@
 import Styles from "./SelectableList.module.css"
-import React, {useEffect, useState} from "react";
+import React, {ReactNode, useEffect, useState} from "react";
 import Fetch from "../helpers/Fetch";
 import i18n from "../helpers/i18n";
 import {VerticalLayout} from "./Layouts";
@@ -7,7 +7,20 @@ import LineEdit from "./LineEdit";
 import {useTranslation} from "react-i18next";
 import PreloadingBlock from "./PreloadingBlock";
 
-export default function SelectableList({children, onClick, items}) {
+interface SelectableListItemObject {
+    onClick?: () => void;
+    contents: ReactNode
+}
+
+type SelectableListItem = SelectableListItemObject | string;
+
+interface SelectableListProps {
+    children?: React.ReactElement
+    onClick?: () => void
+    items?: SelectableListItem[]
+}
+
+export default function SelectableList({children, onClick, items} : SelectableListProps) {
     if (children) {
         return <div className={Styles.listContainer}>
             <div className={Styles.listItem} onClick={onClick}>{children}</div>

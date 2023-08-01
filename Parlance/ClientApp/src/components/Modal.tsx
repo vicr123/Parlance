@@ -1,13 +1,52 @@
-import React from 'react';
+import React, {ReactNode} from 'react';
 import Styles from './Modal.module.css';
 import {createRoot} from "react-dom/client";
-import {withTranslation} from "react-i18next";
+import {WithTranslation, withTranslation} from "react-i18next";
 import i18n from "../helpers/i18n";
 import Icon from "./Icon";
 
 let root;
 
-class Modal extends React.Component {
+interface ModalButton {
+    destructive?: boolean
+    onClick?: () => void
+    text: string
+}
+
+interface ModalExportProps {
+    popover?: any
+    buttons?: ModalButton[]
+    onButtonClick?: () => {}
+    children?: ReactNode
+    onBackClicked?: () => {}
+    heading?: string
+}
+
+interface ModalProps extends WithTranslation, ModalExportProps {
+}
+
+interface ModalState {
+    
+}
+
+type ModalComponentExportType = new(ModalProps) => React.Component<ModalExportProps, ModalState>;
+
+interface ModalExportButtons {
+    CancelButton: ModalButton;
+    OkButton: ModalButton;
+}
+
+interface ModalExports extends ModalComponentExportType, ModalExportButtons {
+    mount: (modal: React.ReactElement) => void;
+    unmount: () => void;
+    ModalProgressSpinner: typeof ModalProgressSpinner
+}
+
+interface ModalProgressSpinnerProps {
+    message?: string;
+}
+
+class Modal extends React.Component<ModalProps, ModalState> {
     render() {
         return <div
             className={`${Styles.ModalBackground} ${i18n.dir()} ${this.props.popover && Styles.PopoverBackground}`}
@@ -35,12 +74,14 @@ class Modal extends React.Component {
     }
 
     renderModalList() {
+        // @ts-ignore
         let children = React.Children.toArray(this.props.children).filter(child => child.type?.displayName === "ModalList")
 
         return children.length !== 0 && <>{children}</>
     }
 
     renderModalText() {
+        // @ts-ignore
         let children = React.Children.toArray(this.props.children).filter(child => child.type?.displayName !== "ModalList")
 
         return children.length !== 0 && <div className={Styles.ModalText}>
@@ -61,7 +102,11 @@ class Modal extends React.Component {
     }
 }
 
-let ExportProperty = withTranslation()(Modal);
+function ModalProgressSpinner(props : ModalProgressSpinnerProps) {
+    return <div className={Styles.ModalProgressSpinner}>
+        {props?.message}
+    </div>
+}
 
 let setStandardButtons = () => {
     ExportProperty.CancelButton = {
@@ -77,8 +122,8 @@ let setStandardButtons = () => {
 i18n.on("initialized", setStandardButtons);
 i18n.on("languageChanged", setStandardButtons);
 i18n.on("loaded", setStandardButtons);
-setStandardButtons();
 
+let ExportProperty = withTranslation()(Modal) as ModalExports;
 ExportProperty.mount = (modal) => {
     if (root) ExportProperty.unmount();
     root = createRoot(document.getElementById('modalContainer'));
@@ -91,15 +136,7 @@ ExportProperty.unmount = () => {
     root.unmount();
     root = null;
 }
-
-class ModalProgressSpinner extends React.Component {
-    render() {
-        return <div className={Styles.ModalProgressSpinner}>
-            {this.props?.message}
-        </div>
-    }
-}
-
 ExportProperty.ModalProgressSpinner = ModalProgressSpinner;
+setStandardButtons();
 
 export default ExportProperty;

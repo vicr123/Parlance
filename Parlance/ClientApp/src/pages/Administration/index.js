@@ -7,6 +7,7 @@ import Superusers from "./Superusers";
 import SSH from "./SSH";
 import Projects from "./Projects";
 import Locales from "./Locales";
+import Glossaries from "./Glossaries";
 
 export default function(props) {
     const {t} = useTranslation();
@@ -16,6 +17,10 @@ export default function(props) {
         {
             name: t("PROJECTS"),
             render: <Projects />
+        },
+        {
+            name: t("GLOSSARIES"),
+            render: <Glossaries />
         },
         t("SSH"),
         {
