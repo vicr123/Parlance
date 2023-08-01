@@ -619,6 +619,45 @@ public class ProjectsController : Controller
             return NotFound();
         }
     }
+    
+    [HttpGet]
+    [Route("{project}/{language}/glossary")]
+    public async Task<IActionResult> GetGlossary(string project, string language)
+    {
+        try
+        {
+            var p = await _projectService.ProjectBySystemName(project);
+            var locale = language.ToLocale();
+            return Json(_glossaryService.SearchGlossaryByProject(p, locale, null).Select(x => new
+            {
+                x.Id, x.Term, x.Translation
+            }));
+        }
+        catch (ProjectNotFoundException)
+        {
+            return NotFound();
+        }
+    }
+    
+    [HttpPost]
+    [Route("{project}/{language}/glossary")]
+    public async Task<IActionResult> SearchGlossary(string project, string language,
+        [FromBody] SearchGlossaryRequestData data)
+    {
+        try
+        {
+            var p = await _projectService.ProjectBySystemName(project);
+            var locale = language.ToLocale();
+            return Json(_glossaryService.SearchGlossaryByProject(p, locale, data.SearchTerm).Select(x => new
+            {
+                x.Id, x.Term, x.Translation
+            }));
+        }
+        catch (ProjectNotFoundException)
+        {
+            return NotFound();
+        }
+    }
 
     public class AddProjectRequestData
     {
@@ -641,5 +680,10 @@ public class ProjectsController : Controller
     public class ConnectGlossaryRequestData
     {
         public required Guid GlossaryId { get; set; }
+    }
+
+    public class SearchGlossaryRequestData
+    {
+        public required string? SearchTerm { get; set; }
     }
 }
