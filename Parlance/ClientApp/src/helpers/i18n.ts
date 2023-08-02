@@ -107,7 +107,7 @@ exportMember.pluralPatterns = async (locale) => {
     let promise: Promise<PluralPattern[]> | PluralCategoryDictionary;
     if (pluralPatternsCache[locale]) {
         promise = pluralPatternsCache[locale];
-        if (promise instanceof Promise) {
+        if (!(promise instanceof Promise)) {
             return pluralPatternsCache[locale];
         }
     } else {
