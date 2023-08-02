@@ -111,14 +111,14 @@ export default function GlossaryListing() : ReactElement {
                 <SelectableList items={glossaries.map(glossary => ({
                     contents: <div className={Styles.glossaryItem}>
                         <span>{glossary.name}</span>
-                        <span className={Styles.glossaryItemSubtext}>{t("{{count}} projects connected", {
+                        <span className={Styles.glossaryItemSubtext}>{t("ADD_GLOSSARY_PROJECTS_CONNECTED", {
                             count: glossary.usedByProjects
                         })}</span>
                     </div>,
                     onClick: () => removeGlossary(glossary)
                 }))} />
                 <SelectableList onClick={addGlossary}>{t("ADD_GLOSSARY")}</SelectableList>
-                <span>{t("Connect a glossary to a project by visiting the project and selecting Manage Glossaries")}</span>
+                <span>{t("ADD_GLOSSARY_CONNECT_PROJECT_PROMPT")}</span>
             </VerticalLayout>
         </ListPageBlock>
     </div>

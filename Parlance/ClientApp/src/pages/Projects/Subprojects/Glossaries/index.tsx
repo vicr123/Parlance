@@ -1,5 +1,5 @@
 import {VerticalLayout, VerticalSpacer} from "../../../../components/Layouts";
-import React, {ReactElement, useEffect, useState} from "react";
+import React, {ReactElement, ReactNode, useEffect, useState} from "react";
 import BackButton from "../../../../components/BackButton";
 import {useTranslation} from "react-i18next";
 import {useNavigate, useParams} from "react-router-dom";
@@ -24,16 +24,25 @@ interface GlossaryListProps {
 function GlossaryList({glossaries, title, shiftGlossary, onLeft}: GlossaryListProps): ReactElement {
     const {t} = useTranslation();
     
-    return <div className={`${Styles.listRoot} ${onLeft ? Styles.left : ""}`}>
-        <PageHeading className={Styles.listHeading} level={3}>{title}</PageHeading>
-        {glossaries?.length ? <SelectableList items={glossaries?.map(x => ({
+    let list: ReactNode;
+    if (glossaries === null) {
+        list = <SelectableList items={SelectableList.PreloadingText()} />
+    } else if (glossaries.length === 0) {
+        list = t("NO_GLOSSARIES")
+    } else {
+        list = <SelectableList items={glossaries?.map(x => ({
             contents: <div className={Styles.glossaryItem}>
                 <span>{x.name}</span>
                 <Icon className={Styles.glossaryItemIcon} icon={onLeft ? "go-next" : "go-previous"} flip={true} />
             </div>,
             onClick: () => shiftGlossary(x),
             containerClass: Styles.glossaryItemContainer
-        }))} /> : t("No glossaries")}
+        }))} />;
+    }
+    
+    return <div className={`${Styles.listRoot} ${onLeft ? Styles.left : ""}`}>
+        <PageHeading className={Styles.listHeading} level={3}>{title}</PageHeading>
+        {list}
     </div>
 }
 
@@ -89,19 +98,19 @@ function GlossaryManager() : ReactElement {
         <div className={`${Styles.glossaryManagerRootContainer} ${mobileSwitch && Styles.mobileSwitch}`}>
             <div className={Styles.glossaryManagerRoot}>
                 <VerticalLayout>
-                    <GlossaryList title={t("Connected Glossaries")} glossaries={connectedGlossaries} shiftGlossary={disconnectGlossary} onLeft={true} />
+                    <GlossaryList title={t("CONNECTED_GLOSSARIES")} glossaries={connectedGlossaries} shiftGlossary={disconnectGlossary} onLeft={true} />
                     <div className={Styles.mobileSwitcher}>
                         <SelectableList onClick={() => setMobileSwitch(true)}>
-                            {t("View Available Glossaries")}
+                            {t("MANAGE_GLOSSARIES_MOBILE_SHIFT_1")}
                         </SelectableList>
                     </div>
                 </VerticalLayout>
                 <div></div>
                 <VerticalLayout>
-                    <GlossaryList title={t("Available Glossaries")} glossaries={disconnectedGlossaries} shiftGlossary={connectGlossary} onLeft={false} />
+                    <GlossaryList title={t("AVAILABLE_GLOSSARIES")} glossaries={disconnectedGlossaries} shiftGlossary={connectGlossary} onLeft={false} />
                     <div className={Styles.mobileSwitcher}>
                         <SelectableList onClick={() => setMobileSwitch(false)}>
-                            {t("Back to connected glossaries")}
+                            {t("MANAGE_GLOSSARIES_MOBILE_SHIFT_2")}
                         </SelectableList>
                     </div>
                 </VerticalLayout>
@@ -120,9 +129,9 @@ export default function Glossaries() : ReactElement {
         <Container>
             <VerticalLayout>
                 <PageHeading level={3}>{t("MANAGE_GLOSSARIES")}</PageHeading>
-                <span>{t("When translators are using the Glossary feature, only the results from the connected glossaries are shown.")}</span>
+                <span>{t("MANAGE_GLOSSARIES_PROMPT_1")}</span>
                 <br />
-                <span>{t("To connect or disconnect a glossary to the project, select it from the list.")}</span>
+                <span>{t("MANAGE_GLOSSARIES_PROMPT_2")}</span>
                 <VerticalSpacer/>
                 <GlossaryManager />
             </VerticalLayout>
