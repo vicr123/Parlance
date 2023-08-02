@@ -20,6 +20,7 @@ import Modal from "../../../../../../components/Modal";
 import CommentsModal from "./Comments/CommentsModal";
 import Fetch from "../../../../../../helpers/Fetch";
 import PreloadingBlock from "../../../../../../components/PreloadingBlock";
+import GlossaryLookup from "./GlossaryLookup";
 
 function TranslationPart({
                              entry,
@@ -153,7 +154,8 @@ export default function TranslationArea({
                                             onPushUpdate,
                                             canEdit,
                                             tabIndex,
-                                            searchParams
+                                            searchParams,
+                                            glossary
                                         }) {
     const {project, subproject, language, key} = useParams();
     const {t} = useTranslation();
@@ -264,7 +266,8 @@ export default function TranslationArea({
                                                 translationDirection={"ltr"} readOnly={true}
                                                 onChange={() => {
                                                 }} showPlaceholders={altDown}
-                                                placeholders={translationPlaceholders}/>
+                                                placeholders={translationPlaceholders} />
+                        <GlossaryLookup glossary={glossary} sourceString={entry.source} />
                     </Untabbable>
                 </div>
                 <div className={Styles.keyContainer}>

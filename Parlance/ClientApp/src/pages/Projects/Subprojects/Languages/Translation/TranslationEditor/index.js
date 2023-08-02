@@ -21,6 +21,7 @@ export default function TranslationEditor() {
     const [entries, setEntries] = useState([]);
     const [subprojectData, setSubprojectData] = useState({});
     const [subprojectLanguageData, setSubprojectLanguageData] = useState({});
+    const [glossaryData, setGlossaryData] = useState([]);
     const [searchParams, setSearchParams] = useState({
         query: "",
         filter: "all"
@@ -106,6 +107,10 @@ export default function TranslationEditor() {
     const updateSubprojectLanguage = async () => {
         setSubprojectLanguageData(await Fetch.get(`/api/Projects/${project}/${subproject}/${language}`));
     }
+    
+    const updateGlossaries = async () => {
+        setGlossaryData(await Fetch.get(`/api/Projects/${project}/${language}/glossary`));
+    }
 
     const canEdit = subprojectLanguageData?.canEdit;
 
@@ -115,6 +120,7 @@ export default function TranslationEditor() {
             updateEntries(),
             updateSubproject(),
             updateSubprojectLanguage(),
+            updateGlossaries(),
             i18n.pluralPatterns(language)
         ])
         setReady(true);
@@ -135,7 +141,7 @@ export default function TranslationEditor() {
                 <TranslationArea tabIndex={tabIndex} onPushUpdate={pushUpdate} entries={entries}
                                  translationDirection={translationDirection}
                                  translationFileType={subprojectData.translationFileType} canEdit={canEdit}
-                                 searchParams={searchParams}/>
+                                 searchParams={searchParams} glossary={glossaryData}/>
                 <AssistantArea entries={entries} searchParams={searchParams}
                                translationDirection={translationDirection}/>
             </div>

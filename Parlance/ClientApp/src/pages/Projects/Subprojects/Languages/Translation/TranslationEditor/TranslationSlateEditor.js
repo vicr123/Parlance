@@ -90,7 +90,7 @@ class TranslationSlateEditor extends React.Component {
         return <TranslationSlateEditorInner {...this.props} editor={this.state.editor}
                                             forceSave={this.forceSave.bind(this)} currentKey={this.state.currentKey}
                                             setCurrentKey={this.setCurrentKey.bind(this)}
-                                            setContents={this.setContents.bind(this)}/>
+                                            setContents={this.setContents.bind(this)} />
     }
 }
 
