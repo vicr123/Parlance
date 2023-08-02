@@ -1,12 +1,19 @@
 import {useTranslation} from "react-i18next";
 import Modal from "../Modal";
 import {VerticalLayout} from "../Layouts";
-import {useEffect, useState} from "react";
+import {ReactElement, ReactNode, useEffect, useState} from "react";
 
-export default function ErrorModal({error, onContinue, specialRenderings}) {
+interface ErrorModalProps {
+    error: any;
+    onContinue: () => void;
+    specialRenderings?: {[key: string]: ReactNode};
+    okButtonText?: string;
+}
+
+export default function ErrorModal({error, onContinue, specialRenderings, okButtonText}: ErrorModalProps): ReactElement {
     const {t} = useTranslation();
-    const [message, setMessage] = useState(t("ERROR_GENERIC"));
-    const [specialRendering, setSpecialRendering] = useState(null);
+    const [message, setMessage] = useState<string>(t("ERROR_GENERIC"));
+    const [specialRendering, setSpecialRendering] = useState<ReactNode | null>(null);
 
     useEffect(() => {
         (async () => {
@@ -62,10 +69,12 @@ export default function ErrorModal({error, onContinue, specialRenderings}) {
         })();
     }, [error])
 
-    if (specialRendering) return specialRendering;
+    if (specialRendering) return <>
+        specialRendering
+    </>;
 
     return <Modal buttons={[{
-        text: t("OK"),
+        text: okButtonText || t("OK"),
         onClick: () => {
             if (onContinue) {
                 onContinue();

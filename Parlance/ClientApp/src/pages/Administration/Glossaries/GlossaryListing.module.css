@@ -1,0 +1,9 @@
+.glossaryItem {
+    display: flex;
+    flex-direction: column;
+}
+
+.glossaryItemSubtext {
+    font-size: 8pt;
+    color: var(--foreground-disabled-color);
+}

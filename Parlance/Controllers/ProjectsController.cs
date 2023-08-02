@@ -318,6 +318,33 @@ public class ProjectsController : Controller
         }
     }
     
+    
+    [HttpGet]
+    [Authorize(Policy = "ProjectManager")]
+    [Route("{project}/glossary")]
+    public async Task<IActionResult> GetConnectedGlossaries(string project)
+    {
+        try
+        {
+            var p = await _projectService.ProjectBySystemName(project);
+            return Json(_glossaryService.ConnectedGlossaries(p).Select(x => new
+            {
+                x.Id, x.Name
+            }));
+        }
+        catch (ProjectNotFoundException)
+        {
+            return NotFound();
+        }
+        catch (DbUpdateException ex) when (ex.InnerException is PostgresException
+                                           {
+                                               SqlState: PostgresErrorCodes.UniqueViolation
+                                           })
+        {
+            return Conflict();
+        }
+    }
+    
     [HttpPost]
     [Authorize(Policy = "ProjectManager")]
     [Route("{project}/glossary")]

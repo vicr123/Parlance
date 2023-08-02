@@ -3,8 +3,17 @@ import Styles from "./BackButton.module.css"
 import Icon from "./Icon";
 import {HorizontalLayout} from "./Layouts";
 import {useTranslation} from "react-i18next";
+import {ReactElement} from "react";
 
-export default function BackButton({onClick, inListPage, inTranslationView, text, className}) {
+interface BackButtonProps {
+    onClick: () => void;
+    inListPage?: boolean;
+    inTranslationView?: boolean;
+    text: string;
+    className?: string;
+}
+
+export default function BackButton({onClick, inListPage, inTranslationView, text, className}: BackButtonProps): ReactElement {
     const {t} = useTranslation();
 
     if (!text) text = t("BACK");
@@ -27,5 +36,4 @@ export default function BackButton({onClick, inListPage, inTranslationView, text
             {child}
         </Container>
     }
-
 }

@@ -44,6 +44,9 @@ public class GlossaryService : IGlossaryService
         await _parlanceContext.SaveChangesAsync();
     }
 
+    public List<Database.Models.Glossary> ConnectedGlossaries(Project project) =>
+        _parlanceContext.Projects.Include(x => x.Glossaries).Single(x => x == project).Glossaries;
+
     public async Task ConnectGlossary(Database.Models.Glossary glossary, Project project)
     {
         glossary.Projects.Add(project);
