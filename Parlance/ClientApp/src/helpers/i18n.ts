@@ -7,9 +7,30 @@ import Fetch from "./Fetch";
 import moment from "moment/moment";
 import 'moment/min/locales'
 
+type i18next = typeof i18n;
+
+interface ParlanceI18nExport extends i18next {
+    humanReadableLocale: (locale: string, selectedLanguage?: string) => string;
+    number: (locale: string, number: number) => string;
+    list: (locale: string, items: any[]) => string;
+    pluralPatterns: (locale: string) => Promise<PluralPattern[]>;
+    isRegionAgnostic: (locale: string) => boolean;
+    dir: (lng?: string) => "ltr" | "rtl";
+}
+
+interface PluralPattern {
+    category: string;
+    examples: number[];
+    index: number;
+}
+
+type PluralCategoryDictionary = {[key: string]: any};
+
+let exportMember = i18n as ParlanceI18nExport;
+
 let instance = i18n.use(HttpBackend);
 
-const pluralPatternsCache = {};
+const pluralPatternsCache: PluralCategoryDictionary | Promise<PluralPattern[]> = {};
 
 if (process.env.REACT_APP_USE_PSEUDOTRANSLATION) {
     instance.use(new Pseudo({
@@ -42,7 +63,7 @@ instance.on("initialized", options => {
     moment.locale(i18n.resolvedLanguage);
 });
 
-i18n.humanReadableLocale = (locale, selectedLanguage = i18n.language) => {
+exportMember.humanReadableLocale = (locale, selectedLanguage = i18n.language) => {
     try {
         let parts = locale.split("-");
 
@@ -71,61 +92,48 @@ i18n.humanReadableLocale = (locale, selectedLanguage = i18n.language) => {
     }
 }
 
-i18n.number = (locale, number) => {
+exportMember.number = (locale, number) => {
     return (new Intl.NumberFormat(locale)).format(number);
 }
 
-i18n.list = (locale, items) => {
+exportMember.list = (locale, items) => {
     return (new Intl.ListFormat(locale, {
         style: "narrow",
         type: "conjunction"
     })).format(items);
 }
 
-i18n.pluralPatterns = async (locale) => {
-    let promise;
+exportMember.pluralPatterns = async (locale) => {
+    let promise: Promise<PluralPattern[]> | PluralCategoryDictionary;
     if (pluralPatternsCache[locale]) {
         promise = pluralPatternsCache[locale];
-        if (typeof (promise) !== "promise") {
+        if (promise instanceof Promise) {
             return pluralPatternsCache[locale];
         }
     } else {
-        promise = Fetch.get(`/api/cldr/${locale}/plurals`)
+        promise = Fetch.get<PluralPattern[]>(`/api/cldr/${locale}/plurals`)
     }
 
     pluralPatternsCache[locale] = promise;
-    let data = await promise;
-    let categories = {};
+    let data: PluralPattern[] = await promise as PluralPattern[];
+    let categories: PluralCategoryDictionary = {};
     for (let category of data) {
         categories[category.category] = category.examples;
     }
-
-    // let rules = new Intl.PluralRules(locale);
-    // let categories = {};
-    // for (let i = 0; i < 200; i++) {
-    //     let cat = rules.select(i);
-    //     if (!categories[cat]) categories[cat] = [];
-    //     categories[cat].push(i);
-    // }
-    //
-    // // Fix CLDR data???
-    // if (locale.toLowerCase() === "pt-br") {
-    //     categories["many"] = categories["other"];
-    // }
 
     pluralPatternsCache[locale] = categories;
     return categories;
 }
 
-i18n.isRegionAgnostic = locale => {
+exportMember.isRegionAgnostic = locale => {
     return locale.length === 2;
 };
 
-const i18ndir = i18n.dir.bind(i18n);
-i18n.dir = (lng) => {
+const i18ndir = exportMember.dir.bind(i18n);
+exportMember.dir = (lng) => {
     if (!lng) lng = i18n.resolvedLanguage || (i18n.languages && i18n.languages.length > 0 ? i18n.languages[0] : i18n.language);
     if (!lng) return "ltr";
     return i18ndir(lng);
 }
 
-export default i18n;
+export default exportMember;
