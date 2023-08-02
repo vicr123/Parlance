@@ -27,7 +27,7 @@ export default function GlossaryLookup({glossary, sourceString}: GlossaryLookupP
         matches.push(...tagger.tagSentence(sourceString)
             .filter(token => token.tag == "word")
             .filter(token => !glossary.some(x => x.term.toLowerCase() === token.normal.toLowerCase() || x.term.toLowerCase() === token.lemma?.toLowerCase()))
-            .filter(token => token.pos === "NN" || token.pos == "VB" || token.pos == "NNP" || token.pos == "VBZ")
+            .filter(token => token.pos === "NN" || token.pos == "VB" || token.pos == "NNP" || token.pos == "VBZ" || token.pos == "NNS")
             .map(token => ({
                 id: token.normal,
                 term: token.lemma || token.normal,
