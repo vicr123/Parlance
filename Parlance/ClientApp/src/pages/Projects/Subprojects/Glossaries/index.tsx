@@ -12,21 +12,27 @@ import Fetch from "../../../../helpers/Fetch";
 import SelectableList from "../../../../components/SelectableList";
 import Modal from "../../../../components/Modal";
 import ErrorModal from "../../../../components/modals/ErrorModal";
+import Icon from "../../../../components/Icon";
 
 interface GlossaryListProps {
     title: string;
     glossaries: Glossary[] | null;
     shiftGlossary: (glossary: Glossary) => void;
+    onLeft: boolean;
 }
 
-function GlossaryList({glossaries, title, shiftGlossary}: GlossaryListProps): ReactElement {
+function GlossaryList({glossaries, title, shiftGlossary, onLeft}: GlossaryListProps): ReactElement {
     const {t} = useTranslation();
     
-    return <div>
-        <PageHeading level={3}>{title}</PageHeading>
+    return <div className={`${Styles.listRoot} ${onLeft ? Styles.left : ""}`}>
+        <PageHeading className={Styles.listHeading} level={3}>{title}</PageHeading>
         {glossaries?.length ? <SelectableList items={glossaries?.map(x => ({
-            contents: x.name,
-            onClick: () => shiftGlossary(x)
+            contents: <div className={Styles.glossaryItem}>
+                <span>{x.name}</span>
+                <Icon className={Styles.glossaryItemIcon} icon={onLeft ? "go-next" : "go-previous"} flip={true} />
+            </div>,
+            onClick: () => shiftGlossary(x),
+            containerClass: Styles.glossaryItemContainer
         }))} /> : t("No glossaries")}
     </div>
 }
@@ -36,6 +42,7 @@ function GlossaryManager() : ReactElement {
     const {project} = useParams();
     const [connectedGlossaries, setConnectedGlossaries] = useState<Glossary[] | null>(null);
     const [disconnectedGlossaries, setDisconnectedGlossaries] = useState<Glossary[] | null>(null);
+    const [mobileSwitch, setMobileSwitch] = useState<boolean>(false);
     
     useEffect(() => {
         (async() => {
@@ -78,11 +85,29 @@ function GlossaryManager() : ReactElement {
         }
     }
     
-    return <div className={Styles.glossaryManagerRoot}>
-        <GlossaryList title={t("Connected Glossaries")} glossaries={connectedGlossaries} shiftGlossary={disconnectGlossary} />
-        <div></div>
-        <GlossaryList title={t("Available Glossaries")} glossaries={disconnectedGlossaries} shiftGlossary={connectGlossary} />
-    </div>
+    return <>
+        <div className={`${Styles.glossaryManagerRootContainer} ${mobileSwitch && Styles.mobileSwitch}`}>
+            <div className={Styles.glossaryManagerRoot}>
+                <VerticalLayout>
+                    <GlossaryList title={t("Connected Glossaries")} glossaries={connectedGlossaries} shiftGlossary={disconnectGlossary} onLeft={true} />
+                    <div className={Styles.mobileSwitcher}>
+                        <SelectableList onClick={() => setMobileSwitch(true)}>
+                            {t("View Available Glossaries")}
+                        </SelectableList>
+                    </div>
+                </VerticalLayout>
+                <div></div>
+                <VerticalLayout>
+                    <GlossaryList title={t("Available Glossaries")} glossaries={disconnectedGlossaries} shiftGlossary={connectGlossary} onLeft={false} />
+                    <div className={Styles.mobileSwitcher}>
+                        <SelectableList onClick={() => setMobileSwitch(false)}>
+                            {t("Back to connected glossaries")}
+                        </SelectableList>
+                    </div>
+                </VerticalLayout>
+            </div>
+        </div>
+    </>
 }
 
 export default function Glossaries() : ReactElement {

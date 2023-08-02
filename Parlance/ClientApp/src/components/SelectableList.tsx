@@ -8,8 +8,9 @@ import {useTranslation} from "react-i18next";
 import PreloadingBlock from "./PreloadingBlock";
 
 interface SelectableListItemObject {
-    onClick?: () => void;
+    onClick?: () => void
     contents: ReactNode
+    containerClass?: string
 }
 
 type SelectableListItem = SelectableListItemObject | string;
@@ -38,7 +39,7 @@ export default function SelectableList({children, onClick, items} : SelectableLi
                 if (typeof (item) === "string") {
                     return <div className={Styles.listSection}>{item}</div>
                 } else {
-                    return <div className={Styles.listItem} key={index} onClick={item.onClick}>{item.contents}</div>
+                    return <div className={`${Styles.listItem} ${item.containerClass}`} key={index} onClick={item.onClick}>{item.contents}</div>
                 }
             })}
         </div>
