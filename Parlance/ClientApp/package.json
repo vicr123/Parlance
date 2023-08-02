@@ -38,6 +38,7 @@
     "slate-react": "^0.83.0",
     "typescript-plugin-css-modules": "^5.0.1",
     "web-vitals": "^2.1.4",
+    "wink-pos-tagger": "^2.2.2",
     "workbox-background-sync": "^6.5.3",
     "workbox-broadcast-update": "^6.5.3",
     "workbox-cacheable-response": "^6.5.3",
