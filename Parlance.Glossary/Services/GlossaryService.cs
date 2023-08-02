@@ -24,7 +24,7 @@ public class GlossaryService : IGlossaryService
         return _parlanceContext.GlossaryItems.Single(x => x.Id == id);
     }
 
-    public IEnumerable<Database.Models.Glossary> Glossaries => _parlanceContext.Glossaries;
+    public IEnumerable<Database.Models.Glossary> Glossaries => _parlanceContext.Glossaries.Include(x => x.Projects);
 
     public async Task AddGlossary(string name)
     {
