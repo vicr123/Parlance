@@ -3,7 +3,7 @@ declare module "wink-pos-tagger" {
         value: string
         tag: "word" | "punctuation" | "alien"
         normal: string
-        pos: "DT" | "NN" | "RB" | "VBD" | "." | "PRP" | "MD" | "VB" | "PDT" | "BBS" | "NNP"  | "VBZ"
+        pos: "DT" | "NN" | "RB" | "VBD" | "." | "PRP" | "MD" | "VB" | "PDT" | "BBS" | "NNP" | "VBZ" | "NNS"
         lemma?: string
     }
     
