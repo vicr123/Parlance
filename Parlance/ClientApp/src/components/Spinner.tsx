@@ -1,7 +1,11 @@
 import Styles from "./Spinner.module.css";
-import {Suspense} from "react";
+import {ReactElement, ReactNode, Suspense} from "react";
 
-export default function Spinner() {
+interface SpinnerSuspenseProps {
+    children: ReactNode
+}
+
+export default function Spinner() : ReactElement {
     return <div className={Styles.spinner}>
         <svg
             width="48"
@@ -19,13 +23,13 @@ export default function Spinner() {
     </div>
 }
 
-Spinner.Container = function SpinnerContainer() {
+Spinner.Container = function SpinnerContainer() : ReactElement {
     return <div className={Styles.spinnerContainer}>
         <Spinner/>
     </div>
 }
 
-Spinner.Suspense = function SpinnerSuspense({children}) {
+Spinner.Suspense = function SpinnerSuspense({children} : SpinnerSuspenseProps) : ReactElement {
     return <Suspense fallback={<Spinner.Container/>}>
         {children}
     </Suspense>

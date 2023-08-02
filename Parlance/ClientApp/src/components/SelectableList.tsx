@@ -1,5 +1,5 @@
 import Styles from "./SelectableList.module.css"
-import React, {ReactNode, useEffect, useState} from "react";
+import React, {ReactElement, ReactNode, useEffect, useState} from "react";
 import Fetch from "../helpers/Fetch";
 import i18n from "../helpers/i18n";
 import {VerticalLayout} from "./Layouts";
@@ -20,7 +20,12 @@ interface SelectableListProps {
     items?: SelectableListItem[]
 }
 
-export default function SelectableList({children, onClick, items} : SelectableListProps) {
+interface SelectableListLocaleProps {
+    locales: string[];
+    onLocaleSelected: (locale: string) => void;
+}
+
+export default function SelectableList({children, onClick, items} : SelectableListProps): ReactElement | null {
     if (children) {
         return <div className={Styles.listContainer}>
             <div className={Styles.listItem} onClick={onClick}>{children}</div>
@@ -40,7 +45,7 @@ export default function SelectableList({children, onClick, items} : SelectableLi
     }
 }
 
-SelectableList.Locales = function Locales({locales, onLocaleSelected}) {
+SelectableList.Locales = function Locales({locales, onLocaleSelected}: SelectableListLocaleProps): ReactElement {
     const [query, setQuery] = useState("");
     const [availableLocales, setAvailableLocales] = useState<string[]>([]);
     const {t} = useTranslation();

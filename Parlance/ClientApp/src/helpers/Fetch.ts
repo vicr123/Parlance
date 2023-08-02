@@ -1,13 +1,10 @@
-let posts = {};
-let user = {};
-
 // Fetch is a custom wrapper around the fetch API.
 class Fetch {
     /**
      * Define and create custom headers for Fetch requests
      */
     static headers() {
-        let headers = {
+        let headers: {[key: string]: string} = {
             "Content-Type": "application/json"
         };
 
@@ -23,7 +20,7 @@ class Fetch {
      * @param {string} url endpoint for the API call
      * @param {function} resultCallback Callback to call when the result is ready containing raw fetch data
      */
-    static async performRequest<T>(method, url, resultCallback = (result: WebFetchResponse) => {}) : Promise<FetchResponse<T>> {
+    static async performRequest<T>(method: string, url: string, resultCallback = (result: WebFetchResponse) => {}) : Promise<FetchResponse<T>> {
         let err = null;
         // Display loading animation for the user
         let headers = Fetch.headers();
@@ -59,7 +56,7 @@ class Fetch {
      * @param {Object} headers Headers to include
      * @param resultCallback Callback to call after result is available but before the JSON is retrieved
      */
-    static async post<T>(url, data, headers = {}, resultCallback = (result: WebFetchResponse) => {}): Promise<T> {
+    static async post<T>(url: string, data: any, headers = {}, resultCallback = (result: WebFetchResponse) => {}): Promise<T> {
         let err = null;
         let result = await fetch(url, {
             method: "POST",
@@ -87,7 +84,7 @@ class Fetch {
      * @param {string} url API endpoint to access
      * @param {Object} data Payload to patch with
      */
-    static async patch<T>(url, data): Promise<FetchResponse<T>> {
+    static async patch<T>(url: string, data: any): Promise<FetchResponse<T>> {
         let err = null;
         let result = await fetch(`/api${url}`, {
             method: "PATCH",
@@ -109,7 +106,7 @@ class Fetch {
      * @param {string} url url to perform API request
      * @param {function} resultCallback Callback to call when the result is ready containing raw fetch data
      */
-    static get<T>(url, resultCallback = () => {}) : Promise<T> {
+    static get<T>(url: string, resultCallback = () => {}) : Promise<T> {
         return Fetch.performRequest("GET", url, resultCallback) as Promise<T>;
     }
 
@@ -117,57 +114,8 @@ class Fetch {
      * DELETE request to specified url
      * @param {string} url url to perform API request
      */
-    static delete<T>(url): Promise<T> {
+    static delete<T>(url: string): Promise<T> {
         return Fetch.performRequest("DELETE", url) as Promise<T>;
-    }
-
-    //TODO: Implement caching
-    //TODO: Types
-
-    /**
-     * Retrieves post based on postID
-     * @param {number} id postID
-     */
-    static async getPost(id) {
-        if (!posts[id]) {
-            posts[id] = await Fetch.get(`/posts/${id}`);
-        }
-        return posts[id];
-    }
-
-    /**
-     * Get the user based on userID
-     * @param {number} id userID from the backend
-     */
-    static async getUser(id) {
-        if (!user[id]) {
-            user[id] = await Fetch.get(`/users/${id}`);
-        }
-        return user[id];
-    }
-
-    /**
-     * Remove garbage posts with an illegal ID
-     * @param {number} id postID
-     */
-    static invalidatePost(id = -1) {
-        if (id === -1) {
-            posts = {};
-        } else if (posts.hasOwnProperty(id)) {
-            delete posts[id];
-        }
-    }
-
-    static invalidateUser(id) {
-        if (user.hasOwnProperty(id)) delete user[id];
-    }
-
-    /**
-     * Reset objects
-     */
-    static invalidate() {
-        posts = {};
-        user = {};
     }
 }
 

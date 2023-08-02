@@ -1,6 +1,12 @@
 import Styles from "./PageHeading.module.css";
+import {ReactElement, ReactNode} from "react";
 
-export default function(props) {
+interface PageHeadingProps {
+    level: 1 | 2 | 3;
+    children: ReactNode;
+}
+
+export default function PageHeading(props: PageHeadingProps): ReactElement {
     switch (props.level) {
         case 2:
             return <h2 className={Styles.level2}>{props.children}</h2>
