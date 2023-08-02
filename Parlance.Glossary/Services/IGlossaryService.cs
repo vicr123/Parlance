@@ -16,4 +16,5 @@ public interface IGlossaryService
     Task RemoveDefinition(GlossaryItem item);
     IEnumerable<GlossaryItem> GetTerms(Database.Models.Glossary glossary, Locale locale);
     IEnumerable<GlossaryItem> SearchGlossaryByProject(Project project, Locale locale, string? term);
+    List<Database.Models.Glossary> ConnectedGlossaries(Project project);
 }

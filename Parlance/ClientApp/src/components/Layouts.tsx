@@ -8,7 +8,7 @@ interface LayoutProps {
 }
 
 interface SpacerProps {
-    children: ReactNode;
+    children?: ReactNode;
     height?: number;
 }
 
