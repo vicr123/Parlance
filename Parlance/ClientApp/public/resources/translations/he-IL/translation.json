@@ -90,6 +90,7 @@
   "CONFIRM_PASSWORD": "אשר סיסמה",
   "CONFIRM_PASSWORD_PROMPT": "אשר את הסיסמה לחשבון שלך",
   "CONNECTED_GLOSSARIES": "",
+  "COPY": "",
   "COPY_SOURCE": "העתק מקור",
   "CREATE_ACCOUNT": "צור חשבון",
   "CREATE_ACCOUNT_PROMPT": "הירשם לחשבון {{type}} כדי לערוך תרגומים.",

@@ -90,6 +90,7 @@
   "CONFIRM_PASSWORD": "Confirm Password",
   "CONFIRM_PASSWORD_PROMPT": "Confirm the password for your account",
   "CONNECTED_GLOSSARIES": "Connected Glossaries",
+  "COPY": "Copy",
   "COPY_SOURCE": "Copy Source",
   "CREATE_ACCOUNT": "Create Account",
   "CREATE_ACCOUNT_PROMPT": "Register for a {{type}} account to make edits to translations.",

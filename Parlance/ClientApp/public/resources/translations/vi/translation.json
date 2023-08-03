@@ -88,6 +88,7 @@
   "CONFIRM_PASSWORD": "Xác nhận mật khẩu",
   "CONFIRM_PASSWORD_PROMPT": "Xác nhận mật khẩu cho tài khoản của bạn",
   "CONNECTED_GLOSSARIES": "",
+  "COPY": "",
   "COPY_SOURCE": "Chép nguồn",
   "CREATE_ACCOUNT": "Tạo tài khoản",
   "CREATE_ACCOUNT_PROMPT": "Đăng ký một tài khoản {{type}} để chỉnh sửa bản dịch.",
