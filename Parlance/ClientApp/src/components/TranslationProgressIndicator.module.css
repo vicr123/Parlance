@@ -1,8 +1,8 @@
 .root {
     display: grid;
-    grid-template-columns: 1fr max-content max-content 50%;
+    grid-template-columns: max-content 1fr max-content max-content;
     grid-template-rows: max-content max-content;
-    gap: 6px 6px;
+    gap: 6px 18px;
     grid-template-areas: 
     "title . deadline metrics"
     "progress progress progress progress";
@@ -21,10 +21,16 @@
 
 .metrics {
     display: flex;
-    flex-direction: row-reverse;
+    flex-direction: row;
+    justify-content: flex-end;
+    flex-wrap: wrap;
     gap: 18px;
 
     grid-area: metrics;
+}
+
+.deadline {
+    grid-area: deadline;
 }
 
 .percentComplete {
@@ -63,6 +69,11 @@
     font-size: 8pt;
 }
 
+.metricShortTitle {
+    font-size: 8pt;
+    display: none;
+}
+
 .progressBarSectionComplete {
     background-color: var(--translation-progress-indicator-complete);
 }
@@ -73,10 +84,6 @@
 
 .progressBarSectionWarnings {
     background-color: var(--translation-progress-indicator-warning);
-}
-
-.deadline {
-    grid-area: deadline;
 }
 
 .titleContainer {
@@ -94,4 +101,41 @@
     padding: 2px;
     background-color: var(--badge-background-color);
     border-radius: 5px;
+}
+
+@media (max-width: 700px) {
+    .root {
+        grid-template-areas: 
+            "title deadline"
+            "metrics metrics"
+            "progress progress";
+        grid-template-columns: 1fr;
+        grid-template-rows: max-content max-content max-content;
+    }
+    
+    .metrics {
+        justify-content: space-around;
+    }
+    
+    .deadline {
+        flex-direction: row;
+        gap: 2px;
+        align-items: baseline;
+    }
+}
+
+@media (max-width: 500px) {
+    :not(.deadline) > .metricShortTitle {
+        display: block;
+    }
+
+    :not(.deadline) > .metricTitle {
+        display: none;
+    }
+
+    .metric:not(.deadline) {
+        flex-direction: row;
+        gap: 2px;
+        align-items: baseline;
+    }
 }

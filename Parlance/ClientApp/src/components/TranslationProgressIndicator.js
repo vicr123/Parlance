@@ -6,7 +6,7 @@ import {calculateDeadline} from "../helpers/Misc";
 
 const percent = value => `${value * 100}%`;
 
-function TranslationProgressMetric({value, title, className}) {
+function TranslationProgressMetric({value, title, shortTitle, className}) {
     if (typeof (value) === "number") {
         if (value > 10000) {
             value = `${(value / 1000).toFixed(0)}k`
@@ -16,6 +16,7 @@ function TranslationProgressMetric({value, title, className}) {
     }
 
     return <div className={`${Styles.metric} ${className}`}>
+        <span className={Styles.metricShortTitle}>{shortTitle}</span>
         <span className={Styles.metricValue}>{value}</span>
         <span className={Styles.metricTitle}>{title}</span>
     </div>
@@ -47,23 +48,27 @@ export default function TranslationProgressIndicator({title, data, deadline, bad
         metrics.push([
             <TranslationProgressMetric key={"total"} value={data.count}
                                        title={t("TRANSLATION_PROGRESS_INDICATOR_TOTAL")}
+                                       shortTitle={"Σ"}
                                        className={Styles.percentComplete}/>,
-            <TranslationProgressMetric key={"complete"} value={`${Math.round(data.complete / data.count * 100)}%`}
+            <TranslationProgressMetric key={"complete"} shortTitle={"☑"} value={`${Math.round(data.complete / data.count * 100)}%`}
                                        title={t("TRANSLATION_PROGRESS_INDICATOR_COMPLETE")}
                                        className={Styles.percentComplete}/>,
             <TranslationProgressMetric key={"remain"} value={data.count - data.complete}
                                        title={t("translation:TRANSLATION_PROGRESS_INDICATOR_REMAINING")}
+                                       shortTitle={"☐"}
                                        className={Styles.remain}/>
         ])
     }
     if (data?.warnings > 0) metrics.push(<TranslationProgressMetric key={"warnings"} value={data.warnings}
                                                                     title={t("TRANSLATION_PROGRESS_INDICATOR_WARNINGS")}
+                                                                    shortTitle={"!"}
                                                                     className={Styles.warnings}/>);
     if (data?.errors > 0) metrics.push(<TranslationProgressMetric key={"errors"} value={data.errors}
                                                                   title={t("TRANSLATION_PROGRESS_INDICATOR_ERRORS")}
+                                                                  shortTitle={"✖"}
                                                                   className={Styles.errors}/>);
-
-    metrics = metrics.flat();
+    
+    metrics = metrics.flat().reverse();
 
     let titleStyles = [Styles.title];
     if (data?.count == null) titleStyles.push(Styles.newTitle);
@@ -77,6 +82,7 @@ export default function TranslationProgressIndicator({title, data, deadline, bad
         </div>
         {deadlineData.valid && <TranslationProgressMetric key={"deadline"} value={deadlineData.text}
                                                           title={t("TRANSLATION_PROGRESS_INDICATOR_REMAINING")}
+                                                          shortTitle={"..."}
                                                           className={`${Styles.deadline} ${deadlineData.ms.asDays() <= 3 && Styles.errors}`}/>}
         <div className={Styles.metrics}>
             {metrics}
