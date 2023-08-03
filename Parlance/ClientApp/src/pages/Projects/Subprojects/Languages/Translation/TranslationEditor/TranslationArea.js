@@ -155,7 +155,9 @@ export default function TranslationArea({
                                             canEdit,
                                             tabIndex,
                                             searchParams,
-                                            glossary
+                                            glossary,
+                                            connectedGlossaries,
+                                            onGlossaryItemAdded
                                         }) {
     const {project, subproject, language, key} = useParams();
     const {t} = useTranslation();
@@ -267,7 +269,7 @@ export default function TranslationArea({
                                                 onChange={() => {
                                                 }} showPlaceholders={altDown}
                                                 placeholders={translationPlaceholders} />
-                        <GlossaryLookup glossary={glossary} sourceString={entry.source} />
+                        <GlossaryLookup glossary={glossary} sourceString={entry.source} connectedGlossaries={connectedGlossaries} onGlossaryItemAdded={onGlossaryItemAdded} />
                     </Untabbable>
                 </div>
                 <div className={Styles.keyContainer}>

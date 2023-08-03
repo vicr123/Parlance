@@ -5,7 +5,7 @@ const commitish = "v1.10";
 
 interface IconProps {
     icon: string;
-    flip: boolean;
+    flip?: boolean;
     className?: string;
 }
 

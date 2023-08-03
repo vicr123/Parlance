@@ -1,14 +1,24 @@
-import {GlossaryItem, PartOfSpeech, PartOfSpeechTranslationString} from "../../../../../../interfaces/glossary";
+import {
+    Glossary,
+    GlossaryItem,
+    PartOfSpeech,
+    PartOfSpeechTranslationString
+} from "../../../../../../interfaces/glossary";
 import {useEffect, useState} from "react";
 import posTagger from "wink-pos-tagger"
 
 import Styles from "./GlossaryLookup.module.css"
 import SmallButton from "../../../../../../components/SmallButton";
 import {useTranslation} from "react-i18next";
+import Modal from "../../../../../../components/Modal";
+import AddToGlossaryModal from "../../../../../../components/modals/glossary/AddToGlossaryModal";
+import {useParams} from "react-router-dom";
 
 interface GlossaryLookupProps {
     glossary: GlossaryItem[]
     sourceString: string
+    connectedGlossaries: Glossary[]
+    onGlossaryItemAdded: (item: GlossaryItem) => void;
 }
 
 interface GlossaryResult {
@@ -18,7 +28,8 @@ interface GlossaryResult {
     partOfSpeech: PartOfSpeech
 }
 
-export default function GlossaryLookup({glossary, sourceString}: GlossaryLookupProps) {
+export default function GlossaryLookup({glossary, sourceString, connectedGlossaries, onGlossaryItemAdded}: GlossaryLookupProps) {
+    const {language} = useParams();
     const {t} = useTranslation();
     const [matches, setMatches] = useState<GlossaryResult[]>([]);
     
@@ -39,6 +50,10 @@ export default function GlossaryLookup({glossary, sourceString}: GlossaryLookupP
         setMatches([...new Map(matches.map(item => [item.term, item])).values()]);
     }, [glossary, sourceString])
     
+    const addToGlossary = (match: GlossaryResult) => {
+        Modal.mount(<AddToGlossaryModal language={language!} initialTerm={match.term} connectedGlossaries={connectedGlossaries} onGlossaryItemAdded={onGlossaryItemAdded} />);
+    }
+    
     if (matches) {
         return <div>
             {matches.map(match => <div key={match.id} className={Styles.match}>
@@ -46,7 +61,7 @@ export default function GlossaryLookup({glossary, sourceString}: GlossaryLookupP
                 <span>{match.translation || "?"}</span>
                 {match.translation ? null : 
                 <span className={Styles.suggestAddButton}>
-                    <SmallButton>{t("add to glossary")}</SmallButton>
+                    <SmallButton onClick={() => addToGlossary(match)}>{t("add to glossary")}</SmallButton>
                 </span>}
             </div>)}
         </div>

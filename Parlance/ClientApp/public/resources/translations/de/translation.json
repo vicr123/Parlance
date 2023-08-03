@@ -38,6 +38,7 @@
   "ADD_PROJECT_ERROR_PROMPT": "",
   "ADD_PROJECT_PROMPT_1": "Gib die erforderlichen Daten, um ein Projekt hinzuzufügen, ein",
   "ADD_PROJECT_PROMPT_2": "Stelle sicher, dass das Projekt eine <1>.parlance.json</1> Datei sich im Wurzelverzeichnis befindet.",
+  "ADD_TO_GLOSSARY": "",
   "APPLY_ATTRIBUTION_SETTINGS": "",
   "ASSISTANT": "Assistent",
   "ASSISTANT_DESCRIPTION": "Der Assistent gibt dir hilfreiche Informationen, um eine Übersetzung zu erstellen.",

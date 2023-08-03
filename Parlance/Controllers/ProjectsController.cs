@@ -310,7 +310,6 @@ public class ProjectsController : Controller
     
     
     [HttpGet]
-    [Authorize(Policy = "ProjectManager")]
     [Route("{project}/glossary")]
     public async Task<IActionResult> GetConnectedGlossaries(string project)
     {
