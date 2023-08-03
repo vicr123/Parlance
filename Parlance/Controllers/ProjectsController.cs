@@ -657,7 +657,7 @@ public class ProjectsController : Controller
             var locale = language.ToLocale();
             return Json(_glossaryService.SearchGlossaryByProject(p, locale, null).Select(x => new
             {
-                x.Id, x.Term, x.Translation
+                x.Id, x.Term, x.Translation, x.PartOfSpeech
             }));
         }
         catch (ProjectNotFoundException)
@@ -677,7 +677,7 @@ public class ProjectsController : Controller
             var locale = language.ToLocale();
             return Json(_glossaryService.SearchGlossaryByProject(p, locale, data.SearchTerm).Select(x => new
             {
-                x.Id, x.Term, x.Translation
+                x.Id, x.Term, x.Translation, x.PartOfSpeech
             }));
         }
         catch (ProjectNotFoundException)

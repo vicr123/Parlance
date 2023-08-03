@@ -12,7 +12,8 @@ public interface IGlossaryService
     Database.Models.Glossary GlossaryById(Guid id);
     Task DisconnectGlossary(Database.Models.Glossary glossary, Project project);
     GlossaryItem GlossaryItemById(Guid id);
-    Task Define(Database.Models.Glossary glossary, string term, string translation, Locale locale);
+    Task Define(Database.Models.Glossary glossary, string term, PartOfSpeech partOfSpeech, string translation,
+        Locale locale);
     Task RemoveDefinition(GlossaryItem item);
     IEnumerable<GlossaryItem> GetTerms(Database.Models.Glossary glossary, Locale locale);
     IEnumerable<GlossaryItem> SearchGlossaryByProject(Project project, Locale locale, string? term);
