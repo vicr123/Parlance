@@ -89,6 +89,7 @@
   "CONFIRM_PASSWORD": "Wachtwoord Bevestigen",
   "CONFIRM_PASSWORD_PROMPT": "Bevestig het wachtwoord voor je account",
   "CONNECTED_GLOSSARIES": "",
+  "COPY": "",
   "COPY_SOURCE": "Bron Kopiëren",
   "CREATE_ACCOUNT": "Account Maken",
   "CREATE_ACCOUNT_PROMPT": "Registreer voor een {{type}}-account om vertalingen te bewerken.",

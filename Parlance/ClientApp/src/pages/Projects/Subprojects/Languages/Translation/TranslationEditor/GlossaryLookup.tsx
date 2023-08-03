@@ -54,15 +54,21 @@ export default function GlossaryLookup({glossary, sourceString, connectedGlossar
         Modal.mount(<AddToGlossaryModal language={language!} initialTerm={match.term} connectedGlossaries={connectedGlossaries} onGlossaryItemAdded={onGlossaryItemAdded} />);
     }
     
+    const copy = async (match: GlossaryResult) => {
+        await navigator.clipboard.writeText(match.translation!);
+    }
+    
     if (matches && connectedGlossaries.length) {
         return <div>
             {matches.map(match => <div key={match.id} className={Styles.match}>
                 <span>{match.term} {match.translation && `(${t(PartOfSpeechTranslationString(match.partOfSpeech))})`} = </span>
                 <span>{match.translation || "?"}</span>
-                {match.translation ? null : 
                 <span className={Styles.suggestAddButton}>
+                {match.translation ?
+                    <SmallButton onClick={() => copy(match)}>{t("COPY")}</SmallButton> : 
                     <SmallButton onClick={() => addToGlossary(match)}>{t("ADD_TO_GLOSSARY")}</SmallButton>
-                </span>}
+                }
+                </span>
             </div>)}
         </div>
     } else {

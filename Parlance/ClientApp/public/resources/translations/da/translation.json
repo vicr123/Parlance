@@ -88,6 +88,7 @@
   "CONFIRM_PASSWORD": "Bekræft adgangskode",
   "CONFIRM_PASSWORD_PROMPT": "Bekræft adgangskoden til din konto",
   "CONNECTED_GLOSSARIES": "",
+  "COPY": "",
   "COPY_SOURCE": "",
   "CREATE_ACCOUNT": "Opret konto",
   "CREATE_ACCOUNT_PROMPT": "Registrer en {{type}}-konto for at redigere oversættelser.",
