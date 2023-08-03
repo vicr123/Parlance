@@ -94,6 +94,11 @@ public class GlossaryManagerController : Controller
     {
         try
         {
+            if (string.IsNullOrEmpty(data.Term) || string.IsNullOrEmpty(data.Translation))
+            {
+                return BadRequest();
+            }
+            
             var g = _glossaryService.GlossaryById(glossary);
             var locale = language.ToLocale();
             await _glossaryService.Define(g, data.Term, data.PartOfSpeech, data.Translation, locale);
@@ -108,7 +113,7 @@ public class GlossaryManagerController : Controller
     [Authorize(Policy = "LanguageEditor")]
     [HttpDelete]
     [Route("{glossary:guid}/{language}/{term:guid}")]
-    public async Task<IActionResult> DefineTerm(Guid glossary, string language, Guid term)
+    public async Task<IActionResult> DeleteTerm(Guid glossary, string language, Guid term)
     {
         try
         {

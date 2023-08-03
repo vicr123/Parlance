@@ -61,7 +61,7 @@ export default function GlossaryLookup({glossary, sourceString, connectedGlossar
                 <span>{match.translation || "?"}</span>
                 {match.translation ? null : 
                 <span className={Styles.suggestAddButton}>
-                    <SmallButton onClick={() => addToGlossary(match)}>{t("add to glossary")}</SmallButton>
+                    <SmallButton onClick={() => addToGlossary(match)}>{t("ADD_TO_GLOSSARY")}</SmallButton>
                 </span>}
             </div>)}
         </div>
