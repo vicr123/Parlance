@@ -22,6 +22,7 @@ import Fetch from "../../../../../../helpers/Fetch";
 import PreloadingBlock from "../../../../../../components/PreloadingBlock";
 import GlossaryLookup from "./GlossaryLookup";
 import AddToGlossaryModal from "../../../../../../components/modals/glossary/AddToGlossaryModal";
+import SearchGlossaryModal from "../../../../../../components/modals/glossary/SearchGlossaryModal";
 
 function TranslationPart({
                              entry,
@@ -254,7 +255,7 @@ export default function TranslationArea({
     };
     
     const searchGlossary = () => {
-        
+        Modal.mount(<SearchGlossaryModal language={language} glossaryData={glossary} />)
     }
     
     const addToGlossary = () => {
