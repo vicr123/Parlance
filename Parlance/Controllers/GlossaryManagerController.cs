@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 using Npgsql;
 using Parlance.CldrData;
+using Parlance.Database.Models;
 using Parlance.Glossary.Services;
 
 namespace Parlance.Controllers;
@@ -76,7 +77,8 @@ public class GlossaryManagerController : Controller
             {
                 term.Id,
                 term.Term,
-                term.Translation
+                term.Translation,
+                term.PartOfSpeech
             })));
         }
         catch (InvalidOperationException)
@@ -94,7 +96,7 @@ public class GlossaryManagerController : Controller
         {
             var g = _glossaryService.GlossaryById(glossary);
             var locale = language.ToLocale();
-            await _glossaryService.Define(g, data.Term, data.Translation, locale);
+            await _glossaryService.Define(g, data.Term, data.PartOfSpeech, data.Translation, locale);
             return NoContent();
         }
         catch (InvalidOperationException)
@@ -134,5 +136,6 @@ public class GlossaryManagerController : Controller
     {
         public required string Term { get; set; }
         public required string Translation { get; set; }
+        public required PartOfSpeech PartOfSpeech { get; set; }
     }
 }

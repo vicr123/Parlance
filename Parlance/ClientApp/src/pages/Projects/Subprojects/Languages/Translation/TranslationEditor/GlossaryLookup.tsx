@@ -1,4 +1,4 @@
-import {GlossaryItem} from "../../../../../../interfaces/glossary";
+import {GlossaryItem, PartOfSpeech, PartOfSpeechTranslationString} from "../../../../../../interfaces/glossary";
 import {useEffect, useState} from "react";
 import posTagger from "wink-pos-tagger"
 
@@ -15,6 +15,7 @@ interface GlossaryResult {
     id: string
     term: string
     translation: string | null
+    partOfSpeech: PartOfSpeech
 }
 
 export default function GlossaryLookup({glossary, sourceString}: GlossaryLookupProps) {
@@ -31,7 +32,8 @@ export default function GlossaryLookup({glossary, sourceString}: GlossaryLookupP
             .map(token => ({
                 id: token.normal,
                 term: token.lemma || token.normal,
-                translation: null
+                translation: null,
+                partOfSpeech: PartOfSpeech.Unknown
             })
         ))
         setMatches([...new Map(matches.map(item => [item.term, item])).values()]);
@@ -40,7 +42,7 @@ export default function GlossaryLookup({glossary, sourceString}: GlossaryLookupP
     if (matches) {
         return <div>
             {matches.map(match => <div key={match.id} className={Styles.match}>
-                <span>{match.term} = </span>
+                <span>{match.term} {match.translation && `(${t(PartOfSpeechTranslationString(match.partOfSpeech))})`} = </span>
                 <span>{match.translation || "?"}</span>
                 {match.translation ? null : 
                 <span className={Styles.suggestAddButton}>

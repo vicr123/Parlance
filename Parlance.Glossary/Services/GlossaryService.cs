@@ -65,7 +65,7 @@ public class GlossaryService : IGlossaryService
         await _parlanceContext.SaveChangesAsync();
     }
 
-    public async Task Define(Database.Models.Glossary glossary, string term, string translation, Locale locale)
+    public async Task Define(Database.Models.Glossary glossary, string term, PartOfSpeech partOfSpeech, string translation, Locale locale)
     {
         var glossaryItem = new GlossaryItem
         {

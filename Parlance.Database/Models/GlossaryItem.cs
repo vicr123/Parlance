@@ -3,6 +3,14 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Parlance.Database.Models;
 
+public enum PartOfSpeech
+{
+    Other = 0,
+    Noun,
+    Verb,
+    Adjective
+}
+
 public class GlossaryItem
 {
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -10,6 +18,8 @@ public class GlossaryItem
     public Guid Id { get; set; }
 
     public string Term { get; set; } = null!;
+
+    public PartOfSpeech PartOfSpeech { get; set; }
 
     public string Translation { get; set; } = null!;
 

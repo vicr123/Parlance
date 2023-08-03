@@ -228,6 +228,9 @@ namespace Parlance.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<int>("PartOfSpeech")
+                        .HasColumnType("integer");
+
                     b.Property<string>("Term")
                         .IsRequired()
                         .HasColumnType("text");
