@@ -11,6 +11,7 @@ import Spinner from "../../../../../../components/Spinner";
 import {KeyboardShortcuts, useKeyboardShortcut} from "./KeyboardShortcuts";
 import {useTabIndex} from "react-tabindex";
 import UserManager from "../../../../../../helpers/UserManager";
+import AddToGlossaryModal from "../../../../../../components/modals/glossary/AddToGlossaryModal";
 
 const EntryList = lazy(() => import("./EntryList"));
 const TranslationArea = lazy(() => import("./TranslationArea"));
@@ -70,6 +71,8 @@ export default function TranslationEditor() {
     useKeyboardShortcut(KeyboardShortcuts.PreviousUnfinished, goToPrevUnfinished);
     useKeyboardShortcut(KeyboardShortcuts.Next, goToNext);
     useKeyboardShortcut(KeyboardShortcuts.Previous, goToPrev);
+    useKeyboardShortcut(KeyboardShortcuts.AddToGlossary, () => Modal.mount(<AddToGlossaryModal language={language} connectedGlossaries={connectedGlossaries} onGlossaryItemAdded={onGlossaryItemAdded} />));
+    useKeyboardShortcut(KeyboardShortcuts.SearchGlossary, () => {});
 
     const updateManager = useUpdateManager();
     updateManager.on("outOfDate", () => {

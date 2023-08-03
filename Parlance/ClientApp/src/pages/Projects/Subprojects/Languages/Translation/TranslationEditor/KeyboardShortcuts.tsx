@@ -1,6 +1,10 @@
 import useHotkeys from "@reecelucas/react-use-hotkeys";
 
-const KeyboardShortcuts = {
+export type KeyboardModifier = "Control" | "Alt" | "Shift";
+
+export type KeyboardShortcut = readonly [...KeyboardModifier[], string]
+
+export const KeyboardShortcuts: Record<string, KeyboardShortcut[] | KeyboardShortcut[][]> = {
     NextUnfinished: [["Control", "Enter"], ["Control", "L"]],
     PreviousUnfinished: [["Control", "H"]],
     Next: [["Control", "J"]],
@@ -16,13 +20,16 @@ const KeyboardShortcuts = {
         [["Alt", "7"], ["Alt", "¶"]],
         [["Alt", "8"], ["Alt", "•"]],
         [["Alt", "9"], ["Alt", "ª"]]
-    ]
+    ],
+    SearchGlossary: [["Control", "G"]],
+    AddToGlossary: [["Control", "Shift", "G"]]
 };
 
-function useKeyboardShortcut(shortcut, callback, enabled = true) {
+export function useKeyboardShortcut(shortcut: KeyboardShortcut, callback: (e: KeyboardEvent) => void, enabled = true) {
     const isMac = navigator.userAgent.toLowerCase().includes("mac");
 
     for (let item of shortcut) {
+        // @ts-ignore
         let resolved = item.map(x => {
             if (isMac) {
                 switch (x) {
@@ -47,6 +54,3 @@ function useKeyboardShortcut(shortcut, callback, enabled = true) {
         });
     }
 }
-
-export {KeyboardShortcuts};
-export {useKeyboardShortcut};
