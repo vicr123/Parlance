@@ -34,12 +34,14 @@ export default function GlossaryLookup({glossary, sourceString, connectedGlossar
     const [matches, setMatches] = useState<GlossaryResult[]>([]);
     
     useEffect(() => {
-        let matches: GlossaryResult[] = glossary.filter(item => new RegExp(`\\b${item.term}\\b`, "iu").exec(sourceString) !== null);
         const tagger = posTagger();
-        matches.push(...tagger.tagSentence(sourceString)
+        const tokens = tagger.tagSentence(sourceString)
             .filter(token => token.tag == "word")
-            .filter(token => !glossary.some(x => x.term.toLowerCase() === token.normal.toLowerCase() || x.term.toLowerCase() === token.lemma?.toLowerCase()))
-            .filter(token => token.pos === "NN" || token.pos == "VB" || token.pos == "NNP" || token.pos == "VBZ" || token.pos == "NNS")
+            
+            .filter(token => token.pos === "NN" || token.pos == "VB" || token.pos == "NNP" || token.pos == "VBZ" || token.pos == "NNS");
+        
+        let matches: GlossaryResult[] = glossary.filter(item => tokens.some(token => item.term.toLowerCase() == (token.lemma || token.normal).toLowerCase()) || new RegExp(`\\b${item.term}\\b`, "iu").exec(sourceString) !== null);
+        matches.push(...tokens.filter(token => !glossary.some(x => x.term.toLowerCase() === (token.lemma || token.normal).toLowerCase()))
             .map(token => ({
                 id: token.normal,
                 term: token.lemma || token.normal,
