@@ -1,4 +1,4 @@
-import {ReactElement, useState} from "react";
+import {ReactElement, useId, useState} from "react";
 import Modal from "../../Modal";
 import {Trans, useTranslation} from "react-i18next";
 import {HorizontalLayout, VerticalLayout, VerticalSpacer} from "../../Layouts";
@@ -26,9 +26,12 @@ export default function AddToGlossaryModal({initialTerm, connectedGlossaries, la
     const [pos, setPos] = useState<PartOfSpeech>(PartOfSpeech.Unknown);
     const [translation, setTranslation] = useState<string>("");
     const [addGlossary, setAddGlossary] = useState<Glossary>(connectedGlossaries[0]);
-    const [selectedLanguage, setSelectedLanguage] = useState<string>(language);
+    const [regionAgnostic, setRegionAgnostic] = useState<boolean>(true);
     const [error, setError] = useState<string>();
+    const regionAgnosticCheckboxId = useId();
     const {t} = useTranslation();
+    
+    const selectedLanguage = () => regionAgnostic ? language.substring(0, 2) : language;
     
     const addToGlossary = async () => {
         if (!term) {
@@ -44,7 +47,7 @@ export default function AddToGlossaryModal({initialTerm, connectedGlossaries, la
         try {
             Modal.unmount();
             
-            await Fetch.post(`/api/glossarymanager/${addGlossary.id}/${selectedLanguage}`, {
+            await Fetch.post(`/api/glossarymanager/${addGlossary.id}/${selectedLanguage()}`, {
                 term: term,
                 translation: translation,
                 partOfSpeech: pos
@@ -80,8 +83,12 @@ export default function AddToGlossaryModal({initialTerm, connectedGlossaries, la
                 </select>
             </HorizontalLayout>
             <LineEdit placeholder={t("TRANSLATION_AREA_TITLE", {
-                lang: I18n.humanReadableLocale(selectedLanguage)
+                lang: I18n.humanReadableLocale(selectedLanguage())
             })} value={translation} onChange={e => setTranslation((e.target as HTMLInputElement).value)} />
+            {I18n.isRegionAgnostic(language) || <div>
+                <input id={regionAgnosticCheckboxId} type={"checkbox"} checked={regionAgnostic} onChange={e => setRegionAgnostic((e.target as HTMLInputElement).checked)} />
+                <label htmlFor={regionAgnosticCheckboxId}>{t("REGION_AGNOSTIC")}</label>
+            </div>}
             {connectedGlossaries.length > 1 && <>
                 <VerticalSpacer />
                 <PageHeading level={3}>{t("GLOSSARY")}</PageHeading>
