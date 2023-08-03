@@ -20,6 +20,7 @@ interface ModalExportProps {
     children?: ReactNode
     onBackClicked?: () => {}
     heading?: string
+    topComponent?: ReactNode
 }
 
 interface ModalProps extends WithTranslation, ModalExportProps {
@@ -53,6 +54,7 @@ class Modal extends React.Component<ModalProps, ModalState> {
             dir={i18n.dir()}>
             <div className={`${Styles.ModalContainer} ${this.props.popover && Styles.PopoverContainer}`}>
                 {this.renderHeading()}
+                {this.renderTopComponent()}
                 {this.renderModalText()}
                 {this.renderModalList()}
                 <div className={Styles.ModalButtonContainer}>
@@ -63,7 +65,8 @@ class Modal extends React.Component<ModalProps, ModalState> {
                             return <div onClick={button.onClick} className={classes.join(" ")}
                                         key={button.text}>{button.text}</div>
                         } else {
-                            //deprecated
+                            // deprecated
+                            // @ts-ignore
                             return <div onClick={this.props.onButtonClick?.bind(this, button)}
                                         className={Styles.ModalButton} key={button}>{button}</div>
                         }
@@ -73,14 +76,14 @@ class Modal extends React.Component<ModalProps, ModalState> {
         </div>
     }
 
-    renderModalList() {
+    private renderModalList() {
         // @ts-ignore
         let children = React.Children.toArray(this.props.children).filter(child => child.type?.displayName === "ModalList")
 
         return children.length !== 0 && <>{children}</>
     }
 
-    renderModalText() {
+    private renderModalText() {
         // @ts-ignore
         let children = React.Children.toArray(this.props.children).filter(child => child.type?.displayName !== "ModalList")
 
@@ -89,7 +92,7 @@ class Modal extends React.Component<ModalProps, ModalState> {
         </div>
     }
 
-    renderHeading() {
+    private renderHeading() {
         if (this.props.heading) {
             return <div className={Styles.ModalHeading}>
                 {this.props.popover &&
@@ -97,6 +100,15 @@ class Modal extends React.Component<ModalProps, ModalState> {
                                                                                                 flip={true}/></div>}
                 <span className={Styles.HeadingText}>{this.props.heading}</span>
             </div>
+        }
+        return null;
+    }
+
+    private renderTopComponent() {
+        if (this.props.topComponent) {
+            return <div className={Styles.ModalComponent}>
+                {this.props.topComponent}
+            </div>;
         }
         return null;
     }
