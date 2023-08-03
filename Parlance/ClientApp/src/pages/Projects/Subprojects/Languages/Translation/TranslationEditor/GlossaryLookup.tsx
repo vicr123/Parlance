@@ -54,7 +54,7 @@ export default function GlossaryLookup({glossary, sourceString, connectedGlossar
         Modal.mount(<AddToGlossaryModal language={language!} initialTerm={match.term} connectedGlossaries={connectedGlossaries} onGlossaryItemAdded={onGlossaryItemAdded} />);
     }
     
-    if (matches) {
+    if (matches && connectedGlossaries.length) {
         return <div>
             {matches.map(match => <div key={match.id} className={Styles.match}>
                 <span>{match.term} {match.translation && `(${t(PartOfSpeechTranslationString(match.partOfSpeech))})`} = </span>
