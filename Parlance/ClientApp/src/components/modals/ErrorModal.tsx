@@ -5,7 +5,7 @@ import {ReactElement, ReactNode, useEffect, useState} from "react";
 
 interface ErrorModalProps {
     error: any;
-    onContinue: () => void;
+    onContinue?: () => void;
     specialRenderings?: {[key: string]: ReactNode};
     okButtonText?: string;
 }

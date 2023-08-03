@@ -39,6 +39,7 @@
   "ADD_PROJECT_ERROR_PROMPT": "Couldn't add the project. Try again later.",
   "ADD_PROJECT_PROMPT_1": "Enter the required data to add a project",
   "ADD_PROJECT_PROMPT_2": "Ensure that the project contains a <1>.parlance.json</1> file in the root.",
+  "ADD_TO_GLOSSARY": "Add to Glossary",
   "APPLY_ATTRIBUTION_SETTINGS": "Apply Attribution Settings",
   "ASSISTANT": "Assistant",
   "ASSISTANT_DESCRIPTION": "The Assistant gives you helpful information to assist in creating translations.",

@@ -38,6 +38,7 @@
   "ADD_PROJECT_ERROR_PROMPT": "Nu am putut adăuga proiectul. Încearcă mai târziu.",
   "ADD_PROJECT_PROMPT_1": "Introdu datele necesare pentru a adăuga un proiect",
   "ADD_PROJECT_PROMPT_2": "Asigură-te că proiectul conține un fișier \u003C1\u003E.parlance.json\u003C/1\u003E la rădăcină.",
+  "ADD_TO_GLOSSARY": "",
   "APPLY_ATTRIBUTION_SETTINGS": "Aplică setările de atribuție",
   "ASSISTANT": "Asistent",
   "ASSISTANT_DESCRIPTION": "Asistentul îți dă informații utile pentru a te asista în crearea traducerilor.",
