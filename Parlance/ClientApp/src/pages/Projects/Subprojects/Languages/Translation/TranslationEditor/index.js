@@ -72,8 +72,8 @@ export default function TranslationEditor() {
     useKeyboardShortcut(KeyboardShortcuts.PreviousUnfinished, goToPrevUnfinished);
     useKeyboardShortcut(KeyboardShortcuts.Next, goToNext);
     useKeyboardShortcut(KeyboardShortcuts.Previous, goToPrev);
-    useKeyboardShortcut(KeyboardShortcuts.AddToGlossary, () => Modal.mount(<AddToGlossaryModal language={language} connectedGlossaries={connectedGlossaries} onGlossaryItemAdded={onGlossaryItemAdded} />));
-    useKeyboardShortcut(KeyboardShortcuts.SearchGlossary, () => Modal.mount(<SearchGlossaryModal language={language} glossaryData={glossaryData} />));
+    useKeyboardShortcut(KeyboardShortcuts.AddToGlossary, () => connectedGlossaries.length && Modal.mount(<AddToGlossaryModal language={language} connectedGlossaries={connectedGlossaries} onGlossaryItemAdded={onGlossaryItemAdded} />));
+    useKeyboardShortcut(KeyboardShortcuts.SearchGlossary, () => connectedGlossaries.length && Modal.mount(<SearchGlossaryModal language={language} glossaryData={glossaryData} />));
 
     const updateManager = useUpdateManager();
     updateManager.on("outOfDate", () => {

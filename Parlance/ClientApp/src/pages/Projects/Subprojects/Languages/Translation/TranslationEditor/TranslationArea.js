@@ -323,25 +323,27 @@ export default function TranslationArea({
                                         tabIndex={tabIndex} placeholders={translationPlaceholders}/>
             })}
             <div style={{flexGrow: 1}}/>
-            <div className={Styles.controls}>
-                <div className={Styles.controlArea}>
-                    <Button onClick={searchGlossary}>
-                        <div className={Styles.navButtonContents}>
-                            <span>{t("Search Glossary")}</span>
-                            <KeyboardShortcut shortcut={KeyboardShortcuts.SearchGlossary}/>
-                        </div>
-                    </Button>
-                    <Button onClick={addToGlossary}>
-                        <div className={Styles.navButtonContents}>
-                            <span>{t("Add Entry to Glossary")}</span>
-                            <VerticalSpacer height={2}/>
-                            <KeyboardShortcut shortcut={KeyboardShortcuts.AddToGlossary}/>
-                        </div>
-                    </Button>
+            {connectedGlossaries.length > 0 && 
+                <div className={Styles.controls}>
+                    <div className={Styles.controlArea}>
+                        <Button onClick={searchGlossary}>
+                            <div className={Styles.navButtonContents}>
+                                <span>{t("Search Glossary")}</span>
+                                <KeyboardShortcut shortcut={KeyboardShortcuts.SearchGlossary}/>
+                            </div>
+                        </Button>
+                        <Button onClick={addToGlossary}>
+                            <div className={Styles.navButtonContents}>
+                                <span>{t("Add Entry to Glossary")}</span>
+                                <VerticalSpacer height={2}/>
+                                <KeyboardShortcut shortcut={KeyboardShortcuts.AddToGlossary}/>
+                            </div>
+                        </Button>
+                    </div>
+                    <div className={Styles.controlArea}>
+                    </div>
                 </div>
-                <div className={Styles.controlArea}>
-                </div>
-            </div>
+            }
             <div className={Styles.controls}>
                 <div className={Styles.controlArea}>
                     <Button onClick={goToPrevUnfinished} disabled={!prevUnfinished}>
