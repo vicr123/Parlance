@@ -6,7 +6,14 @@
 
 .language {
     grid-area: language;
+}
+
+:global(.ltr) .language {
     border-right: 1px solid var(--border-color);
+}
+
+:global(.rtl) .language {
+    border-left: 1px solid var(--border-color);
 }
 
 .table {

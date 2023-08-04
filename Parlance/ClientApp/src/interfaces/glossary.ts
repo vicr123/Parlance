@@ -17,6 +17,7 @@ export interface GlossaryItem {
     term: string
     translation: string
     partOfSpeech: PartOfSpeech
+    lang: string
 }
 
 export function PartOfSpeechTranslationString(pos: PartOfSpeech) {

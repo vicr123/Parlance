@@ -47,6 +47,30 @@ public class GlossaryManagerController : Controller
             return Conflict();
         }
     }
+    
+    
+    [HttpGet]
+    [Route("{glossary:guid}")]
+    public Task<IActionResult> GetAllTerms(Guid glossary)
+    {
+        try
+        {
+            var g = _glossaryService.GlossaryById(glossary);
+
+            return Task.FromResult<IActionResult>(Json(_glossaryService.GetTerms(g, null).Select(term => new
+            {
+                term.Id,
+                term.Term,
+                term.Translation,
+                term.PartOfSpeech,
+                Lang = Locale.FromDatabaseRepresentation(term.Language)!.ToDashed()
+            })));
+        }
+        catch (InvalidOperationException)
+        {
+            return Task.FromResult<IActionResult>(NotFound());
+        }
+    }
 
     [HttpDelete]
     [Authorize(Policy = "Superuser")]
@@ -78,7 +102,8 @@ public class GlossaryManagerController : Controller
                 term.Id,
                 term.Term,
                 term.Translation,
-                term.PartOfSpeech
+                term.PartOfSpeech,
+                Lang = Locale.FromDatabaseRepresentation(term.Language)!.ToDashed()
             })));
         }
         catch (InvalidOperationException)
