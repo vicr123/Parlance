@@ -1,0 +1,12 @@
+.language {
+    padding: 6px;
+    cursor: pointer;
+}
+
+.languageGroup {
+    padding: 6px;
+}
+
+.selected {
+    background: var(--active-color);
+}

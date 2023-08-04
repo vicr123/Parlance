@@ -31,11 +31,7 @@ export interface User {
     email: string
     emailVerified: boolean
     superuser: boolean
-    languagePermissions: UserLanguagePermissions[] 
-}
-
-interface UserLanguagePermissions {
-    
+    languagePermissions: string[] 
 }
 
 export type PasswordResetType = "email";

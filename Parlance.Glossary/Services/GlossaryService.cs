@@ -78,10 +78,10 @@ public class GlossaryService : IGlossaryService
         await _parlanceContext.SaveChangesAsync();
     }
 
-    public IEnumerable<GlossaryItem> GetTerms(Database.Models.Glossary glossary, Locale locale)
+    public IEnumerable<GlossaryItem> GetTerms(Database.Models.Glossary glossary, Locale? locale)
     {
         return _parlanceContext.GlossaryItems.Where(item =>
-            item.GlossaryId == glossary.Id && item.Language == locale.ToDatabaseRepresentation());
+            item.GlossaryId == glossary.Id).Where(item => locale == null || item.Language == locale.ToDatabaseRepresentation());
     }
 
     public async Task RemoveDefinition(GlossaryItem item)

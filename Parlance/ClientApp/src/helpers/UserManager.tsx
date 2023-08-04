@@ -34,7 +34,7 @@ import {
 class UserManager extends EventEmitter {
     #loginSessionDetails: Record<string, any>;
     #currentUser: User | null;
-    #availableLoginTypes: LoginType[];
+    #availableLoginTypes?: LoginType[];
 
     constructor() {
         super();
