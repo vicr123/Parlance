@@ -16,6 +16,7 @@ interface ParlanceI18nExport extends i18next {
     pluralPatterns: (locale: string) => Promise<PluralPattern[]>;
     isRegionAgnostic: (locale: string) => boolean;
     dir: (lng?: string) => "ltr" | "rtl";
+    t: typeof i18n.t
 }
 
 interface PluralPattern {

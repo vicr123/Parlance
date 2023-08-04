@@ -1,0 +1,12 @@
+.errorView {
+    flex-grow: 1;
+    align-self: center;
+    
+    display: flex;
+    align-items: center;
+    justify-items: center;
+}
+
+.errorViewInner {
+    
+}

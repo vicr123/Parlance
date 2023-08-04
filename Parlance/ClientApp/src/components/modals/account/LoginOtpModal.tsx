@@ -1,15 +1,22 @@
 import Modal from "../../Modal";
-import React from "react";
-import LoginUsernameModal from "./LoginUsernameModal";
+import React, {FormEvent, ReactElement} from "react";
 import UserManager from "../../../helpers/UserManager";
 import LoginPasswordModal from "./LoginPasswordModal";
-import {withTranslation} from "react-i18next";
+import {TFunction, withTranslation} from "react-i18next";
 import LineEdit from "../../LineEdit";
 import {VerticalLayout, VerticalSpacer} from "../../Layouts";
 import Styles from "./LoginOtpModal.module.css";
 
-export default withTranslation()(class LoginOtpModal extends React.Component {
-    constructor(props) {
+interface LoginOtpModalProps {
+    t: TFunction
+}
+
+interface LoginOtpModalState {
+    otp: string
+}
+
+class LoginOtpModal extends React.Component<LoginOtpModalProps, LoginOtpModalState> {
+    constructor(props: LoginOtpModalProps) {
         super(props);
 
         this.state = {
@@ -17,13 +24,13 @@ export default withTranslation()(class LoginOtpModal extends React.Component {
         }
     }
 
-    otpTextChanged(e) {
+    otpTextChanged(e: FormEvent) {
         this.setState({
-            otp: e.target.value
+            otp: (e.target as HTMLInputElement).value
         });
     }
 
-    render(props) {
+    render() {
         return <Modal heading={this.props.t('TWO_FACTOR_AUTHENTICATION')} buttons={[
             {
                 text: this.props.t('BACK'),
@@ -47,4 +54,6 @@ export default withTranslation()(class LoginOtpModal extends React.Component {
             </div>
         </Modal>
     }
-})
+}
+
+export default withTranslation()(LoginOtpModal);

@@ -1,11 +1,21 @@
 import Styles from "./ErrorCover.module.css";
 import {useTranslation} from "react-i18next";
 import SilentInformation from "./SilentInformation";
-import {useEffect, useState} from "react";
+import {ReactNode, useEffect, useState} from "react";
 
-export default function ErrorCover({error, children}) {
+interface CustomError {
+    title: string
+    text: string
+}
+
+interface ErrorCoverProps {
+    error: any
+    children: ReactNode
+}
+
+export default function ErrorCover({error, children}: ErrorCoverProps) {
     const {t} = useTranslation();
-    const [customError, setCustomError] = useState({});
+    const [customError, setCustomError] = useState<CustomError>({});
 
     useEffect(() => {
         (async () => {

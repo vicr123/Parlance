@@ -9,7 +9,7 @@ import {useTranslation} from "react-i18next";
 import {useNavigate} from "react-router-dom";
 import ParlanceLogo from "../images/parlance.svg";
 
-export default function NavMenu(props) {
+export default function NavMenu() {
     const [currentUser, setCurrentUser] = useState();
     const {t} = useTranslation();
     const navigate = useNavigate();
@@ -40,6 +40,10 @@ export default function NavMenu(props) {
     const goLanguages = () => {
         navigate("/languages");
     };
+    
+    const goGlossaries = () => {
+        navigate("/glossaries");
+    }
 
     return (
         <header className={Styles.navbarHeader}>
@@ -57,6 +61,9 @@ export default function NavMenu(props) {
                         </Button>
                         <Button onClick={goLanguages}>
                             {t("LANGUAGES")}
+                        </Button>
+                        <Button onClick={goGlossaries}>
+                            {t("GLOSSARIES")}
                         </Button>
                     </div>
                     <div className={Styles.navbarButtonContainer}>

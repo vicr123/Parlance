@@ -9,8 +9,9 @@ import ErrorModal from "../ErrorModal";
 import UserManager from "../../../helpers/UserManager";
 import Fetch from "../../../helpers/Fetch";
 import {RegisterSecurityKeyAdvertisement} from "./securityKeys/RegisterSecurityKeyAdvertisement";
+import {TokenResponseToken} from "../../../interfaces/users";
 
-export default function CreateAccountModal(props) {
+export default function CreateAccountModal() {
     const [username, setUsername] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
@@ -29,7 +30,7 @@ export default function CreateAccountModal(props) {
 
                 Modal.mount(<LoadingModal/>);
                 try {
-                    let result = await Fetch.post("/api/user", {
+                    let result = await Fetch.post<TokenResponseToken>("/api/user", {
                         username: username,
                         password: password,
                         emailAddress: email
@@ -51,14 +52,14 @@ export default function CreateAccountModal(props) {
     ]}>
         <VerticalLayout>
             <span>{t("CREATE_ACCOUNT_PROMPT", {type: "Victor Tran"})}</span>
-            <LineEdit placeholder={t("USERNAME")} value={username} onChange={(e) => setUsername(e.target.value)} />
-            <LineEdit placeholder={t("EMAIL_ADDRESS")} value={email} onChange={(e) => setEmail(e.target.value)} />
+            <LineEdit placeholder={t("USERNAME")} value={username} onChange={(e) => setUsername((e.target as HTMLInputElement).value)} />
+            <LineEdit placeholder={t("EMAIL_ADDRESS")} value={email} onChange={(e) => setEmail((e.target as HTMLInputElement).value)} />
         </VerticalLayout>
         <VerticalSpacer height={40} />
         <VerticalLayout>
             <span>{t("PASSWORD_SET_SECURITY_PROMPT")}</span>
-            <LineEdit password={true} placeholder={t("PASSWORD")} value={password} onChange={(e) => setPassword(e.target.value)} />
-            <LineEdit password={true} placeholder={t("CONFIRM_PASSWORD")} value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} />
+            <LineEdit password={true} placeholder={t("PASSWORD")} value={password} onChange={(e) => setPassword((e.target as HTMLInputElement).value)} />
+            <LineEdit password={true} placeholder={t("CONFIRM_PASSWORD")} value={confirmPassword} onChange={(e) => setConfirmPassword((e.target as HTMLInputElement).value)} />
         </VerticalLayout>
     </Modal>
     

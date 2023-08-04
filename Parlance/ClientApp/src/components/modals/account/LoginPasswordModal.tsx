@@ -20,7 +20,7 @@ export default function LoginPasswordModal() {
                 return <div key={"password"} style={{display: "flex", flexDirection: "column"}}>
                     {t('LOG_IN_PASSWORD_PROMPT')}
                     <LineEdit password={true} placeholder={t('PASSWORD')} value={password}
-                              onChange={e => setPassword(e.target.value)}/>
+                              onChange={e => setPassword((e.target as HTMLInputElement).value)}/>
                 </div>
             case "fido":
                 //Ensure the browser supports webauthn

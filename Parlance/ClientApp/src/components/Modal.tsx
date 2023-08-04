@@ -4,6 +4,7 @@ import {createRoot, Root} from "react-dom/client";
 import {WithTranslation, withTranslation} from "react-i18next";
 import i18n from "../helpers/i18n";
 import Icon from "./Icon";
+import {TFunctionResult} from "i18next";
 
 let root: Root | null;
 
@@ -17,7 +18,7 @@ interface ModalExportProps {
     popover?: any
     buttons?: ModalButton[]
     onButtonClick?: () => {}
-    children?: ReactNode
+    children?: ReactNode | TFunctionResult
     onBackClicked?: () => {}
     heading?: string
     topComponent?: ReactNode

@@ -2,25 +2,39 @@ import Modal from "../components/Modal";
 import LoadingModal from "../components/modals/LoadingModal";
 import Fetch from "./Fetch";
 import LoginPasswordModal from "../components/modals/account/LoginPasswordModal";
+// @ts-ignore
 import LoginOtpModal from "../components/modals/account/LoginOtpModal";
 import EventEmitter from "eventemitter3";
+// @ts-ignore
 import LoginPasswordResetModal from "../components/modals/account/LoginPasswordResetModal";
+// @ts-ignore
 import PasswordResetModal from "../components/modals/account/resets/PasswordResetModal";
 import i18n from "./i18n";
 import CryptoJS from "crypto-js";
+// @ts-ignore
 import LoginErrorModal from "../components/modals/account/LoginErrorModal";
 import React from "react";
+// @ts-ignore
 import LoginSecurityKeyModal from "../components/modals/account/LoginSecurityKeyModal";
+// @ts-ignore
 import LoginSecurityKeyFailureModal from "../components/modals/account/LoginSecurityKeyFailureModal";
 import {decode, encode} from "./Base64";
+// @ts-ignore
 import {
     RegisterSecurityKeyAdvertisement
 } from "../components/modals/account/securityKeys/RegisterSecurityKeyAdvertisement";
+import {
+    LoginType, PasswordResetChallenge, PasswordResetType,
+    TokenResponseFido,
+    TokenResponseFidoOptionsCredentials,
+    TokenResponseToken,
+    User
+} from "../interfaces/users";
 
 class UserManager extends EventEmitter {
-    #loginSessionDetails;
-    #currentUser;
-    #availableLoginTypes;
+    #loginSessionDetails: Record<string, any>;
+    #currentUser: User | null;
+    #availableLoginTypes: LoginType[];
 
     constructor() {
         super();
@@ -40,10 +54,11 @@ class UserManager extends EventEmitter {
     }
 
     get currentUserIsSuperuser() {
-        return this.#currentUser.superuser;
+        return this.#currentUser?.superuser;
     }
 
     get currentUserProfilePicture() {
+        if (!this.#currentUser) return "";
         let normalised = this.#currentUser.email.trim().toLowerCase();
         let md5 = CryptoJS.MD5(normalised);
         return `https://www.gravatar.com/avatar/${md5}`;
@@ -56,7 +71,7 @@ class UserManager extends EventEmitter {
     async updateDetails() {
         if (localStorage.getItem("token")) {
             try {
-                this.#currentUser = await Fetch.get("/api/user");
+                this.#currentUser = await Fetch.get<User>("/api/user");
                 this.emit("currentUserChanged", this.#currentUser);
             } catch {
                 //Couldn't get user details, so log out
@@ -70,11 +85,11 @@ class UserManager extends EventEmitter {
         }
     }
 
-    setLoginDetail(key, value) {
+    setLoginDetail(key: string, value?: any) {
         this.#loginSessionDetails[key] = value;
     }
 
-    loginDetail(key) {
+    loginDetail(key: string) {
         return this.#loginSessionDetails[key] || "";
     }
 
@@ -82,7 +97,7 @@ class UserManager extends EventEmitter {
         this.#loginSessionDetails = {};
     }
 
-    async setUsername(username) {
+    async setUsername(username: string) {
         this.#availableLoginTypes = await Fetch.post("/api/user/tokentypes", {
             username: username
         });
@@ -93,7 +108,7 @@ class UserManager extends EventEmitter {
         Modal.mount(<LoadingModal/>)
 
         try {
-            let response = await Fetch.post(`/api/user/token`, this.#loginSessionDetails);
+            let response = await Fetch.post<TokenResponseToken>(`/api/user/token`, this.#loginSessionDetails);
             await this.setToken(response.token);
             
             if (!fido2Details && window.PublicKeyCredential && !localStorage.getItem("passkey-advertisement-never-ask")) {
@@ -102,7 +117,7 @@ class UserManager extends EventEmitter {
             }
             
             Modal.unmount();
-        } catch (e) {
+        } catch (e: FetchResponse<any>) {
             let json = await e.json();
 
             if (this.#loginSessionDetails.newPassword) {
@@ -168,7 +183,7 @@ class UserManager extends EventEmitter {
         }
     }
 
-    async performPasswordReset(type, challenge) {
+    async performPasswordReset(type: PasswordResetType, challenge: PasswordResetChallenge) {
         Modal.mount(<LoadingModal/>)
         try {
             await Fetch.post("/api/user/reset", {
@@ -185,13 +200,13 @@ class UserManager extends EventEmitter {
                 {i18n.t('PASSWORD_RECOVERY_SUCCESS_PROMPT')}
             </Modal>)
         } catch (e) {
-            Modal.unmount(<Modal heading={"Recovery"} buttons={[Modal.OkButton]}>
+            Modal.mount(<Modal heading={"Recovery"} buttons={[Modal.OkButton]}>
                 {i18n.t('PASSWORD_RECOVERY_ERROR_PROMPT_2')}
             </Modal>)
         }
     }
 
-    async setToken(token) {
+    async setToken(token: string) {
         localStorage.setItem("token", token);
         await this.updateDetails();
     }
@@ -204,9 +219,9 @@ class UserManager extends EventEmitter {
     async attemptFido2Login() {
         Modal.mount(<LoginSecurityKeyModal/>)
 
-        let details;
+        let details: any;
         try {
-            details = await Fetch.post("/api/user/token", {
+            details = await Fetch.post<TokenResponseFido>("/api/user/token", {
                 type: "fido",
                 username: this.loginDetail("username")
             });
@@ -216,20 +231,24 @@ class UserManager extends EventEmitter {
         }
 
         //Perform webauthn authentication
+        // noinspection ExceptionCaughtLocallyJS
         try {
             let assertion = await navigator.credentials.get({
                 publicKey: {
                     challenge: decode(details.options.challenge),
-                    allowCredentials: details.options.allowCredentials.map(x => ({
+                    allowCredentials: details.options.allowCredentials.map((x: TokenResponseFidoOptionsCredentials) => ({
                         type: x.type,
                         id: decode(x.id)
                     })),
                     userVerification: details.options.userVerification,
                     extensions: details.options.extensions
                 }
-            });
+            }) as PublicKeyCredential;
 
             console.log(assertion);
+            if (!assertion) throw assertion;
+            
+            const response = assertion.response as AuthenticatorAssertionResponse;
 
             this.setLoginDetail("type", "fido");
             this.setLoginDetail("keyTokenId", details.id);
@@ -239,10 +258,10 @@ class UserManager extends EventEmitter {
                 rawId: encode(assertion.rawId),
                 type: assertion.type,
                 response: {
-                    authenticatorData: encode(assertion.response.authenticatorData),
-                    clientDataJSON: encode(assertion.response.clientDataJSON),
-                    signature: encode(assertion.response.signature),
-                    userHandle: encode(assertion.response.userHandle)
+                    authenticatorData: encode(response.authenticatorData),
+                    clientDataJSON: encode(response.clientDataJSON),
+                    signature: encode(response.signature),
+                    userHandle: encode(response.userHandle!)
                 }
             });
 

@@ -36,10 +36,10 @@ export default function LoginUsernameModal() {
         <div style={{display: "flex", flexDirection: "column"}}>
             {t('LOG_IN_PROMPT')}
             <LineEdit placeholder={t('USERNAME')} value={username}
-                      onChange={e => setUsername(e.target.value)} autoComplete={"off"}/>
+                      onChange={e => setUsername((e.target as HTMLInputElement).value)} autoComplete={"off"}/>
             <div className={Styles.password}>
                 <LineEdit placeholder={"Password"} password={true} value={password}
-                          onChange={e => setPassword(e.target.value)}/>
+                          onChange={e => setPassword((e.target as HTMLInputElement).value)}/>
             </div>
         </div>
     </Modal>;
