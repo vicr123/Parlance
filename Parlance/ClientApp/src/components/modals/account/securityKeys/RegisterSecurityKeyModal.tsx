@@ -9,7 +9,21 @@ import {decode, encode} from "../../../../helpers/Base64";
 
 let pendingSecurityCredential = false;
 
-function BrowserRegisterSecurityKeyModalFailure({nickname, type, password, onDone}) {
+interface RegisterSecurityKeyModalProps {
+    initialName: string
+    type: string
+    password: string
+    onDone: () => void
+}
+
+interface RegisterSecurityKeyInnerModalProps {
+    nickname: string
+    type: string
+    password: string
+    onDone: () => void
+}
+
+function BrowserRegisterSecurityKeyModalFailure({nickname, type, password, onDone}: RegisterSecurityKeyInnerModalProps) {
     const {t} = useTranslation();
 
     return <Modal buttons={[
@@ -26,7 +40,7 @@ function BrowserRegisterSecurityKeyModalFailure({nickname, type, password, onDon
     </Modal>
 }
 
-function RequestBrowserRegisterSecurityKeyModal({nickname, type, password, onDone}) {
+function RequestBrowserRegisterSecurityKeyModal({nickname, type, password, onDone}: RegisterSecurityKeyInnerModalProps) {
     useEffect(() => {
         (async () => {
             if (pendingSecurityCredential) return;
@@ -35,7 +49,7 @@ function RequestBrowserRegisterSecurityKeyModal({nickname, type, password, onDon
                 pendingSecurityCredential = true;
 
                 //Request details from server
-                let credDetails = await Fetch.post("/api/user/keys/prepareregister", {
+                let credDetails = await Fetch.post<any>("/api/user/keys/prepareregister", {
                     password: password,
                     authenticatorAttachmentType: type
                 });
@@ -55,7 +69,7 @@ function RequestBrowserRegisterSecurityKeyModal({nickname, type, password, onDon
                         timeout: credDetails.authenticatorOptions.timeout,
                         attestation: credDetails.authenticatorOptions.attestation
                     }
-                });
+                }) as PublicKeyCredential;
 
                 Modal.mount(<LoadingModal/>)
                 let response = await Fetch.post("/api/user/keys/register", {
@@ -67,7 +81,7 @@ function RequestBrowserRegisterSecurityKeyModal({nickname, type, password, onDon
                         id: credential.id,
                         rawId: encode(credential.rawId),
                         response: {
-                            attestationObject: encode(credential.response.attestationObject),
+                            attestationObject: encode((credential.response as AuthenticatorAttestationResponse).attestationObject),
                             clientDataJSON: encode(credential.response.clientDataJSON)
                         },
                         type: credential.type
@@ -93,7 +107,7 @@ function RequestBrowserRegisterSecurityKeyModal({nickname, type, password, onDon
     </Modal>
 }
 
-export default function RegisterSecurityKeyModal({type, password, onDone, initialName = ""}) {
+export default function RegisterSecurityKeyModal({type, password, onDone, initialName = ""}: RegisterSecurityKeyModalProps) {
     const [securityKeyName, setSecurityKeyName] = useState(initialName);
     const {t} = useTranslation();
 
@@ -108,7 +122,7 @@ export default function RegisterSecurityKeyModal({type, password, onDone, initia
         <VerticalLayout>
             <div>{t('SECURITY_KEY_ADD_NAME')}</div>
             <LineEdit placeholder={t('SECURITY_KEY_ADD_NAME_PROMPT')} value={securityKeyName}
-                      onChange={e => setSecurityKeyName(e.target.value)}/>
+                      onChange={e => setSecurityKeyName((e.target as HTMLInputElement).value)}/>
         </VerticalLayout>
     </Modal>
 }

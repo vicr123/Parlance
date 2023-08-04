@@ -1,0 +1,19 @@
+.root {
+    display: grid;
+    grid-template-areas: "language table";
+    grid-template-columns: 400px 1fr;
+}
+
+.language {
+    grid-area: language;
+    border-right: 1px solid var(--border-color);
+}
+
+.table {
+    grid-area: table;
+    
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    justify-items: stretch;
+}

@@ -2,7 +2,7 @@ import Styles from "./PageHeading.module.css";
 import {ReactElement, ReactNode} from "react";
 
 interface PageHeadingProps {
-    level: 1 | 2 | 3;
+    level?: 1 | 2 | 3;
     children: ReactNode;
     className?: string;
 }

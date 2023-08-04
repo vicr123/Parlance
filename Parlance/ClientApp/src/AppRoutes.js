@@ -7,6 +7,7 @@ const Administration = lazy(() => import("./pages/Administration"));
 const Account = lazy(() => import("./pages/Account"));
 const Projects = lazy(() => import("./pages/Projects"));
 const Languages = lazy(() => import("./pages/Languages"));
+const Glossaries = lazy(() => import("./pages/Glossaries"));
 
 const AppRoutes = [
     {
@@ -35,6 +36,12 @@ const AppRoutes = [
         path: "/languages/*",
         element: <Spinner.Suspense>
             <Languages/>
+        </Spinner.Suspense>
+    },
+    {
+        path: "/glossaries/*",
+        element: <Spinner.Suspense>
+            <Glossaries />
         </Spinner.Suspense>
     },
     {

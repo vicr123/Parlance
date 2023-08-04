@@ -1,4 +1,4 @@
-import React from "react";
+import React, {ReactNode} from "react";
 import Modal from "../../../Modal";
 import {useTranslation} from "react-i18next";
 import ModalList from "../../../ModalList";
@@ -6,6 +6,15 @@ import RegisterSecurityKeyModal from "./RegisterSecurityKeyModal";
 import moment from "moment";
 
 import Styles from "./RegisterSecurityKeyAdvertisement.module.css"
+
+interface RegisterSecurityKeyAdvertisementProps {
+    password: string
+}
+
+interface FeatureBoxProps {
+    heading: string
+    children: ReactNode
+}
 
 function SecurityKeySetupCompleteModal() {
     const {t} = useTranslation();
@@ -23,14 +32,14 @@ function SecurityKeySetupCompleteModal() {
     </Modal>
 }
 
-function FeatureBox({heading, children}) {
+function FeatureBox({heading, children}: FeatureBoxProps) {
     return <div className={Styles.FeatureBox}>
         <span className={Styles.FeatureBoxHeading}>{heading}</span>
         <span className={Styles.FeatureBoxContent}>{children}</span>
     </div>
 }
 
-export function RegisterSecurityKeyAdvertisement({password}) {
+export function RegisterSecurityKeyAdvertisement({password}: RegisterSecurityKeyAdvertisementProps) {
     const {t} = useTranslation();
     
     return <Modal heading={t("SECURITY_KEY_ADVERTISEMENT_TITLE")} buttons={[
