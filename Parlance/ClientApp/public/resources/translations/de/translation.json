@@ -92,6 +92,7 @@
   "COPY_SOURCE": "",
   "CREATE_ACCOUNT": "Account erstellen",
   "CREATE_ACCOUNT_PROMPT": "Melde dich für einen {{type}} Account an, um Übersetzungen zu bearbeiten.",
+  "DELETE": "",
   "DEMOTE": "Runterstufen",
   "DEMOTE_SUPERUSER_PROMPT_1": "Wenn du {{user}} von der Stufe Superuser runterstuft, kann er nicht mehr den Parlance Server bearbeiten.",
   "DEMOTE_SUPERUSER_PROMPT_2": "Willst du {{user}} runterstufen?",

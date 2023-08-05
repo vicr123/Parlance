@@ -92,6 +92,7 @@
   "COPY_SOURCE": "Chép nguồn",
   "CREATE_ACCOUNT": "Tạo tài khoản",
   "CREATE_ACCOUNT_PROMPT": "Đăng ký một tài khoản {{type}} để chỉnh sửa bản dịch.",
+  "DELETE": "",
   "DEMOTE": "Xuống cấp",
   "DEMOTE_SUPERUSER_PROMPT_1": "Hoạt động xuống cấp {{user}} từ một người dùng quản trị sẽ không cho phép họ quản lý máy chủ Parlance nữa.",
   "DEMOTE_SUPERUSER_PROMPT_2": "Bạn có muốn xuống cấp {{user}} không?",

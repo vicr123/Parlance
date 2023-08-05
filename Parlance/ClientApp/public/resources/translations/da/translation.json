@@ -92,6 +92,7 @@
   "COPY_SOURCE": "",
   "CREATE_ACCOUNT": "Opret konto",
   "CREATE_ACCOUNT_PROMPT": "Registrer en {{type}}-konto for at redigere oversættelser.",
+  "DELETE": "",
   "DEMOTE": "Degrader",
   "DEMOTE_SUPERUSER_PROMPT_1": "Hvis {{user}} bliver degraderet fra at være en superbruger, vil de ikke længere kunne styre Parlance-serveren.",
   "DEMOTE_SUPERUSER_PROMPT_2": "Ønsker du at degradere {{user}}?",

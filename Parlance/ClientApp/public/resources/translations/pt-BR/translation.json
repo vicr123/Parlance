@@ -92,6 +92,7 @@
   "COPY_SOURCE": "Copiar original",
   "CREATE_ACCOUNT": "Criar conta",
   "CREATE_ACCOUNT_PROMPT": "Faça uma conta de tipo {{type}} para editar traduções.",
+  "DELETE": "",
   "DEMOTE": "Rebaixar",
   "DEMOTE_SUPERUSER_PROMPT_1": "Rebaixar {{user}} de um superuser fará com que este usuário não possa mais fazer alterações ao servidor Parlance.",
   "DEMOTE_SUPERUSER_PROMPT_2": "Você quer rebaixar {{user}}?",

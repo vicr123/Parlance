@@ -94,6 +94,7 @@
   "COPY_SOURCE": "Copiere sursă",
   "CREATE_ACCOUNT": "Creează un cont",
   "CREATE_ACCOUNT_PROMPT": "Înregistrează-te pentru un cont {{type}} pentru a edita traducerile.",
+  "DELETE": "",
   "DEMOTE": "Retrogradează",
   "DEMOTE_SUPERUSER_PROMPT_1": "Retrogradarea utilizatorului {{user}} de la gradul de superutilizator îi va revoca accesul la gestionarea serverului Parlance.",
   "DEMOTE_SUPERUSER_PROMPT_2": "Vrei să retrogradezi utilizatorul {{user}}?",

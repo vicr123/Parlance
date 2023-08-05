@@ -93,6 +93,7 @@
   "COPY_SOURCE": "",
   "CREATE_ACCOUNT": "Créer un Compte",
   "CREATE_ACCOUNT_PROMPT": "",
+  "DELETE": "",
   "DEMOTE": "",
   "DEMOTE_SUPERUSER_PROMPT_1": "",
   "DEMOTE_SUPERUSER_PROMPT_2": "",
