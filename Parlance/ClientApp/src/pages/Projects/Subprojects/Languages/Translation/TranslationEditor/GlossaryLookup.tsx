@@ -19,6 +19,7 @@ interface GlossaryLookupProps {
     sourceString: string
     connectedGlossaries: Glossary[]
     onGlossaryItemAdded: (item: GlossaryItem) => void;
+    canEdit: boolean;
 }
 
 interface GlossaryResult {
@@ -28,7 +29,7 @@ interface GlossaryResult {
     partOfSpeech: PartOfSpeech
 }
 
-export default function GlossaryLookup({glossary, sourceString, connectedGlossaries, onGlossaryItemAdded}: GlossaryLookupProps) {
+export default function GlossaryLookup({glossary, sourceString, connectedGlossaries, onGlossaryItemAdded, canEdit}: GlossaryLookupProps) {
     const {language} = useParams();
     const {t} = useTranslation();
     const [matches, setMatches] = useState<GlossaryResult[]>([]);
@@ -67,8 +68,8 @@ export default function GlossaryLookup({glossary, sourceString, connectedGlossar
                 <span>{match.translation || "?"}</span>
                 <span className={Styles.suggestAddButton}>
                 {match.translation ?
-                    <SmallButton onClick={() => copy(match)}>{t("COPY")}</SmallButton> : 
-                    <SmallButton onClick={() => addToGlossary(match)}>{t("ADD_TO_GLOSSARY")}</SmallButton>
+                    <SmallButton onClick={() => copy(match)}>{t("COPY")}</SmallButton> :
+                    (canEdit && <SmallButton onClick={() => addToGlossary(match)}>{t("ADD_TO_GLOSSARY")}</SmallButton>)
                 }
                 </span>
             </div>)}
