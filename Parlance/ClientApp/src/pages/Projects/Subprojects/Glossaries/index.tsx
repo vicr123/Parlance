@@ -1,5 +1,5 @@
 import {VerticalLayout, VerticalSpacer} from "../../../../components/Layouts";
-import React, {ReactElement, ReactNode, useEffect, useState} from "react";
+import React, {ReactElement, ReactNode, useEffect, useMemo, useState} from "react";
 import BackButton from "../../../../components/BackButton";
 import {useTranslation} from "react-i18next";
 import {useNavigate, useParams} from "react-router-dom";
@@ -13,6 +13,7 @@ import SelectableList from "../../../../components/SelectableList";
 import Modal from "../../../../components/Modal";
 import ErrorModal from "../../../../components/modals/ErrorModal";
 import Icon from "../../../../components/Icon";
+import UserManager from "../../../../helpers/UserManager";
 
 interface GlossaryListProps {
     title: string;

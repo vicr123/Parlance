@@ -22,6 +22,7 @@ interface GlossaryTableProps {
     onGlossaryItemAdded: (item: GlossaryItem) => void;
     onGlossaryItemDeleted: (item: GlossaryItem) => void;
     glossaryObject: Glossary;
+    canTranslate: boolean;
 }
 
 interface NoGlossaryViewProps {
@@ -40,7 +41,7 @@ function NoGlossaryView({className}: NoGlossaryViewProps) {
     </div>;
 }
 
-export default function GlossaryTable({className, glossaryData, onGlossaryItemAdded, onGlossaryItemDeleted, glossaryObject}: GlossaryTableProps) {
+export default function GlossaryTable({className, glossaryData, onGlossaryItemAdded, onGlossaryItemDeleted, glossaryObject, canTranslate}: GlossaryTableProps) {
     const {t} = useTranslation();
     const navigate = useNavigate();
     const {glossary, language} = useParams();
@@ -80,17 +81,13 @@ export default function GlossaryTable({className, glossaryData, onGlossaryItemAd
                 {match.translation && <span className={Styles.pos}>{t(PartOfSpeechTranslationString(match.partOfSpeech))}</span>}
                 <span className={Styles.translation}>{match.translation || "?"}</span>
                 <span className={Styles.buttons}>
-                    {/*{match.translation ?*/}
-                    {/*    <SmallButton onClick={() => copy(match)}>{t("COPY")}</SmallButton> :*/}
-                    {/*    <SmallButton onClick={() => addToGlossary(match)}>{t("ADD_TO_GLOSSARY")}</SmallButton>*/}
-                    {/*}*/}
-                    {<SmallButton onClick={() => onDelete(match)}>{t("DELETE")}</SmallButton>}
+                    {canTranslate && <SmallButton onClick={() => onDelete(match)}>{t("DELETE")}</SmallButton>}
                     </span>
             </div>)}
-            <div className={Styles.addButton} onClick={onAdd}>
+            {canTranslate && <div className={Styles.addButton} onClick={onAdd}>
                 <Icon icon={"list-add"} />
                 {t("ADD_TO_GLOSSARY")}
-            </div>
+            </div>}
         </div>
     </div>
 }
