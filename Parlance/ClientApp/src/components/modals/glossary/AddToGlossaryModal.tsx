@@ -57,7 +57,8 @@ export default function AddToGlossaryModal({initialTerm, connectedGlossaries, la
                 term: term,
                 translation: translation,
                 partOfSpeech: pos,
-                id: ""
+                id: "",
+                lang: selectedLanguage()
             })
         } catch (e) {
             Modal.mount(<ErrorModal error={e} />)

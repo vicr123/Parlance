@@ -94,6 +94,7 @@
   "COPY_SOURCE": "העתק מקור",
   "CREATE_ACCOUNT": "צור חשבון",
   "CREATE_ACCOUNT_PROMPT": "הירשם לחשבון {{type}} כדי לערוך תרגומים.",
+  "DELETE": "",
   "DEMOTE": "הורד בדרגה",
   "DEMOTE_SUPERUSER_PROMPT_1": "הורדת {{user}} ממשתמש-על תאסור עליהם לנהל את שרת ה-Parlance.",
   "DEMOTE_SUPERUSER_PROMPT_2": "האם ברצונך להוריד בדרגה את {{user}}?",

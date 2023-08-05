@@ -94,6 +94,7 @@
   "COPY_SOURCE": "Copy Source",
   "CREATE_ACCOUNT": "Create Account",
   "CREATE_ACCOUNT_PROMPT": "Register for a {{type}} account to make edits to translations.",
+  "DELETE": "Delete",
   "DEMOTE": "Demote",
   "DEMOTE_SUPERUSER_PROMPT_1": "Demoting {{user}} from a superuser will no longer allow them to manage the Parlance server.",
   "DEMOTE_SUPERUSER_PROMPT_2": "Do you want to demote {{user}}?",

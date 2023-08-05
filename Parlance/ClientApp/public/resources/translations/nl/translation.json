@@ -93,6 +93,7 @@
   "COPY_SOURCE": "Bron Kopiëren",
   "CREATE_ACCOUNT": "Account Maken",
   "CREATE_ACCOUNT_PROMPT": "Registreer voor een {{type}}-account om vertalingen te bewerken.",
+  "DELETE": "",
   "DEMOTE": "Degraderen",
   "DEMOTE_SUPERUSER_PROMPT_1": "Door {{user}} te degraderen van een supergebruiker kan diegene de Parlance-server niet meer beheren.",
   "DEMOTE_SUPERUSER_PROMPT_2": "Wil je {{user}} degraderen?",
