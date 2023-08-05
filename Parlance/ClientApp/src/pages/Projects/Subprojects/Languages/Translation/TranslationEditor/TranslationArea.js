@@ -279,7 +279,7 @@ export default function TranslationArea({
                                                 onChange={() => {
                                                 }} showPlaceholders={altDown}
                                                 placeholders={translationPlaceholders} />
-                        <GlossaryLookup glossary={glossary} sourceString={entry.source} connectedGlossaries={connectedGlossaries} onGlossaryItemAdded={onGlossaryItemAdded} />
+                        <GlossaryLookup glossary={glossary} sourceString={entry.source} connectedGlossaries={connectedGlossaries} onGlossaryItemAdded={onGlossaryItemAdded} canEdit={canEdit} />
                     </Untabbable>
                 </div>
                 <div className={Styles.keyContainer}>
@@ -332,13 +332,13 @@ export default function TranslationArea({
                                 <KeyboardShortcut shortcut={KeyboardShortcuts.SearchGlossary}/>
                             </div>
                         </Button>
-                        <Button onClick={addToGlossary}>
+                        {canEdit && <Button onClick={addToGlossary}>
                             <div className={Styles.navButtonContents}>
                                 <span>{t("Add Entry to Glossary")}</span>
                                 <VerticalSpacer height={2}/>
                                 <KeyboardShortcut shortcut={KeyboardShortcuts.AddToGlossary}/>
                             </div>
-                        </Button>
+                        </Button>}
                     </div>
                     <div className={Styles.controlArea}>
                     </div>
