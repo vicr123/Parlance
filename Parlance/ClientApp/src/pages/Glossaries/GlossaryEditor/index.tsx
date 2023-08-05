@@ -5,10 +5,11 @@ import {useTranslation} from "react-i18next";
 import Styles from "./index.module.css"
 import GlossaryLanguageSelector from "./GlossaryLanguageSelector";
 import GlossaryTable from "./GlossaryTable";
-import {useEffect, useState} from "react";
+import {useEffect, useMemo, useState} from "react";
 import {Glossary, GlossaryItem} from "../../../interfaces/glossary";
 import Spinner from "../../../components/Spinner";
 import Fetch from "../../../helpers/Fetch";
+import UserManager from "../../../helpers/UserManager";
 
 export default function GlossaryEditor() {
     const navigate = useNavigate();
@@ -17,6 +18,10 @@ export default function GlossaryEditor() {
     const [glossaryData, setGlossaryData] = useState<GlossaryItem[]>([]);
     const [glossaryObject, setGlossaryObject] = useState<Glossary>();
     const [done, setDone] = useState<boolean>(false);
+
+    const canTranslate = useMemo<boolean>(() => !!(UserManager.isLoggedIn && (UserManager.currentUserIsSuperuser || UserManager.currentUser?.languagePermissions?.some(x => x === language))), [
+        language
+    ]);
     
     const updateGlossary = async () => {
         setGlossaryData(await Fetch.get(`/api/GlossaryManager/${glossary}`));
@@ -43,6 +48,6 @@ export default function GlossaryEditor() {
     
     return <div className={`${Styles.root} ${language && Styles.languageEditor}`}>
         <GlossaryLanguageSelector className={Styles.language} glossaryData={glossaryData} />
-        <GlossaryTable className={Styles.table} glossaryData={glossaryData} glossaryObject={glossaryObject!} onGlossaryItemAdded={onGlossaryItemAdded} onGlossaryItemDeleted={onGlossaryItemDeleted} />
+        <GlossaryTable canTranslate={canTranslate} className={Styles.table} glossaryData={glossaryData} glossaryObject={glossaryObject!} onGlossaryItemAdded={onGlossaryItemAdded} onGlossaryItemDeleted={onGlossaryItemDeleted} />
     </div>
 }

@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Parlance.CldrData;
 using Parlance.Database;
 using Parlance.Services.Permissions;
+using Parlance.Services.Superuser;
 using Parlance.Vicr123Accounts.Authentication;
 
 namespace Parlance.Authorization.LanguageEditor;
@@ -9,12 +10,14 @@ namespace Parlance.Authorization.LanguageEditor;
 public class LanguageEditorHandler : AuthorizationHandler<LanguageEditorRequirement>
 {
     private readonly ParlanceContext _parlanceContext;
+    private readonly ISuperuserService _superuserService;
     private readonly IPermissionsService _permissionsService;
 
-    public LanguageEditorHandler(IPermissionsService permissionsService, ParlanceContext parlanceContext)
+    public LanguageEditorHandler(IPermissionsService permissionsService, ParlanceContext parlanceContext, ISuperuserService superuserService)
     {
         _permissionsService = permissionsService;
         _parlanceContext = parlanceContext;
+        _superuserService = superuserService;
     }
 
     protected override async Task HandleRequirementAsync(AuthorizationHandlerContext context,
@@ -65,7 +68,7 @@ public class LanguageEditorHandler : AuthorizationHandler<LanguageEditorRequirem
         if (project is null)
         {
             if (await _permissionsService.HasLocalePermission(username,
-                    language))
+                    language) || await _superuserService.IsSuperuser(username))
             {
                 context.Succeed(requirement);
             }
