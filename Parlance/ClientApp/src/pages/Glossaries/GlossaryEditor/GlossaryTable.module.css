@@ -71,3 +71,13 @@ input.searchBox {
     flex-direction: column;
     border-bottom: 1px solid var(--border-color);
 }
+
+.backButton {
+    display: none;
+}
+
+@media (max-width: 1024px) {
+    .backButton {
+        display: block;
+    }
+}

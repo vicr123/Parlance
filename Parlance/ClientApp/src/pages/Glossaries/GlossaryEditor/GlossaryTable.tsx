@@ -1,4 +1,4 @@
-import {useParams} from "react-router-dom";
+import {useNavigate, useParams} from "react-router-dom";
 import {VerticalLayout} from "../../../components/Layouts";
 import PageHeading from "../../../components/PageHeading";
 import {useTranslation} from "react-i18next";
@@ -14,6 +14,7 @@ import AddToGlossaryModal from "../../../components/modals/glossary/AddToGlossar
 import Fetch from "../../../helpers/Fetch";
 import ErrorModal from "../../../components/modals/ErrorModal";
 import React, {useState} from "react";
+import BackButton from "../../../components/BackButton";
 
 interface GlossaryTableProps {
     className: string
@@ -41,6 +42,7 @@ function NoGlossaryView({className}: NoGlossaryViewProps) {
 
 export default function GlossaryTable({className, glossaryData, onGlossaryItemAdded, onGlossaryItemDeleted, glossaryObject}: GlossaryTableProps) {
     const {t} = useTranslation();
+    const navigate = useNavigate();
     const {glossary, language} = useParams();
     const [searchQuery, setSearchQuery] = useState<string>("");
     
@@ -67,6 +69,7 @@ export default function GlossaryTable({className, glossaryData, onGlossaryItemAd
     const visibleGlossaryItems = searchQuery ? glossaryItems.filter(x => x.term.toLowerCase().includes(searchQuery.toLowerCase())) : glossaryItems
     
     return <div className={className}>
+        <BackButton className={Styles.backButton} text={t("BACK_TO_LANGUAGES")} onClick={() => navigate(`../${glossary}`)} inTranslationView={true} />
         <div className={Styles.searchContainer}>
             <input type={"text"} className={Styles.searchBox} placeholder={t("SEARCH")} value={searchQuery}
                    onChange={e => setSearchQuery((e.target as HTMLInputElement).value)}/>

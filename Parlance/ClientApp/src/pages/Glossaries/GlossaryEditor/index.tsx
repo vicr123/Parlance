@@ -13,7 +13,7 @@ import Fetch from "../../../helpers/Fetch";
 export default function GlossaryEditor() {
     const navigate = useNavigate();
     const {t} = useTranslation();
-    const {glossary} = useParams();
+    const {glossary, language} = useParams();
     const [glossaryData, setGlossaryData] = useState<GlossaryItem[]>([]);
     const [glossaryObject, setGlossaryObject] = useState<Glossary>();
     const [done, setDone] = useState<boolean>(false);
@@ -41,7 +41,7 @@ export default function GlossaryEditor() {
         setGlossaryData([...glossaryData.filter(x => x.id !== item.id)]);
     }
     
-    return <div className={Styles.root}>
+    return <div className={`${Styles.root} ${language && Styles.languageEditor}`}>
         <GlossaryLanguageSelector className={Styles.language} glossaryData={glossaryData} />
         <GlossaryTable className={Styles.table} glossaryData={glossaryData} glossaryObject={glossaryObject!} onGlossaryItemAdded={onGlossaryItemAdded} onGlossaryItemDeleted={onGlossaryItemDeleted} />
     </div>
