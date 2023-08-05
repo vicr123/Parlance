@@ -8,6 +8,7 @@ import ListPage from "../../../../../components/ListPage";
 import Hero from "../../../../../components/Hero";
 import BackButton from "../../../../../components/BackButton";
 import Spinner from "../../../../../components/Spinner";
+import GlossariesDashboard from "./GlossariesDashboard";
 
 export default function Dashboard(props) {
     const {project, subproject, language} = useParams();
@@ -27,10 +28,14 @@ export default function Dashboard(props) {
     if (!data) return <Spinner.Container/>
 
     const items = [
-        t("Dashboard"),
+        t("DASHBOARD"),
         {
-            name: t("Overview"),
+            name: t("OVERVIEW"),
             render: <Overview data={data}/>
+        },
+        {
+            name: t("GLOSSARIES"),
+            render: <GlossariesDashboard data={data} />
         }
     ];
 
