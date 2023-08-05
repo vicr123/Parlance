@@ -35,7 +35,7 @@ export default function GlossaryLanguageSelector({className, glossaryData}: Glos
     const {t} = useTranslation();
     const navigate = useNavigate();
 
-    let showLanguages = [...UserManager.currentUser?.languagePermissions!, ...glossaryData.map(item => item.lang)]
+    let showLanguages = [...UserManager.currentUser?.languagePermissions ?? [], ...glossaryData.map(item => item.lang)]
     showLanguages = showLanguages.filter((x, i) => showLanguages.indexOf(x) === i);
     const myLanguages = UserManager.currentUser?.languagePermissions && showLanguages.filter(lang => UserManager.currentUser!.languagePermissions.includes(lang));
     const otherLanguages = UserManager.currentUser?.languagePermissions ? showLanguages.filter(lang => !UserManager.currentUser!.languagePermissions.includes(lang)) : showLanguages;
@@ -43,9 +43,9 @@ export default function GlossaryLanguageSelector({className, glossaryData}: Glos
 
     return <VerticalLayout gap={0} className={className}>
         <BackButton text={t("QUIT")} onClick={() => navigate("../")} inTranslationView={true} />
-        {myLanguages?.length !== 0 && <PageHeading className={Styles.languageGroup} level={3}>{t("MY_LANGUAGES")}</PageHeading>}
+        {myLanguages && myLanguages?.length !== 0 && <PageHeading className={Styles.languageGroup} level={3}>{t("MY_LANGUAGES")}</PageHeading>}
         {myLanguages?.map(lang => <LanguagePicker lang={lang} />)}
-        {otherLanguages?.length !== 0 && <PageHeading className={Styles.languageGroup} level={3}>{t("OTHER_LANGUAGES")}</PageHeading>}
+        {otherLanguages && otherLanguages?.length !== 0 && <PageHeading className={Styles.languageGroup} level={3}>{t("OTHER_LANGUAGES")}</PageHeading>}
         {otherLanguages?.map(lang => <LanguagePicker lang={lang} />)}
     </VerticalLayout>
 }
