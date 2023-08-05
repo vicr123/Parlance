@@ -95,23 +95,23 @@ TranslationProgressIndicator.Preloading = function () {
     return <div className={Styles.root}>
         <PreloadingBlock className={Styles.title}/>
         <div className={Styles.metrics}>
-            <PreloadingBlock className={Styles.metric}>
+            <PreloadingBlock className={Styles.metric} width={null}>
                 <span className={Styles.metricValue}>20</span>
                 <span className={Styles.metricTitle}>TEXT</span>
             </PreloadingBlock>
-            <PreloadingBlock className={Styles.metric}>
+            <PreloadingBlock className={Styles.metric} width={null}>
                 <span className={Styles.metricValue}>20</span>
                 <span className={Styles.metricTitle}>TEXT</span>
             </PreloadingBlock>
-            <PreloadingBlock className={Styles.metric}>
+            <PreloadingBlock className={Styles.metric} width={null}>
                 <span className={Styles.metricValue}>20</span>
                 <span className={Styles.metricTitle}>TEXT</span>
             </PreloadingBlock>
-            <PreloadingBlock className={Styles.metric}>
+            <PreloadingBlock className={Styles.metric} width={null}>
                 <span className={Styles.metricValue}>20</span>
                 <span className={Styles.metricTitle}>TEXT</span>
             </PreloadingBlock>
-            <PreloadingBlock className={Styles.metric}>
+            <PreloadingBlock className={Styles.metric} width={null}>
                 <span className={Styles.metricValue}>20</span>
                 <span className={Styles.metricTitle}>TEXT</span>
             </PreloadingBlock>
