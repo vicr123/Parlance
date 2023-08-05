@@ -6,14 +6,14 @@ function checkDuplicate(source, translation) {
 }
 
 function checkLeadingSpace(source, translation) {
-    if (translation.trimLeft() !== translation) return {
+    if (translation.trimLeft() !== translation && source.trimLeft() === source) return {
         checkSeverity: "warn",
         message: "Leading space exists"
     };
 }
 
 function checkTrailingSpace(source, translation) {
-    if (translation.trimRight() !== translation) return {
+    if (translation.trimRight() !== translation && source.trimRight() === source) return {
         checkSeverity: "warn",
         message: "Trailing space exists"
     };
@@ -74,6 +74,18 @@ function checkResxPlaceholders(source, translation) {
     });
 }
 
+function checkVueI18nPlaceholders(source, translation) {
+    return [...source.matchAll(/{(.+?)}/g)].flatMap(placeholder => {
+        let ph = placeholder[1];
+        if (!translation.includes(`{${ph}}`)) {
+            return {
+                checkSeverity: "error",
+                message: `Placeholder {${ph}} not present in translation`
+            }
+        }
+    });
+}
+
 const Checks = {
     "common": [
         checkDuplicate,
@@ -92,6 +104,10 @@ const Checks = {
     ],
     "resx": [
         checkResxPlaceholders,
+        "common"
+    ],
+    "vue-i18n": [
+        checkVueI18nPlaceholders,
         "common"
     ]
 }
