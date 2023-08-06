@@ -10,6 +10,7 @@ using Parlance.Authorization.Superuser;
 using Parlance.CldrData;
 using Parlance.Database;
 using Parlance.Glossary;
+using Parlance.Hubs;
 using Parlance.Jobs;
 using Parlance.Project;
 using Parlance.RateLimiting;
@@ -31,6 +32,7 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 builder.Services.AddSwaggerGen();
+builder.Services.AddSignalR();
 builder.Services.AddVicr123Accounts(builder.Configuration);
 builder.Services.AddVersionControl(builder.Configuration);
 builder.Services.AddParlanceProjects(builder.Configuration);
@@ -142,5 +144,6 @@ using (var scope = app.Services.CreateScope())
 }
 
 app.UseRateLimiter();
+app.MapHub<TranslatorHub>("/api/signalr/translator");
 
 app.Run();

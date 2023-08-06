@@ -3,12 +3,14 @@ using LibGit2Sharp;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Primitives;
 using Npgsql;
 using Parlance.CldrData;
 using Parlance.Glossary.Services;
 using Parlance.Helpers;
+using Parlance.Hubs;
 using Parlance.Project;
 using Parlance.Project.Exceptions;
 using Parlance.Project.Index;
@@ -35,6 +37,7 @@ public class ProjectsController : Controller
     private readonly IPermissionsService _permissionsService;
     private readonly IProjectMaintainersService _projectMaintainersService;
     private readonly IGlossaryService _glossaryService;
+    private readonly IHubContext<TranslatorHub, ITranslatorClient> _translatorHubContext;
     private readonly IProjectService _projectService;
     private readonly IParlanceSourceStringsService _sourceStringsService;
 
@@ -42,7 +45,7 @@ public class ProjectsController : Controller
         IPermissionsService permissionsService,
         IParlanceIndexingService indexingService, IParlanceSourceStringsService sourceStringsService,
         IPendingEditsService pendingEditsService, IVicr123AccountsService accountsService,
-        IProjectMaintainersService projectMaintainersService, IGlossaryService glossaryService)
+        IProjectMaintainersService projectMaintainersService, IGlossaryService glossaryService, IHubContext<TranslatorHub, ITranslatorClient> translatorHubContext)
     {
         _projectService = projectService;
         _permissionsService = permissionsService;
@@ -52,6 +55,7 @@ public class ProjectsController : Controller
         _accountsService = accountsService;
         _projectMaintainersService = projectMaintainersService;
         _glossaryService = glossaryService;
+        _translatorHubContext = translatorHubContext;
     }
 
     [HttpGet]
@@ -570,11 +574,18 @@ public class ProjectsController : Controller
 
             entry.Translation = data.TranslationStrings;
 
-            //Record this edit in the database
+            // Record this edit in the database
             await _sourceStringsService.RegisterSourceStringChange(subprojectLanguage, entry);
             await _pendingEditsService.RecordPendingEdit(subprojectLanguage, user);
 
             await translationFile.Save();
+            
+            // Tell SignalR
+            await _translatorHubContext.Clients.Group(TranslatorHub.GetGroup(project, subproject, language.ToLocale()))
+                .TranslationUpdated(translationFile.Hash, new Dictionary<string, IList<TranslationWithPluralType>>()
+                {
+                    {key, data.TranslationStrings}
+                });
 
             Response.Headers["X-Parlance-Hash"] = new StringValues(translationFile.Hash);
             return NoContent();
@@ -608,6 +619,7 @@ public class ProjectsController : Controller
 
             if (!Request.Headers.IfMatch.Contains(translationFile.Hash)) return StatusCode(412); //Precondition Failed
 
+            var updatedData = new Dictionary<string, IList<TranslationWithPluralType>>();
             foreach (var (key, translationData) in data)
             {
                 var entry = translationFile.Entries.Single(entry => entry.Key == key);
@@ -619,9 +631,15 @@ public class ProjectsController : Controller
                 //Record this edit in the database
                 await _sourceStringsService.RegisterSourceStringChange(subprojectLanguage, entry);
                 await _pendingEditsService.RecordPendingEdit(subprojectLanguage, user);
+            
+                updatedData.Add(key, translationData.TranslationStrings);
             }
 
             await translationFile.Save();
+            
+            // Tell SignalR
+            await _translatorHubContext.Clients.Group(TranslatorHub.GetGroup(project, subproject, language.ToLocale()))
+                .TranslationUpdated(translationFile.Hash, updatedData);
 
             Response.Headers["X-Parlance-Hash"] = new StringValues(translationFile.Hash);
             return NoContent();

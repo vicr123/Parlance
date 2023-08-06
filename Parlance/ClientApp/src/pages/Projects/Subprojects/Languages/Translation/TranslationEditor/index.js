@@ -13,6 +13,7 @@ import {useTabIndex} from "react-tabindex";
 import UserManager from "../../../../../../helpers/UserManager";
 import AddToGlossaryModal from "../../../../../../components/modals/glossary/AddToGlossaryModal";
 import SearchGlossaryModal from "../../../../../../components/modals/glossary/SearchGlossaryModal";
+import useTranslatorSignalRConnection from "./TranslatorSignalRConnection";
 
 const EntryList = lazy(() => import("./EntryList"));
 const TranslationArea = lazy(() => import("./TranslationArea"));
@@ -125,6 +126,17 @@ export default function TranslationEditor() {
         setGlossaryData([...glossaryData, item]);
     }
 
+    const signalRConnection = useTranslatorSignalRConnection((hash, data) => {
+        console.log("Got update");
+        setEntries(entries => entries.map(entry => {
+            return {
+                ...entry,
+                translation: data[entry.key] || entry.translation
+            };
+        }));
+        updateManager.setEtag(hash);
+    });
+
     const canEdit = subprojectLanguageData?.canEdit;
 
     const updateData = async () => {
@@ -151,7 +163,7 @@ export default function TranslationEditor() {
             <div className={Styles.root}>
                 <EntryList searchParams={searchParams} setSearchParam={setSearchParam} entries={entries}
                            translationDirection={translationDirection} updateManager={updateManager}
-                           translationFileType={subprojectData.translationFileType}/>
+                           translationFileType={subprojectData.translationFileType} signalRConnection={signalRConnection} />
                 <TranslationArea tabIndex={tabIndex} onPushUpdate={pushUpdate} entries={entries}
                                  translationDirection={translationDirection}
                                  translationFileType={subprojectData.translationFileType} canEdit={canEdit}
