@@ -93,16 +93,39 @@ function EntryListItem({
     );
 }
 
+function ConnectionBox({signalRConnection}) {
+    const {t} = useTranslation();
+    
+    let circleClass;
+    let text;
+    switch (signalRConnection.connected) {
+        case 0:
+            circleClass = Styles.disconnected;
+            text = "SIGNALR_DISCONNECTED";
+            break;
+        case 1:
+            circleClass = Styles.connecting;
+            text = "SIGNALR_CONNECTING";
+            break;
+        case 2:
+            circleClass = Styles.connected;
+            text = "SIGNALR_CONNECTED";
+            break;
+    }
+    
+    return <div className={Styles.connectionBox}>
+        <div className={`${Styles.connectionBoxSignal} ${circleClass}`} />
+        <span>{t(text)}</span>
+    </div>
+}
+
 export default function EntryList({
-    entries,
-    translationDirection,
-    updateManager,
-    translationFileType,
-    searchParams,
-    setSearchParam,
-}) {
-    const { key } = useParams();
-    const { t } = useTranslation();
+                                      entries, translationDirection, updateManager, translationFileType,
+                                      searchParams,
+                                      setSearchParam, signalRConnection
+                                  }) {
+    const {key} = useParams();
+    const {t} = useTranslation();
     const forceUpdate = useForceUpdate();
     const navigate = useNavigate();
     const { filteredEntries } = useTranslationEntries(
@@ -128,6 +151,9 @@ export default function EntryList({
                     onClick={() => navigate("..")}
                     inTranslationView={true}
                 />
+            </Box>
+            <Box>
+                <ConnectionBox signalRConnection={signalRConnection} />
             </Box>
             <Box>
                 <input
