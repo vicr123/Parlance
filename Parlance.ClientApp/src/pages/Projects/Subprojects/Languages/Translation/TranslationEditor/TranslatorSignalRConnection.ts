@@ -1,13 +1,9 @@
 import {HubConnection, HubConnectionBuilder, LogLevel} from "@microsoft/signalr";
 import {useEffect, useState} from "react";
 import {useParams} from "react-router-dom";
+import {TranslationWithPluralType} from "../../../../../../interfaces/translation";
 
-interface TranslationWithPluralType {
-    pluralType: string;
-    translationContent: string;
-}
-
-type OnTranslationUpdatedCallback = (hash: string, data: TranslationWithPluralType[]) => void;
+type OnTranslationUpdatedCallback = (hash: string, data: Record<string, TranslationWithPluralType[]>) => void;
 
 interface TranslatorSignalR {
     connected: ConnectionState
@@ -27,7 +23,7 @@ export default function useTranslatorSignalRConnection(onTranslationUpdated: OnT
 
     useEffect(() => {
         (async () => {
-            const connection = new HubConnectionBuilder().withUrl("/api/signalr/translator").configureLogging(LogLevel.Trace).build();
+            const connection = new HubConnectionBuilder().withUrl("/api/signalr/translator").build();
             
             connection.onreconnected(async err => {
                 await connection.invoke("Subscribe");
