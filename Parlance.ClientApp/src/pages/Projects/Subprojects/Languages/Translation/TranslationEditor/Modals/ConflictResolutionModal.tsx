@@ -27,16 +27,16 @@ function ConflictResolutionPart({translations}: ConflictResolutionPartProps) {
 export default function ConflictResolutionModal({incoming, current, translationKey, updateManager}: ConflictResolutionModalProps) {
     const {t} = useTranslation();
     
-    return <Modal heading={t("Conflict Resolution")} buttons={[
+    return <Modal heading={t("CONFLICT_RESOLUTION")} buttons={[
         {
-            text: t("Accept Incoming Changes"),
+            text: t("CONFLICT_RESOLUTION_ACCEPT_INCOMING"),
             onClick: () => {
                 Modal.unmount();
                 updateManager.clearConflict(translationKey, incoming);
             }
         },
         {
-            text: t("Use My Changes"),
+            text: t("CONFLICT_RESOLUTION_ACCEPT_CURRENT"),
             onClick: () => {
                 Modal.unmount();
                 updateManager.clearConflict(translationKey, current);
@@ -47,10 +47,10 @@ export default function ConflictResolutionModal({incoming, current, translationK
         }
     ]}>
         <VerticalLayout>
-            <span>{t("Looks like you were editing this string at the same time as someone else. Which string do you want to keep?")}</span>
-            <PageHeading level={3}>{t("Incoming Changes")}</PageHeading>
+            <span>{t("CONFLICT_RESOLUTION_PROMPT")}</span>
+            <PageHeading level={3}>{t("CONFLICT_RESOLUTION_INCOMING")}</PageHeading>
             <ConflictResolutionPart translations={incoming} />
-            <PageHeading level={3}>{t("Your Changes")}</PageHeading>
+            <PageHeading level={3}>{t("CONFLICT_RESOLUTION_CURRENT")}</PageHeading>
             <ConflictResolutionPart translations={current} />
         </VerticalLayout>
     </Modal>
