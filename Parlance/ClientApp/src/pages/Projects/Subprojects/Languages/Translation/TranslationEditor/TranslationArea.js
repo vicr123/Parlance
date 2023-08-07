@@ -328,13 +328,13 @@ export default function TranslationArea({
                     <div className={Styles.controlArea}>
                         <Button onClick={searchGlossary}>
                             <div className={Styles.navButtonContents}>
-                                <span>{t("Search Glossary")}</span>
+                                <span>{t("SEARCH_GLOSSARY")}</span>
                                 <KeyboardShortcut shortcut={KeyboardShortcuts.SearchGlossary}/>
                             </div>
                         </Button>
                         {canEdit && <Button onClick={addToGlossary}>
                             <div className={Styles.navButtonContents}>
-                                <span>{t("Add Entry to Glossary")}</span>
+                                <span>{t("ADD_ENTRY_TO_GLOSSARY")}</span>
                                 <VerticalSpacer height={2}/>
                                 <KeyboardShortcut shortcut={KeyboardShortcuts.AddToGlossary}/>
                             </div>
