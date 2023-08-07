@@ -5,6 +5,8 @@ import {TranslationWithPluralType} from "../../../../../../../interfaces/transla
 import {UpdateManager} from "../UpdateManager";
 import PageHeading from "../../../../../../../components/PageHeading";
 
+import Styles from "./ConflictResolutionModal.module.css";
+
 interface ConflictResolutionModalProps {
     incoming: TranslationWithPluralType[]
     current: TranslationWithPluralType[]
@@ -17,7 +19,7 @@ interface ConflictResolutionPartProps {
 }
 
 function ConflictResolutionPart({translations}: ConflictResolutionPartProps) {
-    return <div>
+    return <div className={Styles.conflictResolutionContent}>
         {translations.map(x => <span>{x.translationContent}</span>)}
     </div>
 }
