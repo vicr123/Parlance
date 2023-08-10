@@ -12,6 +12,6 @@ public class QtLinguistTranslationFileEntry : IParlanceTranslationFileEntry
     public string Source { get; init; } = null!;
     public IList<TranslationWithPluralType> Translation { get; set; } = null!;
     public string Context { get; init; } = null!;
-    public bool RequiresPluralisation { get; init; }
+    public bool RequiresPluralisation { get; set; }
     public IEnumerable<Location> Locations { get; init; } = null!;
 }

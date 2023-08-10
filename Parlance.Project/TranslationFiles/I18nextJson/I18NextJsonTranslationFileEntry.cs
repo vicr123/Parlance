@@ -11,5 +11,5 @@ public class I18NextJsonTranslationFileEntry : IParlanceTranslationFileEntry
     public string Source { get; set; } = null!;
     public IList<TranslationWithPluralType> Translation { get; set; } = null!;
     public string Context { get; set; } = null!;
-    public bool RequiresPluralisation { get; init; }
+    public bool RequiresPluralisation { get; set; }
 }
