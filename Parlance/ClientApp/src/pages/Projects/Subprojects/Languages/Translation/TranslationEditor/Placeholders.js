@@ -59,5 +59,18 @@ export default {
             regex: /%[abcdefghnostx]/g,
             type: "placeholder"
         }
+    ],
+    gettext: [
+        {
+            name: PLACEHOLDER_TRANSLATION_STRING,
+            regex: /%s|%r/g,
+            type: "placeholder"
+        },
+        {
+            name: NUMERIC_PLACEHOLDER_TRANSLATION_STRING,
+            regex: /%d/gim,
+            type: "placeholder",
+            preview: ({pluralExample}) => pluralExample
+        }
     ]
 }
