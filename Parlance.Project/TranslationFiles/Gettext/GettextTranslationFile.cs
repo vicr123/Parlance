@@ -214,6 +214,10 @@ public class GettextTranslationFile : ParlanceTranslationFile, IParlanceMonoTran
                 });
         }
 
+        var meta = new GettextMetadata(EmptyEntry.Translation.Single().TranslationContent);
+        meta.Add("Plural-Forms", GettextPluralForms.PluralFormsHeader(locale));
+        EmptyEntry.Translation.Single().TranslationContent = meta.ToString();
+
         return Task.CompletedTask;
     }
 
