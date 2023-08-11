@@ -18,24 +18,35 @@ public class ParlanceSubprojectLanguage : IParlanceSubprojectLanguage
     public IParlanceSubproject Subproject { get; }
     public Locale Locale { get; }
 
-    bool IParlanceSubprojectLanguage.Exists
+    bool IParlanceSubprojectLanguage.Exists => File.Exists(ResolvedTranslationFilePath());
+
+    private string ResolvedLocale()
     {
-        get
+        var (_, attr) = ValidTypes().First();
+
+        var localePart = attr.FileNameFormat switch
         {
-            var (_, attr) = ValidTypes().First();
+            ExpectedTranslationFileNameFormat.Dashed => Locale.ToDashed(),
+            ExpectedTranslationFileNameFormat.Underscored => Locale.ToUnderscored(),
+            _ => throw new ArgumentOutOfRangeException(
+                $"Invalid value for FileNameFormat for attribute '{attr}'.")
+        };
 
-            var translationFilePath = Path.Join(Subproject.Project.VcsDirectory,
-                Subproject.Path.Replace("{lang}", attr.FileNameFormat switch
-                {
-                    ExpectedTranslationFileNameFormat.Dashed => Locale.ToDashed(),
-                    ExpectedTranslationFileNameFormat.Underscored => Locale.ToUnderscored(),
-                    _ => throw new ArgumentOutOfRangeException(
-                        $"Invalid value for FileNameFormat for attribute '{attr}'.")
-                }));
-
-            return File.Exists(translationFilePath);
+        if (!File.Exists(Path.Join(Subproject.Project.VcsDirectory,
+                Subproject.Path.Replace("{lang}", localePart))))
+        {
+            if (File.Exists(Path.Join(Subproject.Project.VcsDirectory,
+                    Subproject.Path.Replace("{lang}", localePart.ToLowerInvariant()))))
+            {
+                return localePart.ToLowerInvariant();
+            }
         }
+
+        return localePart;
     }
+
+    private string ResolvedTranslationFilePath() => Path.Join(Subproject.Project.VcsDirectory,
+            Subproject.Path.Replace("{lang}", ResolvedLocale()));
 
     public async Task WriteNewTranslationFile(IParlanceIndexingService? indexingService)
     {
@@ -45,13 +56,7 @@ public class ParlanceSubprojectLanguage : IParlanceSubprojectLanguage
 
         var (_, attr) = ValidTypes().First();
         var translationFilePath = Path.Join(Subproject.Project.VcsDirectory,
-            Subproject.Path.Replace("{lang}", attr.FileNameFormat switch
-            {
-                ExpectedTranslationFileNameFormat.Dashed => Locale.ToDashed(),
-                ExpectedTranslationFileNameFormat.Underscored => Locale.ToUnderscored(),
-                _ => throw new ArgumentOutOfRangeException(
-                    $"Invalid value for FileNameFormat for attribute '{attr}'.")
-            }));
+            Subproject.Path.Replace("{lang}", ResolvedLocale()));
         await baseFile.UseAsBaseFor(translationFilePath, Locale);
     }
 
@@ -63,18 +68,7 @@ public class ParlanceSubprojectLanguage : IParlanceSubprojectLanguage
     private async Task<ParlanceTranslationFile?> CreateTranslationFile(IParlanceIndexingService? indexingService,
         Locale locale)
     {
-        var (_, attr) = ValidTypes().First();
-
-        var translationFilePath = Path.Join(Subproject.Project.VcsDirectory,
-            Subproject.Path.Replace("{lang}", attr.FileNameFormat switch
-            {
-                ExpectedTranslationFileNameFormat.Dashed => locale.ToDashed(),
-                ExpectedTranslationFileNameFormat.Underscored => locale.ToUnderscored(),
-                _ => throw new ArgumentOutOfRangeException(
-                    $"Invalid value for FileNameFormat for attribute '{attr}'.")
-            }));
-
-        return await CreateTranslationFile(indexingService, locale, translationFilePath);
+        return await CreateTranslationFile(indexingService, locale, ResolvedTranslationFilePath());
     }
 
     private async Task<ParlanceTranslationFile?> CreateTranslationFile(IParlanceIndexingService? indexingService,
