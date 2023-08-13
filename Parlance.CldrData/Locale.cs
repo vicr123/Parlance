@@ -68,9 +68,9 @@ public record Locale
 
     public IReadOnlyList<LocalePluralRule> PluralRules()
     {
-        if (PluralCache.ContainsKey(this))
+        if (PluralCache.TryGetValue(this, out var value))
         {
-            return PluralCache[this];
+            return value;
         }
 
         var order = new List<string>
@@ -83,53 +83,64 @@ public record Locale
             "other"
         };
 
-        //HACK: For some reason German doesn't seem to be working correctly so hardcode the English rules
-        var locale = Sepia.Globalization.Locale.Create(ToUnderscored());
-        var plural = Plural.Create(locale);
-        var rules = Cldr.Instance.GetDocuments("common/supplemental/plurals.xml")
-            .Elements("supplementalData/plurals[@type='cardinal']/pluralRules[contains(@locales, '" +
-                      locale.Id.Language.ToLowerInvariant() + "')]/pluralRule").Select<XPathNavigator, Rule>(Rule.Parse)
-            .OrderBy(x => order.IndexOf(x.Category)).ToList();
+        try
+        {
+            //HACK: For some reason German doesn't seem to be working correctly so hardcode the English rules
+            var locale = Sepia.Globalization.Locale.Create(ToUnderscored());
+            var plural = Plural.Create(locale);
+            var rules = Cldr.Instance.GetDocuments("common/supplemental/plurals.xml")
+                .Elements("supplementalData/plurals[@type='cardinal']/pluralRules[contains(@locales, '" +
+                          locale.Id.Language.ToLowerInvariant() + "')]/pluralRule").Select<XPathNavigator, Rule>(Rule.Parse)
+                .OrderBy(x => order.IndexOf(x.Category)).ToList();
 
-        var result = Enumerable.Range(0, 201).Select(num =>
-            {
-                try
+            var result = Enumerable.Range(0, 201).Select(num =>
                 {
-                    foreach (var rule in rules)
+                    try
                     {
-                        if (rule.Matches(RuleContext.Create(num)))
+                        foreach (var rule in rules)
                         {
-                            return new
+                            if (rule.Matches(RuleContext.Create(num)))
                             {
-                                rule.Category,
-                                Number = num
-                            };
+                                return new
+                                {
+                                    rule.Category,
+                                    Number = num
+                                };
+                            }
                         }
+
+                        return new
+                        {
+                            Category = "other",
+                            Number = num
+                        };
                     }
-
-                    return new
+                    catch
                     {
-                        Category = "other",
-                        Number = num
-                    };
-                }
-                catch
-                {
-                    return new
-                    {
-                        Category = "other",
-                        Number = num
-                    };
-                }
-            })
-            .GroupBy(item => item.Category)
-            .Select((item, index) => new LocalePluralRule(item.Key, item.Select(x => x.Number).ToList(),
-                item.Key == "other" ? 99 : index))
-            .OrderBy(item => item.Index)
-            .ToList();
+                        return new
+                        {
+                            Category = "other",
+                            Number = num
+                        };
+                    }
+                })
+                .GroupBy(item => item.Category)
+                .Select((item, index) => new LocalePluralRule(item.Key, item.Select(x => x.Number).ToList(),
+                    item.Key == "other" ? 99 : index))
+                .OrderBy(item => item.Index)
+                .ToList();
 
-        PluralCache.TryAdd(this, result);
-        return result;
+            PluralCache.TryAdd(this, result);
+            return result;
+        }
+        catch (FormatException)
+        {
+            // If the language can't be retrieved from the CLDR data, no plural rules exist.
+            return new List<LocalePluralRule>
+            {
+                new("other", Enumerable.Range(0, 200).ToList(), 0)
+            };
+        }
     }
 
     public static IEnumerable<Locale> GetLocales()

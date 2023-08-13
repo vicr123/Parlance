@@ -80,7 +80,17 @@ public class ProjectsController : Controller
     [Route("languages")]
     public async Task<IActionResult> GetUsedLanguages()
     {
-        var languages = (await _projectService.Projects()).SelectMany(project => project.GetParlanceProject().Subprojects.SelectMany(subproject => subproject.AvailableLanguages()));
+        var languages = (await _projectService.Projects()).SelectMany(project =>
+        {
+            try
+            {
+                return project.GetParlanceProject().Subprojects.SelectMany(subproject => subproject.AvailableLanguages());
+            }
+            catch (ParlanceJsonFileParseException)
+            {
+                return Enumerable.Empty<Locale>();
+            }
+        });
 
         return Json(await Task.WhenAll(languages.Distinct().Select(async lang =>
         {
