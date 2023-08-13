@@ -28,7 +28,22 @@ public static class CldrExtensions
         
     public static async Task<IServiceCollection> AddCldrAsync(this IServiceCollection services, IConfiguration configuration)
     {
-        await Cldr.Instance.DownloadLatestAsync();
+        var currentVersion = Cldr.Instance.CurrentVersion();
+        Console.WriteLine($"Current CLDR data version: {currentVersion}");
+        var latestVersion = await Cldr.LatestVersionAsync();
+        Console.WriteLine($"Latest CLDR data version: {latestVersion}");
+        
+        if (currentVersion < latestVersion)
+        {
+            Console.WriteLine("Updating CLDR data. This may take some time.");
+            await Cldr.Instance.DownloadAsync(latestVersion);
+            Console.WriteLine("CLDR data was updated.");
+        }
+        else
+        {
+            Console.WriteLine("The CLDR data is up to date.");
+        }
+
         return services;
     }
 
