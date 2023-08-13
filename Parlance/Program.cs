@@ -25,6 +25,16 @@ using Parlance.Vicr123Accounts.Services.AttributionConsent;
 using Quartz;
 using ServiceReference;
 
+Console.WriteLine("""
+ _____ _   ____________________________________
+|     \ /   |  _ \   _ __| |    _ __ ___|  __|
+| ____//    |  __/-'| '__| /--'| '_ / __|  __|
+| |\  /     | || [] | [  || [] | | [ [__| [__
+|_| \/(_)  _|_| \___|_|__|_\___|_| |\___|____|_
+
+========================================
+""");
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
