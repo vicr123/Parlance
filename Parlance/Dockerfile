@@ -38,7 +38,7 @@ RUN dotnet publish "Parlance.csproj" -c Release -o /app/publish
 FROM base AS final
 
 # Install openssl
-RUN apk add libcrypto3
+RUN apk add libcrypto3 icu
 
 WORKDIR /opt/local-libs
 COPY --from=native-build-output /output ./
