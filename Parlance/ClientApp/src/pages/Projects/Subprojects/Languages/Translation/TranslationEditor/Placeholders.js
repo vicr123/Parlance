@@ -39,5 +39,18 @@ export default {
             regex: /\{(\d+?)}/g,
             type: "placeholder"
         },
+    ],
+    "vue-i18n": [
+        {
+            name: PLACEHOLDER_TRANSLATION_STRING,
+            regex: /\{(?!count})(.+?)}/g,
+            type: "placeholder"
+        },
+        {
+            name: NUMERIC_PLACEHOLDER_TRANSLATION_STRING,
+            regex: /{count}/g,
+            type: "placeholder",
+            preview: ({pluralExample}) => pluralExample
+        }
     ]
 }
