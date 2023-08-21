@@ -3,8 +3,11 @@ using LibGit2Sharp;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Primitives;
+using Npgsql;
 using Parlance.CldrData;
+using Parlance.Glossary.Services;
 using Parlance.Helpers;
 using Parlance.Project;
 using Parlance.Project.Exceptions;
@@ -31,6 +34,7 @@ public class ProjectsController : Controller
     private readonly IPendingEditsService _pendingEditsService;
     private readonly IPermissionsService _permissionsService;
     private readonly IProjectMaintainersService _projectMaintainersService;
+    private readonly IGlossaryService _glossaryService;
     private readonly IProjectService _projectService;
     private readonly IParlanceSourceStringsService _sourceStringsService;
 
@@ -38,7 +42,7 @@ public class ProjectsController : Controller
         IPermissionsService permissionsService,
         IParlanceIndexingService indexingService, IParlanceSourceStringsService sourceStringsService,
         IPendingEditsService pendingEditsService, IVicr123AccountsService accountsService,
-        IProjectMaintainersService projectMaintainersService)
+        IProjectMaintainersService projectMaintainersService, IGlossaryService glossaryService)
     {
         _projectService = projectService;
         _permissionsService = permissionsService;
@@ -47,6 +51,7 @@ public class ProjectsController : Controller
         _pendingEditsService = pendingEditsService;
         _accountsService = accountsService;
         _projectMaintainersService = projectMaintainersService;
+        _glossaryService = glossaryService;
     }
 
     [HttpGet]
@@ -312,6 +317,79 @@ public class ProjectsController : Controller
             return BadRequest();
         }
     }
+    
+    
+    [HttpGet]
+    [Route("{project}/glossary")]
+    public async Task<IActionResult> GetConnectedGlossaries(string project)
+    {
+        try
+        {
+            var p = await _projectService.ProjectBySystemName(project);
+            return Json(_glossaryService.ConnectedGlossaries(p).Select(x => new
+            {
+                x.Id, x.Name
+            }));
+        }
+        catch (ProjectNotFoundException)
+        {
+            return NotFound();
+        }
+        catch (DbUpdateException ex) when (ex.InnerException is PostgresException
+                                           {
+                                               SqlState: PostgresErrorCodes.UniqueViolation
+                                           })
+        {
+            return Conflict();
+        }
+    }
+    
+    [HttpPost]
+    [Authorize(Policy = "ProjectManager")]
+    [Route("{project}/glossary")]
+    public async Task<IActionResult> ConnectGlossary(string project, [FromBody] ConnectGlossaryRequestData data)
+    {
+        try
+        {
+            var p = await _projectService.ProjectBySystemName(project);
+            var glossary = _glossaryService.GlossaryById(data.GlossaryId);
+            await _glossaryService.ConnectGlossary(glossary, p);
+            return NoContent();
+        }
+        catch (ProjectNotFoundException)
+        {
+            return NotFound();
+        }
+        catch (DbUpdateException ex) when (ex.InnerException is PostgresException
+                                           {
+                                               SqlState: PostgresErrorCodes.UniqueViolation
+                                           })
+        {
+            return Conflict();
+        }
+    }
+    
+    [HttpDelete]
+    [Authorize(Policy = "ProjectManager")]
+    [Route("{project}/glossary/{glossary:guid}")]
+    public async Task<IActionResult> DisconnectGlossary(string project, Guid glossary)
+    {
+        try
+        {
+            var p = await _projectService.ProjectBySystemName(project);
+            var g = _glossaryService.GlossaryById(glossary);
+            await _glossaryService.DisconnectGlossary(g, p);
+            return NoContent();
+        }
+        catch (ProjectNotFoundException)
+        {
+            return NotFound();
+        }
+        catch (InvalidOperationException)
+        {
+            return NotFound();
+        }
+    }
 
     [HttpGet]
     [Route("{project}/{subproject}")]
@@ -567,6 +645,45 @@ public class ProjectsController : Controller
             return NotFound();
         }
     }
+    
+    [HttpGet]
+    [Route("{project}/{language}/glossary")]
+    public async Task<IActionResult> GetGlossary(string project, string language)
+    {
+        try
+        {
+            var p = await _projectService.ProjectBySystemName(project);
+            var locale = language.ToLocale();
+            return Json(_glossaryService.SearchGlossaryByProject(p, locale, null).Select(x => new
+            {
+                x.Id, x.Term, x.Translation, x.PartOfSpeech
+            }));
+        }
+        catch (ProjectNotFoundException)
+        {
+            return NotFound();
+        }
+    }
+    
+    [HttpPost]
+    [Route("{project}/{language}/glossary")]
+    public async Task<IActionResult> SearchGlossary(string project, string language,
+        [FromBody] SearchGlossaryRequestData data)
+    {
+        try
+        {
+            var p = await _projectService.ProjectBySystemName(project);
+            var locale = language.ToLocale();
+            return Json(_glossaryService.SearchGlossaryByProject(p, locale, data.SearchTerm).Select(x => new
+            {
+                x.Id, x.Term, x.Translation, x.PartOfSpeech
+            }));
+        }
+        catch (ProjectNotFoundException)
+        {
+            return NotFound();
+        }
+    }
 
     public class AddProjectRequestData
     {
@@ -584,5 +701,15 @@ public class ProjectsController : Controller
     {
         public bool ForceUpdate { get; set; }
         public IList<TranslationWithPluralType> TranslationStrings { get; set; } = null!;
+    }
+
+    public class ConnectGlossaryRequestData
+    {
+        public required Guid GlossaryId { get; set; }
+    }
+
+    public class SearchGlossaryRequestData
+    {
+        public required string? SearchTerm { get; set; }
     }
 }

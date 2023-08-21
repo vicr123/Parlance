@@ -4,6 +4,9 @@
   "private": true,
   "dependencies": {
     "@reecelucas/react-use-hotkeys": "^2.0.0",
+    "@types/node": "^20.4.5",
+    "@types/react": "^18.2.18",
+    "@types/react-dom": "^18.2.7",
     "crypto-js": "^4.1.1",
     "diff": "^5.1.0",
     "eventemitter3": "^4.0.7",
@@ -12,9 +15,11 @@
     "i18next-browser-languagedetector": "^6.1.5",
     "i18next-http-backend": "^1.4.1",
     "i18next-pseudo": "^2.2.1",
+    "install": "^0.13.0",
     "jquery": "^3.6.0",
     "merge": "^2.1.1",
     "moment": "^2.29.4",
+    "npm": "^9.8.1",
     "oidc-client": "^1.11.5",
     "react": "^18.1.0",
     "react-dom": "^18.1.0",
@@ -31,7 +36,9 @@
     "rimraf": "^3.0.2",
     "slate": "^0.82.1",
     "slate-react": "^0.83.0",
+    "typescript-plugin-css-modules": "^5.0.1",
     "web-vitals": "^2.1.4",
+    "wink-pos-tagger": "^2.2.2",
     "workbox-background-sync": "^6.5.3",
     "workbox-broadcast-update": "^6.5.3",
     "workbox-cacheable-response": "^6.5.3",
@@ -55,10 +62,11 @@
     "eslint-plugin-jsx-a11y": "^6.5.1",
     "eslint-plugin-react": "^7.29.4",
     "nan": "^2.15.0",
-    "typescript": "^4.6.3"
+    "typescript": "^5.1.6"
   },
   "overrides": {
-    "autoprefixer": "10.4.5"
+    "autoprefixer": "10.4.5",
+    "typescript": "^5.1.6"
   },
   "resolutions": {
     "css-what": "^5.0.1",

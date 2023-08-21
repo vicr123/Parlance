@@ -63,10 +63,16 @@ export default function SubprojectListing() {
         {projectData?.isProjectManager &&
             <Container>
                 <PageHeading level={3}>{t("ACTIONS")}</PageHeading>
-                <SelectableList items={[{
-                    contents: t("MANAGE_VCS_REPOSITORY"),
-                    onClick: () => navigate("vcs")
-                }]}/>
+                <SelectableList items={[
+                    {
+                        contents: t("MANAGE_VCS_REPOSITORY"),
+                        onClick: () => navigate("vcs")
+                    },
+                    {
+                        contents: t("MANAGE_GLOSSARIES"),
+                        onClick: () => navigate("glossaries")
+                    }
+                ]}/>
             </Container>
         }
     </div>

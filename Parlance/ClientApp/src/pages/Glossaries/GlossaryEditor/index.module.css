@@ -1,0 +1,60 @@
+.root {
+    display: grid;
+    grid-template-areas: "language table";
+    grid-template-columns: 400px 1fr;
+    overflow-y: hidden;
+}
+
+.language {
+    grid-area: language;
+    overflow-y: auto;
+}
+
+:global(.ltr) .language {
+    border-right: 1px solid var(--border-color);
+}
+
+:global(.rtl) .language {
+    border-left: 1px solid var(--border-color);
+}
+
+.table {
+    grid-area: table;
+    
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    justify-items: stretch;
+    overflow-y: auto;
+}
+
+@media (max-width: 1024px) {
+    .root {
+        grid-template-areas: "language";
+        grid-template-columns: 1fr;
+    }
+    
+    .languageEditor.root {
+        grid-template-areas: "table";
+    }
+    
+    :global(.ltr) .language {
+        border: none;
+    }
+    
+    :global(.rtl) .language {
+        border: none;
+    }
+    
+    .table {
+        display: none;
+    }
+    
+    .languageEditor .table {
+        display: flex;
+    }
+    
+    .languageEditor .language {
+        display: none;
+    }
+}

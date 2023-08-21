@@ -155,4 +155,19 @@ public record Locale
         CountryCode = this.CountryCode;
         Script = this.Script;
     }
+
+    public bool IsSupersetOf(Locale locale)
+    {
+        if (CountryCode is null)
+        {
+            return locale.LanguageCode == LanguageCode;
+        }
+
+        if (Script is null)
+        {
+            return locale.LanguageCode == LanguageCode && locale.CountryCode == CountryCode;
+        }
+
+        return locale.LanguageCode == LanguageCode && locale.CountryCode == CountryCode && locale.Script == Script;
+    }
 }

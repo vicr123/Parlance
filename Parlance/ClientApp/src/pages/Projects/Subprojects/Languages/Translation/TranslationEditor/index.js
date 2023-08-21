@@ -11,6 +11,8 @@ import Spinner from "../../../../../../components/Spinner";
 import {KeyboardShortcuts, useKeyboardShortcut} from "./KeyboardShortcuts";
 import {useTabIndex} from "react-tabindex";
 import UserManager from "../../../../../../helpers/UserManager";
+import AddToGlossaryModal from "../../../../../../components/modals/glossary/AddToGlossaryModal";
+import SearchGlossaryModal from "../../../../../../components/modals/glossary/SearchGlossaryModal";
 
 const EntryList = lazy(() => import("./EntryList"));
 const TranslationArea = lazy(() => import("./TranslationArea"));
@@ -21,6 +23,8 @@ export default function TranslationEditor() {
     const [entries, setEntries] = useState([]);
     const [subprojectData, setSubprojectData] = useState({});
     const [subprojectLanguageData, setSubprojectLanguageData] = useState({});
+    const [glossaryData, setGlossaryData] = useState([]);
+    const [connectedGlossaries, setConnectedGlossaries] = useState([]);
     const [searchParams, setSearchParams] = useState({
         query: "",
         filter: "all"
@@ -68,6 +72,8 @@ export default function TranslationEditor() {
     useKeyboardShortcut(KeyboardShortcuts.PreviousUnfinished, goToPrevUnfinished);
     useKeyboardShortcut(KeyboardShortcuts.Next, goToNext);
     useKeyboardShortcut(KeyboardShortcuts.Previous, goToPrev);
+    useKeyboardShortcut(KeyboardShortcuts.AddToGlossary, () => connectedGlossaries.length && Modal.mount(<AddToGlossaryModal language={language} connectedGlossaries={connectedGlossaries} onGlossaryItemAdded={onGlossaryItemAdded} />));
+    useKeyboardShortcut(KeyboardShortcuts.SearchGlossary, () => connectedGlossaries.length && Modal.mount(<SearchGlossaryModal language={language} glossaryData={glossaryData} />));
 
     const updateManager = useUpdateManager();
     updateManager.on("outOfDate", () => {
@@ -106,6 +112,18 @@ export default function TranslationEditor() {
     const updateSubprojectLanguage = async () => {
         setSubprojectLanguageData(await Fetch.get(`/api/Projects/${project}/${subproject}/${language}`));
     }
+    
+    const updateGlossaries = async () => {
+        setGlossaryData(await Fetch.get(`/api/Projects/${project}/${language}/glossary`));
+    }
+    
+    const updateConnectedGlossaries = async () => {
+        setConnectedGlossaries(await Fetch.get(`/api/Projects/${project}/glossary`));
+    }
+    
+    const onGlossaryItemAdded = item => {
+        setGlossaryData([...glossaryData, item]);
+    }
 
     const canEdit = subprojectLanguageData?.canEdit;
 
@@ -115,6 +133,8 @@ export default function TranslationEditor() {
             updateEntries(),
             updateSubproject(),
             updateSubprojectLanguage(),
+            updateGlossaries(),
+            updateConnectedGlossaries(),
             i18n.pluralPatterns(language)
         ])
         setReady(true);
@@ -135,7 +155,8 @@ export default function TranslationEditor() {
                 <TranslationArea tabIndex={tabIndex} onPushUpdate={pushUpdate} entries={entries}
                                  translationDirection={translationDirection}
                                  translationFileType={subprojectData.translationFileType} canEdit={canEdit}
-                                 searchParams={searchParams}/>
+                                 searchParams={searchParams} glossary={glossaryData}
+                                 connectedGlossaries={connectedGlossaries} onGlossaryItemAdded={onGlossaryItemAdded} />
                 <AssistantArea entries={entries} searchParams={searchParams}
                                translationDirection={translationDirection}/>
             </div>

@@ -1,0 +1,15 @@
+.match {
+    color: var(--foreground-disabled-color);
+    
+    display: flex;
+    gap: 6px;
+    align-items: center;
+}
+
+.suggestAddButton {
+    visibility: hidden;
+}
+
+.match:hover .suggestAddButton {
+    visibility: visible;
+}

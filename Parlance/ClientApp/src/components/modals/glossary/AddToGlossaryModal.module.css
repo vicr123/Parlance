@@ -1,0 +1,16 @@
+.glossaryItem {
+    display: flex;
+    gap: 6px;
+}
+
+.glossaryCheck {
+    visibility: hidden;
+}
+
+.glossaryCheck.checked {
+    visibility: visible;
+}
+
+.termBox {
+    flex-grow: 1;
+}

@@ -20,6 +20,9 @@ import Modal from "../../../../../../components/Modal";
 import CommentsModal from "./Comments/CommentsModal";
 import Fetch from "../../../../../../helpers/Fetch";
 import PreloadingBlock from "../../../../../../components/PreloadingBlock";
+import GlossaryLookup from "./GlossaryLookup";
+import AddToGlossaryModal from "../../../../../../components/modals/glossary/AddToGlossaryModal";
+import SearchGlossaryModal from "../../../../../../components/modals/glossary/SearchGlossaryModal";
 
 function TranslationPart({
                              entry,
@@ -153,7 +156,10 @@ export default function TranslationArea({
                                             onPushUpdate,
                                             canEdit,
                                             tabIndex,
-                                            searchParams
+                                            searchParams,
+                                            glossary,
+                                            connectedGlossaries,
+                                            onGlossaryItemAdded
                                         }) {
     const {project, subproject, language, key} = useParams();
     const {t} = useTranslation();
@@ -247,6 +253,14 @@ export default function TranslationArea({
         Modal.mount(<CommentsModal threads={commentThreads} onUpdateThreads={updateThreads} project={project}
                                    subproject={subproject} language={language} tkey={key}/>)
     };
+    
+    const searchGlossary = () => {
+        Modal.mount(<SearchGlossaryModal language={language} glossaryData={glossary} />)
+    }
+    
+    const addToGlossary = () => {
+        Modal.mount(<AddToGlossaryModal language={language} connectedGlossaries={connectedGlossaries} onGlossaryItemAdded={onGlossaryItemAdded} />);
+    }
 
     return <div className={`${Styles.translationArea} ${key && Styles.haveKey}`}>
         <div className={Styles.translationAreaInner}>
@@ -264,7 +278,8 @@ export default function TranslationArea({
                                                 translationDirection={"ltr"} readOnly={true}
                                                 onChange={() => {
                                                 }} showPlaceholders={altDown}
-                                                placeholders={translationPlaceholders}/>
+                                                placeholders={translationPlaceholders} />
+                        <GlossaryLookup glossary={glossary} sourceString={entry.source} connectedGlossaries={connectedGlossaries} onGlossaryItemAdded={onGlossaryItemAdded} canEdit={canEdit} />
                     </Untabbable>
                 </div>
                 <div className={Styles.keyContainer}>
@@ -308,6 +323,27 @@ export default function TranslationArea({
                                         tabIndex={tabIndex} placeholders={translationPlaceholders}/>
             })}
             <div style={{flexGrow: 1}}/>
+            {connectedGlossaries.length > 0 && 
+                <div className={Styles.controls}>
+                    <div className={Styles.controlArea}>
+                        <Button onClick={searchGlossary}>
+                            <div className={Styles.navButtonContents}>
+                                <span>{t("SEARCH_GLOSSARY")}</span>
+                                <KeyboardShortcut shortcut={KeyboardShortcuts.SearchGlossary}/>
+                            </div>
+                        </Button>
+                        {canEdit && <Button onClick={addToGlossary}>
+                            <div className={Styles.navButtonContents}>
+                                <span>{t("ADD_ENTRY_TO_GLOSSARY")}</span>
+                                <VerticalSpacer height={2}/>
+                                <KeyboardShortcut shortcut={KeyboardShortcuts.AddToGlossary}/>
+                            </div>
+                        </Button>}
+                    </div>
+                    <div className={Styles.controlArea}>
+                    </div>
+                </div>
+            }
             <div className={Styles.controls}>
                 <div className={Styles.controlArea}>
                     <Button onClick={goToPrevUnfinished} disabled={!prevUnfinished}>

@@ -1,0 +1,83 @@
+.errorView {
+    flex-grow: 1;
+    align-self: center;
+    
+    display: flex;
+    align-items: center;
+    justify-items: center;
+}
+
+.errorViewInner {
+    
+}
+
+.glossaryTable {
+    display: flex;
+    flex-direction: column;
+}
+
+.match {
+    padding: 9px;
+    border-bottom: 1px solid var(--border-color);
+
+    display: grid;
+    grid-template-areas: "term pos"
+                         "translation translation"
+                         "buttons buttons";
+    grid-template-columns: max-content 1fr;
+    gap: 6px;
+}
+
+.term {
+    font-size: 10pt;
+    grid-area: term;
+}
+
+.pos {
+    font-size: 10pt;
+    color: var(--foreground-disabled-color);
+    grid-area: pos;
+}
+
+.translation {
+    grid-area: translation;
+}
+
+.buttons {
+    grid-area: buttons;
+    justify-self: end;
+    
+    display: flex;
+    gap: 6px;
+}
+
+.addButton {
+    display: flex;
+    justify-content: center;
+    padding: 6px;
+    gap: 6px;
+    
+    cursor: pointer;
+}
+
+input.searchBox {
+    border: none;
+    padding: 9px;
+    font-size: 12pt;
+}
+
+.searchContainer {
+    display: flex;
+    flex-direction: column;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.backButton {
+    display: none;
+}
+
+@media (max-width: 1024px) {
+    .backButton {
+        display: block;
+    }
+}
