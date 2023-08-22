@@ -3,7 +3,7 @@ using JetBrains.Annotations;
 namespace Parlance.Project.TranslationFiles;
 
 [MeansImplicitUse]
-[AttributeUsage(AttributeTargets.Class)]
+[AttributeUsage(AttributeTargets.Class, AllowMultiple = true)]
 public class TranslationFileTypeAttribute : Attribute
 {
     public string HandlerFor { get; }

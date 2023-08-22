@@ -25,22 +25,35 @@ public class ParlanceSubproject : IParlanceSubproject
     public string Path => _subproject.Path;
     public string TranslationFileType => _subproject.Type;
     public Locale BaseLang => _subproject.BaseLang.ToLocale();
-    public bool PreferRegionAgnosticLanguage => _subproject.PreferRegionAgnosticLanguage ?? string.IsNullOrEmpty(BaseLang.CountryCode);
 
-    public string BasePath => 
-        System.IO.Path.Join(Project.VcsDirectory, _subproject.BasePath ??
-                    Path.Replace("{lang}",
-                        typeof(ParlanceProjectExtensions).Assembly
-                        .GetTypes()
-                        .Where(t => t.IsDefined(typeof(TranslationFileTypeAttribute)))
-                        .Select(type => type.GetCustomAttribute<TranslationFileTypeAttribute>()!)
-                        .Single(attr => attr.HandlerFor == TranslationFileType).FileNameFormat
-                        switch
-                        {
-                            ExpectedTranslationFileNameFormat.Dashed => BaseLang.ToDashed(),
-                            ExpectedTranslationFileNameFormat.Underscored => BaseLang.ToUnderscored(),
-                            _ => throw new ArgumentOutOfRangeException("Invalid value for FileNameFormat.")
-                        }));
+    public bool PreferRegionAgnosticLanguage =>
+        _subproject.PreferRegionAgnosticLanguage ?? string.IsNullOrEmpty(BaseLang.CountryCode);
+
+    public string BasePath
+    {
+        get
+        {
+            var language = typeof(ParlanceProjectExtensions).Assembly
+                    .GetTypes()
+                    .Where(t => t.IsDefined(typeof(TranslationFileTypeAttribute)))
+                    .SelectMany(type => type.GetCustomAttributes<TranslationFileTypeAttribute>())
+                    .Single(attr => attr.HandlerFor == TranslationFileType)
+                    .FileNameFormat switch
+                    {
+                        ExpectedTranslationFileNameFormat.Dashed => BaseLang.ToDashed(),
+                        ExpectedTranslationFileNameFormat.Underscored => BaseLang.ToUnderscored(),
+                        _ => throw new ArgumentOutOfRangeException("Invalid value for FileNameFormat.")
+                    };
+
+            var standardCased = System.IO.Path.Join(Project.VcsDirectory,
+                _subproject.BasePath ?? Path.Replace("{lang}", language));
+            var lowerCased = System.IO.Path.Join(Project.VcsDirectory,
+                _subproject.BasePath ?? Path.Replace("{lang}", language.ToLowerInvariant()));
+
+            if (!File.Exists(standardCased) && File.Exists(lowerCased)) return lowerCased;
+            return standardCased;
+        }
+    }
 
     public IDictionary<string, object> Options => _subproject.Options;
 
