@@ -86,6 +86,27 @@ function checkVueI18nPlaceholders(source, translation) {
     });
 }
 
+function checkJavaPlaceholders(source, translation) {
+    return [..."abcdefghnostx"].flatMap(placeholder => {
+        let ph = `%${placeholder}`;
+        let sourceMatches = [...source.matchAll(new RegExp(ph, 'g'))];
+        let translationMatches = [...translation.matchAll(new RegExp(ph, 'g'))];
+        
+        const difference = translationMatches.length - sourceMatches.length;
+        if (difference < 0) {
+            return Array(-difference).fill({
+                checkSeverity: "error",
+                message: `Placeholder ${ph} not present in translation`
+            });
+        } else if (difference > 0) {
+            return Array(difference).fill({
+                checkSeverity: "error",
+                message: `Extraneous placeholder ${ph} in translation`
+            });
+        }
+    });
+}
+
 const Checks = {
     "common": [
         checkDuplicate,
@@ -108,6 +129,10 @@ const Checks = {
     ],
     "vue-i18n": [
         checkVueI18nPlaceholders,
+        "common"
+    ],
+    "minecraft-fabric": [
+        checkJavaPlaceholders,
         "common"
     ]
 }
