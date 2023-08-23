@@ -185,8 +185,8 @@ function TranslationSlateEditorInner({
         if (!highlights) highlights = [];
 
         return highlights.flatMap(highlight => {
-            const matches = nodeText.match(highlight.regex);
-            const locations = matches ? matches.map(m => [m.trim(), nodeText.indexOf(m.trim())]) : [];
+            const matches = [...nodeText.matchAll(highlight.regex)];
+            const locations = matches ? matches.map(m => [m[0].trim(), m.index]) : [];
 
             return locations.map(([placeholder, index], number) => ({
                 anchor: {

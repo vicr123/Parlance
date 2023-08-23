@@ -52,5 +52,12 @@ export default {
             type: "placeholder",
             preview: ({pluralExample}) => pluralExample
         }
+    ],
+    "minecraft-fabric": [
+        {
+            name: PLACEHOLDER_TRANSLATION_STRING,
+            regex: /%[abcdefghnostx]/g,
+            type: "placeholder"
+        }
     ]
 }

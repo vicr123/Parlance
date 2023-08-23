@@ -117,11 +117,10 @@ public class ParlanceSubprojectLanguage : IParlanceSubprojectLanguage
     private IEnumerable<(Type, TranslationFileTypeAttribute)> ValidTypes()
     {
         return TranslationFileTypes
-            .Select(type => new
+            .SelectMany(type => type.GetCustomAttributes<TranslationFileTypeAttribute>().Select(attr => new
             {
-                type,
-                attr = (TranslationFileTypeAttribute)type.GetCustomAttribute(typeof(TranslationFileTypeAttribute))!
-            })
+                type, attr
+            }))
             .Where(t => t.attr.HandlerFor == Subproject.TranslationFileType)
             .Select(t => (t.type, t.attr));
     }
