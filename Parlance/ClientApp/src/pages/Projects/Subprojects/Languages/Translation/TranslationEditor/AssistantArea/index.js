@@ -3,7 +3,6 @@ import {useParams} from "react-router-dom";
 import {VerticalLayout} from "../../../../../../../components/Layouts";
 import PageHeading from "../../../../../../../components/PageHeading";
 import {useTranslation} from "react-i18next";
-import MicrosoftEngine from "./MicrosoftEngine";
 import useTranslationEntries from "../EntryUtils";
 import {useEffect, useState} from "react";
 import SmallButton from "../../../../../../../components/SmallButton";
@@ -14,8 +13,7 @@ function SuggestedTranslation({suggestion, index, translationDirection}) {
 
     let type;
     switch (suggestion?.type) {
-        case "microsoft":
-            type = t("MICROSOFT_TERMINOLOGY_COLLECTION")
+        default:
             break;
     }
 
@@ -49,8 +47,7 @@ export default function AssistantArea({entries, searchParams, translationDirecti
 
         let timeout = setTimeout(async () => {
             try {
-                let msTranslations = await MicrosoftEngine.findTranslations(entry.source, language);
-                setSuggested([...msTranslations]);
+                setSuggested([]);
                 setLoading(false);
             } catch {
                 setLoading(false);
@@ -85,14 +82,9 @@ export default function AssistantArea({entries, searchParams, translationDirecti
                     {suggestions}
                 </div>
             </VerticalLayout>
-            <VerticalLayout className={`${Styles.pane} ${Styles.heading}`}>
-                <PageHeading level={3}>{t("ASSISTANT_RESOURCES")}</PageHeading>
-                <a href="https://www.microsoft.com/en-us/language"
-                   target={"_blank"}>{t("MICROSOFT_TERMINOLOGY_COLLECTION")}</a>
-            </VerticalLayout>
-            <div className={Styles.disclaimer}>Microsoft Terminology Service API. © 2022 Microsoft Corporation. All
-                rights reserved.
-            </div>
+            {/*<VerticalLayout className={`${Styles.pane} ${Styles.heading}`}>*/}
+            {/*    <PageHeading level={3}>{t("ASSISTANT_RESOURCES")}</PageHeading>*/}
+            {/*</VerticalLayout>*/}
         </div>
     </div>
 }
