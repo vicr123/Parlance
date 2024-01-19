@@ -1,4 +1,3 @@
-using System.Runtime.Versioning;
 using Parlance.CldrData;
 using Parlance.Project.Index;
 

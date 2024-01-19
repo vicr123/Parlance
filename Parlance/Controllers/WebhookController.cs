@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
-using Parlance.Project;
 using Parlance.Services.Projects;
 using Parlance.Services.ProjectUpdater;
 using Parlance.VersionControl.Services.VersionControl;

@@ -390,7 +390,7 @@ public class ProjectsController : Controller
             return NotFound();
         }
     }
-
+    
     [HttpGet]
     [Route("{project}/{subproject}")]
     public async Task<IActionResult> GetSubprojectLanguages(string project, string subproject)

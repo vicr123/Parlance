@@ -1,5 +1,3 @@
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Parlance.Services.Projects;
 
 namespace Parlance.Services.Repositories;

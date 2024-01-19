@@ -1,5 +1,4 @@
 using JetBrains.Annotations;
-using Parlance.Project;
 using Parlance.Project.Exceptions;
 using Parlance.Services.Projects;
 using Parlance.Services.ProjectUpdater;

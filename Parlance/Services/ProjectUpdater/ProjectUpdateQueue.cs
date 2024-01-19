@@ -1,5 +1,4 @@
 using System.Threading.Channels;
-using Parlance.Project;
 
 namespace Parlance.Services.ProjectUpdater;
 

@@ -1,5 +1,3 @@
-using Parlance.Project;
-
 namespace Parlance.Services.ProjectUpdater;
 
 public interface IProjectUpdateQueue
