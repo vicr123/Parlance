@@ -5,6 +5,12 @@ import Button from "../../../../../../../components/Button";
 import UserManager from "../../../../../../../helpers/UserManager";
 import Fetch from "../../../../../../../helpers/Fetch";
 import {useState} from "react";
+import {Comment, Thread} from "../../../../../../../interfaces/comments";
+
+interface CloseResponse {
+    comments: Comment[],
+    thread: Thread
+}
 
 export default function ThreadReplyArea({
                                             project,
@@ -14,7 +20,16 @@ export default function ThreadReplyArea({
                                             thread,
                                             onReloadThreads,
                                             onCurrentThreadChanged, onThreadDataChanged
-                                        }) {
+                                        }: {
+    project?: string,
+    subproject?: string,
+    language?: string,
+    tkey?: string,
+    thread?: Thread,
+    onReloadThreads: () => void,
+    onCurrentThreadChanged: (thread: Thread | null) => void,
+    onThreadDataChanged?: (threadData: Comment[]) => void
+}) {
     const [title, setTitle] = useState("");
     const [body, setBody] = useState("");
     const [error, setError] = useState("");
@@ -26,7 +41,7 @@ export default function ThreadReplyArea({
         setError("");
         if (threadId) {
             try {
-                onThreadDataChanged(await Fetch.post(`/api/comments/${thread.id}`, {
+                onThreadDataChanged!(await Fetch.post(`/api/comments/${thread.id}`, {
                     body: body
                 }));
             } catch {
@@ -34,7 +49,7 @@ export default function ThreadReplyArea({
                 return;
             }
         } else {
-            let thread;
+            let thread: Thread | null;
             try {
                 thread = await Fetch.post(`/api/comments/${project}/${subproject}/${language}/${tkey}`, {
                     title: title,
@@ -53,24 +68,26 @@ export default function ThreadReplyArea({
     };
 
     const toggleClosed = async () => {
+        if (!thread) return;
+        
         let comments, newThread;
         if (thread.isClosed) {
             try {
-                ({comments, thread: newThread} = await Fetch.delete(`/api/comments/${thread.id}/close`));
+                ({comments, thread: newThread} = await Fetch.delete<CloseResponse>(`/api/comments/${thread.id}/close`));
             } catch {
                 setError(t("THREAD_REOPEN_FAILURE_PROMPT"))
                 return;
             }
         } else {
             try {
-                ({comments, thread: newThread} = await Fetch.post(`/api/comments/${thread.id}/close`));
+                ({comments, thread: newThread} = await Fetch.post<CloseResponse>(`/api/comments/${thread.id}/close`, null));
             } catch {
                 setError(t("THREAD_CLOSE_FAILURE_PROMPT"))
                 return;
             }
         }
 
-        onThreadDataChanged(comments);
+        onThreadDataChanged!(comments);
         onReloadThreads();
         onCurrentThreadChanged(newThread);
     }
@@ -85,7 +102,7 @@ export default function ThreadReplyArea({
         </div>}
         <div className={Styles.buttonContainer}>
             <div className={Styles.postingPrompt}>
-                {t("COMMENT_POSTING_AS_PROMPT", {user: UserManager.currentUser.username})}
+                {t("COMMENT_POSTING_AS_PROMPT", {user: UserManager.currentUser!.username})}
             </div>
             <div className={Styles.buttonContainerInner}>
                 {threadId && <>

@@ -19,7 +19,7 @@ interface ModalExportProps {
     buttons?: ModalButton[]
     onButtonClick?: () => {}
     children?: ReactNode | TFunctionResult
-    onBackClicked?: () => {}
+    onBackClicked?: () => void
     heading?: string
     topComponent?: ReactNode
 }

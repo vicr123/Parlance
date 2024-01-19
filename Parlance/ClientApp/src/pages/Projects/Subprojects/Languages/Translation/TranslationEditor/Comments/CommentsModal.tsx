@@ -8,9 +8,13 @@ import Styles from "./CommentsModal.module.css";
 import Icon from "../../../../../../../components/Icon";
 import ThreadView from "./ThreadView";
 import ThreadReplyArea from "./ThreadReplyArea";
+import {Thread} from "../../../../../../../interfaces/comments";
 
-function ThreadItem({item, onCurrentThreadChanged}) {
-    return <div className={Styles.threadItem} onClick={() => onCurrentThreadChanged(item)}>
+function ThreadItem({item, onCurrentThreadChanged}: {
+    item: Thread,
+    onCurrentThreadChanged: (thread: Thread) => void
+}) {
+    return <div className={`${Styles.threadItem} ${item.isClosed && Styles.closed}`} onClick={() => onCurrentThreadChanged(item)}>
         <span className={Styles.threadTitle}>{item.title}</span>
         <Icon icon={"go-next"} flip={true} className={Styles.goButton}/>
         <div className={Styles.lastMessage}>{item.headCommentBody}</div>
@@ -18,8 +22,15 @@ function ThreadItem({item, onCurrentThreadChanged}) {
     </div>
 }
 
-export default function CommentsModal({project, subproject, language, tkey, threads, onUpdateThreads}) {
-    const [currentThread, setCurrentThread] = useState();
+export default function CommentsModal({project, subproject, language, tkey, threads, onUpdateThreads}: {
+    project: string,
+    subproject: string,
+    language: string,
+    tkey: string,
+    threads: Thread[],
+    onUpdateThreads: () => void
+}) {
+    const [currentThread, setCurrentThread] = useState<Thread | null>();
     const {t} = useTranslation();
 
     const goBack = () => {

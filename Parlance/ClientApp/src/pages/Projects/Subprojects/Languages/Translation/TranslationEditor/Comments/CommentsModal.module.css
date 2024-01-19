@@ -44,3 +44,7 @@
 .goButton {
     grid-area: goButton;
 }
+
+.closed {
+    color: var(--foreground-disabled-color);
+}
