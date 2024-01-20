@@ -9,9 +9,9 @@ using Parlance.Database.Models;
 using Parlance.Helpers;
 using Parlance.Project;
 using Parlance.Project.Index;
+using Parlance.Services.Comments;
 using Parlance.Services.Projects;
 using Parlance.Vicr123Accounts.Authentication;
-using Parlance.Vicr123Accounts.Services;
 
 namespace Parlance.Controllers;
 
@@ -20,18 +20,18 @@ namespace Parlance.Controllers;
 [EnableRateLimiting("limiter")]
 public class CommentsController : Controller
 {
-    private readonly IVicr123AccountsService _accountsService;
+    private readonly ICommentsService _commentsService;
     private readonly ParlanceContext _databaseContext;
     private readonly IParlanceIndexingService _indexingService;
     private readonly IProjectService _projectService;
 
     public CommentsController(ParlanceContext databaseContext, IProjectService projectService,
-        IParlanceIndexingService indexingService, IVicr123AccountsService accountsService)
+        IParlanceIndexingService indexingService, ICommentsService commentsService)
     {
         _databaseContext = databaseContext;
         _projectService = projectService;
         _indexingService = indexingService;
-        _accountsService = accountsService;
+        _commentsService = commentsService;
     }
 
     [HttpGet]
@@ -60,7 +60,7 @@ public class CommentsController : Controller
         foreach (var thread in threads)
         {
             var headComment = _databaseContext.Comments.Where(c => c.ThreadId == thread.Id && c.Event == null).OrderBy(c => c.Date).Last();
-            result.Add(await GetJsonThread(thread, headComment));
+            result.Add(await _commentsService.GetJsonThread(thread, headComment));
         }
 
         return Json(result);
@@ -123,7 +123,7 @@ public class CommentsController : Controller
 
         await _databaseContext.SaveChangesAsync();
 
-        return Json(await GetJsonThread(thread, headComment));
+        return Json(await _commentsService.GetJsonThread(thread, headComment));
     }
 
     [HttpGet]
@@ -205,7 +205,7 @@ public class CommentsController : Controller
 
             return Json(new
             {
-                Thread = await GetJsonThread(thread, headComment),
+                Thread = await _commentsService.GetJsonThread(thread, headComment),
                 Comments = await CommentsInThread(threadId)
             });
         }
@@ -249,7 +249,7 @@ public class CommentsController : Controller
 
             return Json(new
             {
-                Thread = await GetJsonThread(thread, headComment),
+                Thread = await _commentsService.GetJsonThread(thread, headComment),
                 Comments = await CommentsInThread(threadId)
             });
         }
@@ -257,26 +257,6 @@ public class CommentsController : Controller
         {
             return NotFound();
         }
-    }
-
-    private async Task<object> GetAuthor(ulong userId)
-    {
-        var user = await _accountsService.UserById(userId);
-        return new
-        {
-            user.Username,
-            Picture =
-                $"https://www.gravatar.com/avatar/{Convert.ToHexString(MD5.HashData(new UTF8Encoding(false).GetBytes(user.Email.Trim().ToLower()))).ToLower()}"
-        };
-    }
-
-    private async Task<object> GetJsonThread(CommentThread thread, Comment headComment)
-    {
-        return new
-        {
-            thread.Id, thread.Title, thread.IsClosed, thread.IsFlagged, Author = await GetAuthor(headComment.UserId),
-            HeadCommentBody = headComment.Text
-        };
     }
 
     private async Task<IEnumerable<object>?> CommentsInThread(Guid threadId)
@@ -293,7 +273,7 @@ public class CommentsController : Controller
         {
             comments.Add(new
             {
-                comment.Text, comment.Date, Author = await GetAuthor(comment.UserId), comment.Event
+                comment.Text, comment.Date, Author = await _commentsService.GetAuthor(comment.UserId), comment.Event
             });
         }
 

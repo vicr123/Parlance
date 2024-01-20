@@ -13,6 +13,7 @@ using Parlance.Glossary;
 using Parlance.Jobs;
 using Parlance.Project;
 using Parlance.RateLimiting;
+using Parlance.Services.Comments;
 using Parlance.Services.Permissions;
 using Parlance.Services.ProjectMaintainers;
 using Parlance.Services.Projects;
@@ -42,6 +43,7 @@ builder.Services.AddScoped<IRemoteCommunicationService, RemoteCommunicationServi
 builder.Services.AddScoped<IPermissionsService, PermissionsService>();
 builder.Services.AddScoped<IAttributionConsentService, AttributionConsentService>();
 builder.Services.AddScoped<IProjectMaintainersService, ProjectMaintainersService>();
+builder.Services.AddScoped<ICommentsService, CommentsService>();
 builder.Services.AddSingleton<IProjectUpdateQueue, ProjectUpdateQueue>();
 
 builder.Services.AddHostedService<ProjectUpdaterService>();
