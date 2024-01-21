@@ -72,7 +72,8 @@ public class GlossaryService : IGlossaryService
             Language = locale.ToDatabaseRepresentation(),
             Term = term,
             Translation = translation,
-            Glossary = glossary
+            Glossary = glossary,
+            PartOfSpeech = partOfSpeech
         };
         _parlanceContext.GlossaryItems.Add(glossaryItem);
         await _parlanceContext.SaveChangesAsync();
