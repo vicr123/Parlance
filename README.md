@@ -23,3 +23,7 @@ There are many ways to contribute to Parlance. Your contributions to Parlance ar
 
 ![Screenshot of Parlance](readme/screenshot-translations-1.png)
 ![Screenshot of Parlance](readme/screenshot-translations-2.png)
+
+# License
+
+Parlance is licensed under the GNU Affero General Public License, version 3 or later.
