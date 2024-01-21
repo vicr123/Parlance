@@ -72,4 +72,7 @@
         <PackageReference Include="System.ServiceModel.NetTcp" Version="4.10.0" />
         <PackageReference Include="System.ServiceModel.Security" Version="4.10.0" />
     </ItemGroup>
+    <ItemGroup>
+      <_ContentIncludedByDefault Remove="ServiceReference\dotnet-svcutil.params.json" />
+    </ItemGroup>
 </Project>
