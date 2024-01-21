@@ -7,5 +7,5 @@ public class VueI18nTranslationFileEntry : IParlanceTranslationFileEntry
     public required string Source { get; set;  } = null!;
     public required IList<TranslationWithPluralType> Translation { get; set; } = null!;
     public required string Context { get; set;  } = null!;
-    public required bool RequiresPluralisation { get; init; }
+    public required bool RequiresPluralisation { get; set; }
 }
