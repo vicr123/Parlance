@@ -85,7 +85,7 @@ export default function AddToGlossaryModal({initialTerm, connectedGlossaries, la
             </HorizontalLayout>
             <LineEdit placeholder={t("TRANSLATION_AREA_TITLE", {
                 lang: I18n.humanReadableLocale(selectedLanguage())
-            })} value={translation} onChange={e => setTranslation((e.target as HTMLInputElement).value)} />
+            })} dir={I18n.dir(selectedLanguage())} value={translation} onChange={e => setTranslation((e.target as HTMLInputElement).value)} />
             {I18n.isRegionAgnostic(language) || <div>
                 <input id={regionAgnosticCheckboxId} type={"checkbox"} checked={regionAgnostic} onChange={e => setRegionAgnostic((e.target as HTMLInputElement).checked)} />
                 <label htmlFor={regionAgnosticCheckboxId}>{t("REGION_AGNOSTIC")}</label>
