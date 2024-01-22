@@ -53,13 +53,12 @@ public class CommentsController : Controller
             return NotFound();
         }
 
-        var threads = _databaseContext.CommentThreads.Where(x =>
-            x.Project == project && x.Subproject == subproject &&
-            x.Language == language.ToLocale().ToDatabaseRepresentation() && x.Key == key).ToList();
+        var threads = _commentsService.Threads(project, subproject, language.ToLocale(), key);
+
         var result = new List<object>();
         foreach (var thread in threads)
         {
-            var headComment = _databaseContext.Comments.Where(c => c.ThreadId == thread.Id && c.Event == null).OrderBy(c => c.Date).Last();
+            var headComment = _commentsService.HeadComment(thread);
             result.Add(await _commentsService.GetJsonThread(thread, headComment));
         }
 
