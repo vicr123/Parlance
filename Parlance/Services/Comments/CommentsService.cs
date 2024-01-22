@@ -17,6 +17,12 @@ public class CommentsService : ICommentsService
         _accountsService = accountsService;
         _databaseContext = databaseContext;
     }
+
+    public async Task<object> GetJsonThread(CommentThread thread)
+    {
+        var headComment = HeadComment(thread);
+        return await GetJsonThread(thread, headComment);
+    }
     
     public async Task<object> GetJsonThread(CommentThread thread, Comment headComment)
     {
@@ -26,7 +32,17 @@ public class CommentsService : ICommentsService
             HeadCommentBody = headComment.Text
         };
     }
-    
+
+    public async Task<object> GetJsonThreads(IEnumerable<CommentThread> threads)
+    {
+        var result = new List<object>();
+        foreach (var thread in threads)
+        {
+            result.Add(await GetJsonThread(thread));
+        }
+
+        return result;
+    }
 
     public async Task<object> GetAuthor(ulong userId)
     {

@@ -55,14 +55,7 @@ public class CommentsController : Controller
 
         var threads = _commentsService.Threads(project, subproject, language.ToLocale(), key);
 
-        var result = new List<object>();
-        foreach (var thread in threads)
-        {
-            var headComment = _commentsService.HeadComment(thread);
-            result.Add(await _commentsService.GetJsonThread(thread, headComment));
-        }
-
-        return Json(result);
+        return Json(await _commentsService.GetJsonThreads(threads));
     }
 
     [HttpPost]

@@ -9,4 +9,6 @@ public interface ICommentsService
     Task<object> GetAuthor(ulong userId);
     Comment HeadComment(CommentThread thread);
     IEnumerable<CommentThread> Threads(string project = "", string subproject = "", Locale? language = null, string key = "", bool openOnly = false);
+    Task<object> GetJsonThread(CommentThread thread);
+    Task<object> GetJsonThreads(IEnumerable<CommentThread> threads);
 }

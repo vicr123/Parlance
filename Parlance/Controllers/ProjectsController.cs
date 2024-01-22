@@ -14,6 +14,7 @@ using Parlance.Project.Exceptions;
 using Parlance.Project.Index;
 using Parlance.Project.SourceStrings;
 using Parlance.Project.TranslationFiles;
+using Parlance.Services.Comments;
 using Parlance.Services.Permissions;
 using Parlance.Services.ProjectMaintainers;
 using Parlance.Services.Projects;
@@ -35,6 +36,7 @@ public class ProjectsController : Controller
     private readonly IPermissionsService _permissionsService;
     private readonly IProjectMaintainersService _projectMaintainersService;
     private readonly IGlossaryService _glossaryService;
+    private readonly ICommentsService _commentsService;
     private readonly IProjectService _projectService;
     private readonly IParlanceSourceStringsService _sourceStringsService;
 
@@ -42,7 +44,7 @@ public class ProjectsController : Controller
         IPermissionsService permissionsService,
         IParlanceIndexingService indexingService, IParlanceSourceStringsService sourceStringsService,
         IPendingEditsService pendingEditsService, IVicr123AccountsService accountsService,
-        IProjectMaintainersService projectMaintainersService, IGlossaryService glossaryService)
+        IProjectMaintainersService projectMaintainersService, IGlossaryService glossaryService, ICommentsService commentsService)
     {
         _projectService = projectService;
         _permissionsService = permissionsService;
@@ -52,6 +54,7 @@ public class ProjectsController : Controller
         _accountsService = accountsService;
         _projectMaintainersService = projectMaintainersService;
         _glossaryService = glossaryService;
+        _commentsService = commentsService;
     }
 
     [HttpGet]
@@ -475,13 +478,16 @@ public class ProjectsController : Controller
 
             var username = HttpContext.User.Claims.FirstOrDefault(claim => claim.Type == Claims.Username)?.Value;
 
+            var openThreads = _commentsService.Threads(project, subproject, language.ToLocale(), openOnly: true);
+
             return Json(new
             {
                 CompletionData = indexResults,
                 ProjectName = p.Name,
                 SubprojectName = subp.Name,
                 Language = subprojectLanguage.Locale.ToDashed(),
-                CanEdit = await _permissionsService.CanEditProjectLocale(username, project, language.ToLocale())
+                CanEdit = await _permissionsService.CanEditProjectLocale(username, project, language.ToLocale()),
+                OpenThreads = await _commentsService.GetJsonThreads(openThreads)
             });
         }
         catch (SubprojectNotFoundException)
