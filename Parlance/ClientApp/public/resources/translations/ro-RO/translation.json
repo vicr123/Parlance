@@ -81,6 +81,7 @@
   "CLOSE": "Închide",
   "COMMENTS": "Comentarii",
   "COMMENT_ADD": "Adaugă un comentariu",
+  "COMMENT_NOT_LOGGED_IN_PROMPT": "",
   "COMMENT_OPEN_THREADS_few": "{{count}} conversații deschise",
   "COMMENT_OPEN_THREADS_one": "{{count}} conversație deschisă",
   "COMMENT_OPEN_THREADS_other": "{{count}} de conversații deschise",

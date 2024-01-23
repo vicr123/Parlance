@@ -83,6 +83,7 @@
   "CLOSE": "Close",
   "COMMENTS": "Comments",
   "COMMENT_ADD": "Add Comment",
+  "COMMENT_NOT_LOGGED_IN_PROMPT": "Log in to write a comment",
   "COMMENT_OPEN_THREADS_one": "{{count}} open thread",
   "COMMENT_OPEN_THREADS_other": "{{count}} open threads",
   "COMMENT_POST": "Post Comment",

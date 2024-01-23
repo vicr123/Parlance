@@ -81,6 +81,7 @@
   "CLOSE": "Fermer",
   "COMMENTS": "",
   "COMMENT_ADD": "",
+  "COMMENT_NOT_LOGGED_IN_PROMPT": "",
   "COMMENT_OPEN_THREADS_one": "",
   "COMMENT_OPEN_THREADS_other": "",
   "COMMENT_POST": "",

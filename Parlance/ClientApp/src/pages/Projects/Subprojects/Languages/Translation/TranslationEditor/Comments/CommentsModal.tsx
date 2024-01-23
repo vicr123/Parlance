@@ -10,6 +10,7 @@ import ThreadView from "./ThreadView";
 import ThreadReplyArea from "./ThreadReplyArea";
 import {Thread} from "../../../../../../../interfaces/comments";
 import {ThreadItem} from "../../../../../../../components/comments/ThreadItem";
+import UserManager from "../../../../../../../helpers/UserManager";
 
 
 export function CommentsModal({project, subproject, language, tkey, threads, onUpdateThreads}: {
@@ -42,13 +43,15 @@ export function CommentsModal({project, subproject, language, tkey, threads, onU
                     {threads.map((x, i) => <ThreadItem key={i} item={x}
                                                        onCurrentThreadChanged={setCurrentThread}/>) || t("THREADS_NO_THREADS")}
                 </VerticalLayout>
-                <VerticalLayout>
-                    <div className={Styles.headingPadding}>
-                        <PageHeading level={3}>{t("THREADS_NEW_THREAD")}</PageHeading>
-                    </div>
-                    <ThreadReplyArea project={project} subproject={subproject} language={language} tkey={tkey}
-                                     onReloadThreads={onUpdateThreads} onCurrentThreadChanged={setCurrentThread}/>
-                </VerticalLayout>
+                {UserManager.currentUser && <>
+                    <VerticalLayout>
+                        <div className={Styles.headingPadding}>
+                            <PageHeading level={3}>{t("THREADS_NEW_THREAD")}</PageHeading>
+                        </div>
+                        <ThreadReplyArea project={project} subproject={subproject} language={language} tkey={tkey}
+                                         onReloadThreads={onUpdateThreads} onCurrentThreadChanged={setCurrentThread}/>
+                    </VerticalLayout>
+                </>}
             </>}
     </Modal>
 }

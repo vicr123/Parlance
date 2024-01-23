@@ -51,3 +51,7 @@ input.titleBox {
     padding: 9px;
     gap: 6px;
 }
+
+.loggedOutMessage {
+    padding: 9px;
+}

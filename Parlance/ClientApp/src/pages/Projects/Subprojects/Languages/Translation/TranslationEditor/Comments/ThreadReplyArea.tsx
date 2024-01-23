@@ -93,23 +93,28 @@ export default function ThreadReplyArea({
     }
 
     return <div className={Styles.wrapper}>
-        {!threadId && <input value={title} type={"text"} className={Styles.titleBox} placeholder={t("THREAD_TITLE")}
-                             onChange={e => setTitle(e.target.value)}/>}
-        <textarea value={body} className={Styles.bodyBox} placeholder={t("WRITE_COMMENT_PLACEHOLDER")}
-                  onChange={e => setBody(e.target.value)}/>
-        {error && <div className={Styles.buttonContainer}>
-            <span>{error}</span>
-        </div>}
-        <div className={Styles.buttonContainer}>
-            <div className={Styles.postingPrompt}>
-                {t("COMMENT_POSTING_AS_PROMPT", {user: UserManager.currentUser!.username})}
+        {UserManager.currentUser ? <>
+            {!threadId && <input value={title} type={"text"} className={Styles.titleBox} placeholder={t("THREAD_TITLE")}
+                                 onChange={e => setTitle(e.target.value)}/>}
+            <textarea value={body} className={Styles.bodyBox} placeholder={t("WRITE_COMMENT_PLACEHOLDER")}
+                      onChange={e => setBody(e.target.value)}/>
+            {error && <div className={Styles.buttonContainer}>
+                <span>{error}</span>
+            </div>}
+            <div className={Styles.buttonContainer}>
+                <div className={Styles.postingPrompt}>
+                    {t("COMMENT_POSTING_AS_PROMPT", {user: UserManager.currentUser!.username})}
+                </div>
+                <div className={Styles.buttonContainerInner}>
+                    {threadId && <>
+                        <Button onClick={toggleClosed}>{thread.isClosed ? t("THREAD_REOPEN") : t("THREAD_CLOSE")}</Button>
+                    </>}
+                    <Button onClick={createThread}>{threadId ? t("COMMENT_POST") : t("THREAD_CREATE")}</Button>
+                </div>
             </div>
-            <div className={Styles.buttonContainerInner}>
-                {threadId && <>
-                    <Button onClick={toggleClosed}>{thread.isClosed ? t("THREAD_REOPEN") : t("THREAD_CLOSE")}</Button>
-                </>}
-                <Button onClick={createThread}>{threadId ? t("COMMENT_POST") : t("THREAD_CREATE")}</Button>
-            </div>
+        </> : <div className={Styles.loggedOutMessage}>
+            {t("COMMENT_NOT_LOGGED_IN_PROMPT")}
         </div>
+    }
     </div>
 }

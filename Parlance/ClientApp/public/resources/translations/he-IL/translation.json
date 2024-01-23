@@ -84,6 +84,7 @@
   "CLOSE": "סגור",
   "COMMENTS": "תגובות",
   "COMMENT_ADD": "הוסף תגובה",
+  "COMMENT_NOT_LOGGED_IN_PROMPT": "",
   "COMMENT_OPEN_THREADS_one": "פתוח שרשור תגובות {{count}}",
   "COMMENT_OPEN_THREADS_other": "פתוחים {{count}} שרשורי תגובות",
   "COMMENT_OPEN_THREADS_two": "פתוחים {{count}} שרשורי תגובות",
