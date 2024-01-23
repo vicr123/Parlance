@@ -51,7 +51,7 @@
     }
     
     .leftPane {
-        align-items: flex-start;
+        align-items: stretch;
     }
     
     .listItem {
