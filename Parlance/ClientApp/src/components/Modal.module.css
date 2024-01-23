@@ -26,6 +26,7 @@
     border: 1px solid var(--border-color);
 
     flex-basis: 600px;
+    max-height: 100vh;
 }
 
 .PopoverContainer {
