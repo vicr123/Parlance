@@ -88,6 +88,7 @@
   "COMMENT_OPEN_THREADS_one": "{{count}} open thread",
   "COMMENT_OPEN_THREADS_other": "{{count}} open threads",
   "COMMENT_ORIGINAL_TRANSLATION": "Original Translation",
+  "COMMENT_ORIGINAL_TRANSLATION_NO_LONGER_EXISTS": "The translation entry no longer exists",
   "COMMENT_POST": "Post Comment",
   "COMMENT_POSTING_AS_PROMPT": "Posting as {{user}}",
   "COMMENT_SEND_FAILURE_PROMPT": "Unable to send the comment",

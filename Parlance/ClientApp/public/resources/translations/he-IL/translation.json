@@ -90,6 +90,7 @@
   "COMMENT_OPEN_THREADS_other": "פתוחים {{count}} שרשורי תגובות",
   "COMMENT_OPEN_THREADS_two": "פתוחים {{count}} שרשורי תגובות",
   "COMMENT_ORIGINAL_TRANSLATION": "",
+  "COMMENT_ORIGINAL_TRANSLATION_NO_LONGER_EXISTS": "",
   "COMMENT_POST": "פרסם תגובה",
   "COMMENT_POSTING_AS_PROMPT": "מפרסם כ-{{user}}",
   "COMMENT_SEND_FAILURE_PROMPT": "לא ניתן לפרסם תגובה",

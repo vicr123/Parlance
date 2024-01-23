@@ -86,6 +86,7 @@
   "COMMENT_OPEN_THREADS_one": "{{count}} open thread",
   "COMMENT_OPEN_THREADS_other": "",
   "COMMENT_ORIGINAL_TRANSLATION": "",
+  "COMMENT_ORIGINAL_TRANSLATION_NO_LONGER_EXISTS": "",
   "COMMENT_POST": "Reactie Plaatsen",
   "COMMENT_POSTING_AS_PROMPT": "Reageren als {{user}}",
   "COMMENT_SEND_FAILURE_PROMPT": "Kon de reactie niet verzenden",

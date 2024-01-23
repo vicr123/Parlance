@@ -13,6 +13,7 @@ import {ButtonGroup} from "reactstrap";
 import Modal from "../../../../../../../components/Modal";
 import {useNavigate} from "react-router-dom";
 import I18n from "../../../../../../../helpers/i18n";
+import ErrorText from "../../../../../../../components/ErrorText";
 
 function ThreadComment({data}: {
     data: Comment
@@ -61,10 +62,12 @@ function ThreadHeader({thread}: {
     return <div className={Styles.headerItem}>
         <VerticalLayout>
             <PageHeading level={4}>{t("COMMENT_ORIGINAL_TRANSLATION")}</PageHeading>
-            <div dir={I18n.dir(thread.language)}>{thread.sourceTranslation}</div>
-            <HorizontalLayout>
-                <SmallButton onClick={goToString}>{t("COMMENT_GO_TO_STRING")}</SmallButton>
-            </HorizontalLayout>
+            <div dir={I18n.dir(thread.language)}>{thread.sourceTranslation || <ErrorText error={t("COMMENT_ORIGINAL_TRANSLATION_NO_LONGER_EXISTS")} />}</div>
+            {!!thread.sourceTranslation && 
+                <HorizontalLayout>
+                    <SmallButton onClick={goToString}>{t("COMMENT_GO_TO_STRING")}</SmallButton>
+                </HorizontalLayout>
+            }
         </VerticalLayout>
     </div>
 }

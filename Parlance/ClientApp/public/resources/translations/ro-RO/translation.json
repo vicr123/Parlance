@@ -87,6 +87,7 @@
   "COMMENT_OPEN_THREADS_one": "{{count}} conversație deschisă",
   "COMMENT_OPEN_THREADS_other": "{{count}} de conversații deschise",
   "COMMENT_ORIGINAL_TRANSLATION": "",
+  "COMMENT_ORIGINAL_TRANSLATION_NO_LONGER_EXISTS": "",
   "COMMENT_POST": "Postează comentariul",
   "COMMENT_POSTING_AS_PROMPT": "Postare ca {{user}}",
   "COMMENT_SEND_FAILURE_PROMPT": "Nu am putut trimite comentariul",
