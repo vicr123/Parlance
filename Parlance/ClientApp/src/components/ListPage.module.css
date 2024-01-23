@@ -7,12 +7,19 @@
 
 .leftPane {
     flex-basis: 300px;
-    border-right: 1px solid var(--border-color);
     flex-grow: 1;
     
     display: flex;
     flex-direction: column;
     align-items: flex-end;
+}
+
+:global(.ltr) .leftPane {
+    border-right: 1px solid var(--border-color);
+}
+
+:global(.rtl) .leftPane {
+    border-left: 1px solid var(--border-color);
 }
 
 .rightPane {
