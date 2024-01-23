@@ -36,3 +36,25 @@
 .listItemClickable:active, .selected {
     background-color: var(--active-color);
 }
+
+.mobileOnly {
+    display: none;
+}
+
+@media (max-width: 600px) {
+    .mobileOnly {
+        display: block;
+    }
+    
+    .desktopOnly {
+        display: none;
+    }
+    
+    .leftPane {
+        align-items: flex-start;
+    }
+    
+    .listItem {
+        width: initial;
+    }
+}

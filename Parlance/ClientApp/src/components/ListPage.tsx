@@ -1,6 +1,8 @@
 import Styles from "./ListPage.module.css";
-import {Route, Routes, useLocation, useNavigate} from "react-router-dom";
+import {Outlet, Route, Routes, useLocation, useNavigate} from "react-router-dom";
 import {ReactNode} from "react";
+import BackButton from "./BackButton";
+import {useTranslation} from "react-i18next";
 
 interface ListPageItemObject {
     name: string,
@@ -35,11 +37,19 @@ function ListItem(props: {
     </div>
 }
 
-export default function ListPage({items}: {
-    items: ListPageItem[]
+function ListPageInner({items, isLeftPane}: {
+    items: ListPageItem[],
+    isLeftPane: boolean
 }) {
+    const navigate = useNavigate();
+    const {t} = useTranslation();
+    
+    const goBack = () => {
+        navigate("..")
+    };
+    
     return <div className={Styles.parent}>
-        <div className={Styles.leftPane}>
+        <div className={`${Styles.leftPane} ${isLeftPane || Styles.desktopOnly}`}>
             {items.map((item, i) => {
                 if (typeof (item) === "string") {
                     return <b key={i} className={Styles.listItem}>{item.toUpperCase()}</b>
@@ -48,14 +58,30 @@ export default function ListPage({items}: {
                 }
             })}
         </div>
-        <div className={Styles.rightPane}>
-            <Routes>
-                {(items.filter(item => typeof (item) === "object") as ListPageItemObject[]).flatMap((item, index) => {
-                    const routes = [<Route key={index} path={`/${toUrl(item.name)}/*`} element={item.render}/>]
-                    if (item.default) routes.push(<Route key={"default"} path={`/*`} element={item.render}/>)
-                    return routes;
-                })}
-            </Routes>
+        <div className={`${Styles.rightPane} ${isLeftPane && Styles.desktopOnly}`}>
+            <div className={Styles.mobileOnly}>
+                <BackButton inListPage={true} onClick={goBack} text={t("BACK")} />
+            </div>
+            <Outlet />
         </div>
     </div>
+}
+
+export default function ListPage({items}: {
+    items: ListPageItem[]
+}) {
+    return <Routes>
+        <Route element={<ListPageInner items={items} isLeftPane={true} />} path={"/"}>
+            {(items.filter(item => typeof (item) === "object") as ListPageItemObject[])
+                .filter(item => item.default)
+                .map(item => <Route key={"default"} path={`/`} element={item.render}/>)}
+        </Route>
+        <Route element={<ListPageInner items={items} isLeftPane={false} />}>
+            {(items.filter(item => typeof (item) === "object") as ListPageItemObject[]).flatMap((item, index) => {
+                const routes = [<Route key={index} path={`/${toUrl(item.name)}/*`} element={item.render}/>]
+                if (item.default) routes.push(<Route key={"default"} path={`/*`} element={item.render}/>)
+                return routes;
+            })}
+        </Route>
+    </Routes>
 }
