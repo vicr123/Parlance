@@ -40,8 +40,10 @@ export function CommentsModal({project, subproject, language, tkey, threads, onU
                     <div className={Styles.headingPadding}>
                         <PageHeading level={3}>{t("THREADS")}</PageHeading>
                     </div>
-                    {threads.map((x, i) => <ThreadItem key={i} item={x}
-                                                       onCurrentThreadChanged={setCurrentThread}/>) || t("THREADS_NO_THREADS")}
+                    {threads.length ? threads.map((x, i) => <ThreadItem key={i} item={x}
+                                                       onCurrentThreadChanged={setCurrentThread}/>) : <div className={Styles.noThreads}>
+                        {t("THREADS_NO_THREADS")}
+                    </div>}
                 </VerticalLayout>
                 {UserManager.currentUser && <>
                     <VerticalLayout>

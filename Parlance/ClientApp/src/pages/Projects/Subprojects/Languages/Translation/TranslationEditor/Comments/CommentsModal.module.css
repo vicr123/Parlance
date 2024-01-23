@@ -5,3 +5,7 @@
 .threadsContainer {
     border-bottom: 1px solid var(--border-color);
 }
+
+.noThreads {
+    padding: 6px;
+}
