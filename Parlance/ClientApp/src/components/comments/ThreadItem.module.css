@@ -1,0 +1,61 @@
+.threadItem {
+    display: grid;
+    grid-template-columns: 1fr max-content;
+    grid-template-rows: max-content max-content max-content;
+    gap: 6px 0px;
+    grid-template-areas: 
+        "threadTitle goButton"
+        "lastMessageDate goButton"
+        "lastMessage goButton";
+    align-items: center;
+
+    padding: 9px;
+    cursor: default;
+}
+
+.threadItem:hover {
+    background-color: var(--hover-color);
+}
+
+.threadItem:active {
+    background-color: var(--active-color);
+}
+
+.threadTitle {
+    grid-area: threadTitle;
+}
+
+.closed {
+    color: var(--foreground-disabled-color);
+}
+
+.goButton {
+    grid-area: goButton;
+}
+
+.lastMessage {
+    grid-area: lastMessage;
+}
+
+.lastMessageDate {
+    grid-area: lastMessageDate;
+    font-size: 10pt;
+    opacity: 50%;
+}
+
+.threadCreator {
+    font-size: 10pt;
+    
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.noPadding {
+    padding: 0;
+}
+
+.threadCreatorImage {
+    height: 16px;
+    border-radius: 50%;
+}

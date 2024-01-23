@@ -9,10 +9,12 @@ import Hero from "../../../../../components/Hero";
 import BackButton from "../../../../../components/BackButton";
 import Spinner from "../../../../../components/Spinner";
 import GlossariesDashboard from "./GlossariesDashboard";
+import {SubprojectLocaleMeta} from "../../../../../interfaces/projects";
+import {CommentsDashboard} from "./CommentsDashboard";
 
-export default function Dashboard(props) {
+export default function Dashboard() {
     const {project, subproject, language} = useParams();
-    const [data, setData] = useState();
+    const [data, setData] = useState<SubprojectLocaleMeta>();
     const navigate = useNavigate();
     const {t} = useTranslation();
 
@@ -31,17 +33,25 @@ export default function Dashboard(props) {
         t("DASHBOARD"),
         {
             name: t("OVERVIEW"),
-            render: <Overview data={data}/>
+            slug: "overview",
+            render: <Overview data={data}/>,
+            default: true
         },
         {
             name: t("GLOSSARIES"),
-            render: <GlossariesDashboard data={data} />
+            slug: "glossaries",
+            render: <GlossariesDashboard />
+        },
+        {
+            name: t("COMMENTS"),
+            slug: "comments",
+            render: <CommentsDashboard />
         }
     ];
 
     return <div style={{display: "flex", flexDirection: "column", flexGrow: 1}}>
         <BackButton text={t("BACK_TO_LANGUAGES")} onClick={() => navigate("../..")}/>
-        <Hero heading={i18n.humanReadableLocale(language)} subheading={data.subprojectName} buttons={[
+        <Hero heading={i18n.humanReadableLocale(language!)} subheading={data.subprojectName} buttons={[
             {
                 text: t("TRANSLATE"),
                 onClick: () => navigate("translate")

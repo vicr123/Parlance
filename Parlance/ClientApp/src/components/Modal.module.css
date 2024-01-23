@@ -26,16 +26,24 @@
     border: 1px solid var(--border-color);
 
     flex-basis: 600px;
+    max-height: 100vh;
 }
 
 .PopoverContainer {
     border-top: none;
     border-bottom: none;
-    border-right: none;
 
     display: grid;
     grid-template-rows: max-content 1fr;
     grid-template-areas: "heading" "body";
+}
+
+:global(.ltr) .PopoverContainer {
+    border-right: none;
+}
+
+:global(.rtl) .PopoverContainer {
+    border-left: none;
 }
 
 .ModalHeading {
@@ -64,7 +72,14 @@
     justify-content: center;
 
     padding: 10px;
+}
+
+:global(.ltr) .BackButton {
     border-right: 1px solid var(--border-color);
+}
+
+:global(.rtl) .BackButton {
+    border-left: 1px solid var(--border-color);
 }
 
 .BackButton:hover {

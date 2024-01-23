@@ -16,24 +16,29 @@ export default function(props) {
         t("PROJECTS"),
         {
             name: t("PROJECTS"),
+            slug: "projects",
             render: <Projects />
         },
         {
             name: t("GLOSSARIES"),
+            slug: "glossaries",
             render: <Glossaries />
         },
         t("SSH"),
         {
             name: t("SSH_KEYS"),
+            slug: "ssh-keys",
             render: <SSH />
         },
         t("USERS_AND_PERMISSIONS"),
         {
             name: t("SUPERUSERS"),
+            slug: "superusers",
             render: <Superusers />
         },
         {
             name: t("LOCALES"),
+            slug: "locales",
             render: <Locales />
         }
     ];

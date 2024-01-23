@@ -41,8 +41,12 @@ input.titleBox {
     flex-direction: row;
 }
 
-.buttonContainerInner div {
+:global(.ltr) .buttonContainerInner div {
     border-left: 1px solid var(--border-color);
+}
+
+:global(.rtl) .buttonContainerInner div {
+    border-right: 1px solid var(--border-color);
 }
 
 .postingPrompt {
@@ -50,4 +54,8 @@ input.titleBox {
     align-items: center;
     padding: 9px;
     gap: 6px;
+}
+
+.loggedOutMessage {
+    padding: 9px;
 }

@@ -73,6 +73,6 @@
         <PackageReference Include="System.ServiceModel.Security" Version="4.10.0" />
     </ItemGroup>
     <ItemGroup>
-      <_ContentIncludedByDefault Remove="ServiceReference\dotnet-svcutil.params.json" />
+      <Folder Include="Models\" />
     </ItemGroup>
 </Project>

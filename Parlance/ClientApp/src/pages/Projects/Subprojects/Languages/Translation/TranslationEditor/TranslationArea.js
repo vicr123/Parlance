@@ -17,7 +17,7 @@ import Placeholders from "./Placeholders";
 import {useForceUpdateOnUserChange} from "../../../../../../helpers/Hooks";
 import Icon from "../../../../../../components/Icon";
 import Modal from "../../../../../../components/Modal";
-import CommentsModal from "./Comments/CommentsModal";
+import { CommentsModal } from "./Comments/CommentsModal";
 import Fetch from "../../../../../../helpers/Fetch";
 import PreloadingBlock from "../../../../../../components/PreloadingBlock";
 import GlossaryLookup from "./GlossaryLookup";
