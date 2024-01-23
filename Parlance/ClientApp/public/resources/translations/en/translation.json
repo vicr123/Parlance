@@ -180,6 +180,8 @@
   "OK": "OK",
   "OTHER_LANGUAGES": "Other Languages",
   "OVERVIEW": "Overview",
+  "OVERVIEW_COMMENTS_NO_OPEN_THREADS": "No open threads",
+  "OVERVIEW_COMMENTS_NO_OPEN_THREADS_DESCRIPTION": "There are no open comment threads in this file right now",
   "OVERVIEW_GO_TO_COMMENTS": "Go to comments",
   "OVERVIEW_STATS": "Stats",
   "PARLANCE_ADMINISTRATION": "Parlance Administration",

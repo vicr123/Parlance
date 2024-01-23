@@ -8,6 +8,8 @@ import {Thread} from "../../../../../interfaces/comments";
 import {useParams} from "react-router-dom";
 import Fetch from "../../../../../helpers/Fetch";
 import {ThreadItem} from "../../../../../components/comments/ThreadItem";
+import PreloadingBlock from "../../../../../components/PreloadingBlock";
+import SilentInformation from "../../../../../components/SilentInformation";
 
 export function CommentsDashboard() {
     const {project, subproject, language} = useParams();
@@ -24,9 +26,16 @@ export function CommentsDashboard() {
         <ListPageBlock>
             <VerticalLayout>
                 <PageHeading level={3}>{t("COMMENTS")}</PageHeading>
-                <SelectableList items={comments ? comments.map(thread => ({
-                    contents: <ThreadItem noPadding={true} item={thread} onCurrentThreadChanged={() => {}}/>
-                })) : SelectableList.PreloadingText(3)} />
+                {comments?.length === 0 ? 
+                    <div>
+                        <SilentInformation title={t("OVERVIEW_COMMENTS_NO_OPEN_THREADS")} text={t("OVERVIEW_COMMENTS_NO_OPEN_THREADS_DESCRIPTION")} />
+                    </div> : <>
+                        {comments ? <div>{t("COMMENT_OPEN_THREADS", {count: comments.length})}</div> : <PreloadingBlock>{t("COMMENT_OPEN_THREADS", {count: 0})}</PreloadingBlock>}
+                        <SelectableList items={comments ? comments.map(thread => ({
+                            contents: <ThreadItem noPadding={true} item={thread} onCurrentThreadChanged={() => {}}/>
+                        })) : SelectableList.PreloadingText(3)}/>
+                    </>
+                }
             </VerticalLayout>
         </ListPageBlock>
     </div>
