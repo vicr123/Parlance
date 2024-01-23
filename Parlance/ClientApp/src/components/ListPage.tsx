@@ -5,6 +5,7 @@ import {ReactNode} from "react";
 interface ListPageItemObject {
     name: string,
     render: ReactNode
+    default?: boolean
 }
 
 type ListPageItem = ListPageItemObject | string;
@@ -15,6 +16,7 @@ function toUrl(name: string) {
 
 function ListItem(props: {
     name: string
+    default?: boolean
 }) {
     const navigate = useNavigate();
     const location = useLocation();
@@ -48,8 +50,10 @@ export default function ListPage({items}: {
         </div>
         <div className={Styles.rightPane}>
             <Routes>
-                {(items.filter(item => typeof (item) === "object") as ListPageItemObject[]).map((item, index) => {
-                    return <Route key={index} path={`/${toUrl(item.name)}/*`} element={item.render}/>
+                {(items.filter(item => typeof (item) === "object") as ListPageItemObject[]).flatMap((item, index) => {
+                    const routes = [<Route key={index} path={`/${toUrl(item.name)}/*`} element={item.render}/>]
+                    if (item.default) routes.push(<Route key={"default"} path={`/*`} element={item.render}/>)
+                    return routes;
                 })}
             </Routes>
         </div>

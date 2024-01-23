@@ -33,7 +33,8 @@ export default function Dashboard() {
         t("DASHBOARD"),
         {
             name: t("OVERVIEW"),
-            render: <Overview data={data}/>
+            render: <Overview data={data}/>,
+            default: true
         },
         {
             name: t("GLOSSARIES"),
