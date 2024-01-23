@@ -3,8 +3,7 @@ export interface Thread {
     title: string
     isClosed: boolean
     isFlagged: boolean
-    author: Author
-    headCommentBody: string
+    headComment: HeadComment
     project: string
     subproject: string
     language: string
@@ -12,10 +11,13 @@ export interface Thread {
     sourceTranslation?: string
 }
 
-export interface Comment {
-    text: string,
-    date: number,
-    author: Author,
+interface HeadComment {
+    text: string
+    date: number
+    author: Author
+}
+
+export interface Comment extends HeadComment {
     event: string | null
 }
 

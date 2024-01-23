@@ -1,12 +1,12 @@
 .threadItem {
     display: grid;
     grid-template-columns: 1fr max-content;
-    grid-template-rows: 1fr 1fr 1fr;
-    gap: 0px 0px;
+    grid-template-rows: max-content max-content max-content;
+    gap: 6px 0px;
     grid-template-areas: 
         "threadTitle goButton"
-        "lastMessage goButton"
-        "threadCreator goButton";
+        "lastMessageDate goButton"
+        "lastMessage goButton";
     align-items: center;
 
     padding: 9px;
@@ -37,10 +37,25 @@
     grid-area: lastMessage;
 }
 
+.lastMessageDate {
+    grid-area: lastMessageDate;
+    font-size: 10pt;
+    opacity: 50%;
+}
+
 .threadCreator {
-    grid-area: threadCreator;
+    font-size: 10pt;
+    
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
 }
 
 .noPadding {
     padding: 0;
+}
+
+.threadCreatorImage {
+    height: 16px;
+    border-radius: 50%;
 }

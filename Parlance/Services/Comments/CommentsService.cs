@@ -45,8 +45,13 @@ public class CommentsService : ICommentsService
         return new
         {
             thread.Id, thread.Title, thread.IsClosed, thread.IsFlagged, thread.Project, thread.Subproject,
-            Language = language.ToDashed(), thread.Key, Author = await GetAuthor(headComment.UserId),
-            HeadCommentBody = headComment.Text,
+            Language = language.ToDashed(), thread.Key,
+            HeadComment = new
+            {
+                headComment.Text,
+                headComment.Date,
+                Author = await GetAuthor(headComment.UserId)
+            },
             SourceTranslation = entry?.Source
         };
     }
