@@ -1,11 +1,21 @@
 import Styles from "./ListPage.module.css";
 import {Route, Routes, useLocation, useNavigate} from "react-router-dom";
+import {ReactNode} from "react";
 
-function toUrl(name) {
+interface ListPageItemObject {
+    name: string,
+    render: ReactNode
+}
+
+type ListPageItem = ListPageItemObject | string;
+
+function toUrl(name: string) {
     return name.toLowerCase().replace(" ", "-")
 }
 
-function ListItem(props) {
+function ListItem(props: {
+    name: string
+}) {
     const navigate = useNavigate();
     const location = useLocation();
 
@@ -23,7 +33,9 @@ function ListItem(props) {
     </div>
 }
 
-export default function ListPage({items}) {
+export default function ListPage({items}: {
+    items: ListPageItem[]
+}) {
     return <div className={Styles.parent}>
         <div className={Styles.leftPane}>
             {items.map((item, i) => {
@@ -36,7 +48,7 @@ export default function ListPage({items}) {
         </div>
         <div className={Styles.rightPane}>
             <Routes>
-                {items.filter(item => typeof (item) === "object").map((item, index) => {
+                {(items.filter(item => typeof (item) === "object") as ListPageItemObject[]).map((item, index) => {
                     return <Route key={index} path={`/${toUrl(item.name)}/*`} element={item.render}/>
                 })}
             </Routes>

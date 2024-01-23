@@ -177,6 +177,8 @@
   "OK": "OK",
   "OTHER_LANGUAGES": "Outras linguagens",
   "OVERVIEW": "",
+  "OVERVIEW_GO_TO_COMMENTS": "",
+  "OVERVIEW_STATS": "",
   "PARLANCE_ADMINISTRATION": "Administração de Parlance",
   "PARLANCE_ADMINISTRATION_DESCRIPTION": "Configurar servidor de Parlance",
   "PARLANCE_ON_GIT": "Parlance em Git",

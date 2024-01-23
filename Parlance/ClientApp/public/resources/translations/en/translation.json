@@ -180,6 +180,8 @@
   "OK": "OK",
   "OTHER_LANGUAGES": "Other Languages",
   "OVERVIEW": "Overview",
+  "OVERVIEW_GO_TO_COMMENTS": "Go to comments",
+  "OVERVIEW_STATS": "Stats",
   "PARLANCE_ADMINISTRATION": "Parlance Administration",
   "PARLANCE_ADMINISTRATION_DESCRIPTION": "Configure the Parlance server",
   "PARLANCE_ON_GIT": "Parlance on Git",
