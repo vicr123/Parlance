@@ -1,4 +1,4 @@
-import {VerticalLayout} from "../../../../../../../components/Layouts";
+import {HorizontalLayout, VerticalLayout} from "../../../../../../../components/Layouts";
 import {useEffect, useState} from "react";
 import Fetch from "../../../../../../../helpers/Fetch";
 import ThreadReplyArea from "./ThreadReplyArea";
@@ -7,6 +7,11 @@ import Styles from "./ThreadView.module.css";
 import moment from "moment";
 import {useTranslation} from "react-i18next";
 import {Comment, Thread} from "../../../../../../../interfaces/comments";
+import PageHeading from "../../../../../../../components/PageHeading";
+import SmallButton from "../../../../../../../components/SmallButton";
+import {ButtonGroup} from "reactstrap";
+import Modal from "../../../../../../../components/Modal";
+import {useNavigate} from "react-router-dom";
 
 function ThreadComment({data}: {
     data: Comment
@@ -42,10 +47,32 @@ function ThreadEvent({data}: {
     </div>
 }
 
-export default function ThreadView({thread, onCurrentThreadChanged, onReloadThreads}: {
+function ThreadHeader({thread}: {
+    thread: Thread
+}) {
+    const {t} = useTranslation();
+    
+    const goToString = () => {
+        Modal.unmount();
+        window.location.pathname = `/projects/${thread.project}/${thread.subproject}/${thread.language}/translate/${thread.key}`;
+    }
+    
+    return <div className={Styles.headerItem}>
+        <VerticalLayout>
+            <PageHeading level={4}>{t("Original Translation")}</PageHeading>
+            <div>{thread.sourceTranslation}</div>
+            <HorizontalLayout>
+                <SmallButton onClick={goToString}>{t("Go to string")}</SmallButton>
+            </HorizontalLayout>
+        </VerticalLayout>
+    </div>
+}
+
+export default function ThreadView({thread, onCurrentThreadChanged, onReloadThreads, showHeader}: {
     thread: Thread,
     onCurrentThreadChanged: (thread: Thread | null) => void,
-    onReloadThreads: () => void
+    onReloadThreads: () => void,
+    showHeader?: boolean
 }) {
     const [threadData, setThreadData] = useState<Comment[]>([]);
 
@@ -58,6 +85,7 @@ export default function ThreadView({thread, onCurrentThreadChanged, onReloadThre
     }, []);
 
     return <VerticalLayout gap={0}>
+        {showHeader && <ThreadHeader thread={thread} />}
         {threadData.map((x, i) => x.event ? <ThreadEvent key={i} data={x}/> : <ThreadComment key={i} data={x}/>)}
         <ThreadReplyArea thread={thread} onThreadDataChanged={setThreadData}
                          onCurrentThreadChanged={onCurrentThreadChanged} onReloadThreads={onReloadThreads}/>

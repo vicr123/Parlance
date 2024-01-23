@@ -50,3 +50,8 @@
 
     border-bottom: 1px solid var(--border-color);
 }
+
+.headerItem {
+    padding: 9px;
+    border-bottom: 1px solid var(--border-color);
+}

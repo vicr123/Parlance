@@ -28,7 +28,7 @@ export function CommentsDashboard() {
     }, []);
     
     const openThread = (thread: Thread) => {
-        Modal.mount(<CommentsThreadModal thread={thread} onUpdateThreads={updateComments} />)
+        Modal.mount(<CommentsThreadModal thread={thread} onUpdateThreads={updateComments} showHeader={true} />)
     }
     
     return <div>

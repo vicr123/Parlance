@@ -53,11 +53,12 @@ export function CommentsModal({project, subproject, language, tkey, threads, onU
     </Modal>
 }
 
-export function CommentsThreadModal({thread, onUpdateThreads}: {
+export function CommentsThreadModal({thread, onUpdateThreads, showHeader}: {
     thread: Thread
-    onUpdateThreads: () => void
+    onUpdateThreads: () => void,
+    showHeader?: boolean
 }) {
     return <Modal popover={true} heading={thread.title} onBackClicked={() => Modal.unmount()}>
-        <ThreadView thread={thread} onCurrentThreadChanged={() => {}} onReloadThreads={onUpdateThreads} />
+        <ThreadView thread={thread} onCurrentThreadChanged={() => {}} onReloadThreads={onUpdateThreads} showHeader={showHeader} />
     </Modal>
 }
