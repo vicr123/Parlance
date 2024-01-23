@@ -35,6 +35,24 @@ public class CommentsController : Controller
     }
 
     [HttpGet]
+    [Route("{project}/{subproject}/{language}")]
+    public async Task<IActionResult> GetCommentThreads(string project, string subproject, string language)
+    {
+        var p = await _projectService.ProjectBySystemName(project);
+        var subprojectLanguage = p.GetParlanceProject().SubprojectBySystemName(subproject)
+            .Language(language.ToLocale());
+        await using var translationFile = await subprojectLanguage.CreateTranslationFile(_indexingService);
+        if (translationFile is null)
+        {
+            return NotFound();
+        }
+
+        var threads = _commentsService.Threads(project, subproject, language.ToLocale(), openOnly: true);
+
+        return Json(await _commentsService.GetJsonThreads(threads));
+    }
+
+    [HttpGet]
     [Route("{project}/{subproject}/{language}/{key}")]
     public async Task<IActionResult> GetCommentThreads(string project, string subproject, string language,
         string key)

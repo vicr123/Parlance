@@ -3,6 +3,9 @@ using System.Text;
 using Parlance.CldrData;
 using Parlance.Database;
 using Parlance.Database.Models;
+using Parlance.Project;
+using Parlance.Project.Index;
+using Parlance.Services.Projects;
 using Parlance.Vicr123Accounts.Services;
 
 namespace Parlance.Services.Comments;
@@ -11,11 +14,15 @@ public class CommentsService : ICommentsService
 {
     private readonly IVicr123AccountsService _accountsService;
     private readonly ParlanceContext _databaseContext;
+    private readonly IProjectService _projectService;
+    private readonly IParlanceIndexingService _indexingService;
 
-    public CommentsService(IVicr123AccountsService accountsService, ParlanceContext databaseContext)
+    public CommentsService(IVicr123AccountsService accountsService, ParlanceContext databaseContext, IProjectService projectService, IParlanceIndexingService indexingService)
     {
         _accountsService = accountsService;
         _databaseContext = databaseContext;
+        _projectService = projectService;
+        _indexingService = indexingService;
     }
 
     public async Task<object> GetJsonThread(CommentThread thread)
@@ -26,10 +33,21 @@ public class CommentsService : ICommentsService
     
     public async Task<object> GetJsonThread(CommentThread thread, Comment headComment)
     {
+        var language = Locale.FromDatabaseRepresentation(thread.Language)!;
+        
+        var p = await _projectService.ProjectBySystemName(thread.Project);
+        var subprojectLanguage = p.GetParlanceProject().SubprojectBySystemName(thread.Subproject)
+            .Language(language);
+        await using var translationFile = await subprojectLanguage.CreateTranslationFile(_indexingService);
+
+        var entry = translationFile?.Entries.FirstOrDefault(x => x.Key == thread.Key);
+        
         return new
         {
-            thread.Id, thread.Title, thread.IsClosed, thread.IsFlagged, Author = await GetAuthor(headComment.UserId),
-            HeadCommentBody = headComment.Text
+            thread.Id, thread.Title, thread.IsClosed, thread.IsFlagged, thread.Project, thread.Subproject,
+            Language = language.ToDashed(), thread.Key, Author = await GetAuthor(headComment.UserId),
+            HeadCommentBody = headComment.Text,
+            SourceTranslation = entry?.Source
         };
     }
 

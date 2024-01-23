@@ -5,6 +5,11 @@ export interface Thread {
     isFlagged: boolean
     author: Author
     headCommentBody: string
+    project: string
+    subproject: string
+    language: string
+    key: string
+    sourceTranslation?: string
 }
 
 export interface Comment {

@@ -9,18 +9,8 @@ import Icon from "../../../../../../../components/Icon";
 import ThreadView from "./ThreadView";
 import ThreadReplyArea from "./ThreadReplyArea";
 import {Thread} from "../../../../../../../interfaces/comments";
+import {ThreadItem} from "../../../../../../../components/comments/ThreadItem";
 
-function ThreadItem({item, onCurrentThreadChanged}: {
-    item: Thread,
-    onCurrentThreadChanged: (thread: Thread) => void
-}) {
-    return <div className={`${Styles.threadItem} ${item.isClosed && Styles.closed}`} onClick={() => onCurrentThreadChanged(item)}>
-        <span className={Styles.threadTitle}>{item.title}</span>
-        <Icon icon={"go-next"} flip={true} className={Styles.goButton}/>
-        <div className={Styles.lastMessage}>{item.headCommentBody}</div>
-        <div className={Styles.threadCreator}>{item.author.username}</div>
-    </div>
-}
 
 export default function CommentsModal({project, subproject, language, tkey, threads, onUpdateThreads}: {
     project: string,
