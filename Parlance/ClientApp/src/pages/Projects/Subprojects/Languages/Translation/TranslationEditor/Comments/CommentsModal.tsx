@@ -12,13 +12,13 @@ import {Thread} from "../../../../../../../interfaces/comments";
 import {ThreadItem} from "../../../../../../../components/comments/ThreadItem";
 
 
-export default function CommentsModal({project, subproject, language, tkey, threads, onUpdateThreads}: {
+export function CommentsModal({project, subproject, language, tkey, threads, onUpdateThreads}: {
     project: string,
     subproject: string,
     language: string,
     tkey: string,
     threads: Thread[],
-    onUpdateThreads: () => void
+    onUpdateThreads: () => void,
 }) {
     const [currentThread, setCurrentThread] = useState<Thread | null>();
     const {t} = useTranslation();
@@ -50,5 +50,14 @@ export default function CommentsModal({project, subproject, language, tkey, thre
                                      onReloadThreads={onUpdateThreads} onCurrentThreadChanged={setCurrentThread}/>
                 </VerticalLayout>
             </>}
+    </Modal>
+}
+
+export function CommentsThreadModal({thread, onUpdateThreads}: {
+    thread: Thread
+    onUpdateThreads: () => void
+}) {
+    return <Modal popover={true} heading={thread.title} onBackClicked={() => Modal.unmount()}>
+        <ThreadView thread={thread} onCurrentThreadChanged={() => {}} onReloadThreads={onUpdateThreads} />
     </Modal>
 }
