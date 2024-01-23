@@ -33,15 +33,18 @@ export default function Dashboard() {
         t("DASHBOARD"),
         {
             name: t("OVERVIEW"),
+            slug: "overview",
             render: <Overview data={data}/>,
             default: true
         },
         {
             name: t("GLOSSARIES"),
+            slug: "glossaries",
             render: <GlossariesDashboard />
         },
         {
             name: t("COMMENTS"),
+            slug: "comments",
             render: <CommentsDashboard />
         }
     ];

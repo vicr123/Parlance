@@ -6,29 +6,27 @@ import {useTranslation} from "react-i18next";
 
 interface ListPageItemObject {
     name: string,
+    slug: string,
     render: ReactNode
     default?: boolean
 }
 
 type ListPageItem = ListPageItemObject | string;
 
-function toUrl(name: string) {
-    return name.toLowerCase().replace(" ", "-")
-}
-
 function ListItem(props: {
     name: string
+    slug: string
     default?: boolean
 }) {
     const navigate = useNavigate();
     const location = useLocation();
 
     const switchPage = () => {
-        navigate(toUrl(props.name));
+        navigate(props.slug);
     };
 
     let styles = [Styles.listItem, Styles.listItemClickable]
-    if (location.pathname.includes(toUrl(props.name))) {
+    if (location.pathname.includes(props.slug)) {
         styles.push(Styles.selected);
     }
 
@@ -78,7 +76,7 @@ export default function ListPage({items}: {
         </Route>
         <Route element={<ListPageInner items={items} isLeftPane={false} />}>
             {(items.filter(item => typeof (item) === "object") as ListPageItemObject[]).flatMap((item, index) => {
-                const routes = [<Route key={index} path={`/${toUrl(item.name)}/*`} element={item.render}/>]
+                const routes = [<Route key={index} path={`/${item.slug}/*`} element={item.render}/>]
                 if (item.default) routes.push(<Route key={"default"} path={`/*`} element={item.render}/>)
                 return routes;
             })}
