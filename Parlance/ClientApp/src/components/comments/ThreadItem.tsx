@@ -21,7 +21,7 @@ export function ThreadItem({item, onCurrentThreadChanged, noPadding}: {
             <span>{item.headComment.text}</span>
             &nbsp;&mdash;&nbsp;
             <span className={Styles.threadCreator}>
-                <img className={Styles.threadCreatorImage} src={item.headComment.author.picture} alt={t("{{ user }}'s profile picture", { user: item.headComment.author.username })} />
+                <img className={Styles.threadCreatorImage} src={item.headComment.author.picture} alt={t("COMMENT_THREAD_PROFILE_PICTURE_ALT_TEXT", { user: item.headComment.author.username })} />
                 {item.headComment.author.username} 
             </span>
         </div>
