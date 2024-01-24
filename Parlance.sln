@@ -23,6 +23,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		Directory.Build.props = Directory.Build.props
 	EndProjectSection
 EndProject
+Project("{54A90642-561A-4BB1-A94E-469ADEE60C69}") = "Parlance.ClientApp", "Parlance.ClientApp\Parlance.ClientApp.esproj", "{7DDB194B-378C-460D-9486-46E3C239838D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -57,6 +59,12 @@ Global
 		{DA491F0B-5ECD-48A0-83A6-8A42E86CEAD3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DA491F0B-5ECD-48A0-83A6-8A42E86CEAD3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DA491F0B-5ECD-48A0-83A6-8A42E86CEAD3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7DDB194B-378C-460D-9486-46E3C239838D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7DDB194B-378C-460D-9486-46E3C239838D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7DDB194B-378C-460D-9486-46E3C239838D}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{7DDB194B-378C-460D-9486-46E3C239838D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7DDB194B-378C-460D-9486-46E3C239838D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7DDB194B-378C-460D-9486-46E3C239838D}.Release|Any CPU.Deploy.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

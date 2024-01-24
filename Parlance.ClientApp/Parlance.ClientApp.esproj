@@ -2,5 +2,6 @@
   <PropertyGroup>
     <StartupCommand>npm run dev</StartupCommand>
     <ShouldRunBuildScript>false</ShouldRunBuildScript>
+    <BuildOutputFolder>$(MSBuildProjectDirectory)\dist</BuildOutputFolder>
   </PropertyGroup>
 </Project>

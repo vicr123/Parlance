@@ -19,7 +19,7 @@ public class RemoteCommunicationService : IRemoteCommunicationService
         try
         {
             var key = _dbContext.SshKeys.First();
-            
+
             return new SshKeyMemoryCredentials
             {
                 Username = usernameFromUrl,
