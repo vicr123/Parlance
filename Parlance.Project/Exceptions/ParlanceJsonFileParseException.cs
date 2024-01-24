@@ -8,10 +8,6 @@ public class ParlanceJsonFileParseException : Exception
     {
     }
 
-    protected ParlanceJsonFileParseException(SerializationInfo info, StreamingContext context) : base(info, context)
-    {
-    }
-
     public ParlanceJsonFileParseException(string? message) : base(message)
     {
     }

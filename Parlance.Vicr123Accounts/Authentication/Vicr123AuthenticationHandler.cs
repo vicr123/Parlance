@@ -16,8 +16,7 @@ public class Vicr123AuthenticationHandler : AuthenticationHandler<Vicr123Authent
     public Vicr123AuthenticationHandler(IOptionsMonitor<Vicr123AuthenticationOptions> options,
                                         ILoggerFactory logger,
                                         UrlEncoder encoder,
-                                        ISystemClock clock,
-                                        IVicr123AccountsService accountsService) : base(options, logger, encoder, clock)
+                                        IVicr123AccountsService accountsService) : base(options, logger, encoder)
     {
         _accountsService = accountsService;
     }
@@ -25,10 +24,7 @@ public class Vicr123AuthenticationHandler : AuthenticationHandler<Vicr123Authent
     protected override async Task<AuthenticateResult> HandleAuthenticateAsync()
     {
         var authHeader = Request.Headers.Authorization;
-        if (authHeader.Count == 0) return AuthenticateResult.Fail("No auth token");
-
-        var authHeaderValue = authHeader[0];
-        if (!authHeaderValue.StartsWith("Bearer ")) return AuthenticateResult.Fail("No auth token");
+        if (authHeader is not [ string authHeaderValue, .. ] || !authHeaderValue.StartsWith("Bearer ")) return AuthenticateResult.Fail("No auth token");
 
         var token = authHeaderValue[7..];
         

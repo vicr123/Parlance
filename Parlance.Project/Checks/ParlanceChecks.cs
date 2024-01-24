@@ -18,12 +18,12 @@ public class ParlanceChecks : IParlanceChecks
         var checksCode = checksReader.ReadToEnd();
 
         _jsEngine = new Engine();
-        _jsEngine.AddModule("checks", checksCode);
+        _jsEngine.Modules.Add("checks", checksCode);
     }
 
     public IEnumerable<CheckResult> CheckTranslation(string source, string translation, string checkSet)
     {
-        var checksModule = _jsEngine.ImportModule("checks");
+        var checksModule = _jsEngine.Modules.Import("checks");
         var checkTranslationFunction = checksModule.Get("checkTranslation").AsFunctionInstance();
         try
         {

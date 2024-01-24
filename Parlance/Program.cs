@@ -25,6 +25,7 @@ using Parlance.VersionControl.Services;
 using Parlance.Vicr123Accounts;
 using Parlance.Vicr123Accounts.Services.AttributionConsent;
 using Quartz;
+using Quartz.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -76,7 +77,6 @@ builder.Services.AddScoped<IAuthorizationHandler, ProjectManagerHandler>();
 
 builder.Services.AddQuartz(q =>
 {
-    q.UseMicrosoftDependencyInjectionJobFactory();
     q.ScheduleJob<ProjectCommitJob>(trigger => trigger
         .WithSimpleSchedule(x => x
             .WithIntervalInMinutes(60)

@@ -112,7 +112,7 @@ public class GitVersionControlService : IVersionControlService
         {
             ReconcileRemoteWithLocalCoreRebase(repo);
         }
-        catch (MergeConflictException ex)
+        catch (MergeConflictException)
         {
             ReconcileRemoteWithLocalCoreMerge(repo);
         }
