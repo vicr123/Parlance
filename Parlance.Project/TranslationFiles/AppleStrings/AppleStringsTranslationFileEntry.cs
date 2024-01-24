@@ -6,5 +6,5 @@ public class AppleStringsTranslationFileEntry : IParlanceTranslationFileEntry
     public string Source { get; init; }
     public IList<TranslationWithPluralType> Translation { get; set; }
     public string Context { get; init; }
-    public bool RequiresPluralisation { get; init; }
+    public bool RequiresPluralisation { get; set; }
 }

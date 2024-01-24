@@ -107,6 +107,18 @@ function checkJavaPlaceholders(source, translation) {
     });
 }
 
+function checkGettextPlaceholders(source, translation) {
+    return [...source.matchAll(/%s|%d|%r/g)].flatMap(placeholder => {
+        let ph = placeholder[1];
+        if (!translation.includes(`{${ph}}`)) {
+            return {
+                checkSeverity: "error",
+                message: `Placeholder {${ph}} not present in translation`
+            }
+        }
+    });
+}
+
 const Checks = {
     "common": [
         checkDuplicate,
@@ -133,6 +145,10 @@ const Checks = {
     ],
     "minecraft-fabric": [
         checkJavaPlaceholders,
+        "common"
+    ],
+    "gettext": [
+        checkGettextPlaceholders,
         "common"
     ]
 }

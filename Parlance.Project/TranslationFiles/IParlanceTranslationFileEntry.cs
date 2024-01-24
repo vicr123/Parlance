@@ -12,5 +12,5 @@ public interface IParlanceTranslationFileEntry
     public string Source { get; }
     public IList<TranslationWithPluralType> Translation { get; set; }
     public string Context { get; }
-    public bool RequiresPluralisation { get; init; }
+    public bool RequiresPluralisation { get; set; }
 }

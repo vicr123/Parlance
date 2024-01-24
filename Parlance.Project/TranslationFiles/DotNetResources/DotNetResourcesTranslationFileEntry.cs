@@ -6,5 +6,5 @@ public class DotNetResourcesTranslationFileEntry : IParlanceTranslationFileEntry
     public string Source { get; set; }
     public IList<TranslationWithPluralType> Translation { get; set; }
     public string Context { get; set; }
-    public bool RequiresPluralisation { get; init; }
+    public bool RequiresPluralisation { get; set; }
 }
