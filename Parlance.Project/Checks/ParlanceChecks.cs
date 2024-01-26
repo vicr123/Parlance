@@ -13,7 +13,7 @@ public class ParlanceChecks : IParlanceChecks
     {
         using var checksStream =
             Assembly.GetEntryAssembly()!.GetManifestResourceStream(
-                $"{Assembly.GetEntryAssembly()!.GetName().Name}.ClientApp.src.checks.js");
+                $"{Assembly.GetEntryAssembly()!.GetName().Name}.checks.js");
         using var checksReader = new StreamReader(checksStream!, Encoding.UTF8);
         var checksCode = checksReader.ReadToEnd();
 
