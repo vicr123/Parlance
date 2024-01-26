@@ -4,6 +4,7 @@
     "jsx": "react-jsx",
     "baseUrl": "src",
     "moduleResolution": "node",
+    "module": "ES2022",
     "resolveJsonModule": true,
     "plugins": [
       {
@@ -11,7 +12,8 @@
       }
     ],
     "strict": true,
-    "target": "ES2022"
+    "target": "ES2022",
+    "types": ["vite/client"]
     //    "noImplicitAny": false
   },
   "typeAcquisition": {

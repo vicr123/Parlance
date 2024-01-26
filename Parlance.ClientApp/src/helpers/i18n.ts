@@ -33,7 +33,7 @@ let instance = i18n.use(HttpBackend);
 
 const pluralPatternsCache: PluralCategoryDictionary | Promise<PluralPattern[]> = {};
 
-if (process.env.REACT_APP_USE_PSEUDOTRANSLATION) {
+if (import.meta.env.REACT_APP_USE_PSEUDOTRANSLATION) {
     instance.use(new Pseudo({
         enabled: true
     }))
