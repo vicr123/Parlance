@@ -1,12 +1,12 @@
 import ListPageBlock from "../../../components/ListPageBlock";
 import {VerticalLayout, VerticalSpacer} from "../../../components/Layouts";
 import PageHeading from "../../../components/PageHeading";
-import SelectableList from "components/SelectableList";
+import SelectableList from "@/components/SelectableList";
 import {useTranslation} from "react-i18next";
 import {ReactElement, useEffect, useState} from "react";
 import Fetch from "../../../helpers/Fetch";
 import {Glossary} from "interfaces/glossary";
-import Modal from "components/Modal";
+import Modal from "@/components/Modal";
 import LineEdit from "../../../components/LineEdit";
 import LoadingModal from "../../../components/modals/LoadingModal";
 

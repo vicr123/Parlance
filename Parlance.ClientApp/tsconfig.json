@@ -13,13 +13,16 @@
     ],
     "strict": true,
     "target": "ES2022",
-    "types": ["vite/client"]
+    "types": ["vite/client"],
+    "paths": {
+      "@/*": ["src/*"]
+    }
     //    "noImplicitAny": false
   },
   "typeAcquisition": {
     "enable": true
   },
   "include": [
-    "src"
+    "src/**/*"
   ]
 }

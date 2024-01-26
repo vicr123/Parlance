@@ -1,9 +1,9 @@
-﻿FROM mcr.microsoft.com/dotnet/aspnet:7.0-alpine AS base
+﻿FROM mcr.microsoft.com/dotnet/aspnet:8.0-alpine AS base
 WORKDIR /app
 EXPOSE 80
 EXPOSE 443
 
-FROM mcr.microsoft.com/dotnet/aspnet:7.0-alpine AS native-build
+FROM mcr.microsoft.com/dotnet/aspnet:8.0-alpine AS native-build
 
 RUN apk add git cmake ninja build-base openssl-dev
 WORKDIR /src
@@ -20,20 +20,20 @@ FROM native-build AS native-build-output
 RUN mkdir -p /output
 RUN cp /usr/local/lib/*.so* /output/
 
-FROM mcr.microsoft.com/dotnet/sdk:7.0-alpine AS build
+FROM mcr.microsoft.com/dotnet/sdk:8.0-alpine AS build
 
 # Install Node.js
 RUN apk add nodejs npm
 
 WORKDIR /src
-COPY ["Parlance/Parlance.csproj", "Parlance/"]
-RUN dotnet restore "Parlance/Parlance.csproj"
 COPY . .
+RUN dotnet restore "Parlance/Parlance.csproj"
 WORKDIR "/src/Parlance"
 RUN dotnet build "Parlance.csproj" -c Release -o /app/build
 
 FROM build AS publish
 RUN dotnet publish "Parlance.csproj" -c Release -o /app/publish
+RUN ls /app/publish/wwwroot
 
 FROM base AS final
 
