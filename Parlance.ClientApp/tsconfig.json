@@ -15,7 +15,7 @@
     "target": "ES2022",
     "types": ["vite/client"],
     "paths": {
-      "@/*": ["src/*"]
+      "@/*": ["./*"]
     }
     //    "noImplicitAny": false
   },
@@ -23,6 +23,6 @@
     "enable": true
   },
   "include": [
-    "src/**/*"
+    "src"
   ]
 }
