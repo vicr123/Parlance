@@ -7,19 +7,12 @@ using Parlance.Vicr123Accounts.Authentication;
 
 namespace Parlance.Authorization.LanguageEditor;
 
-public class LanguageEditorHandler : AuthorizationHandler<LanguageEditorRequirement>
+public class LanguageEditorHandler(
+    IPermissionsService permissionsService,
+    ParlanceContext parlanceContext,
+    ISuperuserService superuserService)
+    : AuthorizationHandler<LanguageEditorRequirement>
 {
-    private readonly ParlanceContext _parlanceContext;
-    private readonly ISuperuserService _superuserService;
-    private readonly IPermissionsService _permissionsService;
-
-    public LanguageEditorHandler(IPermissionsService permissionsService, ParlanceContext parlanceContext, ISuperuserService superuserService)
-    {
-        _permissionsService = permissionsService;
-        _parlanceContext = parlanceContext;
-        _superuserService = superuserService;
-    }
-
     protected override async Task HandleRequirementAsync(AuthorizationHandlerContext context,
         LanguageEditorRequirement requirement)
     {
@@ -41,7 +34,7 @@ public class LanguageEditorHandler : AuthorizationHandler<LanguageEditorRequirem
         {
             try
             {
-                var thread = _parlanceContext.CommentThreads
+                var thread = parlanceContext.CommentThreads
                     .Single(x => x.Id == Guid.Parse(routeData.Values["threadId"]!.ToString()!));
 
                 project = thread.Project;
@@ -67,15 +60,15 @@ public class LanguageEditorHandler : AuthorizationHandler<LanguageEditorRequirem
 
         if (project is null)
         {
-            if (await _permissionsService.HasLocalePermission(username,
-                    language) || await _superuserService.IsSuperuser(username))
+            if (await permissionsService.HasLocalePermission(username,
+                    language) || await superuserService.IsSuperuser(username))
             {
                 context.Succeed(requirement);
             }
         }
         else
         {
-            if (await _permissionsService.CanEditProjectLocale(username, project,
+            if (await permissionsService.CanEditProjectLocale(username, project,
                     language))
             {
                 context.Succeed(requirement);

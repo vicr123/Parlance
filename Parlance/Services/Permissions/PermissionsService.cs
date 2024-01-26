@@ -10,39 +10,28 @@ using Parlance.Vicr123Accounts.Services;
 
 namespace Parlance.Services.Permissions;
 
-public class PermissionsService : IPermissionsService
+public class PermissionsService(
+    ParlanceContext dbContext,
+    ISuperuserService superuserService,
+    IVicr123AccountsService accountsService,
+    IProjectMaintainersService projectMaintainersService,
+    IProjectService projectService)
+    : IPermissionsService
 {
     private const string LocalePermissionType = "locale";
-    private readonly IVicr123AccountsService _accountsService;
-
-    private readonly ParlanceContext _dbContext;
-    private readonly IProjectMaintainersService _projectMaintainersService;
-    private readonly IProjectService _projectService;
-    private readonly ISuperuserService _superuserService;
-
-    public PermissionsService(ParlanceContext dbContext, ISuperuserService superuserService,
-        IVicr123AccountsService accountsService, IProjectMaintainersService projectMaintainersService,
-        IProjectService projectService)
-    {
-        _dbContext = dbContext;
-        _superuserService = superuserService;
-        _accountsService = accountsService;
-        _projectMaintainersService = projectMaintainersService;
-        _projectService = projectService;
-    }
 
     public async Task GrantLocalePermission(string user, Locale locale)
     {
         try
         {
-            _dbContext.Permissions.Add(new Permission
+            dbContext.Permissions.Add(new Permission
             {
-                UserId = (await _accountsService.UserByUsername(user)).Id,
+                UserId = (await accountsService.UserByUsername(user)).Id,
                 PermissionType = LocalePermissionType,
                 SpecificPermission = locale.ToDashed()
             });
 
-            await _dbContext.SaveChangesAsync();
+            await dbContext.SaveChangesAsync();
         }
         catch (DbUpdateException ex) when (ex.InnerException is PostgresException
                                            {
@@ -55,35 +44,35 @@ public class PermissionsService : IPermissionsService
 
     public async Task RevokeLocalePermission(string user, Locale locale)
     {
-        var userId = (await _accountsService.UserByUsername(user)).Id;
+        var userId = (await accountsService.UserByUsername(user)).Id;
 
-        var permission = _dbContext.Permissions.Single(permission =>
+        var permission = dbContext.Permissions.Single(permission =>
             permission.UserId == userId && permission.PermissionType == LocalePermissionType &&
             permission.SpecificPermission == locale.ToDashed());
 
-        _dbContext.Permissions.Remove(permission);
-        await _dbContext.SaveChangesAsync();
+        dbContext.Permissions.Remove(permission);
+        await dbContext.SaveChangesAsync();
     }
 
     public async Task<bool> HasLocalePermission(string? user, Locale locale)
     {
         if (user is null) return false;
-        var userId = (await _accountsService.UserByUsername(user)).Id;
+        var userId = (await accountsService.UserByUsername(user)).Id;
 
-        return _dbContext.Permissions.Any(permission =>
+        return dbContext.Permissions.Any(permission =>
             permission.UserId == userId && permission.PermissionType == LocalePermissionType &&
             permission.SpecificPermission == locale.ToDashed());
     }
 
     public async IAsyncEnumerable<string> LocalePermissions(Locale locale)
     {
-        var permissions = _dbContext.Permissions
+        var permissions = dbContext.Permissions
             .Where(permission => permission.PermissionType == LocalePermissionType &&
                                  permission.SpecificPermission == locale.ToDashed());
 
         foreach (var permission in permissions)
         {
-            var user = await _accountsService.UserById(permission.UserId);
+            var user = await accountsService.UserById(permission.UserId);
             yield return user.Username;
         }
     }
@@ -91,10 +80,10 @@ public class PermissionsService : IPermissionsService
     public async Task<bool> CanEditProjectLocale(string? user, string project, Locale locale)
     {
         if (user is null) return false;
-        if (await _superuserService.IsSuperuser(user)) return true;
+        if (await superuserService.IsSuperuser(user)) return true;
 
-        var p = await _projectService.ProjectBySystemName(project);
-        if (await _projectMaintainersService.IsProjectMaintainer(user, p)) return true;
+        var p = await projectService.ProjectBySystemName(project);
+        if (await projectMaintainersService.IsProjectMaintainer(user, p)) return true;
         if (await HasLocalePermission(user, locale)) return true;
         return false;
     }
@@ -108,9 +97,9 @@ public class PermissionsService : IPermissionsService
     public async IAsyncEnumerable<Locale> UserPermissions(string? user)
     {
         if (user is null) yield break;
-        var userId = (await _accountsService.UserByUsername(user)).Id;
+        var userId = (await accountsService.UserByUsername(user)).Id;
 
-        var permissions = _dbContext.Permissions.Where(permission =>
+        var permissions = dbContext.Permissions.Where(permission =>
             permission.PermissionType == LocalePermissionType && permission.UserId == userId);
 
         foreach (var permission in permissions) yield return permission.SpecificPermission.ToLocale();

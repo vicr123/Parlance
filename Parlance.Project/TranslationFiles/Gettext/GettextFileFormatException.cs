@@ -1,9 +1,3 @@
 namespace Parlance.Project.TranslationFiles.Gettext;
 
-public class GettextFileFormatException : FormatException
-{
-    public GettextFileFormatException(string message) : base(message)
-    {
-        
-    }
-}
+public class GettextFileFormatException(string message) : FormatException(message);

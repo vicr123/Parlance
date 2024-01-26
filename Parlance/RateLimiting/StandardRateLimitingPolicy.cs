@@ -5,14 +5,9 @@ using Microsoft.Extensions.Options;
 
 namespace Parlance.RateLimiting;
 
-public class StandardRateLimitingPolicy : IRateLimiterPolicy<IPAddress>
+public class StandardRateLimitingPolicy(IOptions<RateLimitingOptions> options) : IRateLimiterPolicy<IPAddress>
 {
-    private readonly RateLimitingOptions RateLimitingOptions;
-
-    public StandardRateLimitingPolicy(IOptions<RateLimitingOptions> options)
-    {
-        RateLimitingOptions = options.Value;
-    }
+    private readonly RateLimitingOptions RateLimitingOptions = options.Value;
 
     public RateLimitPartition<IPAddress> GetPartition(HttpContext httpContext)
     {

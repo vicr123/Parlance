@@ -3,13 +3,8 @@ using Parlance.Database.Models;
 
 namespace Parlance.Database;
 
-public class ParlanceContext : DbContext
+public class ParlanceContext(DbContextOptions options) : DbContext(options)
 {
-    public ParlanceContext(DbContextOptions options) : base(options)
-    {
-        
-    }
-
     public DbSet<SshKey> SshKeys { get; set; } = null!;
     public DbSet<SshTrustedServer> SshTrustedServers { get; set; } = null!;
     public DbSet<Superuser> Superusers { get; set; } = null!;

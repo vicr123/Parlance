@@ -8,33 +8,25 @@ using Tmds.DBus;
 
 namespace Parlance.Vicr123Accounts.Authentication;
 
-public class Vicr123AuthenticationHandler : AuthenticationHandler<Vicr123AuthenticationOptions>
+public class Vicr123AuthenticationHandler(
+    IOptionsMonitor<Vicr123AuthenticationOptions> options,
+    ILoggerFactory logger,
+    UrlEncoder encoder,
+    IVicr123AccountsService accountsService)
+    : AuthenticationHandler<Vicr123AuthenticationOptions>(options, logger, encoder)
 {
-    private readonly IVicr123AccountsService _accountsService;
     public const string AuthenticationScheme = "Vicr123Accounts";
-
-    public Vicr123AuthenticationHandler(IOptionsMonitor<Vicr123AuthenticationOptions> options,
-                                        ILoggerFactory logger,
-                                        UrlEncoder encoder,
-                                        ISystemClock clock,
-                                        IVicr123AccountsService accountsService) : base(options, logger, encoder, clock)
-    {
-        _accountsService = accountsService;
-    }
 
     protected override async Task<AuthenticateResult> HandleAuthenticateAsync()
     {
         var authHeader = Request.Headers.Authorization;
-        if (authHeader.Count == 0) return AuthenticateResult.Fail("No auth token");
-
-        var authHeaderValue = authHeader[0];
-        if (!authHeaderValue.StartsWith("Bearer ")) return AuthenticateResult.Fail("No auth token");
+        if (authHeader is not [ string authHeaderValue, .. ] || !authHeaderValue.StartsWith("Bearer ")) return AuthenticateResult.Fail("No auth token");
 
         var token = authHeaderValue[7..];
         
         try
         {
-            var user = await _accountsService.UserByToken(token);
+            var user = await accountsService.UserByToken(token);
 
             var claims = new[]
             {

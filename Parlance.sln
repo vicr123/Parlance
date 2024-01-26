@@ -1,18 +1,29 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Parlance", "Parlance\Parlance.csproj", "{F4309113-E698-4890-B7C9-EEE45B6B21D2}"
+# Visual Studio Version 17
+VisualStudioVersion = 17.9.34511.98
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Parlance", "Parlance\Parlance.csproj", "{F4309113-E698-4890-B7C9-EEE45B6B21D2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Parlance.VersionControl", "Parlance.VersionControl\Parlance.VersionControl.csproj", "{C2876D35-CAAC-442E-BB77-5A45C9CA7DEC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Parlance.VersionControl", "Parlance.VersionControl\Parlance.VersionControl.csproj", "{C2876D35-CAAC-442E-BB77-5A45C9CA7DEC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Parlance.Vicr123Accounts", "Parlance.Vicr123Accounts\Parlance.Vicr123Accounts.csproj", "{25B65970-6BAA-4B96-826D-5FD6547088DD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Parlance.Vicr123Accounts", "Parlance.Vicr123Accounts\Parlance.Vicr123Accounts.csproj", "{25B65970-6BAA-4B96-826D-5FD6547088DD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Parlance.Database", "Parlance.Database\Parlance.Database.csproj", "{F111D49A-7CA8-4090-B8B5-E3AFC7788229}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Parlance.Database", "Parlance.Database\Parlance.Database.csproj", "{F111D49A-7CA8-4090-B8B5-E3AFC7788229}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Parlance.Project", "Parlance.Project\Parlance.Project.csproj", "{397FA9C6-20FB-49FD-B088-00C6633B37BB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Parlance.Project", "Parlance.Project\Parlance.Project.csproj", "{397FA9C6-20FB-49FD-B088-00C6633B37BB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Parlance.CldrData", "Parlance.CldrData\Parlance.CldrData.csproj", "{61C7B395-ECC7-4A27-96EC-46C35055C640}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Parlance.CldrData", "Parlance.CldrData\Parlance.CldrData.csproj", "{61C7B395-ECC7-4A27-96EC-46C35055C640}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Parlance.Glossary", "Parlance.Glossary\Parlance.Glossary.csproj", "{DA491F0B-5ECD-48A0-83A6-8A42E86CEAD3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Parlance.Glossary", "Parlance.Glossary\Parlance.Glossary.csproj", "{DA491F0B-5ECD-48A0-83A6-8A42E86CEAD3}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{BC72624D-470F-435C-94DC-B8171C0B2F0E}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+		Directory.Build.props = Directory.Build.props
+	EndProjectSection
+EndProject
+Project("{54A90642-561A-4BB1-A94E-469ADEE60C69}") = "Parlance.ClientApp", "Parlance.ClientApp\Parlance.ClientApp.esproj", "{7DDB194B-378C-460D-9486-46E3C239838D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -48,5 +59,17 @@ Global
 		{DA491F0B-5ECD-48A0-83A6-8A42E86CEAD3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DA491F0B-5ECD-48A0-83A6-8A42E86CEAD3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DA491F0B-5ECD-48A0-83A6-8A42E86CEAD3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7DDB194B-378C-460D-9486-46E3C239838D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7DDB194B-378C-460D-9486-46E3C239838D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7DDB194B-378C-460D-9486-46E3C239838D}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{7DDB194B-378C-460D-9486-46E3C239838D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7DDB194B-378C-460D-9486-46E3C239838D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7DDB194B-378C-460D-9486-46E3C239838D}.Release|Any CPU.Deploy.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {6FFF94FD-4414-4E32-9585-6B853E5DE9E8}
 	EndGlobalSection
 EndGlobal

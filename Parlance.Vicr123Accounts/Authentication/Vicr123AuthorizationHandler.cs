@@ -14,15 +14,8 @@ public static class Claims
     public const string UserId = "userId";
 }
 
-public class Vicr123AuthorizationHandler : IAuthorizationHandler
+public class Vicr123AuthorizationHandler(IVicr123AccountsService accountsService) : IAuthorizationHandler
 {
-    private readonly IVicr123AccountsService _accountsService;
-
-    public Vicr123AuthorizationHandler(IVicr123AccountsService accountsService)
-    {
-        _accountsService = accountsService;
-    }
-
     public async Task HandleAsync(AuthorizationHandlerContext context)
     {
         if (context.Resource is not HttpContext httpContext)
@@ -42,7 +35,7 @@ public class Vicr123AuthorizationHandler : IAuthorizationHandler
         var token = authHeader[7..];
         try
         {
-            var user = await _accountsService.UserByToken(token);
+            var user = await accountsService.UserByToken(token);
 
             var claims = new[]
             {

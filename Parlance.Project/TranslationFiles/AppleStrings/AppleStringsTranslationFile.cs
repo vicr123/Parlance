@@ -7,17 +7,15 @@ using Parlance.Project.Index;
 namespace Parlance.Project.TranslationFiles.AppleStrings;
 
 [TranslationFileType("apple-strings", ExpectedTranslationFileNameFormat.Underscored)]
-public class AppleStringsTranslationFile : ParlanceTranslationFile, IParlanceMonoTranslationFile
+public class AppleStringsTranslationFile(
+    IParlanceSubprojectLanguage? subprojectLanguage,
+    IParlanceIndexingService? indexingService)
+    : ParlanceTranslationFile(subprojectLanguage, indexingService), IParlanceMonoTranslationFile
 {
         private string _baseFile = null!;
     private Locale _baseLocale = null!;
     private string _file = null!;
     private Locale _locale = null!;
-
-    public AppleStringsTranslationFile(IParlanceSubprojectLanguage? subprojectLanguage,
-        IParlanceIndexingService? indexingService) : base(subprojectLanguage, indexingService)
-    {
-    }
 
     public override string Hash { get; internal set; } = null!;
     public override IList<IParlanceTranslationFileEntry> Entries { get; internal set; } = null!;

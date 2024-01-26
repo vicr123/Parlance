@@ -2,39 +2,32 @@ using Parlance.Database;
 
 namespace Parlance.Services.Superuser;
 
-public class SuperuserService : ISuperuserService
+public class SuperuserService(ParlanceContext dbContext) : ISuperuserService
 {
-    private readonly ParlanceContext _dbContext;
-
-    public SuperuserService(ParlanceContext dbContext)
-    {
-        _dbContext = dbContext;
-    }
-
     public Task<bool> IsSuperuser(string username)
     {
-        return Task.FromResult(username == "parlance" || _dbContext.Superusers.Any(x => x.Username == username));
+        return Task.FromResult(username == "parlance" || dbContext.Superusers.Any(x => x.Username == username));
     }
 
     public async Task GrantSuperuserPermissions(string username)
     {
-        _dbContext.Superusers.Add(new Database.Models.Superuser
+        dbContext.Superusers.Add(new Database.Models.Superuser
         {
             Username = username
         });
         
-        await _dbContext.SaveChangesAsync();
+        await dbContext.SaveChangesAsync();
     }
 
     public async Task RevokeSuperuserPermissions(string username)
     {
-        _dbContext.Superusers.Remove(_dbContext.Superusers.First(x => x.Username == username));
+        dbContext.Superusers.Remove(dbContext.Superusers.First(x => x.Username == username));
 
-        await _dbContext.SaveChangesAsync();
+        await dbContext.SaveChangesAsync();
     }
 
     public Task<IEnumerable<string>> Superusers()
     {
-        return Task.FromResult<IEnumerable<string>>(_dbContext.Superusers.Select(x => x.Username));
+        return Task.FromResult<IEnumerable<string>>(dbContext.Superusers.Select(x => x.Username));
     }
 }

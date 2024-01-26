@@ -4,15 +4,8 @@ using Parlance.Vicr123Accounts.Authentication;
 
 namespace Parlance.Authorization.Superuser;
 
-public class SuperuserHandler : AuthorizationHandler<SuperuserRequirement>
+public class SuperuserHandler(ISuperuserService superuserService) : AuthorizationHandler<SuperuserRequirement>
 {
-    private readonly ISuperuserService _superuserService;
-
-    public SuperuserHandler(ISuperuserService superuserService)
-    {
-        _superuserService = superuserService;
-    }
-
     protected override async Task HandleRequirementAsync(AuthorizationHandlerContext context, SuperuserRequirement requirement)
     {
         if (context.Resource is not HttpContext httpContext) return;
@@ -20,6 +13,6 @@ public class SuperuserHandler : AuthorizationHandler<SuperuserRequirement>
         var username = httpContext.User.Claims.FirstOrDefault(claim => claim.Type == Claims.Username)?.Value;
         if (username is null) return;
         
-        if (await _superuserService.IsSuperuser(username)) context.Succeed(requirement);
+        if (await superuserService.IsSuperuser(username)) context.Succeed(requirement);
     }
 }

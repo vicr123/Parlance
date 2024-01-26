@@ -20,36 +20,26 @@ namespace Parlance.Controllers;
 [ApiController]
 [Route("api/[controller]")]
 [EnableRateLimiting("limiter")]
-public class UserController : Controller
+public class UserController(
+    IVicr123AccountsService accountsService,
+    ISuperuserService superuserService,
+    IPermissionsService permissionsService,
+    IAttributionConsentService attributionConsentService)
+    : Controller
 {
-    private readonly IVicr123AccountsService _accountsService;
-    private readonly IAttributionConsentService _attributionConsentService;
-
-    private readonly IPermissionsService _permissionsService;
-    private readonly ISuperuserService _superuserService;
-
-    public UserController(IVicr123AccountsService accountsService, ISuperuserService superuserService,
-        IPermissionsService permissionsService, IAttributionConsentService attributionConsentService)
-    {
-        _accountsService = accountsService;
-        _superuserService = superuserService;
-        _permissionsService = permissionsService;
-        _attributionConsentService = attributionConsentService;
-    }
-
     [Authorize]
     public async Task<IActionResult> GetUser()
     {
         var userId = ulong.Parse(HttpContext.User.Claims.First(claim => claim.Type == Claims.UserId).Value);
-        var user = await _accountsService.UserById(userId);
+        var user = await accountsService.UserById(userId);
 
-        var superuser = await _superuserService.IsSuperuser(user.Username);
+        var superuser = await superuserService.IsSuperuser(user.Username);
 
         return Json(new
         {
             user.Id, user.Username, user.Email, user.EmailVerified,
             Superuser = superuser,
-            LanguagePermissions = await _permissionsService.UserPermissions(user.Username)
+            LanguagePermissions = await permissionsService.UserPermissions(user.Username)
                 .SelectAwait(x => ValueTask.FromResult(x.ToDashed())).ToListAsync()
         });
     }
@@ -59,8 +49,8 @@ public class UserController : Controller
     {
         try
         {
-            await _accountsService.CreateUser(data.Username, data.Password, data.EmailAddress);
-            var token = await _accountsService.ProvisionTokenAsync(new ProvisionTokenParameters
+            await accountsService.CreateUser(data.Username, data.Password, data.EmailAddress);
+            var token = await accountsService.ProvisionTokenAsync(new ProvisionTokenParameters
             {
                 Username = data.Username,
                 Password = data.Password
@@ -83,7 +73,7 @@ public class UserController : Controller
     {
         try
         {
-            return Json(await _accountsService.LoginMethods(data.Username));
+            return Json(await accountsService.LoginMethods(data.Username));
         }
         catch (DBusException ex)
         {
@@ -109,7 +99,7 @@ public class UserController : Controller
     {
         try
         {
-            var methods = await _accountsService.LoginMethods(data.Username);
+            var methods = await accountsService.LoginMethods(data.Username);
             if (!methods.Contains(data.Type)) return this.ClientError(ParlanceClientError.IncorrectParameters);
 
             switch (data.Type)
@@ -121,7 +111,7 @@ public class UserController : Controller
 
                     if (pwData.Password is null) return this.ClientError(ParlanceClientError.IncorrectParameters);
 
-                    var token = await _accountsService.ProvisionTokenAsync(new ProvisionTokenParameters
+                    var token = await accountsService.ProvisionTokenAsync(new ProvisionTokenParameters
                     {
                         Username = pwData.Username,
                         Password = pwData.Password,
@@ -140,7 +130,7 @@ public class UserController : Controller
 
                     if (fidoData.KeyTokenId is null || fidoData.KeyResponse is null)
                     {
-                        var (id, response) = await _accountsService.GetFidoAssertionOptions(fidoData.Username);
+                        var (id, response) = await accountsService.GetFidoAssertionOptions(fidoData.Username);
                         return Json(new
                         {
                             Options = response,
@@ -150,7 +140,7 @@ public class UserController : Controller
 
                     return Json(new
                     {
-                        Token = await _accountsService.ProvisionTokenViaFido(fidoData.KeyTokenId.Value,
+                        Token = await accountsService.ProvisionTokenViaFido(fidoData.KeyTokenId.Value,
                             fidoData.KeyResponse)
                     });
             }
@@ -184,9 +174,9 @@ public class UserController : Controller
     [Route("reset/methods")]
     public async Task<IActionResult> GetPasswordResetMethods([FromBody] UsernameRequestData data)
     {
-        var user = await _accountsService.UserByUsername(data.Username);
+        var user = await accountsService.UserByUsername(data.Username);
         return Json(
-            (await _accountsService.PasswordResetMethods(user)).Select(m => m.ToJsonSerializable())
+            (await accountsService.PasswordResetMethods(user)).Select(m => m.ToJsonSerializable())
         );
     }
 
@@ -194,8 +184,8 @@ public class UserController : Controller
     [Route("reset")]
     public async Task<IActionResult> PerformReset([FromBody] PerformResetRequestData data)
     {
-        var user = await _accountsService.UserByUsername(data.Username);
-        await _accountsService.PerformPasswordReset(user, data.Type, data.Challenge.ToDictionary(item => item.Key,
+        var user = await accountsService.UserByUsername(data.Username);
+        await accountsService.PerformPasswordReset(user, data.Type, data.Challenge.ToDictionary(item => item.Key,
             item =>
             {
                 if (item.Value is JsonElement json)
@@ -222,12 +212,12 @@ public class UserController : Controller
     public async Task<IActionResult> ChangeUsername([FromBody] ChangeUsernameRequestData data)
     {
         var userId = ulong.Parse(HttpContext.User.Claims.First(claim => claim.Type == Claims.UserId).Value);
-        var user = await _accountsService.UserById(userId);
+        var user = await accountsService.UserById(userId);
 
-        if (!await _accountsService.VerifyUserPassword(user, data.Password)) return Forbid();
+        if (!await accountsService.VerifyUserPassword(user, data.Password)) return Forbid();
 
         user.Username = data.NewUsername;
-        await _accountsService.UpdateUser(user);
+        await accountsService.UpdateUser(user);
 
         return NoContent();
     }
@@ -238,12 +228,12 @@ public class UserController : Controller
     public async Task<IActionResult> ChangeEmail([FromBody] ChangeEmailRequestData data)
     {
         var userId = ulong.Parse(HttpContext.User.Claims.First(claim => claim.Type == Claims.UserId).Value);
-        var user = await _accountsService.UserById(userId);
+        var user = await accountsService.UserById(userId);
 
-        if (!await _accountsService.VerifyUserPassword(user, data.Password)) return Forbid();
+        if (!await accountsService.VerifyUserPassword(user, data.Password)) return Forbid();
 
         user.Email = data.NewEmail;
-        await _accountsService.UpdateUser(user);
+        await accountsService.UpdateUser(user);
 
         return NoContent();
     }
@@ -254,11 +244,11 @@ public class UserController : Controller
     public async Task<IActionResult> ChangeEmail([FromBody] ChangePasswordRequestData data)
     {
         var userId = ulong.Parse(HttpContext.User.Claims.First(claim => claim.Type == Claims.UserId).Value);
-        var user = await _accountsService.UserById(userId);
+        var user = await accountsService.UserById(userId);
 
-        if (!await _accountsService.VerifyUserPassword(user, data.Password)) return Forbid();
+        if (!await accountsService.VerifyUserPassword(user, data.Password)) return Forbid();
 
-        await _accountsService.UpdateUserPassword(user, data.NewPassword);
+        await accountsService.UpdateUserPassword(user, data.NewPassword);
 
         return NoContent();
     }
@@ -269,11 +259,11 @@ public class UserController : Controller
     public async Task<IActionResult> ResendVerificationEmail()
     {
         var userId = ulong.Parse(HttpContext.User.Claims.First(claim => claim.Type == Claims.UserId).Value);
-        var user = await _accountsService.UserById(userId);
+        var user = await accountsService.UserById(userId);
 
         if (user.EmailVerified) return BadRequest();
 
-        await _accountsService.ResendVerificationEmail(user);
+        await accountsService.ResendVerificationEmail(user);
 
         return NoContent();
     }
@@ -284,11 +274,11 @@ public class UserController : Controller
     public async Task<IActionResult> VerifyEmail([FromBody] VerifyEmailRequestData data)
     {
         var userId = ulong.Parse(HttpContext.User.Claims.First(claim => claim.Type == Claims.UserId).Value);
-        var user = await _accountsService.UserById(userId);
+        var user = await accountsService.UserById(userId);
 
         if (user.EmailVerified) return BadRequest();
 
-        if (!await _accountsService.VerifyEmail(user, data.VerificationCode)) return BadRequest();
+        if (!await accountsService.VerifyEmail(user, data.VerificationCode)) return BadRequest();
 
         return NoContent();
     }
@@ -299,21 +289,21 @@ public class UserController : Controller
     public async Task<IActionResult> GetOtpStatus([FromBody] OtpRequestData data)
     {
         var userId = ulong.Parse(HttpContext.User.Claims.First(claim => claim.Type == Claims.UserId).Value);
-        var user = await _accountsService.UserById(userId);
+        var user = await accountsService.UserById(userId);
 
-        if (!await _accountsService.VerifyUserPassword(user, data.Password)) return Forbid();
+        if (!await accountsService.VerifyUserPassword(user, data.Password)) return Forbid();
 
-        if (await _accountsService.OtpEnabled(user))
+        if (await accountsService.OtpEnabled(user))
             return Json(new
             {
                 Enabled = true,
-                BackupCodes = await _accountsService.OtpBackupCodes(user)
+                BackupCodes = await accountsService.OtpBackupCodes(user)
             });
 
         return Json(new
         {
             Enabled = false,
-            Key = await _accountsService.GenerateOtpKey(user)
+            Key = await accountsService.GenerateOtpKey(user)
         });
     }
 
@@ -323,13 +313,13 @@ public class UserController : Controller
     public async Task<IActionResult> EnableOtp([FromBody] EnableOtpRequestData data)
     {
         var userId = ulong.Parse(HttpContext.User.Claims.First(claim => claim.Type == Claims.UserId).Value);
-        var user = await _accountsService.UserById(userId);
+        var user = await accountsService.UserById(userId);
 
-        if (!await _accountsService.VerifyUserPassword(user, data.Password)) return Forbid();
+        if (!await accountsService.VerifyUserPassword(user, data.Password)) return Forbid();
 
         try
         {
-            await _accountsService.EnableOtp(user, data.OtpCode);
+            await accountsService.EnableOtp(user, data.OtpCode);
             return NoContent();
         }
         catch (DBusException ex)
@@ -349,13 +339,13 @@ public class UserController : Controller
     public async Task<IActionResult> DisableOtp([FromBody] OtpRequestData data)
     {
         var userId = ulong.Parse(HttpContext.User.Claims.First(claim => claim.Type == Claims.UserId).Value);
-        var user = await _accountsService.UserById(userId);
+        var user = await accountsService.UserById(userId);
 
-        if (!await _accountsService.VerifyUserPassword(user, data.Password)) return Forbid();
+        if (!await accountsService.VerifyUserPassword(user, data.Password)) return Forbid();
 
         try
         {
-            await _accountsService.DisableOtp(user);
+            await accountsService.DisableOtp(user);
             return NoContent();
         }
         catch (DBusException ex)
@@ -375,13 +365,13 @@ public class UserController : Controller
     public async Task<IActionResult> RegenerateOtpCodes([FromBody] OtpRequestData data)
     {
         var userId = ulong.Parse(HttpContext.User.Claims.First(claim => claim.Type == Claims.UserId).Value);
-        var user = await _accountsService.UserById(userId);
+        var user = await accountsService.UserById(userId);
 
-        if (!await _accountsService.VerifyUserPassword(user, data.Password)) return Forbid();
+        if (!await accountsService.VerifyUserPassword(user, data.Password)) return Forbid();
 
         try
         {
-            await _accountsService.RegenerateBackupCodes(user);
+            await accountsService.RegenerateBackupCodes(user);
             return NoContent();
         }
         catch (DBusException ex)
@@ -400,11 +390,11 @@ public class UserController : Controller
     public async Task<IActionResult> GetFidoKeys([FromBody] OtpRequestData data)
     {
         var userId = ulong.Parse(HttpContext.User.Claims.First(claim => claim.Type == Claims.UserId).Value);
-        var user = await _accountsService.UserById(userId);
+        var user = await accountsService.UserById(userId);
 
-        if (!await _accountsService.VerifyUserPassword(user, data.Password)) return Forbid();
+        if (!await accountsService.VerifyUserPassword(user, data.Password)) return Forbid();
 
-        return Json(await _accountsService.GetFidoKeys(user));
+        return Json(await accountsService.GetFidoKeys(user));
     }
 
 
@@ -414,14 +404,14 @@ public class UserController : Controller
     public async Task<IActionResult> DeleteFidoKey([FromBody] OtpRequestData data, [FromRoute] int key)
     {
         var userId = ulong.Parse(HttpContext.User.Claims.First(claim => claim.Type == Claims.UserId).Value);
-        var user = await _accountsService.UserById(userId);
+        var user = await accountsService.UserById(userId);
 
-        if (!await _accountsService.VerifyUserPassword(user, data.Password)) return Forbid();
+        if (!await accountsService.VerifyUserPassword(user, data.Password)) return Forbid();
 
-        var keys = await _accountsService.GetFidoKeys(user);
+        var keys = await accountsService.GetFidoKeys(user);
         if (keys.All(x => x.Id != key)) return NotFound();
 
-        await _accountsService.DeleteFidoKey(user, key);
+        await accountsService.DeleteFidoKey(user, key);
         return NoContent();
     }
 
@@ -431,12 +421,12 @@ public class UserController : Controller
     public async Task<IActionResult> PrepareRegisterKeys([FromBody] PrepareRegisterKeysRequestData data)
     {
         var userId = ulong.Parse(HttpContext.User.Claims.First(claim => claim.Type == Claims.UserId).Value);
-        var user = await _accountsService.UserById(userId);
+        var user = await accountsService.UserById(userId);
 
-        if (!await _accountsService.VerifyUserPassword(user, data.Password)) return Forbid();
+        if (!await accountsService.VerifyUserPassword(user, data.Password)) return Forbid();
 
         var response =
-            await _accountsService.PrepareRegisterFidoKey(user, data.AuthenticatorAttachmentType switch
+            await accountsService.PrepareRegisterFidoKey(user, data.AuthenticatorAttachmentType switch
             {
                 "cross-platform" => IVicr123AccountsService.CrossPlatformAttachmentCrossPlatform,
                 "platform" => IVicr123AccountsService.CrossPlatformAttachmentPlatform,
@@ -456,11 +446,11 @@ public class UserController : Controller
     public async Task<IActionResult> RegisterKeys([FromBody] RegisterKeysRequestData data)
     {
         var userId = ulong.Parse(HttpContext.User.Claims.First(claim => claim.Type == Claims.UserId).Value);
-        var user = await _accountsService.UserById(userId);
+        var user = await accountsService.UserById(userId);
 
-        if (!await _accountsService.VerifyUserPassword(user, data.Password)) return Forbid();
+        if (!await accountsService.VerifyUserPassword(user, data.Password)) return Forbid();
 
-        await _accountsService.FinishRegisterFidoKey(user, data.Response, data.Name);
+        await accountsService.FinishRegisterFidoKey(user, data.Response, data.Name);
 
         return NoContent();
     }
@@ -471,12 +461,12 @@ public class UserController : Controller
     public async Task<IActionResult> AttributionConsentStatus()
     {
         var userId = ulong.Parse(HttpContext.User.Claims.First(claim => claim.Type == Claims.UserId).Value);
-        var user = await _accountsService.UserById(userId);
+        var user = await accountsService.UserById(userId);
 
         return Json(new
         {
-            ConsentProvided = _attributionConsentService.HaveConsent(user),
-            PreferredUserName = _attributionConsentService.PreferredUserName(user)
+            ConsentProvided = attributionConsentService.HaveConsent(user),
+            PreferredUserName = attributionConsentService.PreferredUserName(user)
         });
     }
 
@@ -486,13 +476,13 @@ public class UserController : Controller
     public async Task<IActionResult> UpdateAttributionConsent([FromBody] UpdateAttributionConsentRequestData data)
     {
         var userId = ulong.Parse(HttpContext.User.Claims.First(claim => claim.Type == Claims.UserId).Value);
-        var user = await _accountsService.UserById(userId);
+        var user = await accountsService.UserById(userId);
 
         if (!data.ConsentProvided && data.PreferredName is null)
             return this.ClientError(ParlanceClientError.IncorrectParameters);
 
-        await _attributionConsentService.SetConsentStatus(user, data.ConsentProvided);
-        if (data.ConsentProvided) await _attributionConsentService.SetPreferredUserName(user, data.PreferredName);
+        await attributionConsentService.SetConsentStatus(user, data.ConsentProvided);
+        if (data.ConsentProvided) await attributionConsentService.SetPreferredUserName(user, data.PreferredName);
 
         return NoContent();
     }

@@ -9,35 +9,27 @@ namespace Parlance.Controllers;
 [ApiController]
 [Route("api/[controller]")]
 [EnableRateLimiting("limiter")]
-public class WebhookController : Controller
+public class WebhookController(
+    IProjectService projectService,
+    IVersionControlService versionControlService,
+    IProjectUpdateQueue updateQueue)
+    : Controller
 {
-    private readonly IProjectService _projectService;
-    private readonly IProjectUpdateQueue _updateQueue;
-    private readonly IVersionControlService _versionControlService;
-
-    public WebhookController(IProjectService projectService, IVersionControlService versionControlService,
-        IProjectUpdateQueue updateQueue)
-    {
-        _projectService = projectService;
-        _versionControlService = versionControlService;
-        _updateQueue = updateQueue;
-    }
-
     [HttpPost]
     [Route("github")]
     public async Task<IActionResult> ExecuteGitHubWebhook([FromBody] ExecuteGitHubWebhookRequestData data)
     {
         if (!Request.Headers["X-GitHub-Event"].Contains("push")) return NoContent();
 
-        var projects = await _projectService.Projects();
+        var projects = await projectService.Projects();
         var hitProjects = projects.Where(x =>
-            string.Equals(_versionControlService.CloneUrl(x), data.Repository.Clone_Url,
+            string.Equals(versionControlService.CloneUrl(x), data.Repository.Clone_Url,
                 StringComparison.InvariantCultureIgnoreCase) ||
-            string.Equals(_versionControlService.CloneUrl(x), data.Repository.Ssh_Url,
+            string.Equals(versionControlService.CloneUrl(x), data.Repository.Ssh_Url,
                 StringComparison.InvariantCultureIgnoreCase));
 
         foreach (var project in hitProjects)
-            await _updateQueue.Queue(project);
+            await updateQueue.Queue(project);
 
         return NoContent();
     }

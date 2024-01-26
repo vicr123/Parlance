@@ -7,18 +7,12 @@ using System.Text.Unicode;
 
 namespace Parlance.Project.TranslationFiles;
 
-public abstract class ParlanceTranslationFile : IAsyncDisposable
+public abstract class ParlanceTranslationFile(
+    IParlanceSubprojectLanguage? subprojectLanguage,
+    IParlanceIndexingService? indexingService)
+    : IAsyncDisposable
 {
-    private readonly IParlanceIndexingService? _indexingService;
-    private readonly IParlanceSubprojectLanguage? _subprojectLanguage;
     private bool _edited;
-
-    protected ParlanceTranslationFile(IParlanceSubprojectLanguage? subprojectLanguage,
-        IParlanceIndexingService? indexingService)
-    {
-        _subprojectLanguage = subprojectLanguage;
-        _indexingService = indexingService;
-    }
 
     protected static readonly JsonSerializerOptions UnescapedJsonSerializerOptions = new()
     {
@@ -31,8 +25,8 @@ public abstract class ParlanceTranslationFile : IAsyncDisposable
 
     public async ValueTask DisposeAsync()
     {
-        if (_edited && _indexingService is not null && _subprojectLanguage is not null)
-            await _indexingService.IndexTranslationFile(_subprojectLanguage);
+        if (_edited && indexingService is not null && subprojectLanguage is not null)
+            await indexingService.IndexTranslationFile(subprojectLanguage);
     }
 
     public virtual Task Save()

@@ -12,19 +12,12 @@ namespace Parlance.Controllers;
 [ApiController]
 [Route("api/[controller]")]
 [EnableRateLimiting("limiter")]
-public class GlossaryManagerController : Controller
+public class GlossaryManagerController(IGlossaryService glossaryService) : Controller
 {
-    private readonly IGlossaryService _glossaryService;
-
-    public GlossaryManagerController(IGlossaryService glossaryService)
-    {
-        _glossaryService = glossaryService;
-    }
-
     [HttpGet]
     public Task<IActionResult> GetGlossaries()
     {
-        return Task.FromResult<IActionResult>(Json(_glossaryService.Glossaries.Select(glossary => new {
+        return Task.FromResult<IActionResult>(Json(glossaryService.Glossaries.Select(glossary => new {
             glossary.Id, glossary.Name, glossary.CreatedDate,
             UsedByProjects = glossary.Projects.Count
         })));
@@ -36,7 +29,7 @@ public class GlossaryManagerController : Controller
     {
         try
         {
-            await _glossaryService.AddGlossary(requestData.Name);
+            await glossaryService.AddGlossary(requestData.Name);
             return NoContent();
         }
         catch (DbUpdateException ex) when (ex.InnerException is PostgresException
@@ -55,9 +48,9 @@ public class GlossaryManagerController : Controller
     {
         try
         {
-            var g = _glossaryService.GlossaryById(glossary);
+            var g = glossaryService.GlossaryById(glossary);
 
-            return Task.FromResult<IActionResult>(Json(_glossaryService.GetTerms(g, null).Select(term => new
+            return Task.FromResult<IActionResult>(Json(glossaryService.GetTerms(g, null).Select(term => new
             {
                 term.Id,
                 term.Term,
@@ -79,7 +72,7 @@ public class GlossaryManagerController : Controller
     {
         try
         {
-            await _glossaryService.DeleteGlossary(_glossaryService.GlossaryById(glossary));
+            await glossaryService.DeleteGlossary(glossaryService.GlossaryById(glossary));
             return NoContent();
         }
         catch (InvalidOperationException)
@@ -94,10 +87,10 @@ public class GlossaryManagerController : Controller
     {
         try
         {
-            var g = _glossaryService.GlossaryById(glossary);
+            var g = glossaryService.GlossaryById(glossary);
             var locale = language.ToLocale();
 
-            return Task.FromResult<IActionResult>(Json(_glossaryService.GetTerms(g, locale).Select(term => new
+            return Task.FromResult<IActionResult>(Json(glossaryService.GetTerms(g, locale).Select(term => new
             {
                 term.Id,
                 term.Term,
@@ -124,9 +117,9 @@ public class GlossaryManagerController : Controller
                 return BadRequest();
             }
             
-            var g = _glossaryService.GlossaryById(glossary);
+            var g = glossaryService.GlossaryById(glossary);
             var locale = language.ToLocale();
-            await _glossaryService.Define(g, data.Term, data.PartOfSpeech, data.Translation, locale);
+            await glossaryService.Define(g, data.Term, data.PartOfSpeech, data.Translation, locale);
             return NoContent();
         }
         catch (InvalidOperationException)
@@ -142,13 +135,13 @@ public class GlossaryManagerController : Controller
     {
         try
         {
-            var glossaryItem = _glossaryService.GlossaryItemById(term);
+            var glossaryItem = glossaryService.GlossaryItemById(term);
             if (glossaryItem.GlossaryId != glossary || language.ToLocale().ToDatabaseRepresentation() != glossaryItem.Language)
             {
                 return NotFound();
             }
             
-            await _glossaryService.RemoveDefinition(_glossaryService.GlossaryItemById(term));
+            await glossaryService.RemoveDefinition(glossaryService.GlossaryItemById(term));
             return NoContent();
         }
         catch (InvalidOperationException)

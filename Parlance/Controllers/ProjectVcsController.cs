@@ -14,20 +14,12 @@ namespace Parlance.Controllers;
 [ApiController]
 [Route("api/projects/{project}")]
 [EnableRateLimiting("limiter")]
-public class ProjectVcsController : Controller
+public class ProjectVcsController(
+    IProjectService projectService,
+    IVersionControlService versionControlService,
+    IParlanceIndexingService indexingService)
+    : Controller
 {
-    private readonly IParlanceIndexingService _indexingService;
-    private readonly IProjectService _projectService;
-    private readonly IVersionControlService _versionControlService;
-
-    public ProjectVcsController(IProjectService projectService, IVersionControlService versionControlService,
-        IParlanceIndexingService indexingService)
-    {
-        _projectService = projectService;
-        _versionControlService = versionControlService;
-        _indexingService = indexingService;
-    }
-
     [HttpGet]
     [Authorize(Policy = "ProjectManager")]
     [Route("vcs")]
@@ -35,8 +27,8 @@ public class ProjectVcsController : Controller
     {
         try
         {
-            var p = await _projectService.ProjectBySystemName(project);
-            return Json(_versionControlService.VersionControlStatus(p));
+            var p = await projectService.ProjectBySystemName(project);
+            return Json(versionControlService.VersionControlStatus(p));
         }
         catch (ProjectNotFoundException)
         {
@@ -51,8 +43,8 @@ public class ProjectVcsController : Controller
     {
         try
         {
-            var p = await _projectService.ProjectBySystemName(project);
-            await _versionControlService.UpdateVersionControlMetadata(p);
+            var p = await projectService.ProjectBySystemName(project);
+            await versionControlService.UpdateVersionControlMetadata(p);
 
             return NoContent();
         }
@@ -74,15 +66,15 @@ public class ProjectVcsController : Controller
     {
         try
         {
-            var p = await _projectService.ProjectBySystemName(project);
+            var p = await projectService.ProjectBySystemName(project);
 
-            await _versionControlService.UpdateVersionControlMetadata(p);
-            await _versionControlService.ReconcileRemoteWithLocal(p);
+            await versionControlService.UpdateVersionControlMetadata(p);
+            await versionControlService.ReconcileRemoteWithLocal(p);
 
             try
             {
                 var proj = p.GetParlanceProject();
-                await _indexingService.IndexProject(proj);
+                await indexingService.IndexProject(proj);
             }
             catch (ParlanceJsonFileParseException)
             {
@@ -116,8 +108,8 @@ public class ProjectVcsController : Controller
     {
         try
         {
-            var p = await _projectService.ProjectBySystemName(project);
-            await _versionControlService.PublishSavedChangesToSource(p);
+            var p = await projectService.ProjectBySystemName(project);
+            await versionControlService.PublishSavedChangesToSource(p);
 
             return NoContent();
         }
@@ -142,8 +134,8 @@ public class ProjectVcsController : Controller
     {
         try
         {
-            var p = await _projectService.ProjectBySystemName(project);
-            var commit = await _versionControlService.SaveChangesToVersionControl(p);
+            var p = await projectService.ProjectBySystemName(project);
+            var commit = await versionControlService.SaveChangesToVersionControl(p);
             if (commit is null) return BadRequest();
 
             return Json(commit);
@@ -165,8 +157,8 @@ public class ProjectVcsController : Controller
     {
         try
         {
-            var p = await _projectService.ProjectBySystemName(project);
-            await _versionControlService.DeleteUnpublishedChanges(p);
+            var p = await projectService.ProjectBySystemName(project);
+            await versionControlService.DeleteUnpublishedChanges(p);
 
             return NoContent();
         }

@@ -4,18 +4,12 @@ using Parlance.VersionControl.Services.PendingEdits;
 
 namespace Parlance.VersionControl.Services.VersionControl;
 
-public class GitVersionControlService : IVersionControlService
+public class GitVersionControlService(
+    IRemoteCommunicationService remoteCommunicationService,
+    IPendingEditsService pendingEditsService)
+    : IVersionControlService
 {
     private readonly Identity _identity = new("Parlance", "parlance@vicr123.com");
-    private readonly IPendingEditsService _pendingEditsService;
-    private readonly IRemoteCommunicationService _remoteCommunicationService;
-
-    public GitVersionControlService(IRemoteCommunicationService remoteCommunicationService,
-        IPendingEditsService pendingEditsService)
-    {
-        _remoteCommunicationService = remoteCommunicationService;
-        _pendingEditsService = pendingEditsService;
-    }
 
     public Task DownloadFromSource(string cloneUrl, string directory, string branch)
     {
@@ -112,7 +106,7 @@ public class GitVersionControlService : IVersionControlService
         {
             ReconcileRemoteWithLocalCoreRebase(repo);
         }
-        catch (MergeConflictException ex)
+        catch (MergeConflictException)
         {
             ReconcileRemoteWithLocalCoreMerge(repo);
         }
@@ -149,8 +143,8 @@ public class GitVersionControlService : IVersionControlService
         repo.Network.Fetch("origin",
             repo.Network.Remotes["origin"].FetchRefSpecs.Select(refspec => refspec.Specification), new FetchOptions
             {
-                CredentialsProvider = _remoteCommunicationService.CredentialsHandler,
-                CertificateCheck = _remoteCommunicationService.CertificateCheckHandler
+                CredentialsProvider = remoteCommunicationService.CredentialsHandler,
+                CertificateCheck = remoteCommunicationService.CertificateCheckHandler
             });
     }
 
@@ -161,8 +155,8 @@ public class GitVersionControlService : IVersionControlService
             var repoPath = Repository.Clone(cloneUrl, directory,
                 new CloneOptions
                 {
-                    CredentialsProvider = _remoteCommunicationService.CredentialsHandler,
-                    CertificateCheck = _remoteCommunicationService.CertificateCheckHandler,
+                    CredentialsProvider = remoteCommunicationService.CredentialsHandler,
+                    CertificateCheck = remoteCommunicationService.CertificateCheckHandler,
                     IsBare = false,
                     OnTransferProgress = progress => { return true; }
                 });
@@ -220,8 +214,8 @@ public class GitVersionControlService : IVersionControlService
         // TODO: Express actual translation authors through Author
         var signature = new Signature(_identity, DateTimeOffset.Now);
 
-        var pendingEdits = await _pendingEditsService.EditorsPendingEdits(project);
-        var pendingLocales = _pendingEditsService.LocalesPendingEdits(project).ToList();
+        var pendingEdits = await pendingEditsService.EditorsPendingEdits(project);
+        var pendingLocales = pendingEditsService.LocalesPendingEdits(project).ToList();
 
         var commitLines = new List<string>
         {
@@ -234,7 +228,7 @@ public class GitVersionControlService : IVersionControlService
         commitLines.AddRange(pendingEdits.Select(x => $"Co-Authored-By: {x.Name} <{x.Email}>"));
 
         var commit = repo.Commit(string.Join("\n", commitLines), signature, signature);
-        await _pendingEditsService.ClearPendingEdits(project);
+        await pendingEditsService.ClearPendingEdits(project);
         return new VersionControlCommit(commit);
     }
 
@@ -244,8 +238,8 @@ public class GitVersionControlService : IVersionControlService
         var branch = repo.Head;
         repo.Network.Push(branch, new PushOptions
         {
-            CredentialsProvider = _remoteCommunicationService.CredentialsHandler,
-            CertificateCheck = _remoteCommunicationService.CertificateCheckHandler
+            CredentialsProvider = remoteCommunicationService.CredentialsHandler,
+            CertificateCheck = remoteCommunicationService.CertificateCheckHandler
         });
     }
 

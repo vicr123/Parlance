@@ -9,25 +9,17 @@ namespace Parlance.Project;
 public record SubprojectDefinition(string Name, string Type, string Path, string BaseLang, string? BasePath,
     IDictionary<string, object> Options, bool? PreferRegionAgnosticLanguage);
 
-public class ParlanceSubproject : IParlanceSubproject
+public class ParlanceSubproject(IParlanceProject project, SubprojectDefinition subproject) : IParlanceSubproject
 {
-    private readonly SubprojectDefinition _subproject;
-
-    public ParlanceSubproject(IParlanceProject project, SubprojectDefinition subproject)
-    {
-        Project = project;
-        _subproject = subproject;
-    }
-
-    public string Name => _subproject.Name;
-    public string SystemName => _subproject.Name.ToLower().Replace(" ", "-");
-    public IParlanceProject Project { get; }
-    public string Path => _subproject.Path;
-    public string TranslationFileType => _subproject.Type;
-    public Locale BaseLang => _subproject.BaseLang.ToLocale();
+    public string Name => subproject.Name;
+    public string SystemName => subproject.Name.ToLower().Replace(" ", "-");
+    public IParlanceProject Project { get; } = project;
+    public string Path => subproject.Path;
+    public string TranslationFileType => subproject.Type;
+    public Locale BaseLang => subproject.BaseLang.ToLocale();
 
     public bool PreferRegionAgnosticLanguage =>
-        _subproject.PreferRegionAgnosticLanguage ?? string.IsNullOrEmpty(BaseLang.CountryCode);
+        subproject.PreferRegionAgnosticLanguage ?? string.IsNullOrEmpty(BaseLang.CountryCode);
 
     public string BasePath
     {
@@ -46,16 +38,16 @@ public class ParlanceSubproject : IParlanceSubproject
                     };
 
             var standardCased = System.IO.Path.Join(Project.VcsDirectory,
-                _subproject.BasePath ?? Path.Replace("{lang}", language));
+                subproject.BasePath ?? Path.Replace("{lang}", language));
             var lowerCased = System.IO.Path.Join(Project.VcsDirectory,
-                _subproject.BasePath ?? Path.Replace("{lang}", language.ToLowerInvariant()));
+                subproject.BasePath ?? Path.Replace("{lang}", language.ToLowerInvariant()));
 
             if (!File.Exists(standardCased) && File.Exists(lowerCased)) return lowerCased;
             return standardCased;
         }
     }
 
-    public IDictionary<string, object> Options => _subproject.Options;
+    public IDictionary<string, object> Options => subproject.Options;
 
     public Locale CalculatePreferredLocale(Locale locale)
     {
@@ -69,7 +61,7 @@ public class ParlanceSubproject : IParlanceSubproject
 
     public IEnumerable<Locale> AvailableLanguages()
     {
-        var wildcard = _subproject.Path.Replace("{lang}", "*");
+        var wildcard = subproject.Path.Replace("{lang}", "*");
         var toTrim = wildcard.Length - wildcard.IndexOf('*') - 1;
         var toStart = wildcard.IndexOf('*') - 1;
 

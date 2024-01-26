@@ -10,18 +10,16 @@ namespace Parlance.Project.TranslationFiles.VueI18n;
 
 [TranslationFileType("vue-i18n", ExpectedTranslationFileNameFormat.Dashed)]
 // ReSharper disable once InconsistentNaming
-public class VueI18nTranslationFile : ParlanceTranslationFile, IParlanceMonoTranslationFile
+public class VueI18nTranslationFile(
+    IParlanceSubprojectLanguage? subprojectLanguage,
+    IParlanceIndexingService? indexingService)
+    : ParlanceTranslationFile(subprojectLanguage, indexingService), IParlanceMonoTranslationFile
 {
     private const string pluralSeparator = " | ";
     private string _baseFile = null!;
     private Locale _baseLocale = null!;
     private string _file = null!;
     private Locale _locale = null!;
-
-    public VueI18nTranslationFile(IParlanceSubprojectLanguage? subprojectLanguage,
-        IParlanceIndexingService? indexingService) : base(subprojectLanguage, indexingService)
-    {
-    }
 
     public override string Hash { get; internal set; } = null!;
     public override IList<IParlanceTranslationFileEntry> Entries { get; internal set; } = null!;

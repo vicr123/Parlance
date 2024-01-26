@@ -5,19 +5,10 @@ using Parlance.Project.Checks;
 
 namespace Parlance.Project.Index;
 
-public class ParlanceIndexingService : IParlanceIndexingService
+public class ParlanceIndexingService(ParlanceContext dbContext, IParlanceChecks checks) : IParlanceIndexingService
 {
     public enum IndexType
     {
-    }
-
-    private readonly IParlanceChecks _checks;
-    private readonly ParlanceContext _dbContext;
-
-    public ParlanceIndexingService(ParlanceContext dbContext, IParlanceChecks checks)
-    {
-        _dbContext = dbContext;
-        _checks = checks;
     }
 
     public async Task IndexProject(IParlanceProject project)
@@ -35,7 +26,7 @@ public class ParlanceIndexingService : IParlanceIndexingService
     {
         try
         {
-            _dbContext.Index.RemoveRange(_dbContext.Index.Where(item =>
+            dbContext.Index.RemoveRange(dbContext.Index.Where(item =>
                 item.Project == file.Subproject.Project.Name && item.Subproject == file.Subproject.Name &&
                 item.Language == file.Locale.ToDatabaseRepresentation()));
 
@@ -47,7 +38,7 @@ public class ParlanceIndexingService : IParlanceIndexingService
                     //Check if the translation is complete
                     if (entry.Translation.All(translation => translation.TranslationContent != ""))
                     {
-                        _dbContext.Index.Add(new IndexItem
+                        dbContext.Index.Add(new IndexItem
                         {
                             Project = file.Subproject.Project.Name,
                             Subproject = file.Subproject.Name,
@@ -56,12 +47,12 @@ public class ParlanceIndexingService : IParlanceIndexingService
                             RecordType = IndexItemType.Complete
                         });
 
-                        var checks = entry.Translation.SelectMany(translation => _checks.CheckTranslation(entry.Source,
+                        var checks1 = entry.Translation.SelectMany(translation => checks.CheckTranslation(entry.Source,
                                 translation.TranslationContent, file.Subproject.TranslationFileType))
                             .Select(x => x.CheckSeverity).ToList();
 
-                        if (checks.Contains(CheckResult.Severity.Error))
-                            _dbContext.Index.Add(new IndexItem
+                        if (checks1.Contains(CheckResult.Severity.Error))
+                            dbContext.Index.Add(new IndexItem
                             {
                                 Project = file.Subproject.Project.Name,
                                 Subproject = file.Subproject.Name,
@@ -69,8 +60,8 @@ public class ParlanceIndexingService : IParlanceIndexingService
                                 ItemIdentifier = entry.Key,
                                 RecordType = IndexItemType.Error
                             });
-                        else if (checks.Contains(CheckResult.Severity.Warning))
-                            _dbContext.Index.Add(new IndexItem
+                        else if (checks1.Contains(CheckResult.Severity.Warning))
+                            dbContext.Index.Add(new IndexItem
                             {
                                 Project = file.Subproject.Project.Name,
                                 Subproject = file.Subproject.Name,
@@ -79,7 +70,7 @@ public class ParlanceIndexingService : IParlanceIndexingService
                                 RecordType = IndexItemType.CumulativeWarning
                             });
                         else
-                            _dbContext.Index.Add(new IndexItem
+                            dbContext.Index.Add(new IndexItem
                             {
                                 Project = file.Subproject.Project.Name,
                                 Subproject = file.Subproject.Name,
@@ -88,8 +79,8 @@ public class ParlanceIndexingService : IParlanceIndexingService
                                 RecordType = IndexItemType.PassedChecks
                             });
 
-                        if (checks.Contains(CheckResult.Severity.Warning))
-                            _dbContext.Index.Add(new IndexItem
+                        if (checks1.Contains(CheckResult.Severity.Warning))
+                            dbContext.Index.Add(new IndexItem
                             {
                                 Project = file.Subproject.Project.Name,
                                 Subproject = file.Subproject.Name,
@@ -99,14 +90,14 @@ public class ParlanceIndexingService : IParlanceIndexingService
                             });
                     }
 
-                    var originalSource = _dbContext.SourceStrings.SingleOrDefault(x =>
+                    var originalSource = dbContext.SourceStrings.SingleOrDefault(x =>
                         x.Key == entry.Key && x.Language == file.Locale.ToDatabaseRepresentation() &&
                         x.Project == file.Subproject.Project.Name && x.Subproject == file.Subproject.SystemName);
 
                     if (originalSource != default)
                         if (originalSource.SourceTranslation !=
                             entry.Source)
-                            _dbContext.Index.Add(new IndexItem
+                            dbContext.Index.Add(new IndexItem
                             {
                                 Project = file.Subproject.Project.Name,
                                 Subproject = file.Subproject.Name,
@@ -115,7 +106,7 @@ public class ParlanceIndexingService : IParlanceIndexingService
                                 RecordType = IndexItemType.OutOfDate
                             });
 
-                    _dbContext.Index.Add(new IndexItem
+                    dbContext.Index.Add(new IndexItem
                     {
                         Project = file.Subproject.Project.Name,
                         Subproject = file.Subproject.Name,
@@ -125,7 +116,7 @@ public class ParlanceIndexingService : IParlanceIndexingService
                     });
                 }
 
-            await _dbContext.SaveChangesAsync();
+            await dbContext.SaveChangesAsync();
         }
         catch (Exception ex)
         {
@@ -144,7 +135,7 @@ public class ParlanceIndexingService : IParlanceIndexingService
 
     public async Task<IParlanceIndexingService.OverallIndexResults> OverallResults(IParlanceProject project)
     {
-        var types = _dbContext.Index.Where(item => item.Project == project.Name)
+        var types = dbContext.Index.Where(item => item.Project == project.Name)
             .GroupBy(item => item.RecordType, (key, results) => new { Key = key, Count = results.Count() })
             .ToDictionary(x => x.Key, x => x.Count);
 
@@ -153,7 +144,7 @@ public class ParlanceIndexingService : IParlanceIndexingService
     
     public async Task<IParlanceIndexingService.OverallIndexResults> OverallResults(IParlanceSubproject subproject)
     {
-        var types = _dbContext.Index
+        var types = dbContext.Index
             .Where(item => item.Project == subproject.Project.Name && item.Subproject == subproject.Name)
             .GroupBy(item => item.RecordType, (key, results) => new { Key = key, Count = results.Count() })
             .ToDictionary(x => x.Key, x => x.Count);
@@ -163,7 +154,7 @@ public class ParlanceIndexingService : IParlanceIndexingService
 
     public async Task<IParlanceIndexingService.OverallIndexResults> OverallResults(IParlanceSubprojectLanguage file)
     {
-        var types = _dbContext.Index.Where(item =>
+        var types = dbContext.Index.Where(item =>
                 item.Project == file.Subproject.Project.Name && item.Subproject == file.Subproject.Name &&
                 item.Language == file.Locale.ToDatabaseRepresentation())
             .GroupBy(item => item.RecordType, (key, results) => new { Key = key, Count = results.Count() })
@@ -174,7 +165,7 @@ public class ParlanceIndexingService : IParlanceIndexingService
 
     public async Task<IParlanceIndexingService.OverallIndexResults> OverallResults(Locale locale)
     {
-        var types = _dbContext.Index.Where(item => item.Language == locale.ToDatabaseRepresentation())
+        var types = dbContext.Index.Where(item => item.Language == locale.ToDatabaseRepresentation())
             .GroupBy(item => item.RecordType, (key, results) => new { Key = key, Count = results.Count() })
             .ToDictionary(x => x.Key, x => x.Count);
 

@@ -8,27 +8,20 @@ namespace Parlance.Controllers;
 [ApiController]
 [Route("api/[controller]")]
 [EnableRateLimiting("limiter")]
-public class SuperusersController : Controller
+public class SuperusersController(ISuperuserService superuserService) : Controller
 {
-    private readonly ISuperuserService _superuserService;
-
-    public SuperusersController(ISuperuserService superuserService)
-    {
-        _superuserService = superuserService;
-    }
-
     [Authorize(Policy = "Superuser")]
     [HttpGet]
     public async Task<IActionResult> GetSuperusers()
     {
-        return Json(await _superuserService.Superusers());
+        return Json(await superuserService.Superusers());
     }
 
     [Authorize(Policy = "Superuser")]
     [HttpPost]
     public async Task<IActionResult> AddSuperuser([FromBody] AddSuperuserRequestData data)
     {
-        await _superuserService.GrantSuperuserPermissions(data.Username);
+        await superuserService.GrantSuperuserPermissions(data.Username);
         return NoContent();
     }
 
@@ -37,8 +30,8 @@ public class SuperusersController : Controller
     [Route("{user}")]
     public async Task<IActionResult> RemoveSuperuser(string user)
     {
-        if (!await _superuserService.IsSuperuser(user)) return NotFound();
-        await _superuserService.RevokeSuperuserPermissions(user);
+        if (!await superuserService.IsSuperuser(user)) return NotFound();
+        await superuserService.RevokeSuperuserPermissions(user);
         return NoContent();
     }
 
