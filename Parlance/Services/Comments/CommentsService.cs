@@ -10,21 +10,13 @@ using Parlance.Vicr123Accounts.Services;
 
 namespace Parlance.Services.Comments;
 
-public class CommentsService : ICommentsService
+public class CommentsService(
+    IVicr123AccountsService accountsService,
+    ParlanceContext databaseContext,
+    IProjectService projectService,
+    IParlanceIndexingService indexingService)
+    : ICommentsService
 {
-    private readonly IVicr123AccountsService _accountsService;
-    private readonly ParlanceContext _databaseContext;
-    private readonly IProjectService _projectService;
-    private readonly IParlanceIndexingService _indexingService;
-
-    public CommentsService(IVicr123AccountsService accountsService, ParlanceContext databaseContext, IProjectService projectService, IParlanceIndexingService indexingService)
-    {
-        _accountsService = accountsService;
-        _databaseContext = databaseContext;
-        _projectService = projectService;
-        _indexingService = indexingService;
-    }
-
     public async Task<object> GetJsonThread(CommentThread thread)
     {
         var headComment = HeadComment(thread);
@@ -35,10 +27,10 @@ public class CommentsService : ICommentsService
     {
         var language = Locale.FromDatabaseRepresentation(thread.Language)!;
         
-        var p = await _projectService.ProjectBySystemName(thread.Project);
+        var p = await projectService.ProjectBySystemName(thread.Project);
         var subprojectLanguage = p.GetParlanceProject().SubprojectBySystemName(thread.Subproject)
             .Language(language);
-        await using var translationFile = await subprojectLanguage.CreateTranslationFile(_indexingService);
+        await using var translationFile = await subprojectLanguage.CreateTranslationFile(indexingService);
 
         var entry = translationFile?.Entries.FirstOrDefault(x => x.Key == thread.Key);
         
@@ -69,7 +61,7 @@ public class CommentsService : ICommentsService
 
     public async Task<object> GetAuthor(ulong userId)
     {
-        var user = await _accountsService.UserById(userId);
+        var user = await accountsService.UserById(userId);
         return new
         {
             user.Username,
@@ -80,7 +72,7 @@ public class CommentsService : ICommentsService
 
     public IEnumerable<CommentThread> Threads(string project = "", string subproject = "", Locale? language = null, string key = "", bool openOnly = false)
     {
-        IQueryable<CommentThread> query = _databaseContext.CommentThreads;
+        IQueryable<CommentThread> query = databaseContext.CommentThreads;
 
         if (!string.IsNullOrEmpty(project))
             query = query.Where(thread => thread.Project == project);
@@ -102,6 +94,6 @@ public class CommentsService : ICommentsService
 
     public Comment HeadComment(CommentThread thread)
     {
-        return _databaseContext.Comments.Where(c => c.ThreadId == thread.Id && c.Event == null).OrderBy(c => c.Date).Last();
+        return databaseContext.Comments.Where(c => c.ThreadId == thread.Id && c.Event == null).OrderBy(c => c.Date).Last();
     }
 }

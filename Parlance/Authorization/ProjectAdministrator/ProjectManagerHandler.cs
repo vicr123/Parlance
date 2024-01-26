@@ -5,17 +5,9 @@ using Parlance.Vicr123Accounts.Authentication;
 
 namespace Parlance.Authorization.ProjectAdministrator;
 
-public class ProjectManagerHandler : AuthorizationHandler<ProjectManagerRequirement>
+public class ProjectManagerHandler(IProjectMaintainersService projectMaintainersService, IProjectService projectService)
+    : AuthorizationHandler<ProjectManagerRequirement>
 {
-    private readonly IProjectMaintainersService _projectMaintainersService;
-    private readonly IProjectService _projectService;
-
-    public ProjectManagerHandler(IProjectMaintainersService projectMaintainersService, IProjectService projectService)
-    {
-        _projectMaintainersService = projectMaintainersService;
-        _projectService = projectService;
-    }
-
     protected override async Task HandleRequirementAsync(AuthorizationHandlerContext context,
         ProjectManagerRequirement requirement)
     {
@@ -27,8 +19,8 @@ public class ProjectManagerHandler : AuthorizationHandler<ProjectManagerRequirem
         var routeData = httpContext.GetRouteData();
         if (!routeData.Values.TryGetValue("project", out var projectName)) return;
 
-        var p = await _projectService.ProjectBySystemName((string)projectName!);
+        var p = await projectService.ProjectBySystemName((string)projectName!);
 
-        if (await _projectMaintainersService.IsProjectMaintainer(username, p)) context.Succeed(requirement);
+        if (await projectMaintainersService.IsProjectMaintainer(username, p)) context.Succeed(requirement);
     }
 }

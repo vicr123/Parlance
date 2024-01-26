@@ -11,16 +11,10 @@ public class DirtyWorkingTreeException : Exception
 {
 }
 
-public class VersionControlCommit
+public class VersionControlCommit(Commit commit)
 {
-    public VersionControlCommit(Commit commit)
-    {
-        CommitIdentifier = commit.Sha;
-        CommitMessage = commit.Message;
-    }
-
-    public string CommitIdentifier { get; }
-    public string CommitMessage { get; }
+    public string CommitIdentifier { get; } = commit.Sha;
+    public string CommitMessage { get; } = commit.Message;
 }
 
 public class VersionControlStatus

@@ -3,23 +3,16 @@ using Parlance.Project.TranslationFiles;
 
 namespace Parlance.Project.SourceStrings;
 
-public class ParlanceSourceStringsService : IParlanceSourceStringsService
+public class ParlanceSourceStringsService(ParlanceContext parlanceContext) : IParlanceSourceStringsService
 {
-    private readonly ParlanceContext _parlanceContext;
-
-    public ParlanceSourceStringsService(ParlanceContext parlanceContext)
-    {
-        _parlanceContext = parlanceContext;
-    }
-
     public async Task RegisterSourceStringChange(IParlanceSubprojectLanguage translationFile,
         IParlanceTranslationFileEntry entry)
     {
-        _parlanceContext.SourceStrings.RemoveRange(_parlanceContext.SourceStrings.Where(x =>
+        parlanceContext.SourceStrings.RemoveRange(parlanceContext.SourceStrings.Where(x =>
             x.Project == translationFile.Subproject.Project.Name &&
             x.Subproject == translationFile.Subproject.SystemName &&
             x.Language == translationFile.Locale.ToDatabaseRepresentation() && x.Key == entry.Key));
-        _parlanceContext.SourceStrings.Add(new Database.Models.SourceStrings
+        parlanceContext.SourceStrings.Add(new Database.Models.SourceStrings
         {
             Project = translationFile.Subproject.Project.Name,
             Subproject = translationFile.Subproject.SystemName,
@@ -28,13 +21,13 @@ public class ParlanceSourceStringsService : IParlanceSourceStringsService
             SourceTranslation = entry.Source
         });
 
-        await _parlanceContext.SaveChangesAsync();
+        await parlanceContext.SaveChangesAsync();
     }
 
     public Task<string?> GetSourceStringChange(IParlanceSubprojectLanguage translationFile,
         IParlanceTranslationFileEntry entry)
     {
-        var oldSourceString = _parlanceContext.SourceStrings.SingleOrDefault(x =>
+        var oldSourceString = parlanceContext.SourceStrings.SingleOrDefault(x =>
             x.Project == translationFile.Subproject.Project.Name &&
             x.Subproject == translationFile.Subproject.SystemName &&
             x.Language == translationFile.Locale.ToDatabaseRepresentation() && x.Key == entry.Key);

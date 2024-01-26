@@ -8,18 +8,14 @@ using Tmds.DBus;
 
 namespace Parlance.Vicr123Accounts.Authentication;
 
-public class Vicr123AuthenticationHandler : AuthenticationHandler<Vicr123AuthenticationOptions>
+public class Vicr123AuthenticationHandler(
+    IOptionsMonitor<Vicr123AuthenticationOptions> options,
+    ILoggerFactory logger,
+    UrlEncoder encoder,
+    IVicr123AccountsService accountsService)
+    : AuthenticationHandler<Vicr123AuthenticationOptions>(options, logger, encoder)
 {
-    private readonly IVicr123AccountsService _accountsService;
     public const string AuthenticationScheme = "Vicr123Accounts";
-
-    public Vicr123AuthenticationHandler(IOptionsMonitor<Vicr123AuthenticationOptions> options,
-                                        ILoggerFactory logger,
-                                        UrlEncoder encoder,
-                                        IVicr123AccountsService accountsService) : base(options, logger, encoder)
-    {
-        _accountsService = accountsService;
-    }
 
     protected override async Task<AuthenticateResult> HandleAuthenticateAsync()
     {
@@ -30,7 +26,7 @@ public class Vicr123AuthenticationHandler : AuthenticationHandler<Vicr123Authent
         
         try
         {
-            var user = await _accountsService.UserByToken(token);
+            var user = await accountsService.UserByToken(token);
 
             var claims = new[]
             {

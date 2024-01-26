@@ -6,29 +6,21 @@ using Parlance.Vicr123Accounts.Services.AttributionConsent;
 
 namespace Parlance.VersionControl.Services.PendingEdits;
 
-public class PendingEditsService : IPendingEditsService
+public class PendingEditsService(
+    ParlanceContext parlanceContext,
+    IVicr123AccountsService accountsService,
+    IAttributionConsentService attributionConsentService)
+    : IPendingEditsService
 {
-    private readonly IVicr123AccountsService _accountsService;
-    private readonly IAttributionConsentService _attributionConsentService;
-    private readonly ParlanceContext _parlanceContext;
-
-    public PendingEditsService(ParlanceContext parlanceContext, IVicr123AccountsService accountsService,
-        IAttributionConsentService attributionConsentService)
-    {
-        _parlanceContext = parlanceContext;
-        _accountsService = accountsService;
-        _attributionConsentService = attributionConsentService;
-    }
-
     public async Task RecordPendingEdit(IParlanceSubprojectLanguage parlanceSubprojectLanguage, User user)
     {
-        if (_parlanceContext.EditsPending.Any(x =>
+        if (parlanceContext.EditsPending.Any(x =>
                 x.Project == parlanceSubprojectLanguage.Subproject.Project.Name &&
                 x.Subproject == parlanceSubprojectLanguage.Subproject.Name &&
                 x.Language == parlanceSubprojectLanguage.Locale.ToDatabaseRepresentation() &&
                 x.UserId == user.Id)) return;
 
-        _parlanceContext.EditsPending.Add(new()
+        parlanceContext.EditsPending.Add(new()
         {
             Project = parlanceSubprojectLanguage.Subproject.Project.Name,
             Subproject = parlanceSubprojectLanguage.Subproject.Name,
@@ -36,20 +28,20 @@ public class PendingEditsService : IPendingEditsService
             UserId = user.Id
         });
 
-        await _parlanceContext.SaveChangesAsync();
+        await parlanceContext.SaveChangesAsync();
     }
 
     public async Task<IEnumerable<Editor>> EditorsPendingEdits(Database.Models.Project project)
     {
-        var users = await Task.WhenAll(_parlanceContext.EditsPending.Where(x => x.Project == project.Name)
+        var users = await Task.WhenAll(parlanceContext.EditsPending.Where(x => x.Project == project.Name)
             .AsEnumerable()
             .DistinctBy(x => x.UserId).Select(async x =>
             {
-                var user = await _accountsService.UserById(x.UserId);
-                if (!_attributionConsentService.HaveConsent(user)) return null;
+                var user = await accountsService.UserById(x.UserId);
+                if (!attributionConsentService.HaveConsent(user)) return null;
                 return new Editor
                 {
-                    Name = _attributionConsentService.PreferredUserName(user),
+                    Name = attributionConsentService.PreferredUserName(user),
                     Email = user.Email
                 };
             }));
@@ -58,14 +50,14 @@ public class PendingEditsService : IPendingEditsService
 
     public IEnumerable<Locale> LocalesPendingEdits(Database.Models.Project project)
     {
-        return _parlanceContext.EditsPending.Where(x => x.Project == project.Name).AsEnumerable()
+        return parlanceContext.EditsPending.Where(x => x.Project == project.Name).AsEnumerable()
             .DistinctBy(x => x.Language).Select(x => Locale.FromDatabaseRepresentation(x.Language))
             .Where(x => x is not null).Cast<Locale>();
     }
 
     public async Task ClearPendingEdits(Database.Models.Project project)
     {
-        _parlanceContext.EditsPending.RemoveRange(_parlanceContext.EditsPending.Where(x => x.Project == project.Name));
-        await _parlanceContext.SaveChangesAsync();
+        parlanceContext.EditsPending.RemoveRange(parlanceContext.EditsPending.Where(x => x.Project == project.Name));
+        await parlanceContext.SaveChangesAsync();
     }
 }

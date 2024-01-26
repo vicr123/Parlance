@@ -7,15 +7,13 @@ using Parlance.Project.Index;
 namespace Parlance.Project.TranslationFiles.QtLinguist;
 
 [TranslationFileType("qt", ExpectedTranslationFileNameFormat.Underscored)]
-public class QtLinguistTranslationFile : ParlanceTranslationFile, IParlanceDualTranslationFile
+public class QtLinguistTranslationFile(
+    IParlanceSubprojectLanguage? subprojectLanguage,
+    IParlanceIndexingService? indexingService)
+    : ParlanceTranslationFile(subprojectLanguage, indexingService), IParlanceDualTranslationFile
 {
     private string _file = null!;
     private Locale _locale = null!;
-
-    public QtLinguistTranslationFile(IParlanceSubprojectLanguage? subprojectLanguage,
-        IParlanceIndexingService? indexingService) : base(subprojectLanguage, indexingService)
-    {
-    }
 
     public override string Hash { get; internal set; } = null!;
 

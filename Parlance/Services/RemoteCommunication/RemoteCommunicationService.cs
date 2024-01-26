@@ -4,14 +4,9 @@ using Parlance.VersionControl.Services;
 
 namespace Parlance.Services.RemoteCommunication;
 
-public class RemoteCommunicationService : IRemoteCommunicationService
+public class RemoteCommunicationService(ParlanceContext dbContext) : IRemoteCommunicationService
 {
-    private readonly ParlanceContext _dbContext;
-
-    public RemoteCommunicationService(ParlanceContext dbContext)
-    {
-        _dbContext = dbContext;
-    }
+    private readonly ParlanceContext _dbContext = dbContext;
 
     public Credentials CredentialsHandler(string url, string usernameFromUrl, SupportedCredentialTypes types)
     {

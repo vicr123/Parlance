@@ -11,22 +11,14 @@ namespace Parlance.Controllers;
 [ApiController]
 [Route("api/[controller]")]
 [EnableRateLimiting("limiter")]
-public class PermissionsController : Controller
+public class PermissionsController(IPermissionsService permissionsService) : Controller
 {
-    private readonly IPermissionsService _permissionsService;
-
-    public PermissionsController(IPermissionsService permissionsService)
-    {
-        _permissionsService = permissionsService;
-    }
-
-
     [Authorize(Policy = "Superuser")]
     [HttpGet]
     [Route("language/{language}")]
     public async Task<IActionResult> GetLocalePermissions(string language)
     {
-        return Json(await _permissionsService.LocalePermissions(language.ToLocale()).ToListAsync());
+        return Json(await permissionsService.LocalePermissions(language.ToLocale()).ToListAsync());
     }
 
     [Authorize(Policy = "Superuser")]
@@ -36,7 +28,7 @@ public class PermissionsController : Controller
     {
         try
         {
-            await _permissionsService.GrantLocalePermission(username, language.ToLocale());
+            await permissionsService.GrantLocalePermission(username, language.ToLocale());
             return NoContent();
         }
         catch (DBusException ex)
@@ -58,7 +50,7 @@ public class PermissionsController : Controller
     {
         try
         {
-            await _permissionsService.RevokeLocalePermission(username, language.ToLocale());
+            await permissionsService.RevokeLocalePermission(username, language.ToLocale());
             return NoContent();
         }
         catch (DBusException ex) when (ex.ErrorName == "com.vicr123.accounts.Error.NoAccount")

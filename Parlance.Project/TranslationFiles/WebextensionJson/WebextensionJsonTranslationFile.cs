@@ -9,17 +9,15 @@ using Parlance.Project.Index;
 namespace Parlance.Project.TranslationFiles.WebextensionJson;
 
 [TranslationFileType("webext-json", ExpectedTranslationFileNameFormat.Underscored)]
-public class WebextensionJsonTranslationFile : ParlanceTranslationFile, IParlanceMonoTranslationFile
+public class WebextensionJsonTranslationFile(
+    IParlanceSubprojectLanguage? subprojectLanguage,
+    IParlanceIndexingService? indexingService)
+    : ParlanceTranslationFile(subprojectLanguage, indexingService), IParlanceMonoTranslationFile
 {
     private string _baseFile = null!;
     private Locale _baseLocale = null!;
     private string _file = null!;
     private Locale _locale = null!;
-
-    public WebextensionJsonTranslationFile(IParlanceSubprojectLanguage? subprojectLanguage,
-        IParlanceIndexingService? indexingService) : base(subprojectLanguage, indexingService)
-    {
-    }
 
     public override string Hash { get; internal set; } = null!;
     public override IList<IParlanceTranslationFileEntry> Entries { get; internal set; } = null!;

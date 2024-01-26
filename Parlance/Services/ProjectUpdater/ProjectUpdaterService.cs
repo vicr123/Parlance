@@ -7,17 +7,9 @@ using Parlance.VersionControl.Services.VersionControl;
 
 namespace Parlance.Services.ProjectUpdater;
 
-public class ProjectUpdaterService : BackgroundService
+public class ProjectUpdaterService(IProjectUpdateQueue queue, IServiceScopeFactory scopeFactory)
+    : BackgroundService
 {
-    private readonly IProjectUpdateQueue _queue;
-    private readonly IServiceScopeFactory _scopeFactory;
-
-    public ProjectUpdaterService(IProjectUpdateQueue queue, IServiceScopeFactory scopeFactory)
-    {
-        _queue = queue;
-        _scopeFactory = scopeFactory;
-    }
-
     protected override async Task ExecuteAsync(CancellationToken cancellationToken)
     {
         await UpdateProjects(cancellationToken);
@@ -27,8 +19,8 @@ public class ProjectUpdaterService : BackgroundService
     {
         while (!cancellationToken.IsCancellationRequested)
         {
-            var project = await _queue.Dequeue(cancellationToken);
-            using var scope = _scopeFactory.CreateScope();
+            var project = await queue.Dequeue(cancellationToken);
+            using var scope = scopeFactory.CreateScope();
             await using var dbContext = scope.ServiceProvider.GetRequiredService<ParlanceContext>();
             var versionControlService = scope.ServiceProvider.GetRequiredService<IVersionControlService>();
             var indexingService = scope.ServiceProvider.GetRequiredService<IParlanceIndexingService>();

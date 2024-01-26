@@ -5,50 +5,42 @@ using Parlance.Vicr123Accounts.Services;
 
 namespace Parlance.Services.ProjectMaintainers;
 
-public class ProjectMaintainersService : IProjectMaintainersService
+public class ProjectMaintainersService(
+    ParlanceContext dbContext,
+    IVicr123AccountsService accountsService,
+    ISuperuserService superuserService)
+    : IProjectMaintainersService
 {
-    private readonly IVicr123AccountsService _accountsService;
-    private readonly ParlanceContext _dbContext;
-    private readonly ISuperuserService _superuserService;
-
-    public ProjectMaintainersService(ParlanceContext dbContext, IVicr123AccountsService accountsService,
-        ISuperuserService superuserService)
-    {
-        _dbContext = dbContext;
-        _accountsService = accountsService;
-        _superuserService = superuserService;
-    }
-
     public async Task AddProjectMaintainer(string user, Database.Models.Project? project)
     {
-        _dbContext.ProjectMaintainers.Add(new ProjectMaintainer
+        dbContext.ProjectMaintainers.Add(new ProjectMaintainer
         {
             Project = project,
-            UserId = (await _accountsService.UserByUsername(user)).Id
+            UserId = (await accountsService.UserByUsername(user)).Id
         });
 
-        await _dbContext.SaveChangesAsync();
+        await dbContext.SaveChangesAsync();
     }
 
     public async Task RemoveProjectMaintainer(string user, Database.Models.Project? project)
     {
-        var userId = (await _accountsService.UserByUsername(user)).Id;
+        var userId = (await accountsService.UserByUsername(user)).Id;
 
-        var maintainer = _dbContext.ProjectMaintainers.Single(maintainer =>
+        var maintainer = dbContext.ProjectMaintainers.Single(maintainer =>
             maintainer.Project == project && maintainer.UserId == userId);
 
-        _dbContext.ProjectMaintainers.Remove(maintainer);
-        await _dbContext.SaveChangesAsync();
+        dbContext.ProjectMaintainers.Remove(maintainer);
+        await dbContext.SaveChangesAsync();
     }
 
     public async IAsyncEnumerable<string> ProjectMaintainers(Database.Models.Project? project)
     {
-        var maintainers = _dbContext.ProjectMaintainers
+        var maintainers = dbContext.ProjectMaintainers
             .Where(maintainer => maintainer.Project == project);
 
         foreach (var maintainer in maintainers)
         {
-            var user = await _accountsService.UserById(maintainer.UserId);
+            var user = await accountsService.UserById(maintainer.UserId);
             yield return user.Username;
         }
     }
@@ -57,10 +49,10 @@ public class ProjectMaintainersService : IProjectMaintainersService
     {
         if (user is null) return false;
 
-        if (await _superuserService.IsSuperuser(user)) return true;
+        if (await superuserService.IsSuperuser(user)) return true;
 
-        var userId = (await _accountsService.UserByUsername(user)).Id;
-        return _dbContext.ProjectMaintainers.Any(maintainer =>
+        var userId = (await accountsService.UserByUsername(user)).Id;
+        return dbContext.ProjectMaintainers.Any(maintainer =>
             maintainer.UserId == userId && maintainer.Project == project);
     }
 }

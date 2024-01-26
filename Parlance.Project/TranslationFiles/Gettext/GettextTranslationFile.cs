@@ -8,17 +8,15 @@ using Parlance.Project.TranslationFiles.QtLinguist;
 namespace Parlance.Project.TranslationFiles.Gettext;
 
 [TranslationFileType("gettext", ExpectedTranslationFileNameFormat.Underscored)]
-public class GettextTranslationFile : ParlanceTranslationFile, IParlanceMonoTranslationFile
+public class GettextTranslationFile(
+    IParlanceSubprojectLanguage? subprojectLanguage,
+    IParlanceIndexingService? indexingService)
+    : ParlanceTranslationFile(subprojectLanguage, indexingService), IParlanceMonoTranslationFile
 {
     private string _file = null!;
     private Locale _locale = null!;
     private string _baseFile = null!;
     private Locale _baseLocale = null!;
-
-    public GettextTranslationFile(IParlanceSubprojectLanguage? subprojectLanguage,
-        IParlanceIndexingService? indexingService) : base(subprojectLanguage, indexingService)
-    {
-    }
 
     public override string Hash { get; internal set; } = null!;
 

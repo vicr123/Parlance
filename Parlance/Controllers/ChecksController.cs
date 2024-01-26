@@ -7,19 +7,12 @@ namespace Parlance.Controllers;
 [ApiController]
 [Route("api/[controller]")]
 [EnableRateLimiting("limiter")]
-public class ChecksController : Controller
+public class ChecksController(IParlanceChecks checks) : Controller
 {
-    private readonly IParlanceChecks _checks;
-
-    public ChecksController(IParlanceChecks checks)
-    {
-        _checks = checks;
-    }
-
     [HttpPost]
     public Task<IActionResult> PerformChecks([FromBody] PerformChecksRequestData data)
     {
-        return Task.FromResult<IActionResult>(Json(_checks.CheckTranslation(data.Source, data.Translation,
+        return Task.FromResult<IActionResult>(Json(checks.CheckTranslation(data.Source, data.Translation,
             data.CheckSuite)));
     }
 

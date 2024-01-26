@@ -14,18 +14,11 @@ namespace Parlance.Controllers;
 [ApiController]
 [Route("git/{project}")]
 [EnableRateLimiting("limiter")]
-public class ProjectVcsGitSmartHttpController : Controller
+public class ProjectVcsGitSmartHttpController(
+    IProjectService projectService,
+    IVersionControlService versionControlService)
+    : Controller
 {
-    private readonly IProjectService _projectService;
-    private readonly IVersionControlService _versionControlService;
-
-    public ProjectVcsGitSmartHttpController(IProjectService projectService,
-        IVersionControlService versionControlService)
-    {
-        _projectService = projectService;
-        _versionControlService = versionControlService;
-    }
-
     private static async Task WritePktFlush(Stream stream)
     {
         await stream.WriteAsync(Encoding.UTF8.GetBytes("0000"));
@@ -128,14 +121,14 @@ public class ProjectVcsGitSmartHttpController : Controller
         //Only allow git-upload-pack
         if (service is not "git-upload-pack") return Forbid();
 
-        if (_versionControlService is not GitVersionControlService gitService) return NotFound();
+        if (versionControlService is not GitVersionControlService gitService) return NotFound();
 
         if (!Request.Headers.TryGetValue("Git-Protocol", out var proto)) return BadRequest();
         if (!proto.Contains("version=2")) return BadRequest();
 
         try
         {
-            var p = await _projectService.ProjectBySystemName(project);
+            var p = await projectService.ProjectBySystemName(project);
             var proj = p.GetParlanceProject();
 
             var stream = new MemoryStream();
@@ -165,7 +158,7 @@ public class ProjectVcsGitSmartHttpController : Controller
     [Route("git-upload-pack")]
     public async Task<IActionResult> GitUploadPack(string project)
     {
-        if (_versionControlService is not GitVersionControlService gitService) return NotFound();
+        if (versionControlService is not GitVersionControlService gitService) return NotFound();
 
         if (Request.Headers["Content-Encoding"].Contains("gzip"))
         {
@@ -175,7 +168,7 @@ public class ProjectVcsGitSmartHttpController : Controller
 
         try
         {
-            var p = await _projectService.ProjectBySystemName(project);
+            var p = await projectService.ProjectBySystemName(project);
             var proj = p.GetParlanceProject();
 
             using var repo = gitService.ProjectRepository(proj);

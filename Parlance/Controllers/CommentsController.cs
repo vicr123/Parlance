@@ -18,38 +18,29 @@ namespace Parlance.Controllers;
 [ApiController]
 [Route("api/[controller]")]
 [EnableRateLimiting("limiter")]
-public class CommentsController : Controller
+public class CommentsController(
+    ParlanceContext databaseContext,
+    IProjectService projectService,
+    IParlanceIndexingService indexingService,
+    ICommentsService commentsService)
+    : Controller
 {
-    private readonly ICommentsService _commentsService;
-    private readonly ParlanceContext _databaseContext;
-    private readonly IParlanceIndexingService _indexingService;
-    private readonly IProjectService _projectService;
-
-    public CommentsController(ParlanceContext databaseContext, IProjectService projectService,
-        IParlanceIndexingService indexingService, ICommentsService commentsService)
-    {
-        _databaseContext = databaseContext;
-        _projectService = projectService;
-        _indexingService = indexingService;
-        _commentsService = commentsService;
-    }
-
     [HttpGet]
     [Route("{project}/{subproject}/{language}")]
     public async Task<IActionResult> GetCommentThreads(string project, string subproject, string language)
     {
-        var p = await _projectService.ProjectBySystemName(project);
+        var p = await projectService.ProjectBySystemName(project);
         var subprojectLanguage = p.GetParlanceProject().SubprojectBySystemName(subproject)
             .Language(language.ToLocale());
-        await using var translationFile = await subprojectLanguage.CreateTranslationFile(_indexingService);
+        await using var translationFile = await subprojectLanguage.CreateTranslationFile(indexingService);
         if (translationFile is null)
         {
             return NotFound();
         }
 
-        var threads = _commentsService.Threads(project, subproject, language.ToLocale(), openOnly: true);
+        var threads = commentsService.Threads(project, subproject, language.ToLocale(), openOnly: true);
 
-        return Json(await _commentsService.GetJsonThreads(threads));
+        return Json(await commentsService.GetJsonThreads(threads));
     }
 
     [HttpGet]
@@ -57,10 +48,10 @@ public class CommentsController : Controller
     public async Task<IActionResult> GetCommentThreads(string project, string subproject, string language,
         string key)
     {
-        var p = await _projectService.ProjectBySystemName(project);
+        var p = await projectService.ProjectBySystemName(project);
         var subprojectLanguage = p.GetParlanceProject().SubprojectBySystemName(subproject)
             .Language(language.ToLocale());
-        await using var translationFile = await subprojectLanguage.CreateTranslationFile(_indexingService);
+        await using var translationFile = await subprojectLanguage.CreateTranslationFile(indexingService);
         if (translationFile is null)
         {
             return NotFound();
@@ -71,9 +62,9 @@ public class CommentsController : Controller
             return NotFound();
         }
 
-        var threads = _commentsService.Threads(project, subproject, language.ToLocale(), key);
+        var threads = commentsService.Threads(project, subproject, language.ToLocale(), key);
 
-        return Json(await _commentsService.GetJsonThreads(threads));
+        return Json(await commentsService.GetJsonThreads(threads));
     }
 
     [HttpPost]
@@ -83,10 +74,10 @@ public class CommentsController : Controller
         string key,
         [FromBody] CreateNewCommentThreadRequestData data)
     {
-        var p = await _projectService.ProjectBySystemName(project);
+        var p = await projectService.ProjectBySystemName(project);
         var subprojectLanguage = p.GetParlanceProject().SubprojectBySystemName(subproject)
             .Language(language.ToLocale());
-        await using var translationFile = await subprojectLanguage.CreateTranslationFile(_indexingService);
+        await using var translationFile = await subprojectLanguage.CreateTranslationFile(indexingService);
         if (translationFile is null)
         {
             return NotFound();
@@ -114,7 +105,7 @@ public class CommentsController : Controller
             IsFlagged = false,
             IsClosed = false
         };
-        _databaseContext.CommentThreads.Add(thread);
+        databaseContext.CommentThreads.Add(thread);
 
         var headComment = new Comment
         {
@@ -124,16 +115,16 @@ public class CommentsController : Controller
             UserId = userId
         };
 
-        _databaseContext.Comments.Add(headComment);
-        _databaseContext.CommentThreadSubscriptions.Add(new()
+        databaseContext.Comments.Add(headComment);
+        databaseContext.CommentThreadSubscriptions.Add(new()
         {
             Thread = thread,
             UserId = userId
         });
 
-        await _databaseContext.SaveChangesAsync();
+        await databaseContext.SaveChangesAsync();
 
-        return Json(await _commentsService.GetJsonThread(thread, headComment));
+        return Json(await commentsService.GetJsonThread(thread, headComment));
     }
 
     [HttpGet]
@@ -163,15 +154,15 @@ public class CommentsController : Controller
                 return this.ClientError(ParlanceClientError.IncorrectParameters);
             }
 
-            _databaseContext.Comments.Add(new()
+            databaseContext.Comments.Add(new()
             {
-                Thread = _databaseContext.CommentThreads.Single(x => x.Id == threadId),
+                Thread = databaseContext.CommentThreads.Single(x => x.Id == threadId),
                 Text = data.Body,
                 Date = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(),
                 UserId = userId
             });
 
-            await _databaseContext.SaveChangesAsync();
+            await databaseContext.SaveChangesAsync();
 
             return await GetCommentsInThread(threadId);
         }
@@ -190,16 +181,16 @@ public class CommentsController : Controller
         {
             var userId = ulong.Parse(HttpContext.User.Claims.First(claim => claim.Type == Claims.UserId).Value);
 
-            var thread = _databaseContext.CommentThreads.Single(x => x.Id == threadId);
+            var thread = databaseContext.CommentThreads.Single(x => x.Id == threadId);
             if (thread.IsClosed)
             {
                 return StatusCode(StatusCodes.Status405MethodNotAllowed);
             }
 
             thread.IsClosed = true;
-            _databaseContext.Update(thread);
+            databaseContext.Update(thread);
 
-            _databaseContext.Comments.Add(new()
+            databaseContext.Comments.Add(new()
             {
                 Thread = thread,
                 Text = "Closed Thread",
@@ -208,14 +199,14 @@ public class CommentsController : Controller
                 Event = "closed"
             });
 
-            await _databaseContext.SaveChangesAsync();
+            await databaseContext.SaveChangesAsync();
 
-            var headComment = _databaseContext.Comments.Where(c => c.ThreadId == thread.Id && c.Event == null).OrderBy(c => c.Date)
+            var headComment = databaseContext.Comments.Where(c => c.ThreadId == thread.Id && c.Event == null).OrderBy(c => c.Date)
                 .Last();
 
             return Json(new
             {
-                Thread = await _commentsService.GetJsonThread(thread, headComment),
+                Thread = await commentsService.GetJsonThread(thread, headComment),
                 Comments = await CommentsInThread(threadId)
             });
         }
@@ -234,16 +225,16 @@ public class CommentsController : Controller
         {
             var userId = ulong.Parse(HttpContext.User.Claims.First(claim => claim.Type == Claims.UserId).Value);
 
-            var thread = _databaseContext.CommentThreads.Single(x => x.Id == threadId);
+            var thread = databaseContext.CommentThreads.Single(x => x.Id == threadId);
             if (!thread.IsClosed)
             {
                 return StatusCode(StatusCodes.Status405MethodNotAllowed);
             }
 
             thread.IsClosed = false;
-            _databaseContext.Update(thread);
+            databaseContext.Update(thread);
 
-            _databaseContext.Comments.Add(new()
+            databaseContext.Comments.Add(new()
             {
                 Thread = thread,
                 Text = "Reopened Thread",
@@ -252,14 +243,14 @@ public class CommentsController : Controller
                 Event = "reopened"
             });
 
-            await _databaseContext.SaveChangesAsync();
+            await databaseContext.SaveChangesAsync();
 
-            var headComment = _databaseContext.Comments.Where(c => c.ThreadId == thread.Id && c.Event == null).OrderBy(c => c.Date)
+            var headComment = databaseContext.Comments.Where(c => c.ThreadId == thread.Id && c.Event == null).OrderBy(c => c.Date)
                 .Last();
 
             return Json(new
             {
-                Thread = await _commentsService.GetJsonThread(thread, headComment),
+                Thread = await commentsService.GetJsonThread(thread, headComment),
                 Comments = await CommentsInThread(threadId)
             });
         }
@@ -272,7 +263,7 @@ public class CommentsController : Controller
     private async Task<IEnumerable<object>?> CommentsInThread(Guid threadId)
     {
         var comments = new List<object>();
-        var dbComments = _databaseContext.Comments.Where(x => x.ThreadId == threadId)
+        var dbComments = databaseContext.Comments.Where(x => x.ThreadId == threadId)
             .OrderBy(x => x.Date);
         if (!dbComments.Any())
         {
@@ -283,7 +274,7 @@ public class CommentsController : Controller
         {
             comments.Add(new
             {
-                comment.Text, comment.Date, Author = await _commentsService.GetAuthor(comment.UserId), comment.Event
+                comment.Text, comment.Date, Author = await commentsService.GetAuthor(comment.UserId), comment.Event
             });
         }
 

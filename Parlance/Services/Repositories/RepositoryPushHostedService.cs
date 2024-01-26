@@ -2,17 +2,13 @@ using Parlance.Services.Projects;
 
 namespace Parlance.Services.Repositories;
 
-public sealed class RepositoryPushHostedService : IHostedService, IDisposable
+public sealed class RepositoryPushHostedService(
+    ILogger<RepositoryPushHostedService> logger,
+    IProjectService projectService)
+    : IHostedService, IDisposable
 {
-    private readonly ILogger<RepositoryPushHostedService> _logger;
-    private readonly IProjectService _projectService;
+    private readonly ILogger<RepositoryPushHostedService> _logger = logger;
     private Timer? _timer = null;
-
-    public RepositoryPushHostedService(ILogger<RepositoryPushHostedService> logger, IProjectService projectService)
-    {
-        _logger = logger;
-        _projectService = projectService;
-    }
 
     public Task StartAsync(CancellationToken stoppingToken)
     {
@@ -22,7 +18,7 @@ public sealed class RepositoryPushHostedService : IHostedService, IDisposable
 
     private async Task PushRepositories()
     {
-        var projects = await _projectService.Projects();
+        var projects = await projectService.Projects();
         foreach (var project in projects)
         {
             //project.VcsDirectory

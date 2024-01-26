@@ -4,16 +4,11 @@ namespace Parlance.Project.TranslationFiles;
 
 [MeansImplicitUse]
 [AttributeUsage(AttributeTargets.Class, AllowMultiple = true)]
-public class TranslationFileTypeAttribute : Attribute
+public class TranslationFileTypeAttribute(string handlerFor, ExpectedTranslationFileNameFormat fileNameFormat)
+    : Attribute
 {
-    public string HandlerFor { get; }
-    public ExpectedTranslationFileNameFormat FileNameFormat { get; }
-
-    public TranslationFileTypeAttribute(string handlerFor, ExpectedTranslationFileNameFormat fileNameFormat)
-    {
-        HandlerFor = handlerFor;
-        FileNameFormat = fileNameFormat;
-    }
+    public string HandlerFor { get; } = handlerFor;
+    public ExpectedTranslationFileNameFormat FileNameFormat { get; } = fileNameFormat;
 }
 
 public enum ExpectedTranslationFileNameFormat

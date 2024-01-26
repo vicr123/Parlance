@@ -5,18 +5,12 @@ using Parlance.Project.TranslationFiles;
 
 namespace Parlance.Project;
 
-public class ParlanceSubprojectLanguage : IParlanceSubprojectLanguage
+public class ParlanceSubprojectLanguage(IParlanceSubproject subproject, Locale locale) : IParlanceSubprojectLanguage
 {
-    public ParlanceSubprojectLanguage(IParlanceSubproject subproject, Locale locale)
-    {
-        Subproject = subproject;
-        Locale = locale;
-    }
-
     public static List<Type> TranslationFileTypes { get; } = FindTranslationTypes();
 
-    public IParlanceSubproject Subproject { get; }
-    public Locale Locale { get; }
+    public IParlanceSubproject Subproject { get; } = subproject;
+    public Locale Locale { get; } = locale;
 
     bool IParlanceSubprojectLanguage.Exists => File.Exists(ResolvedTranslationFilePath());
 
