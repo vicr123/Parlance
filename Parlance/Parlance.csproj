@@ -24,4 +24,7 @@
     <ItemGroup>
         <EmbeddedResource Include="..\Parlance.ClientApp\src\checks.js" />
     </ItemGroup>
+    <ItemGroup>
+      <_ContentIncludedByDefault Remove="ClientApp\public\resources\translations\index.json" />
+    </ItemGroup>
 </Project>
