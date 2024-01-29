@@ -1,5 +1,6 @@
 using System.Net;
 using System.Threading.RateLimiting;
+using MessagePipe;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
@@ -11,6 +12,7 @@ using Parlance.CldrData;
 using Parlance.Database;
 using Parlance.Glossary;
 using Parlance.Jobs;
+using Parlance.Notifications;
 using Parlance.Project;
 using Parlance.RateLimiting;
 using Parlance.Services.Comments;
@@ -36,6 +38,8 @@ builder.Services.AddVicr123Accounts(builder.Configuration);
 builder.Services.AddVersionControl(builder.Configuration);
 builder.Services.AddParlanceProjects(builder.Configuration);
 builder.Services.AddGlossary(builder.Configuration);
+builder.Services.AddNotifications(builder.Configuration);
+builder.Services.AddMessagePipe();
 await builder.Services.AddCldrAsync(builder.Configuration);
 
 builder.Services.AddScoped<IProjectService, ProjectService>();

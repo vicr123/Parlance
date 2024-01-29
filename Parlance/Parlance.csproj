@@ -16,6 +16,7 @@
     <ItemGroup>
         <ProjectReference Include="..\Parlance.Database\Parlance.Database.csproj" />
         <ProjectReference Include="..\Parlance.Glossary\Parlance.Glossary.csproj" />
+        <ProjectReference Include="..\Parlance.Notifications\Parlance.Notifications.csproj" />
         <ProjectReference Include="..\Parlance.Project\Parlance.Project.csproj" />
         <ProjectReference Include="..\Parlance.VersionControl\Parlance.VersionControl.csproj" />
         <ProjectReference Include="..\Parlance.Vicr123Accounts\Parlance.Vicr123Accounts.csproj" />
@@ -26,5 +27,8 @@
     </ItemGroup>
     <ItemGroup>
       <_ContentIncludedByDefault Remove="ClientApp\public\resources\translations\index.json" />
+    </ItemGroup>
+    <ItemGroup>
+      <Folder Include="Services\Notifications\" />
     </ItemGroup>
 </Project>
