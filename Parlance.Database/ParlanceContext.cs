@@ -23,6 +23,7 @@ public class ParlanceContext(DbContextOptions options) : DbContext(options)
     public DbSet<GlossaryItem> GlossaryItems { get; set; } = null!;
     public DbSet<NotificationSubscription> NotificationSubscriptions { get; set; } = null!;
     public DbSet<NotificationUnsubscription> NotificationUnsubscriptions { get; set; } = null!;
+    public DbSet<NotificationEventAutoSubscription> NotificationEventAutoSubscriptions { get; set; } = null!;
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -45,6 +46,7 @@ public class ParlanceContext(DbContextOptions options) : DbContext(options)
         modelBuilder.Entity<GlossaryItem>().ToTable("GlossaryItems");
         modelBuilder.Entity<NotificationSubscription>().ToTable("NotificationSubscriptions");
         modelBuilder.Entity<NotificationUnsubscription>().ToTable("NotificationUnsubscriptions");
+        modelBuilder.Entity<NotificationEventAutoSubscription>().ToTable("NotificationEventAutoSubscriptions");
     }
 }
 

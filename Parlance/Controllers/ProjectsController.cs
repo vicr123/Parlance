@@ -20,7 +20,6 @@ using Parlance.Services.Comments;
 using Parlance.Services.Permissions;
 using Parlance.Services.ProjectMaintainers;
 using Parlance.Services.Projects;
-using Parlance.VersionControl.Services.PendingEdits;
 using Parlance.Vicr123Accounts.Authentication;
 using Parlance.Vicr123Accounts.Services;
 using Tmds.DBus;
@@ -35,7 +34,6 @@ public class ProjectsController(
     IPermissionsService permissionsService,
     IParlanceIndexingService indexingService,
     IParlanceSourceStringsService sourceStringsService,
-    IPendingEditsService pendingEditsService,
     IVicr123AccountsService accountsService,
     IProjectMaintainersService projectMaintainersService,
     IGlossaryService glossaryService,
@@ -574,6 +572,7 @@ public class ProjectsController(
             
             await translationSubmitEventPublisher.PublishAsync(new()
             {
+                Project = p,
                 SubprojectLanguage = subprojectLanguage,
                 Entry = entry,
                 User = user
@@ -624,6 +623,7 @@ public class ProjectsController(
                 //Record this edit in the database
                 await translationSubmitEventPublisher.PublishAsync(new()
                 {
+                    Project = p,
                     SubprojectLanguage = subprojectLanguage,
                     Entry = entry,
                     User = user

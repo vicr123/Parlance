@@ -9,7 +9,30 @@
     <ItemGroup>
       <ProjectReference Include="..\Parlance.Database\Parlance.Database.csproj" />
       <ProjectReference Include="..\Parlance.Project\Parlance.Project.csproj" />
+      <ProjectReference Include="..\Parlance.VersionControl\Parlance.VersionControl.csproj" />
       <ProjectReference Include="..\Parlance.Vicr123Accounts\Parlance.Vicr123Accounts.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <EmbeddedResource Update="Resources\EmailContents.resx">
+        <Generator>ResXFileCodeGenerator</Generator>
+        <LastGenOutput>Email.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+    </ItemGroup>
+
+    <ItemGroup>
+      <Compile Update="Resources\EmailContents.Designer.cs">
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+        <DependentUpon>EmailContents.resx</DependentUpon>
+      </Compile>
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="MessagePipe.Analyzer" Version="1.7.4">
+        <PrivateAssets>all</PrivateAssets>
+        <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      </PackageReference>
     </ItemGroup>
 
 </Project>

@@ -1,12 +1,17 @@
 using LibGit2Sharp;
+using MessagePipe;
+using Parlance.Database;
 using Parlance.Project;
+using Parlance.Project.Exceptions;
+using Parlance.VersionControl.Events;
 using Parlance.VersionControl.Services.PendingEdits;
 
 namespace Parlance.VersionControl.Services.VersionControl;
 
 public class GitVersionControlService(
     IRemoteCommunicationService remoteCommunicationService,
-    IPendingEditsService pendingEditsService)
+    IPendingEditsService pendingEditsService,
+    IAsyncPublisher<ProjectMetadataFileChangedEvent> projectMetadataFileChangedEventPublisher)
     : IVersionControlService
 {
     private readonly Identity _identity = new("Parlance", "parlance@vicr123.com");
@@ -31,9 +36,40 @@ public class GitVersionControlService(
         return Task.Run(() => PublishSavedChangesToSourceCore(project));
     }
 
-    public Task ReconcileRemoteWithLocal(Database.Models.Project project)
+    public async Task ReconcileRemoteWithLocal(Database.Models.Project project)
     {
-        return Task.Run(() => ReconcileRemoteWithLocalCore(project));
+        IParlanceProject? oldProject = null;
+        try
+        {
+            oldProject = project.GetParlanceProject();
+        }
+        catch (ParlanceJsonFileParseException)
+        {
+            // ignore
+        }
+        
+        var projectMetaChanged = false;
+        await Task.Run(() => ReconcileRemoteWithLocalCore(project, out projectMetaChanged));
+        
+        if (projectMetaChanged)
+        {
+            IParlanceProject? newProject = null;
+            try
+            {
+                newProject = project.GetParlanceProject();
+            }
+            catch (ParlanceJsonFileParseException)
+            {
+                // ignore
+            }
+
+            await projectMetadataFileChangedEventPublisher.PublishAsync(new()
+            {
+                OldProject = oldProject,
+                NewProject = newProject,
+                ProjectSystemName = project.SystemName
+            });
+        }
     }
 
     public VersionControlStatus VersionControlStatus(Database.Models.Project project)
@@ -93,9 +129,10 @@ public class GitVersionControlService(
         }
     }
 
-    private void ReconcileRemoteWithLocalCore(Database.Models.Project project)
+    private void ReconcileRemoteWithLocalCore(Database.Models.Project project, out bool projectMetaChanged)
     {
         using var repo = new Repository(project.VcsDirectory);
+        var oldProjectMetaRevision = repo.Commits.QueryBy(".parlance.json").FirstOrDefault()?.Commit.Sha;
         if (repo.RetrieveStatus().IsDirty) throw new DirtyWorkingTreeException();
 
         //Attempt to reconcile the remote by rebasing
@@ -110,6 +147,9 @@ public class GitVersionControlService(
         {
             ReconcileRemoteWithLocalCoreMerge(repo);
         }
+        
+        var projectMetaRevision = repo.Commits.QueryBy(".parlance.json").FirstOrDefault()?.Commit.Sha;
+        projectMetaChanged = projectMetaRevision != oldProjectMetaRevision;
     }
 
     private void ReconcileRemoteWithLocalCoreRebase(IRepository repo)
