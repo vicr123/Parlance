@@ -92,4 +92,7 @@ public interface IVicr123AccountsService
     public Task<string> ProvisionTokenViaFido(int id, AuthenticatorAssertionRawResponse response);
     public Task<IEnumerable<FidoKey>> GetFidoKeys(User user);
     public Task DeleteFidoKey(User user, int id);
+
+    public Task SendEmail(User user, (string Address, string Name) from, string subject, string textContent,
+        string htmlContent);
 }

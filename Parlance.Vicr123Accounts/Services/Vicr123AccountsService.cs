@@ -273,6 +273,25 @@ public class Vicr123AccountsService : IVicr123AccountsService
         await fidoProxy.DeleteKeyAsync(id);
     }
 
+    public async Task SendEmail(User user, (string Address, string Name) from, string subject, string textContent, string htmlContent)
+    {
+        var objectPath = await _manager.UserByIdAsync(user.Id);
+        var userProxy = _connection.CreateProxy<IUser>(_serviceName, objectPath);
+        if (!await userProxy.GetVerifiedAsync()) return; // Don't send email to users that are not verified
+
+        var mailMessageObjectPath = await userProxy.CreateMailMessageAsync();
+        var mailMessageProxy = _connection.CreateProxy<IMailMessage>(_serviceName, mailMessageObjectPath);
+
+        await Task.WhenAll(
+            mailMessageProxy.SetFromAsync(from),
+            mailMessageProxy.SetSubjectAsync(subject),
+            mailMessageProxy.SetHtmlContentAsync(htmlContent),
+            mailMessageProxy.SetTextContentAsync(textContent)
+        );
+        
+        await mailMessageProxy.SendAsync();
+    }
+
     private async Task InitAsync()
     {
         _connection = new Connection(new ClientConnectionOptions(_accountOptions.Value.DbusConnectionPath)

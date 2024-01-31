@@ -3,19 +3,14 @@ using Parlance.Database.Models;
 
 namespace Parlance.Notifications.Channels.TranslationFreeze;
 
-public class TranslationFreezeNotificationChannelSubscription : INotificationChannelSubscription
+public class TranslationFreezeNotificationChannelSubscription : INotificationChannelSubscription<TranslationFreezeNotificationChannelSubscription>
 {
     record SubscriptionData(string Project);
-    
-    public TranslationFreezeNotificationChannelSubscription(NotificationSubscription subscription)
-    {
-        UserId = subscription.UserId;
-        Enabled = subscription.Enabled;
-        Channel = subscription.Channel;
-        AutoSubscriptionSource = subscription.AutoSubscriptionSource;
 
-        var data = JsonSerializer.Deserialize<SubscriptionData>(subscription.SubscriptionData)!;
-        Project = data.Project;
+    private TranslationFreezeNotificationChannelSubscription(string channel, string project)
+    {
+        Channel = channel;
+        Project = project;
     }
 
     public TranslationFreezeNotificationChannelSubscription(ulong userId, string channel, string project, NotificationEventAutoSubscription? eventSource = null)
@@ -26,12 +21,23 @@ public class TranslationFreezeNotificationChannelSubscription : INotificationCha
         Project = project;
     }
 
-    public ulong UserId { get; }
-    
-    public bool Enabled { get; }
-    
-    public NotificationEventAutoSubscription? AutoSubscriptionSource { get; }
-    
+    public static TranslationFreezeNotificationChannelSubscription FromDatabase(NotificationSubscription subscription)
+    {
+        var data = JsonSerializer.Deserialize<SubscriptionData>(subscription.SubscriptionData)!;
+        return new TranslationFreezeNotificationChannelSubscription(subscription.Channel, data.Project)
+        {
+            UserId = subscription.UserId,
+            Enabled = subscription.Enabled,
+            AutoSubscriptionSource = subscription.AutoSubscriptionSource
+        };
+    }
+
+    public ulong UserId { get; private init; }
+
+    public bool Enabled { get; private init; }
+
+    public NotificationEventAutoSubscription? AutoSubscriptionSource { get; private init; }
+
     public string Channel { get; }
     
     public string Project { get; }

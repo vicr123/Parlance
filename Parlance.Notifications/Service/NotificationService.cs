@@ -1,11 +1,15 @@
 using Microsoft.EntityFrameworkCore;
+using Parlance.CldrData;
 using Parlance.Database;
 using Parlance.Database.Models;
 using Parlance.Notifications.Channels;
+using Parlance.Notifications.Channels.TranslationFreeze;
+using Parlance.Notifications.Email;
+using Parlance.Vicr123Accounts.Services;
 
 namespace Parlance.Notifications.Service;
 
-public class NotificationService(ParlanceContext dbContext) : INotificationService
+public class NotificationService(ParlanceContext dbContext, IVicr123AccountsService accountsService) : INotificationService
 {
     public async Task SetUnsubscriptionState(ulong userId, bool unsubscribed)
     {
@@ -39,7 +43,7 @@ public class NotificationService(ParlanceContext dbContext) : INotificationServi
         return unsubscription != null;
     }
 
-    public async Task AddSubscriptionPreference(INotificationChannelSubscription subscription, bool enabled)
+    public async Task AddSubscriptionPreference<T>(INotificationChannelSubscription<T> subscription, bool enabled) where T : INotificationChannelSubscription<T>
     {
         dbContext.NotificationSubscriptions.Add(new NotificationSubscription()
         {
@@ -52,12 +56,12 @@ public class NotificationService(ParlanceContext dbContext) : INotificationServi
         await dbContext.SaveChangesAsync();
     }
 
-    public Task UpsertSubscriptionPreference(INotificationChannelSubscription subscription, bool enabled)
+    public Task UpsertSubscriptionPreference<T>(INotificationChannelSubscription<T> subscription, bool enabled) where T : INotificationChannelSubscription<T>
     {
         throw new NotImplementedException();
     }
 
-    public async Task RemoveSubscriptionPreference(INotificationChannelSubscription subscription)
+    public async Task RemoveSubscriptionPreference<T>(INotificationChannelSubscription<T> subscription) where T : INotificationChannelSubscription<T>
     {
         var dbSubscription = await dbContext.NotificationSubscriptions.Where(x =>
             x.UserId == subscription.UserId && x.SubscriptionData == subscription.GetSubscriptionData() &&
@@ -68,6 +72,15 @@ public class NotificationService(ParlanceContext dbContext) : INotificationServi
             dbContext.NotificationSubscriptions.RemoveRange(dbSubscription);
             await dbContext.SaveChangesAsync();
         }
+    }
+
+    public IAsyncEnumerable<TSubscription> SavedSubscriptionPreferences<TNotificationChannel, TSubscription>() where TNotificationChannel : INotificationChannel where TSubscription : INotificationChannelSubscription<TSubscription>
+    {
+        var channelName = TNotificationChannel.ChannelName;
+        return dbContext.NotificationSubscriptions
+            .Where(x => x.Channel == channelName)
+            .AsAsyncEnumerable()
+            .Select(TSubscription.FromDatabase);
     }
 
     public async Task<AutoSubscriptionPreference> GetAutoSubscriptionPreference<TAutoSubscription, TChannel>(ulong userId, bool defaultValue) where TAutoSubscription : IAutoSubscription<TChannel> where TChannel : INotificationChannel
@@ -103,5 +116,13 @@ public class NotificationService(ParlanceContext dbContext) : INotificationServi
             dbContext.Update(subscription);
             await dbContext.SaveChangesAsync();
         }
+    }
+
+    public async Task SendEmailNotification<TChannel>(ulong userId, Locale locale, object args) where TChannel : INotificationChannel
+    {
+        var email = new NotificationEmail(locale, TChannel.ChannelName, args);
+        var user = await accountsService.UserById(userId);
+        await accountsService.SendEmail(user, ("parlance@vicr123.com", "Parlance"), email.Subject, email.Body,
+            email.Body);
     }
 }
