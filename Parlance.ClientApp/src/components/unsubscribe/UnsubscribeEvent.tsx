@@ -7,8 +7,8 @@ export function UnsubscribeEvent({subscription}: {
     const {t} = useTranslation();
     
     switch (subscription.type) {
-        case "translation-freeze":
-            return <span>{t("Translation Freeze for project {{project}}", { project: subscription.project })}</span>
+        case "TranslationFreeze":
+            return <span>{t("Translation Freeze for project {{project}}", { project: subscription.projectName })}</span>
     }
 }
 
@@ -18,7 +18,7 @@ export function AutoSubscribeEvent({autoSubscribeEvent}: {
     const {t} = useTranslation();
     
     switch (autoSubscribeEvent.type) {
-        case "translation-submit":
+        case "TranslationSubmit":
             return <span>{t("Submit translations")}</span>
     }
 }

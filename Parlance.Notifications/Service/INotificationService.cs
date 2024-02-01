@@ -1,15 +1,10 @@
-using Parlance.CldrData;
 using Parlance.Database.Models;
 using Parlance.Notifications.Channels;
-using Parlance.Notifications.Channels.TranslationFreeze;
 
 namespace Parlance.Notifications.Service;
 
 public interface INotificationService
 {
-    Task SetUnsubscriptionState(ulong userId, bool unsubscribed);
-    Task<bool> GetUnsubscriptionState(ulong userId);
-
     Task AddSubscriptionPreference<T>(INotificationChannelSubscription<T> subscription, bool enabled) where T : INotificationChannelSubscription<T>;
     Task UpsertSubscriptionPreference<T>(INotificationChannelSubscription<T> subscription, bool enabled) where T : INotificationChannelSubscription<T>;
     Task RemoveSubscriptionPreference<T>(INotificationChannelSubscription<T> subscription) where T : INotificationChannelSubscription<T>;
@@ -19,6 +14,7 @@ public interface INotificationService
 
     Task<AutoSubscriptionPreference> GetAutoSubscriptionPreference<TAutoSubscription, TChannel>(ulong userId, bool defaultValue) where TAutoSubscription : IAutoSubscription<TChannel> where TChannel : INotificationChannel;
     Task SetAutoSubscriptionPreference<TAutoSubscription, TChannel>(ulong userId, bool isSubscribed) where TAutoSubscription : IAutoSubscription<TChannel> where TChannel : INotificationChannel;
+    INotificationChannelSubscriptionBase DecodeDatabaseSubscription(NotificationSubscription subscription);
 }
 
 public record AutoSubscriptionPreference(NotificationEventAutoSubscription Subscription, bool IsSubscribed);

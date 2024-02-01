@@ -1,5 +1,5 @@
 interface TranslationSubmitEvent {
-    type: "translation-submit";
+    type: "TranslationSubmit";
 }
 
 export type AutoSubscriptionEvent = TranslationSubmitEvent;
@@ -9,8 +9,14 @@ interface BaseSubscription {
 }
 
 interface TranslationFreezeSubscription extends BaseSubscription {
-    type: "translation-freeze";
+    type: "TranslationFreeze";
     project: string;
+    projectName: string;
 }
 
 export type Subscription = TranslationFreezeSubscription;
+
+export interface UnsubscribeInformation {
+    emailNotificationsOn: boolean,
+    subscription: Subscription
+}
