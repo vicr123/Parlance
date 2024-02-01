@@ -1,16 +1,11 @@
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
-using Parlance.CldrData;
 using Parlance.Database;
 using Parlance.Database.Models;
 using Parlance.Notifications.Channels;
-using Parlance.Notifications.Channels.TranslationFreeze;
-using Parlance.Notifications.Email;
-using Parlance.Vicr123Accounts.Services;
 
 namespace Parlance.Notifications.Service;
 
-public class NotificationService(ParlanceContext dbContext, IVicr123AccountsService accountsService, IOptions<EmailOptions> emailOptions) : INotificationService
+public class NotificationService(ParlanceContext dbContext) : INotificationService
 {
     public async Task SetUnsubscriptionState(ulong userId, bool unsubscribed)
     {
@@ -117,13 +112,5 @@ public class NotificationService(ParlanceContext dbContext, IVicr123AccountsServ
             dbContext.Update(subscription);
             await dbContext.SaveChangesAsync();
         }
-    }
-
-    public async Task SendEmailNotification<TChannel>(ulong userId, Locale locale, object args) where TChannel : INotificationChannel
-    {
-        var user = await accountsService.UserById(userId);
-        var email = new NotificationEmail(user, emailOptions.Value, locale, TChannel.ChannelName, args);
-        await accountsService.SendEmail(user, (emailOptions.Value.FromAddress, emailOptions.Value.FromName), email.Subject, email.Body,
-            email.HtmlBody);
     }
 }

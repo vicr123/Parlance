@@ -13,7 +13,8 @@ namespace Parlance.Notifications.Email;
 
 public class NotificationEmail
 {
-    public NotificationEmail(User user, EmailOptions emailOptions, Locale locale, string emailType, object args)
+    public NotificationEmail(User user, EmailOptions emailOptions, string unsubscribeToken, Locale locale,
+        string emailType, object args)
     {
         var markdownBody = Smart.Format(GetGeneralResource("Body"), new
         {
@@ -21,7 +22,7 @@ public class NotificationEmail
             Body = GetResource("Body")
         });
 
-        var unsubscribeLink = new Uri($"{emailOptions.RootUrl}/unsubscribe").AbsoluteUri;
+        var unsubscribeLink = new Uri($"{emailOptions.RootUrl}/email-unsubscribe?subscription={unsubscribeToken}").AbsoluteUri;
         
         Body = $"""
                 {Smart.Format(Markdown.ToPlainText(markdownBody), args)}

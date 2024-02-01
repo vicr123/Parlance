@@ -43,6 +43,7 @@ public class TranslationFreezeNotificationChannel(
     {
         await using var scope = serviceProvider.CreateAsyncScope();
         var notificationService = scope.ServiceProvider.GetRequiredService<INotificationService>();
+        var emailService = scope.ServiceProvider.GetRequiredService<IEmailService>();
 
         await foreach (var subscription in notificationService
                            .SavedSubscriptionPreferences<TranslationFreezeNotificationChannel,
@@ -51,7 +52,7 @@ public class TranslationFreezeNotificationChannel(
         {
             var locale = "en-US".ToLocale();
             
-            await notificationService.SendEmailNotification<TranslationFreezeNotificationChannel>(subscription.UserId,
+            await emailService.SendEmailNotification<TranslationFreezeNotificationChannel>(subscription,
                 locale, new
                 {
                     Project = message.NewProject!.ReadableName,

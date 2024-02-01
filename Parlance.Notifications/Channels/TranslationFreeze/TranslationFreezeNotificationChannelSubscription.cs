@@ -26,12 +26,14 @@ public class TranslationFreezeNotificationChannelSubscription : INotificationCha
         var data = JsonSerializer.Deserialize<SubscriptionData>(subscription.SubscriptionData)!;
         return new TranslationFreezeNotificationChannelSubscription(subscription.Channel, data.Project)
         {
+            Id = subscription.Id,
             UserId = subscription.UserId,
             Enabled = subscription.Enabled,
             AutoSubscriptionSource = subscription.AutoSubscriptionSource
         };
     }
 
+    public Guid Id { get; private init; }
     public ulong UserId { get; private init; }
 
     public bool Enabled { get; private init; }

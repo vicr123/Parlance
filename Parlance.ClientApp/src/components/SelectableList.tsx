@@ -18,7 +18,7 @@ type SelectableListItem = SelectableListItemObject | string;
 interface SelectableListProps {
     children?: React.ReactElement
     onClick?: () => void
-    items?: SelectableListItem[]
+    items?: (SelectableListItem | undefined)[]
 }
 
 interface SelectableListLocaleProps {
@@ -35,11 +35,11 @@ export default function SelectableList({children, onClick, items} : SelectableLi
         if (!items?.length) return null;
 
         return <div className={Styles.listContainer}>
-            {items.map((item, index) => {
+            {items.filter(item => item).map((item, index) => {
                 if (typeof (item) === "string") {
                     return <div className={Styles.listSection}>{item}</div>
                 } else {
-                    return <div className={`${Styles.listItem} ${item.containerClass}`} key={index} onClick={item.onClick}>{item.contents}</div>
+                    return <div className={`${Styles.listItem} ${item!.containerClass}`} key={index} onClick={item!.onClick}>{item!.contents}</div>
                 }
             })}
         </div>

@@ -1,6 +1,7 @@
 using Parlance.CldrData;
 using Parlance.Database.Models;
 using Parlance.Notifications.Channels;
+using Parlance.Notifications.Channels.TranslationFreeze;
 
 namespace Parlance.Notifications.Service;
 
@@ -18,8 +19,6 @@ public interface INotificationService
 
     Task<AutoSubscriptionPreference> GetAutoSubscriptionPreference<TAutoSubscription, TChannel>(ulong userId, bool defaultValue) where TAutoSubscription : IAutoSubscription<TChannel> where TChannel : INotificationChannel;
     Task SetAutoSubscriptionPreference<TAutoSubscription, TChannel>(ulong userId, bool isSubscribed) where TAutoSubscription : IAutoSubscription<TChannel> where TChannel : INotificationChannel;
-
-    Task SendEmailNotification<TChannel>(ulong userId, Locale locale, object args) where TChannel : INotificationChannel;
 }
 
 public record AutoSubscriptionPreference(NotificationEventAutoSubscription Subscription, bool IsSubscribed);

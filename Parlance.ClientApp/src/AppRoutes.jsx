@@ -8,6 +8,7 @@ const Account = lazy(() => import("./pages/Account"));
 const Projects = lazy(() => import("./pages/Projects"));
 const Languages = lazy(() => import("./pages/Languages"));
 const Glossaries = lazy(() => import("./pages/Glossaries"));
+const EmailUnsubscribe = lazy(() => import("./pages/EmailUnsubscribe"))
 
 const AppRoutes = [
     {
@@ -42,6 +43,12 @@ const AppRoutes = [
         path: "/glossaries/*",
         element: <Spinner.Suspense>
             <Glossaries />
+        </Spinner.Suspense>
+    },
+    {
+        path: "/email-unsubscribe",
+        element: <Spinner.Suspense>
+            <EmailUnsubscribe />
         </Spinner.Suspense>
     },
     {
