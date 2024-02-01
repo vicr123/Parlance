@@ -19,7 +19,7 @@
         <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
     </resheader>
     <data name="TranslationFreeze.Body" xml:space="preserve">
-        <value>A translation freeze has been announced for the project {Project}. The translation freeze expires at {Expiry}.
+        <value>A translation freeze has been announced for the project {Project}. The translation freeze expires on {Expiry}.
 
 You can view the project page [here]({ProjectPageLink}).</value>
     </data>

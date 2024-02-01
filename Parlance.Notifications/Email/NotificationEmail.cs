@@ -52,7 +52,8 @@ public class NotificationEmail
             
             // TODO: Unsubscribe logic
             UnsubscribeLink = unsubscribeLink,
-            HeadingImageSource = new Uri($"{emailOptions.RootUrl}/img/parlance.svg").AbsoluteUri
+            HeadingImageSource = new Uri($"{emailOptions.RootUrl}/mail/parlance.svg").AbsoluteUri,
+            FontUrl = new Uri($"{emailOptions.RootUrl}/mail/mail.css").AbsoluteUri
         }).ReplaceFirst("<style>", "<mj-style>").ReplaceFirst("</style>", "</mj-style>");
         
         var mjmlRenderer = new MjmlRenderer();

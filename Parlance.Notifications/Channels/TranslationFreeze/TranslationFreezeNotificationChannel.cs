@@ -55,7 +55,7 @@ public class TranslationFreezeNotificationChannel(
                 locale, new
                 {
                     Project = message.NewProject!.ReadableName,
-                    Expiry = $"{message.NewProject!.Deadline!.Value.ToString(locale.ToCultureInfo())} UTC",
+                    Expiry = $"{message.NewProject!.Deadline!.Value.ToString("F", locale.ToCultureInfo())} UTC",
                     ProjectPageLink = new Uri($"{emailOptions.Value.RootUrl}/projects/{message.ProjectSystemName}").AbsoluteUri
                 });
         }
