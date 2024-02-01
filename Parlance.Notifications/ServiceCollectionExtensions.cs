@@ -12,6 +12,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<INotificationService, NotificationService>();
         services.AddHostedService<TranslationFreezeNotificationChannel>();
         services.AddHostedService<TranslationFreezeTranslationSubmitEventAutoSubscription>();
+        services.Configure<EmailOptions>(configuration.GetSection("Email"));
         return services;
     }
 }

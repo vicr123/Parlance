@@ -19,11 +19,25 @@
         <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
     </resheader>
     <data name="TranslationFreeze.Body" xml:space="preserve">
-        <value>A translation freeze has been announced for the project {Project}. The translation freeze expires at {Expiry}. 
+        <value>A translation freeze has been announced for the project {Project}. The translation freeze expires at {Expiry}.
 
-You can view the project page at {ProjectPageLink}.</value>
+You can view the project page [here]({ProjectPageLink}).</value>
     </data>
     <data name="TranslationFreeze.Subject" xml:space="preserve">
         <value>Translation freeze announced for {Project}</value>
+    </data>
+    <data name="General.Unsubscribe1" xml:space="preserve">
+        <value>Modify your notification settings in User Settings.</value>
+    </data>
+    <data name="General.Unsubscribe2" xml:space="preserve">
+        <value>You can also unsubscribe.</value>
+    </data>
+    <data name="General.Body" xml:space="preserve">
+        <value>Hi, {User}!
+
+{Body}</value>
+    </data>
+    <data name="General.Unsubscribe2Text" xml:space="preserve">
+        <value>You can also unsubscribe at {UnsubscribeLink}</value>
     </data>
 </root>

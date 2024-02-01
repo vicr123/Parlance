@@ -1,6 +1,7 @@
 using MessagePipe;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
 using Parlance.CldrData;
 using Parlance.Notifications.Service;
 using Parlance.VersionControl.Events;
@@ -9,7 +10,8 @@ namespace Parlance.Notifications.Channels.TranslationFreeze;
 
 public class TranslationFreezeNotificationChannel(
     IAsyncSubscriber<ProjectMetadataFileChangedEvent> projectMetadataFileChangedEventSubscriber,
-    IServiceProvider serviceProvider)
+    IServiceProvider serviceProvider,
+    IOptions<EmailOptions> emailOptions)
     : INotificationChannel, IHostedService, IAsyncMessageHandler<ProjectMetadataFileChangedEvent>
 {
     public static string ChannelName => "TranslationFreeze";
@@ -53,8 +55,8 @@ public class TranslationFreezeNotificationChannel(
                 locale, new
                 {
                     Project = message.NewProject!.ReadableName,
-                    Expiry = message.NewProject!.Deadline!.Value.ToString(locale.ToCultureInfo()),
-                    ProjectPageLink = "Project Page Link"
+                    Expiry = $"{message.NewProject!.Deadline!.Value.ToString(locale.ToCultureInfo())} UTC",
+                    ProjectPageLink = new Uri($"{emailOptions.Value.RootUrl}/projects/{message.ProjectSystemName}").AbsoluteUri
                 });
         }
     }

@@ -1,0 +1,24 @@
+<mjml>
+    <mj-head>
+        <style>
+            a {
+                color: #0366d6;
+            }
+        </style>
+    </mj-head>
+    <mj-body background-color="#282828">
+        <mj-section>
+            <mj-column>
+                <mj-image height="64px" src="{HeadingImageSource}"></mj-image>
+                <mj-divider border-color="#505050" border-width="1px"></mj-divider>
+                
+                <mj-text font-size="15px" color="white">
+                    {Body}
+                </mj-text>
+                
+                <mj-divider border-color="#505050" border-width="1px"></mj-divider>
+                <mj-text font-size="12px" color="#505050">{Unsubscribe1} <a href="{UnsubscribeLink}">{Unsubscribe2}</a></mj-text>
+            </mj-column>
+        </mj-section>
+    </mj-body>
+</mjml>
