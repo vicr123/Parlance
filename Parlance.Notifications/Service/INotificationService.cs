@@ -5,9 +5,9 @@ namespace Parlance.Notifications.Service;
 
 public interface INotificationService
 {
-    Task AddSubscriptionPreference<T>(INotificationChannelSubscription<T> subscription, bool enabled) where T : INotificationChannelSubscription<T>;
-    Task UpsertSubscriptionPreference<T>(INotificationChannelSubscription<T> subscription, bool enabled) where T : INotificationChannelSubscription<T>;
-    Task RemoveSubscriptionPreference<T>(INotificationChannelSubscription<T> subscription) where T : INotificationChannelSubscription<T>;
+    Task AddSubscriptionPreference(INotificationChannelSubscriptionBase subscription, bool enabled);
+    Task UpsertSubscriptionPreference(INotificationChannelSubscriptionBase subscription, bool enabled);
+    Task RemoveSubscriptionPreference(INotificationChannelSubscriptionBase subscription);
 
     IAsyncEnumerable<TSubscription> SavedSubscriptionPreferences<TNotificationChannel, TSubscription>()
         where TNotificationChannel : INotificationChannel where TSubscription : INotificationChannelSubscription<TSubscription>;
@@ -15,6 +15,8 @@ public interface INotificationService
     Task<AutoSubscriptionPreference> GetAutoSubscriptionPreference<TAutoSubscription, TChannel>(ulong userId, bool defaultValue) where TAutoSubscription : IAutoSubscription<TChannel> where TChannel : INotificationChannel;
     Task SetAutoSubscriptionPreference<TAutoSubscription, TChannel>(ulong userId, bool isSubscribed) where TAutoSubscription : IAutoSubscription<TChannel> where TChannel : INotificationChannel;
     INotificationChannelSubscriptionBase DecodeDatabaseSubscription(NotificationSubscription subscription);
+    Task SetAutoSubscriptionPreference(NotificationEventAutoSubscription subscriptionAutoSubscriptionSource,
+        ulong userId, bool isSubscribed);
 }
 
 public record AutoSubscriptionPreference(NotificationEventAutoSubscription Subscription, bool IsSubscribed);

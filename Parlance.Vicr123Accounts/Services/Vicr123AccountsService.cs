@@ -140,6 +140,15 @@ public class Vicr123AccountsService : IVicr123AccountsService
         }
     }
 
+    public async Task UnverifyEmail(User user)
+    {
+        var objectPath = await _manager.UserByIdAsync(user.Id);
+        var userProxy = _connection.CreateProxy<IUser>(_serviceName, objectPath);
+        if (!await userProxy.GetVerifiedAsync()) throw new InvalidOperationException();
+
+        await userProxy.SetEmailVerifiedAsync(false);
+    }
+
     public async Task<bool> OtpEnabled(User user)
     {
         var objectPath = await _manager.UserByIdAsync(user.Id);

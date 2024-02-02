@@ -117,6 +117,7 @@
   "EMAIL_UNSUBSCRIBE_COMPLETELY_HEADER": "Turn off email notifications altogether",
   "EMAIL_UNSUBSCRIBE_DESCRIPTION": "Unsubscribe from <1/>?",
   "EMAIL_UNSUBSCRIBE_ONLY": "Just unsubscribe me",
+  "EMAIL_UNVERIFY_BUTTON": "Unverify this email address",
   "EMAIL_VERIFY_ENTER_CODE": "Enter Verification Code",
   "EMAIL_VERIFY_PROMPT": "Check your email for a code that we sent you. If you can't find it, try checking your spam folder, and if that doesn't work, try resending a verification email.",
   "EMAIL_VERIFY_RESEND": "Resend Verification Email",

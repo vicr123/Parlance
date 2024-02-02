@@ -115,6 +115,7 @@
   "EMAIL_UNSUBSCRIBE_COMPLETELY_HEADER": "",
   "EMAIL_UNSUBSCRIBE_DESCRIPTION": "",
   "EMAIL_UNSUBSCRIBE_ONLY": "",
+  "EMAIL_UNVERIFY_BUTTON": "",
   "EMAIL_VERIFY_ENTER_CODE": "Vul Verificatiecode In",
   "EMAIL_VERIFY_PROMPT": "Controleer je e-mail voor een code die we hebben opgestuurd. Als je hem niet kunt vinden, kijk dan eens in je spammap en als dat niet werkt, stuur dan nog een verificatiemail.",
   "EMAIL_VERIFY_RESEND": "Verificatiemail Opnieuw Versturen",

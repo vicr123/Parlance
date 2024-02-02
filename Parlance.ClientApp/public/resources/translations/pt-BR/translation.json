@@ -114,6 +114,7 @@
   "EMAIL_UNSUBSCRIBE_COMPLETELY_HEADER": "",
   "EMAIL_UNSUBSCRIBE_DESCRIPTION": "",
   "EMAIL_UNSUBSCRIBE_ONLY": "",
+  "EMAIL_UNVERIFY_BUTTON": "",
   "EMAIL_VERIFY_ENTER_CODE": "Digite o código de verificação",
   "EMAIL_VERIFY_PROMPT": "Confira seu e-mail para ver o código que mandamos. Se você não consegue achar, tente procurar na pasta spam. Se ainda não achar, tente reenviar o e-mail de verificação.",
   "EMAIL_VERIFY_RESEND": "Reenviar e-mail de verificação",

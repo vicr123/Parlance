@@ -95,4 +95,6 @@ public interface IVicr123AccountsService
 
     public Task SendEmail(User user, (string Address, string Name) from, string subject, string textContent,
         string htmlContent);
+
+    public Task UnverifyEmail(User user);
 }

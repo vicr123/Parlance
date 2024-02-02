@@ -116,6 +116,7 @@
   "EMAIL_UNSUBSCRIBE_COMPLETELY_HEADER": "",
   "EMAIL_UNSUBSCRIBE_DESCRIPTION": "",
   "EMAIL_UNSUBSCRIBE_ONLY": "",
+  "EMAIL_UNVERIFY_BUTTON": "",
   "EMAIL_VERIFY_ENTER_CODE": "Introdu codul de verificare",
   "EMAIL_VERIFY_PROMPT": "Verifică-ți mailul pentru codul pe care ți l-am trimis. Dacă nu-l găsești, verifică secțiunea spam, iar dacă nu-l găsești nici acum, poți retrimite mail-ul de verificare.",
   "EMAIL_VERIFY_RESEND": "Retrimite mail-ul de verificare",

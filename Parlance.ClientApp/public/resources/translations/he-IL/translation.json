@@ -119,6 +119,7 @@
   "EMAIL_UNSUBSCRIBE_COMPLETELY_HEADER": "",
   "EMAIL_UNSUBSCRIBE_DESCRIPTION": "",
   "EMAIL_UNSUBSCRIBE_ONLY": "",
+  "EMAIL_UNVERIFY_BUTTON": "",
   "EMAIL_VERIFY_ENTER_CODE": "הזן קוד אימות",
   "EMAIL_VERIFY_PROMPT": "מצע קוד ששלחנו לך בדואר האלקטרוני שלך. אם לא ניתן למצוא אותו, נסה לבדוק את תיקיית הספאם שלך, ואם זה לא עובד, נסה לשלוח מכתב אימות חדש.",
   "EMAIL_VERIFY_RESEND": "שלח מכתב אימות חדש",

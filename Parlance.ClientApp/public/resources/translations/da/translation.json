@@ -114,6 +114,7 @@
   "EMAIL_UNSUBSCRIBE_COMPLETELY_HEADER": "",
   "EMAIL_UNSUBSCRIBE_DESCRIPTION": "",
   "EMAIL_UNSUBSCRIBE_ONLY": "",
+  "EMAIL_UNVERIFY_BUTTON": "",
   "EMAIL_VERIFY_ENTER_CODE": "Indtast bekræftelseskode",
   "EMAIL_VERIFY_PROMPT": "Tjek din email efter den kode som vi har sendt dig. Hvis du ikke kan finde den, så prøv at tjekke spam-mappen, og hvis det ikke virker, så prøv at sende en bekræftelsesmail igen.",
   "EMAIL_VERIFY_RESEND": "Se",

@@ -8,7 +8,7 @@ namespace Parlance.Notifications.Service;
 
 public class NotificationService(ParlanceContext dbContext) : INotificationService
 {
-    public async Task AddSubscriptionPreference<T>(INotificationChannelSubscription<T> subscription, bool enabled) where T : INotificationChannelSubscription<T>
+    public async Task AddSubscriptionPreference(INotificationChannelSubscriptionBase subscription, bool enabled)
     {
         dbContext.NotificationSubscriptions.Add(new NotificationSubscription()
         {
@@ -21,12 +21,24 @@ public class NotificationService(ParlanceContext dbContext) : INotificationServi
         await dbContext.SaveChangesAsync();
     }
 
-    public Task UpsertSubscriptionPreference<T>(INotificationChannelSubscription<T> subscription, bool enabled) where T : INotificationChannelSubscription<T>
+    public async Task UpsertSubscriptionPreference(INotificationChannelSubscriptionBase subscription, bool enabled)
     {
-        throw new NotImplementedException();
+        var subscriptionObject = await dbContext.NotificationSubscriptions.SingleOrDefaultAsync(x =>
+            x.Channel == subscription.Channel && x.SubscriptionData == subscription.GetSubscriptionData() &&
+            x.UserId == subscription.UserId);
+
+        if (subscriptionObject is null)
+        {
+            await AddSubscriptionPreference(subscription, enabled);
+            return;
+        }
+        
+        subscriptionObject.Enabled = enabled;
+        dbContext.NotificationSubscriptions.Update(subscriptionObject);
+        await dbContext.SaveChangesAsync();
     }
 
-    public async Task RemoveSubscriptionPreference<T>(INotificationChannelSubscription<T> subscription) where T : INotificationChannelSubscription<T>
+    public async Task RemoveSubscriptionPreference(INotificationChannelSubscriptionBase subscription)
     {
         var dbSubscription = await dbContext.NotificationSubscriptions.Where(x =>
             x.UserId == subscription.UserId && x.SubscriptionData == subscription.GetSubscriptionData() &&
@@ -60,10 +72,22 @@ public class NotificationService(ParlanceContext dbContext) : INotificationServi
         throw new ArgumentOutOfRangeException(nameof(subscription));
     }
 
-    public async Task<AutoSubscriptionPreference> GetAutoSubscriptionPreference<TAutoSubscription, TChannel>(ulong userId, bool defaultValue) where TAutoSubscription : IAutoSubscription<TChannel> where TChannel : INotificationChannel
+    public async Task SetAutoSubscriptionPreference(NotificationEventAutoSubscription subscriptionAutoSubscriptionSource, ulong userId,
+        bool isSubscribed)
     {
-        var autoSubscriptionEventName = TAutoSubscription.AutoSubscriptionEventName;
-        var channelName = TChannel.ChannelName;
+        var (subscription, isSubscriptionSubscribed) = await GetAutoSubscriptionPreference(subscriptionAutoSubscriptionSource, userId, isSubscribed);
+        if (isSubscriptionSubscribed != isSubscribed)
+        {
+            subscription.Enabled = isSubscribed;
+            dbContext.Update(subscription);
+            await dbContext.SaveChangesAsync();
+        }
+    }
+    
+    public async Task<AutoSubscriptionPreference> GetAutoSubscriptionPreference(NotificationEventAutoSubscription subscriptionAutoSubscriptionSource, ulong userId, bool defaultValue)
+    {
+        var autoSubscriptionEventName = subscriptionAutoSubscriptionSource.Event;
+        var channelName = subscriptionAutoSubscriptionSource.Channel;
         var entry = await dbContext.NotificationEventAutoSubscriptions.FirstOrDefaultAsync(
             x => x.Event == autoSubscriptionEventName && x.UserId == userId && x.Channel == channelName);
 
@@ -84,14 +108,21 @@ public class NotificationService(ParlanceContext dbContext) : INotificationServi
         return new AutoSubscriptionPreference(entry, entry.Enabled);
     }
 
+    public async Task<AutoSubscriptionPreference> GetAutoSubscriptionPreference<TAutoSubscription, TChannel>(ulong userId, bool defaultValue) where TAutoSubscription : IAutoSubscription<TChannel> where TChannel : INotificationChannel
+    {
+        return await GetAutoSubscriptionPreference(new()
+        {
+            Channel = TChannel.ChannelName,
+            Event = TAutoSubscription.AutoSubscriptionEventName
+        }, userId, defaultValue);
+    }
+
     public async Task SetAutoSubscriptionPreference<TAutoSubscription, TChannel>(ulong userId, bool isSubscribed) where TAutoSubscription : IAutoSubscription<TChannel> where TChannel : INotificationChannel
     {
-        var (subscription, isSubscriptionSubscribed) = await GetAutoSubscriptionPreference<TAutoSubscription, TChannel>(userId, isSubscribed);
-        if (isSubscriptionSubscribed != isSubscribed)
+        await SetAutoSubscriptionPreference(new()
         {
-            subscription.Enabled = isSubscribed;
-            dbContext.Update(subscription);
-            await dbContext.SaveChangesAsync();
-        }
+            Channel = TChannel.ChannelName,
+            Event = TAutoSubscription.AutoSubscriptionEventName
+        }, userId, isSubscribed);
     }
 }

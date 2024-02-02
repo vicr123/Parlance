@@ -115,6 +115,7 @@
   "EMAIL_UNSUBSCRIBE_COMPLETELY_HEADER": "",
   "EMAIL_UNSUBSCRIBE_DESCRIPTION": "",
   "EMAIL_UNSUBSCRIBE_ONLY": "",
+  "EMAIL_UNVERIFY_BUTTON": "",
   "EMAIL_VERIFY_ENTER_CODE": "Điền Vào Mã Xác Nhận",
   "EMAIL_VERIFY_PROMPT": "Kiểm tra email của bạn cho mã chúng tôi đã gửi. Nếu bạn không thể tìm thấy, hãy xem thư mục rác, rồi nếu đó không có gì, hãy gửi email xác nhận lại.",
   "EMAIL_VERIFY_RESEND": "Gửi Email Xác Nhận Lại",
