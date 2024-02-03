@@ -1,6 +1,6 @@
 namespace Parlance.Notifications.Channels;
 
-public interface IAutoSubscription<TChannel> where TChannel : INotificationChannel
+public interface IAutoSubscription
 {
     public static abstract string AutoSubscriptionEventName { get; }
 }

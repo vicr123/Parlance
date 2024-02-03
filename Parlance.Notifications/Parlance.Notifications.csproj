@@ -11,6 +11,7 @@
       <ProjectReference Include="..\Parlance.Project\Parlance.Project.csproj" />
       <ProjectReference Include="..\Parlance.VersionControl\Parlance.VersionControl.csproj" />
       <ProjectReference Include="..\Parlance.Vicr123Accounts\Parlance.Vicr123Accounts.csproj" />
+      <ProjectReference Include="..\Parlance.Roslyn\Parlance.Roslyn.csproj" PrivateAssets="all" ReferenceOutputAssembly="false" OutputItemType="Analyzer" />
     </ItemGroup>
 
     <ItemGroup>

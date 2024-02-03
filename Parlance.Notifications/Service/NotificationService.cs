@@ -4,6 +4,7 @@ using Parlance.Database;
 using Parlance.Database.Models;
 using Parlance.Notifications.Channels;
 using Parlance.Notifications.Channels.TranslationFreeze;
+using Parlance.Notifications.Generated;
 
 namespace Parlance.Notifications.Service;
 
@@ -61,6 +62,11 @@ public class NotificationService(ParlanceContext dbContext) : INotificationServi
             .Select(TSubscription.FromDatabase);
     }
 
+    public IEnumerable<AutoSubscription> GetAutoSubscriptions()
+    {
+        return AutoSubscriptionRepository.AutoSubscriptions.Select(x => new AutoSubscription(x.Item1, x.Item2));
+    }
+
     public INotificationChannelSubscriptionBase DecodeDatabaseSubscription(NotificationSubscription subscription)
     {
         //TODO: Use reflection?
@@ -114,7 +120,7 @@ public class NotificationService(ParlanceContext dbContext) : INotificationServi
             subscriptionAutoSubscriptionSource.Event, userId, defaultValue);
     }
 
-    public async Task<AutoSubscriptionPreference> GetAutoSubscriptionPreference<TAutoSubscription, TChannel>(ulong userId, bool defaultValue) where TAutoSubscription : IAutoSubscription<TChannel> where TChannel : INotificationChannel
+    public async Task<AutoSubscriptionPreference> GetAutoSubscriptionPreference<TAutoSubscription, TChannel>(ulong userId, bool defaultValue) where TAutoSubscription : IAutoSubscription where TChannel : INotificationChannel
     {
         return await GetAutoSubscriptionPreference(TChannel.ChannelName, TAutoSubscription.AutoSubscriptionEventName, userId, defaultValue);
     }
@@ -139,7 +145,7 @@ public class NotificationService(ParlanceContext dbContext) : INotificationServi
         return await GetAutoSubscriptionPreference(channelName, autoSubscriptionEventName, userId, defaultValue);
     }
 
-    public async Task SetAutoSubscriptionPreference<TAutoSubscription, TChannel>(ulong userId, bool isSubscribed) where TAutoSubscription : IAutoSubscription<TChannel> where TChannel : INotificationChannel
+    public async Task SetAutoSubscriptionPreference<TAutoSubscription, TChannel>(ulong userId, bool isSubscribed) where TAutoSubscription : IAutoSubscription where TChannel : INotificationChannel
     {
         await SetAutoSubscriptionPreference(new()
         {

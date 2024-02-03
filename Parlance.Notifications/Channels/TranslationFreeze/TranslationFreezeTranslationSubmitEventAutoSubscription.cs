@@ -2,14 +2,16 @@ using MessagePipe;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Parlance.Notifications.Generated;
 using Parlance.Notifications.Service;
 using Parlance.Project.Events;
 
 namespace Parlance.Notifications.Channels.TranslationFreeze;
 
+[AutoSubscription(typeof(TranslationFreezeNotificationChannel))]
 public class TranslationFreezeTranslationSubmitEventAutoSubscription(
     IAsyncSubscriber<TranslationSubmitEvent> translationSubmitEventSubscriber,
-    IServiceProvider serviceProvider) : IHostedService, IAsyncMessageHandler<TranslationSubmitEvent>, IAutoSubscription<TranslationFreezeNotificationChannel>
+    IServiceProvider serviceProvider) : IHostedService, IAsyncMessageHandler<TranslationSubmitEvent>, IAutoSubscription
 {
     public static string AutoSubscriptionEventName => "TranslationSubmit";
     private IDisposable? _translationSubmitEventSubscriberSubscription;
@@ -49,5 +51,4 @@ public class TranslationFreezeTranslationSubmitEventAutoSubscription(
             
         }
     }
-
 }

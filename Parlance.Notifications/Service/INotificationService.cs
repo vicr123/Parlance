@@ -12,9 +12,10 @@ public interface INotificationService
     IAsyncEnumerable<TSubscription> SavedSubscriptionPreferences<TNotificationChannel, TSubscription>()
         where TNotificationChannel : INotificationChannel where TSubscription : INotificationChannelSubscription<TSubscription>;
 
+    IEnumerable<AutoSubscription> GetAutoSubscriptions();
     Task<AutoSubscriptionPreference> GetAutoSubscriptionPreference(string channel, string @event, ulong userId, bool defaultValue);
-    Task<AutoSubscriptionPreference> GetAutoSubscriptionPreference<TAutoSubscription, TChannel>(ulong userId, bool defaultValue) where TAutoSubscription : IAutoSubscription<TChannel> where TChannel : INotificationChannel;
-    Task SetAutoSubscriptionPreference<TAutoSubscription, TChannel>(ulong userId, bool isSubscribed) where TAutoSubscription : IAutoSubscription<TChannel> where TChannel : INotificationChannel;
+    Task<AutoSubscriptionPreference> GetAutoSubscriptionPreference<TAutoSubscription, TChannel>(ulong userId, bool defaultValue) where TAutoSubscription : IAutoSubscription where TChannel : INotificationChannel;
+    Task SetAutoSubscriptionPreference<TAutoSubscription, TChannel>(ulong userId, bool isSubscribed) where TAutoSubscription : IAutoSubscription where TChannel : INotificationChannel;
     INotificationChannelSubscriptionBase DecodeDatabaseSubscription(NotificationSubscription subscription);
     Task SetAutoSubscriptionPreference(NotificationEventAutoSubscription subscriptionAutoSubscriptionSource,
         ulong userId, bool isSubscribed);
@@ -23,3 +24,5 @@ public interface INotificationService
 }
 
 public record AutoSubscriptionPreference(NotificationEventAutoSubscription Subscription, bool IsSubscribed);
+
+public record AutoSubscription(string Channel, string Event);
