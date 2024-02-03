@@ -64,7 +64,7 @@ public class NotificationService(ParlanceContext dbContext) : INotificationServi
 
     public IEnumerable<AutoSubscription> GetAutoSubscriptions()
     {
-        return AutoSubscriptionRepository.AutoSubscriptions.Select(x => new AutoSubscription(x.Item1, x.Item2));
+        return AutoSubscriptionRepository.AutoSubscriptions.Select(x => new AutoSubscription(x.Channel, x.Event, x.SubscribedByDefault));
     }
 
     public INotificationChannelSubscriptionBase DecodeDatabaseSubscription(NotificationSubscription subscription)
@@ -82,7 +82,13 @@ public class NotificationService(ParlanceContext dbContext) : INotificationServi
     public async Task SetAutoSubscriptionPreference(NotificationEventAutoSubscription subscriptionAutoSubscriptionSource, ulong userId,
         bool isSubscribed)
     {
-        var (subscription, isSubscriptionSubscribed) = await GetAutoSubscriptionPreference(subscriptionAutoSubscriptionSource, userId, isSubscribed);
+        await SetAutoSubscriptionPreference(subscriptionAutoSubscriptionSource.Channel,
+            subscriptionAutoSubscriptionSource.Event, userId, isSubscribed);
+    }
+
+    public async Task SetAutoSubscriptionPreference(string channel, string @event, ulong userId, bool isSubscribed)
+    {
+        var (subscription, isSubscriptionSubscribed) = await GetAutoSubscriptionPreference(channel, @event, userId);
         if (isSubscriptionSubscribed != isSubscribed)
         {
             subscription.Enabled = isSubscribed;
@@ -92,7 +98,7 @@ public class NotificationService(ParlanceContext dbContext) : INotificationServi
     }
 
     public async Task<AutoSubscriptionPreference> GetAutoSubscriptionPreference(string channel, string @event,
-        ulong userId, bool defaultValue)
+        ulong userId)
     {
         var entry = await dbContext.NotificationEventAutoSubscriptions.FirstOrDefaultAsync(
             x => x.Event == @event && x.UserId == userId && x.Channel == channel);
@@ -102,7 +108,7 @@ public class NotificationService(ParlanceContext dbContext) : INotificationServi
             // Insert a new entry
             entry = new NotificationEventAutoSubscription
             {
-                Enabled = defaultValue,
+                Enabled = DefaultAutoSubscriptionValue(channel, @event),
                 Channel = channel,
                 Event = @event,
                 UserId = userId
@@ -114,18 +120,18 @@ public class NotificationService(ParlanceContext dbContext) : INotificationServi
         return new AutoSubscriptionPreference(entry, entry.Enabled);
     }
     
-    public async Task<AutoSubscriptionPreference> GetAutoSubscriptionPreference(NotificationEventAutoSubscription subscriptionAutoSubscriptionSource, ulong userId, bool defaultValue)
+    public async Task<AutoSubscriptionPreference> GetAutoSubscriptionPreference(NotificationEventAutoSubscription subscriptionAutoSubscriptionSource, ulong userId)
     {
         return await GetAutoSubscriptionPreference(subscriptionAutoSubscriptionSource.Channel,
-            subscriptionAutoSubscriptionSource.Event, userId, defaultValue);
+            subscriptionAutoSubscriptionSource.Event, userId);
     }
 
-    public async Task<AutoSubscriptionPreference> GetAutoSubscriptionPreference<TAutoSubscription, TChannel>(ulong userId, bool defaultValue) where TAutoSubscription : IAutoSubscription where TChannel : INotificationChannel
+    public async Task<AutoSubscriptionPreference> GetAutoSubscriptionPreference<TAutoSubscription, TChannel>(ulong userId) where TAutoSubscription : IAutoSubscription where TChannel : INotificationChannel
     {
-        return await GetAutoSubscriptionPreference(TChannel.ChannelName, TAutoSubscription.AutoSubscriptionEventName, userId, defaultValue);
+        return await GetAutoSubscriptionPreference(TChannel.ChannelName, TAutoSubscription.AutoSubscriptionEventName, userId);
     }
     
-    public async Task<AutoSubscriptionPreference> GetAutoSubscriptionPreference(Type autoSubscriptionType, Type channelType, ulong userId, bool defaultValue)
+    public async Task<AutoSubscriptionPreference> GetAutoSubscriptionPreference(Type autoSubscriptionType, Type channelType, ulong userId)
     {
         // Get static properties using Reflection
         var autoSubscriptionEventNameProperty = autoSubscriptionType.GetProperty("AutoSubscriptionEventName", BindingFlags.Public | BindingFlags.Static);
@@ -142,7 +148,7 @@ public class NotificationService(ParlanceContext dbContext) : INotificationServi
         var channelName = (string)channelNameProperty.GetValue(null!)!;
 
         // Call the original function
-        return await GetAutoSubscriptionPreference(channelName, autoSubscriptionEventName, userId, defaultValue);
+        return await GetAutoSubscriptionPreference(channelName, autoSubscriptionEventName, userId);
     }
 
     public async Task SetAutoSubscriptionPreference<TAutoSubscription, TChannel>(ulong userId, bool isSubscribed) where TAutoSubscription : IAutoSubscription where TChannel : INotificationChannel
@@ -150,7 +156,13 @@ public class NotificationService(ParlanceContext dbContext) : INotificationServi
         await SetAutoSubscriptionPreference(new()
         {
             Channel = TChannel.ChannelName,
-            Event = TAutoSubscription.AutoSubscriptionEventName
+            Event = TAutoSubscription.AutoSubscriptionEventName,
         }, userId, isSubscribed);
+    }
+
+    private bool DefaultAutoSubscriptionValue(string channel, string @event)
+    {
+        return AutoSubscriptionRepository.AutoSubscriptions.Single(x => x.Channel == channel && x.Event == @event)
+            .SubscribedByDefault;
     }
 }

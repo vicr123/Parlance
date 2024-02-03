@@ -14,6 +14,7 @@ public class TranslationFreezeTranslationSubmitEventAutoSubscription(
     IServiceProvider serviceProvider) : IHostedService, IAsyncMessageHandler<TranslationSubmitEvent>, IAutoSubscription
 {
     public static string AutoSubscriptionEventName => "TranslationSubmit";
+    public static bool SubscribedByDefault => true;
     private IDisposable? _translationSubmitEventSubscriberSubscription;
     
     public Task StartAsync(CancellationToken cancellationToken)
@@ -33,7 +34,7 @@ public class TranslationFreezeTranslationSubmitEventAutoSubscription(
         await using var scope = serviceProvider.CreateAsyncScope();
         var notificationService = scope.ServiceProvider.GetRequiredService<INotificationService>();
         
-        var subscription = await notificationService.GetAutoSubscriptionPreference<TranslationFreezeTranslationSubmitEventAutoSubscription, TranslationFreezeNotificationChannel>(message.User.Id, true);
+        var subscription = await notificationService.GetAutoSubscriptionPreference<TranslationFreezeTranslationSubmitEventAutoSubscription, TranslationFreezeNotificationChannel>(message.User.Id);
         if (!subscription.IsSubscribed)
         {
             return;

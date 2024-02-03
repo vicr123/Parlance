@@ -23,6 +23,7 @@
     "enable": true
   },
   "include": [
-    "src"
+    "src",
+    "vite/**/*.d.ts"
   ]
 }

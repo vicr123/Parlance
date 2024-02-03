@@ -1,11 +1,15 @@
+export type SubscriptionChannelName = "TranslationFreeze";
+
+export type AutoSubscriptionEventName = "TranslationSubmit";
+
 interface TranslationSubmitEvent {
     type: "TranslationSubmit";
 }
 
-export type AutoSubscriptionEvent = TranslationSubmitEvent;
+export type AutoSubscription = TranslationSubmitEvent;
 
 interface BaseSubscription {
-    autoSubscription?: AutoSubscriptionEvent;
+    autoSubscription?: AutoSubscription;
 }
 
 interface TranslationFreezeSubscription extends BaseSubscription {

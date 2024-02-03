@@ -1,4 +1,3 @@
-using System.Diagnostics;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -26,24 +25,35 @@ public class AutoSubscriptionRepositorySourceGenerator : ISourceGenerator
         var classDeclarations = receiver.NotificationEvents;
 
         // Define list of pairs
-        var pairs = new List<(string, string)>();
+        var pairs = new List<(string, string, bool)>();
 
         // Populate pairs with the class name and static property value
         foreach (var classDeclaration in classDeclarations)
         {
-            var staticProperty = classDeclaration.Class.DescendantNodes()
+            var autoSubscriptionProperty = classDeclaration.Class.DescendantNodes()
                 .OfType<PropertyDeclarationSyntax>()
                 .FirstOrDefault(p => p.Modifiers.Any(SyntaxKind.StaticKeyword) &&
                     p.Identifier.Text == "AutoSubscriptionEventName");
+            
+            var defaultSubscriptionProperty = classDeclaration.Class.DescendantNodes()
+                .OfType<PropertyDeclarationSyntax>()
+                .FirstOrDefault(p => p.Modifiers.Any(SyntaxKind.StaticKeyword) &&
+                                     p.Identifier.Text == "SubscribedByDefault");
 
-            if (staticProperty?.ExpressionBody is null)
+            if (autoSubscriptionProperty?.ExpressionBody is null || defaultSubscriptionProperty?.ExpressionBody is null)
             {
                 continue;
             }
             
-            var propertyValue = (staticProperty.ExpressionBody.Expression as LiteralExpressionSyntax)?.Token.ValueText;
-            pairs.Add((receiver.NotificationChannels.SingleOrDefault(x => x.ClassName == classDeclaration.NotificationChannel)?.ChannelNameValue ?? "???", propertyValue ?? "???"));
+            var autoSubscriptionPropertyValue = (autoSubscriptionProperty.ExpressionBody.Expression as LiteralExpressionSyntax)?.Token.ValueText;
+            var defaultSubscriptionPropertyValue = (defaultSubscriptionProperty.ExpressionBody.Expression as LiteralExpressionSyntax)?.Token.Value as bool?;
+            pairs.Add((
+                receiver.NotificationChannels.SingleOrDefault(x => x.ClassName == classDeclaration.NotificationChannel)?.ChannelNameValue ?? "???",
+                autoSubscriptionPropertyValue ?? "???",
+                defaultSubscriptionPropertyValue ?? false
+            ));
         }
+
 
         // Define source
         var sourceBuilder = $$"""
@@ -51,9 +61,9 @@ public class AutoSubscriptionRepositorySourceGenerator : ISourceGenerator
 
                               public static class AutoSubscriptionRepository
                               {
-                                  public static List<(string, string)> AutoSubscriptions = new()
+                                  public static List<(string Channel, string Event, bool SubscribedByDefault)> AutoSubscriptions = new()
                                   {
-                                      {{string.Join(",\n", pairs.Select(x => $"""new("{x.Item1}", "{x.Item2}")"""))}}
+                                      {{string.Join(",\n", pairs.Select(x => $"""new("{x.Item1}", "{x.Item2}", {x.Item3.ToString().ToLower()})"""))}}
                                   };
                               }
                               """;

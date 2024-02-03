@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
-using Parlance.Notifications.Channels.TranslationFreeze;
 using Parlance.Notifications.Service;
 using Parlance.Vicr123Accounts.Authentication;
 using Parlance.Vicr123Accounts.Services;
@@ -44,14 +43,49 @@ public class NotificationsController(INotificationService notificationService, I
     {
         var userId = ulong.Parse(HttpContext.User.Claims.First(claim => claim.Type == Claims.UserId).Value);
 
-        return Json(new
+        List<object> subscriptions = [];
+        foreach (var subscription in notificationService.GetAutoSubscriptions())
         {
-            Unsubscribed = await unsubscribeService.GetUnsubscriptionState(userId)
-        });
+            subscriptions.Add(new
+            {
+                subscription.Channel,
+                subscription.Event,
+                Subscribed = (await notificationService.GetAutoSubscriptionPreference(subscription.Channel, subscription.Event, userId)).IsSubscribed
+            });
+        }
+        
+        return Json(subscriptions);
     }
 
+    [HttpPost]
+    [Authorize]
+    [Route("autosubscriptions")]
+    public async Task<IActionResult> SetAutoSubscription([FromBody] SetAutoSubscriptionRequestData data)
+    {
+        var userId = ulong.Parse(HttpContext.User.Claims.First(claim => claim.Type == Claims.UserId).Value);
+
+        try
+        {
+            await notificationService.SetAutoSubscriptionPreference(data.Channel, data.Event, userId, data.Subscribed);
+            return NoContent();
+        }
+        catch (InvalidOperationException)
+        {
+            return BadRequest();
+        }
+    }
+    
     public class SetUnsubscriptionStateRequestData
     {
         public required bool Unsubscribed { get; set; }
+    }
+    
+    public class SetAutoSubscriptionRequestData
+    {
+        public required string Channel { get; set; }
+        
+        public required string Event { get; set; }
+        
+        public required bool Subscribed { get; set; }
     }
 }

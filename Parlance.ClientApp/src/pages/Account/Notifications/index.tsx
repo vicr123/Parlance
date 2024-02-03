@@ -18,19 +18,19 @@ export function NotificationsSettings() {
         <BackButton onClick={() => navigate("..")}/>
         <Container>
             <ListPage items={[
-                t("Notifications"),
+                t("NOTIFICATIONS"),
                 {
                     slug: "general",
-                    name: t("General"),
+                    name: t("GENERAL"),
                     render: <GeneralNotificationSettings />,
                     default: true
                 },
                 {
                     slug: "automatic-subscriptions",
-                    name: t("Automatic Subscriptions"),
+                    name: t("AUTO_SUBSCRIPTION_SETTINGS_TITLE"),
                     render: <AutomaticSubscriptions />
                 },
-                t("Channels")
+                t("NOTIFICATIONS_CHANNELS")
             ]} />
         </Container>
     </div>
