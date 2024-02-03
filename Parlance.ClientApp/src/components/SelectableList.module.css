@@ -9,6 +9,8 @@
     padding: 9px;
 
     cursor: default;
+    
+    display: flex;
 }
 
 .listItem:hover {
@@ -29,4 +31,12 @@
 
 .listItem + .listItem {
     border-top: none;
+}
+
+.listItemContents {
+    flex-grow: 1;
+}
+
+.listItemOnState {
+    text-transform: uppercase;
 }

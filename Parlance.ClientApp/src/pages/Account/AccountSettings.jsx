@@ -85,6 +85,10 @@ export default function AccountSettings() {
                 {
                     contents: t("ACCOUNT_SETTINGS_ATTRIBUTION"),
                     onClick: () => navigate("attribution")
+                },
+                {
+                    contents: t("Notifications"),
+                    onClick: () => navigate("notifications")
                 }
             ]}/>
         </Container>
