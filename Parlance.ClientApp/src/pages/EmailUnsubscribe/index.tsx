@@ -4,15 +4,14 @@ import SelectableList from "@/components/SelectableList";
 import React, {useEffect, useMemo, useState} from "react";
 import {Trans, useTranslation} from "react-i18next";
 import {VerticalSpacer} from "@/components/Layouts";
-import {AutoSubscribeEvent, UnsubscribeEvent} from "@/components/unsubscribe/UnsubscribeEvent";
 import {Subscription, UnsubscribeInformation} from "@/interfaces/unsubscribe";
 import Fetch from "@/helpers/Fetch";
 import Spinner from "@/components/Spinner";
 import Modal from "@/components/Modal";
 import LoadingModal from "@/components/modals/LoadingModal";
-import UserManager from "@/helpers/UserManager";
 import {useNavigate} from "react-router-dom";
 import ModalList from "@/components/ModalList";
+import {AutoSubscribeEvent, UnsubscribeEvent} from "@/components/notifications/Events";
 
 type UnsubscribeOptions = "UnsubscribeOnly" | "UnsubscribeTerminateAutoSubscription" | "UnsubscribeTotally" | "UnverifyEmail";
 
@@ -53,20 +52,20 @@ export default function EmailUnsubscribe() {
                 unsubscribeOption: type
             });
 
-            Modal.mount(<Modal heading={t("Unsubscribe")} buttons={[
+            Modal.mount(<Modal heading={t("UNSUBSCRIBE")} buttons={[
                 {
-                    text: t("Notification Settings"),
+                    text: t("NOTIFICATION_SETTINGS"),
                     onClick: () => {
                         Modal.unmount();
                         navigate("/account/notifications")
                     }
                 }
             ]}>
-                {t("You have been unsubscribed.")}
+                {t("UNSUBSCRIBE_SUCCESS")}
             </Modal>)
         } catch (ex) {
-            Modal.mount(<Modal heading={t("Could not unsubscribe from the event")} buttons={[Modal.OkButton]}>
-                {t("Unable to unsubscribe you from the event.")}
+            Modal.mount(<Modal heading={t("UNSUBSCRIBE_ERROR_HEADING")} buttons={[Modal.OkButton]}>
+                {t("UNSUBSCRIBE_ERROR_BODY")}
             </Modal>)
         }
     }
@@ -87,8 +86,8 @@ export default function EmailUnsubscribe() {
     }
 
     const unverifyEmail = () => {
-        Modal.mount(<Modal heading={t("Unverify Email Address")} buttons={[Modal.CancelButton]}>
-            {t("Do you want to unverify the email address associated with this account?")}
+        Modal.mount(<Modal heading={t("UNSUBSCRIBE_UNVERIFY_CONFIRM_TITLE")} buttons={[Modal.CancelButton]}>
+            {t("UNSUBSCRIBE_UNVERIFY_CONFIRM_BODY")}
             <ModalList>
                 {[
                     {
@@ -133,8 +132,8 @@ export default function EmailUnsubscribe() {
             </Container>
             <VerticalSpacer/>
             <Container>
-                <PageHeading level={3}>{t("If this is not your email address")}</PageHeading>
-                <p>{t("If this is not your email address, you can also unverify the email address for this account. Email notifications will not be sent to this email address until the email address is verified again.")}</p>
+                <PageHeading level={3}>{t("EMAIL_UNSUBSCRIBE_UNVERIFY_HEADER")}</PageHeading>
+                <p>{t("EMAIL_UNSUBSCRIBE_UNVERIFY_DESCRIPTION")}</p>
                 <SelectableList onClick={unverifyEmail}>{t("EMAIL_UNVERIFY_BUTTON")}</SelectableList>
             </Container>
         </>}
