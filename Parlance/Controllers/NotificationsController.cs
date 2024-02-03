@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
+using Parlance.Notifications.Channels.TranslationFreeze;
 using Parlance.Notifications.Service;
 using Parlance.Vicr123Accounts.Authentication;
 using Parlance.Vicr123Accounts.Services;
@@ -34,6 +35,19 @@ public class NotificationsController(INotificationService notificationService, I
 
         await unsubscribeService.SetUnsubscriptionState(userId, data.Unsubscribed);
         return NoContent();
+    }
+    
+    [HttpGet]
+    [Authorize]
+    [Route("autosubscriptions")]
+    public async Task<IActionResult> GetAutoSubscriptions()
+    {
+        var userId = ulong.Parse(HttpContext.User.Claims.First(claim => claim.Type == Claims.UserId).Value);
+
+        return Json(new
+        {
+            Unsubscribed = await unsubscribeService.GetUnsubscriptionState(userId)
+        });
     }
 
     public class SetUnsubscriptionStateRequestData

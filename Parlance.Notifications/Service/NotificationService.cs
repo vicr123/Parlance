@@ -1,3 +1,4 @@
+using System.Reflection;
 using Microsoft.EntityFrameworkCore;
 using Parlance.Database;
 using Parlance.Database.Models;
@@ -83,13 +84,12 @@ public class NotificationService(ParlanceContext dbContext) : INotificationServi
             await dbContext.SaveChangesAsync();
         }
     }
-    
-    public async Task<AutoSubscriptionPreference> GetAutoSubscriptionPreference(NotificationEventAutoSubscription subscriptionAutoSubscriptionSource, ulong userId, bool defaultValue)
+
+    public async Task<AutoSubscriptionPreference> GetAutoSubscriptionPreference(string channel, string @event,
+        ulong userId, bool defaultValue)
     {
-        var autoSubscriptionEventName = subscriptionAutoSubscriptionSource.Event;
-        var channelName = subscriptionAutoSubscriptionSource.Channel;
         var entry = await dbContext.NotificationEventAutoSubscriptions.FirstOrDefaultAsync(
-            x => x.Event == autoSubscriptionEventName && x.UserId == userId && x.Channel == channelName);
+            x => x.Event == @event && x.UserId == userId && x.Channel == channel);
 
         if (entry is null)
         {
@@ -97,8 +97,8 @@ public class NotificationService(ParlanceContext dbContext) : INotificationServi
             entry = new NotificationEventAutoSubscription
             {
                 Enabled = defaultValue,
-                Channel = channelName,
-                Event = autoSubscriptionEventName,
+                Channel = channel,
+                Event = @event,
                 UserId = userId
             };
             dbContext.NotificationEventAutoSubscriptions.Add(entry);
@@ -107,14 +107,36 @@ public class NotificationService(ParlanceContext dbContext) : INotificationServi
 
         return new AutoSubscriptionPreference(entry, entry.Enabled);
     }
+    
+    public async Task<AutoSubscriptionPreference> GetAutoSubscriptionPreference(NotificationEventAutoSubscription subscriptionAutoSubscriptionSource, ulong userId, bool defaultValue)
+    {
+        return await GetAutoSubscriptionPreference(subscriptionAutoSubscriptionSource.Channel,
+            subscriptionAutoSubscriptionSource.Event, userId, defaultValue);
+    }
 
     public async Task<AutoSubscriptionPreference> GetAutoSubscriptionPreference<TAutoSubscription, TChannel>(ulong userId, bool defaultValue) where TAutoSubscription : IAutoSubscription<TChannel> where TChannel : INotificationChannel
     {
-        return await GetAutoSubscriptionPreference(new()
+        return await GetAutoSubscriptionPreference(TChannel.ChannelName, TAutoSubscription.AutoSubscriptionEventName, userId, defaultValue);
+    }
+    
+    public async Task<AutoSubscriptionPreference> GetAutoSubscriptionPreference(Type autoSubscriptionType, Type channelType, ulong userId, bool defaultValue)
+    {
+        // Get static properties using Reflection
+        var autoSubscriptionEventNameProperty = autoSubscriptionType.GetProperty("AutoSubscriptionEventName", BindingFlags.Public | BindingFlags.Static);
+        var channelNameProperty = channelType.GetProperty("ChannelName", BindingFlags.Public | BindingFlags.Static);
+
+        // Check if the properties exist
+        if (autoSubscriptionEventNameProperty == null || channelNameProperty == null)
         {
-            Channel = TChannel.ChannelName,
-            Event = TAutoSubscription.AutoSubscriptionEventName
-        }, userId, defaultValue);
+            throw new ArgumentException("The required static properties do not exist in the provided types.");
+        }
+
+        // Get the values of the static properties
+        var autoSubscriptionEventName = (string)autoSubscriptionEventNameProperty.GetValue(null!)!;
+        var channelName = (string)channelNameProperty.GetValue(null!)!;
+
+        // Call the original function
+        return await GetAutoSubscriptionPreference(channelName, autoSubscriptionEventName, userId, defaultValue);
     }
 
     public async Task SetAutoSubscriptionPreference<TAutoSubscription, TChannel>(ulong userId, bool isSubscribed) where TAutoSubscription : IAutoSubscription<TChannel> where TChannel : INotificationChannel
