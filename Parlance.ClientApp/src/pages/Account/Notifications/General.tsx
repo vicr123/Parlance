@@ -44,7 +44,7 @@ export function GeneralNotificationSettings() {
     return <div>
         <ListPageBlock>
             <VerticalLayout>
-                <PageHeading level={3}>{t("General")}</PageHeading>
+                <PageHeading level={3}>{t("GENERAL")}</PageHeading>
                 <span>{t("If you don't want to receive any email notifications from Parlance, you can turn off email notifications altogether.")}</span>
                 <span>{t("EMAIL_UNSUBSCRIBE_COMPLETELY_DESCRIPTION_2")}</span>
                 <SelectableList onClick={toggleEmailNotifications} on={!emailNotificationsOff}>{t("Email Notifications")}</SelectableList>

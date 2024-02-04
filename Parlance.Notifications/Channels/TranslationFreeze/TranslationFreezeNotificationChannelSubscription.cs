@@ -1,8 +1,10 @@
 using System.Text.Json;
 using Parlance.Database.Models;
+using Parlance.Notifications.Generated;
 
 namespace Parlance.Notifications.Channels.TranslationFreeze;
 
+[ChannelSubscription(typeof(TranslationFreezeNotificationChannel))]
 public class TranslationFreezeNotificationChannelSubscription : INotificationChannelSubscription<TranslationFreezeNotificationChannelSubscription>
 {
     record SubscriptionData(string Project);

@@ -12,6 +12,8 @@ public interface INotificationService
     IAsyncEnumerable<TSubscription> SavedSubscriptionPreferences<TNotificationChannel, TSubscription>()
         where TNotificationChannel : INotificationChannel where TSubscription : INotificationChannelSubscription<TSubscription>;
 
+    IAsyncEnumerable<INotificationChannelSubscriptionBase> SavedSubscriptionPreferences(ulong userId);
+
     IEnumerable<AutoSubscription> GetAutoSubscriptions();
     Task<AutoSubscriptionPreference> GetAutoSubscriptionPreference(string channel, string @event, ulong userId);
     Task<AutoSubscriptionPreference> GetAutoSubscriptionPreference<TAutoSubscription, TChannel>(ulong userId) where TAutoSubscription : IAutoSubscription where TChannel : INotificationChannel;

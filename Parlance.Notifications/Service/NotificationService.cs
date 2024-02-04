@@ -62,6 +62,13 @@ public class NotificationService(ParlanceContext dbContext) : INotificationServi
             .Select(TSubscription.FromDatabase);
     }
 
+    public IAsyncEnumerable<INotificationChannelSubscriptionBase> SavedSubscriptionPreferences(ulong userId)
+    {
+        return dbContext.NotificationSubscriptions.AsAsyncEnumerable()
+            .Where(x => x.UserId == userId)
+            .Select(ChannelSubscriptionRepository.FromDatabase);
+    }
+
     public IEnumerable<AutoSubscription> GetAutoSubscriptions()
     {
         return AutoSubscriptionRepository.AutoSubscriptions.Select(x => new AutoSubscription(x.Channel, x.Event, x.SubscribedByDefault));
