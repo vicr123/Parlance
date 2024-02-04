@@ -91,6 +91,26 @@ public class NotificationsController(INotificationService notificationService, I
         }).ToListAsync());
     }
     
+    [HttpPost]
+    [Authorize]
+    [Route("channels")]
+    public async Task<IActionResult> SetChannelSubscription([FromBody] SetChannelSubscriptionRequestData data)
+    {
+        var userId = ulong.Parse(HttpContext.User.Claims.First(claim => claim.Type == Claims.UserId).Value);
+
+        try
+        {
+            var preference = await notificationService.SavedSubscriptionPreferences(userId).SingleAsync(x =>
+                x.Channel == data.Channel && x.GetSubscriptionData() == data.SubscriptionData);
+            await notificationService.UpsertSubscriptionPreference(preference, data.Enabled);
+            return NoContent();
+        }
+        catch (InvalidOperationException)
+        {
+            return BadRequest();
+        }
+    }
+    
     public class SetUnsubscriptionStateRequestData
     {
         public required bool Unsubscribed { get; set; }
@@ -103,5 +123,14 @@ public class NotificationsController(INotificationService notificationService, I
         public required string Event { get; set; }
         
         public required bool Subscribed { get; set; }
+    }
+    
+    public class SetChannelSubscriptionRequestData
+    {
+        public required string Channel { get; set; }
+        
+        public required string SubscriptionData { get; set; }
+        
+        public required bool Enabled { get; set; }
     }
 }

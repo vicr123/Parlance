@@ -10,41 +10,21 @@ import Spinner from "@/components/Spinner";
 import {SubscriptionChannelName} from "@/interfaces/unsubscribe";
 import Fetch from "@/helpers/Fetch";
 import {notificationChannelText, NotificationChannelType} from "@/components/notifications/Events";
-
-interface ChannelSubscriptionState {
-    channel: SubscriptionChannelName;
-    subscriptionData: string;
-    subscribed: boolean;
-}
-
-interface SubscriptionsInitAction {
-    action: "init"
-    data: ChannelSubscriptionState[]
-}
-
-interface SubscriptionsSetAction {
-    action: "set"
-    channel: string
-    subscriptionData: string
-    subscribed: boolean
-}
-
-type SubscriptionsActions = SubscriptionsInitAction | SubscriptionsSetAction;
-
+import {Channel, ChannelSubscriptionsActions, ChannelSubscriptionState} from "@/pages/Account/Notifications/Channel";
 
 export function NotificationsSettings() {
     const [ready, setReady] = useState(false);
     const {t} = useTranslation();
     const navigate = useNavigate();
 
-    const [channels, dispatchChannels] = useReducer((state: ChannelSubscriptionState[], action: SubscriptionsActions) => {
+    const [channels, dispatchChannels] = useReducer((state: ChannelSubscriptionState[], action: ChannelSubscriptionsActions) => {
         switch (action.action) {
             case "init":
                 return action.data;
             case "set":
                 return state.map(item => {
                     if (item.channel == action.channel && item.subscriptionData == action.subscriptionData) {
-                        item.subscribed = action.subscribed;
+                        item.enabled = action.enabled;
                     }
                     return item;
                 });
@@ -90,11 +70,15 @@ export function NotificationsSettings() {
                     render: <AutomaticSubscriptions />
                 },
                 t("NOTIFICATIONS_CHANNELS"),
-                ...Object.keys(groups).map(group => ({
-                    slug: group,
-                    name: t(notificationChannelText(group as SubscriptionChannelName, NotificationChannelType.Name)),
-                    render: <></>
-                }))
+                ...Object.keys(groups).map(groupString => {
+                    const group = groupString as SubscriptionChannelName;
+                    
+                    return {
+                        slug: group,
+                        name: t(notificationChannelText(group, NotificationChannelType.Name)),
+                        render: <Channel channel={group} channels={channels} dispatchChannels={dispatchChannels} />
+                    };
+                })
             ]} />
         </Container>
     </div>
