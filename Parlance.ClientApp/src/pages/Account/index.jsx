@@ -15,6 +15,7 @@ import "./index.css";
 import Otp from "./Otp";
 import SecurityKeys from "./SecurityKeys";
 import Attribution from "./Attribution";
+import {NotificationsSettings} from "@/pages/Account/Notifications/index";
 
 export default function Account() {
     const [ignored, forceUpdate] = useReducer(x => x + 1, 0);
@@ -59,7 +60,7 @@ export default function Account() {
         </Container>
         <TransitionGroup component={"div"}>
             <CSSTransition
-                key={location.pathname}
+                key={location.pathname.split("/")[2]}
                 timeout={250}
                 classNames={"account-settings-lift"}>
                 <Routes location={location}>
@@ -71,6 +72,7 @@ export default function Account() {
                     <Route element={<SecurityKeys/>} path={"/keys"}/>
                     <Route element={<Otp/>} path={"/otp"}/>
                     <Route element={<Attribution/>} path={"/attribution"}/>
+                    <Route element={<NotificationsSettings/>} path={"/notifications/*"}/>
                 </Routes>
             </CSSTransition>
         </TransitionGroup>

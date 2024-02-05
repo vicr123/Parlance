@@ -165,4 +165,14 @@ public class Vicr123AccountsDummyService : IVicr123AccountsService
     {
         throw new NotSupportedException();
     }
+
+    public Task SendEmail(User user, (string Address, string Name) from, string subject, string textContent, string htmlContent)
+    {
+        throw new NotSupportedException();
+    }
+
+    public Task UnverifyEmail(User user)
+    {
+        throw new NotSupportedException();
+    }
 }

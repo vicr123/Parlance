@@ -1,5 +1,6 @@
 using System.Globalization;
 using LibGit2Sharp;
+using MessagePipe;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
@@ -10,6 +11,7 @@ using Parlance.CldrData;
 using Parlance.Glossary.Services;
 using Parlance.Helpers;
 using Parlance.Project;
+using Parlance.Project.Events;
 using Parlance.Project.Exceptions;
 using Parlance.Project.Index;
 using Parlance.Project.SourceStrings;
@@ -18,7 +20,6 @@ using Parlance.Services.Comments;
 using Parlance.Services.Permissions;
 using Parlance.Services.ProjectMaintainers;
 using Parlance.Services.Projects;
-using Parlance.VersionControl.Services.PendingEdits;
 using Parlance.Vicr123Accounts.Authentication;
 using Parlance.Vicr123Accounts.Services;
 using Tmds.DBus;
@@ -33,11 +34,11 @@ public class ProjectsController(
     IPermissionsService permissionsService,
     IParlanceIndexingService indexingService,
     IParlanceSourceStringsService sourceStringsService,
-    IPendingEditsService pendingEditsService,
     IVicr123AccountsService accountsService,
     IProjectMaintainersService projectMaintainersService,
     IGlossaryService glossaryService,
-    ICommentsService commentsService)
+    ICommentsService commentsService,
+    IAsyncPublisher<TranslationSubmitEvent> translationSubmitEventPublisher)
     : Controller
 {
     [HttpGet]
@@ -568,10 +569,14 @@ public class ProjectsController(
             }
 
             entry.Translation = data.TranslationStrings;
-
-            //Record this edit in the database
-            await sourceStringsService.RegisterSourceStringChange(subprojectLanguage, entry);
-            await pendingEditsService.RecordPendingEdit(subprojectLanguage, user);
+            
+            await translationSubmitEventPublisher.PublishAsync(new()
+            {
+                Project = p,
+                SubprojectLanguage = subprojectLanguage,
+                Entry = entry,
+                User = user
+            });
 
             await translationFile.Save();
 
@@ -616,8 +621,13 @@ public class ProjectsController(
                 entry.Translation = translationData.TranslationStrings;
 
                 //Record this edit in the database
-                await sourceStringsService.RegisterSourceStringChange(subprojectLanguage, entry);
-                await pendingEditsService.RecordPendingEdit(subprojectLanguage, user);
+                await translationSubmitEventPublisher.PublishAsync(new()
+                {
+                    Project = p,
+                    SubprojectLanguage = subprojectLanguage,
+                    Entry = entry,
+                    User = user
+                });
             }
 
             await translationFile.Save();

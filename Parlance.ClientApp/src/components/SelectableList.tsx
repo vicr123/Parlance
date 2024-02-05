@@ -10,40 +10,67 @@ import PreloadingBlock from "./PreloadingBlock";
 interface SelectableListItemObject {
     onClick?: () => void
     contents: ReactNode
-    containerClass?: string
+    containerClass?: string,
+    on?: boolean
 }
 
 type SelectableListItem = SelectableListItemObject | string;
 
-interface SelectableListProps {
+interface SelectableListOneItemProps {
     children?: React.ReactElement
     onClick?: () => void
-    items?: SelectableListItem[]
+    on?: boolean
 }
+
+interface SelectableListMultiItemProps {
+    items?: (SelectableListItem | undefined)[]
+}
+
+type SelectableListProps = SelectableListOneItemProps | SelectableListMultiItemProps;
 
 interface SelectableListLocaleProps {
     locales: string[];
     onLocaleSelected: (locale: string) => void;
 }
 
-export default function SelectableList({children, onClick, items} : SelectableListProps): ReactElement | null {
-    if (children) {
+function SelectableListItem({item}: {
+    item: SelectableListItemObject
+}) {
+    const {t} = useTranslation();
+    
+    return <div className={`${Styles.listItem} ${item.containerClass}`} onClick={item.onClick}>
+        <div className={Styles.listItemContents}>{item.contents}</div>
+        {item.on !== undefined && <div className={Styles.listItemOnState}>
+            {item.on ? t("On") : t("Off")}
+        </div>}
+    </div>
+}
+
+export default function SelectableList(props: SelectableListProps): ReactElement | null {
+    if ("children" in props && props.children) {
+        const {children, onClick, on} = props;
         return <div className={Styles.listContainer}>
-            <div className={Styles.listItem} onClick={onClick}>{children}</div>
+            <SelectableListItem item={{
+                contents: children,
+                onClick: onClick,
+                on: on
+            }} />
         </div>
-    } else {
+    } else if ("items" in props) {
+        const {items} = props;
         if (!items?.length) return null;
 
         return <div className={Styles.listContainer}>
-            {items.map((item, index) => {
+            {items.filter(item => item).map((item, index) => {
                 if (typeof (item) === "string") {
-                    return <div className={Styles.listSection}>{item}</div>
+                    return <div className={Styles.listSection} key={index}>{item}</div>
                 } else {
-                    return <div className={`${Styles.listItem} ${item.containerClass}`} key={index} onClick={item.onClick}>{item.contents}</div>
+                    return <SelectableListItem item={item!} key={index} />
                 }
             })}
         </div>
     }
+    return null;
 }
 
 SelectableList.Locales = function Locales({locales, onLocaleSelected}: SelectableListLocaleProps): ReactElement {

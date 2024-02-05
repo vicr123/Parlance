@@ -17,7 +17,7 @@ namespace Parlance.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "7.0.0")
+                .HasAnnotation("ProductVersion", "8.0.0")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -279,6 +279,75 @@ namespace Parlance.Migrations
                     b.ToTable("Index", (string)null);
                 });
 
+            modelBuilder.Entity("Parlance.Database.Models.NotificationEventAutoSubscription", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Channel")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<bool>("Enabled")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Event")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<decimal>("UserId")
+                        .HasColumnType("numeric(20,0)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("NotificationEventAutoSubscriptions", (string)null);
+                });
+
+            modelBuilder.Entity("Parlance.Database.Models.NotificationSubscription", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid?>("AutoSubscriptionSourceId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Channel")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<bool>("Enabled")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("SubscriptionData")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<decimal>("UserId")
+                        .HasColumnType("numeric(20,0)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AutoSubscriptionSourceId");
+
+                    b.HasIndex("UserId", "Channel", "SubscriptionData")
+                        .IsUnique();
+
+                    b.ToTable("NotificationSubscriptions", (string)null);
+                });
+
+            modelBuilder.Entity("Parlance.Database.Models.NotificationUnsubscription", b =>
+                {
+                    b.Property<decimal>("UserId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("numeric(20,0)");
+
+                    b.HasKey("UserId");
+
+                    b.ToTable("NotificationUnsubscriptions", (string)null);
+                });
+
             modelBuilder.Entity("Parlance.Database.Models.Permission", b =>
                 {
                     b.Property<Guid>("Id")
@@ -467,6 +536,15 @@ namespace Parlance.Migrations
                         .IsRequired();
 
                     b.Navigation("Glossary");
+                });
+
+            modelBuilder.Entity("Parlance.Database.Models.NotificationSubscription", b =>
+                {
+                    b.HasOne("Parlance.Database.Models.NotificationEventAutoSubscription", "AutoSubscriptionSource")
+                        .WithMany()
+                        .HasForeignKey("AutoSubscriptionSourceId");
+
+                    b.Navigation("AutoSubscriptionSource");
                 });
 
             modelBuilder.Entity("Parlance.Database.Models.ProjectMaintainer", b =>

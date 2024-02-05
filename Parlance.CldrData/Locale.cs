@@ -1,4 +1,5 @@
 using System.Collections.Concurrent;
+using System.Globalization;
 using System.Text;
 using System.Text.Json;
 using System.Xml.XPath;
@@ -148,6 +149,8 @@ public record Locale
         var dir = new DirectoryInfo(Path.Combine(Cldr.Instance.Repositories[0], "common/main"));
         return dir.EnumerateFiles().Select(info => Path.GetFileNameWithoutExtension(info.Name).ToLocale()).Distinct();
     }
+    
+    public CultureInfo ToCultureInfo() => new(ToDashed());
 
     public void Deconstruct(out string LanguageCode, out string? CountryCode, out string? Script)
     {

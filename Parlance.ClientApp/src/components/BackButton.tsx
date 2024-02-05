@@ -9,7 +9,7 @@ interface BackButtonProps {
     onClick: () => void;
     inListPage?: boolean;
     inTranslationView?: boolean;
-    text: string;
+    text?: string;
     className?: string;
 }
 

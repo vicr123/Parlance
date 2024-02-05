@@ -1,0 +1,9 @@
+﻿{
+  "$schema": "http://json.schemastore.org/launchsettings.json",
+  "profiles": {
+    "DebugProjectNotifications": {
+      "commandName": "DebugRoslynComponent",
+      "targetProject": "../Parlance.Notifications/Parlance.Notifications.csproj"
+    }
+  }
+}

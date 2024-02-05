@@ -25,6 +25,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{54A90642-561A-4BB1-A94E-469ADEE60C69}") = "Parlance.ClientApp", "Parlance.ClientApp\Parlance.ClientApp.esproj", "{7DDB194B-378C-460D-9486-46E3C239838D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Parlance.Notifications", "Parlance.Notifications\Parlance.Notifications.csproj", "{900F56B1-8346-4286-93D7-9BE495174FA7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Parlance.Roslyn", "Parlance.Roslyn\Parlance.Roslyn.csproj", "{5663604C-A38C-4180-ACA7-A8CCBDA2B777}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -65,6 +69,14 @@ Global
 		{7DDB194B-378C-460D-9486-46E3C239838D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7DDB194B-378C-460D-9486-46E3C239838D}.Release|Any CPU.Build.0 = Release|Any CPU
 		{7DDB194B-378C-460D-9486-46E3C239838D}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{900F56B1-8346-4286-93D7-9BE495174FA7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{900F56B1-8346-4286-93D7-9BE495174FA7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{900F56B1-8346-4286-93D7-9BE495174FA7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{900F56B1-8346-4286-93D7-9BE495174FA7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5663604C-A38C-4180-ACA7-A8CCBDA2B777}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5663604C-A38C-4180-ACA7-A8CCBDA2B777}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5663604C-A38C-4180-ACA7-A8CCBDA2B777}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5663604C-A38C-4180-ACA7-A8CCBDA2B777}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

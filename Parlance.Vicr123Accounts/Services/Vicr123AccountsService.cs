@@ -140,6 +140,15 @@ public class Vicr123AccountsService : IVicr123AccountsService
         }
     }
 
+    public async Task UnverifyEmail(User user)
+    {
+        var objectPath = await _manager.UserByIdAsync(user.Id);
+        var userProxy = _connection.CreateProxy<IUser>(_serviceName, objectPath);
+        if (!await userProxy.GetVerifiedAsync()) throw new InvalidOperationException();
+
+        await userProxy.SetEmailVerifiedAsync(false);
+    }
+
     public async Task<bool> OtpEnabled(User user)
     {
         var objectPath = await _manager.UserByIdAsync(user.Id);
@@ -271,6 +280,25 @@ public class Vicr123AccountsService : IVicr123AccountsService
         var objectPath = await _manager.UserByIdAsync(user.Id);
         var fidoProxy = _connection.CreateProxy<IFido2>(_serviceName, objectPath);
         await fidoProxy.DeleteKeyAsync(id);
+    }
+
+    public async Task SendEmail(User user, (string Address, string Name) from, string subject, string textContent, string htmlContent)
+    {
+        var objectPath = await _manager.UserByIdAsync(user.Id);
+        var userProxy = _connection.CreateProxy<IUser>(_serviceName, objectPath);
+        if (!await userProxy.GetVerifiedAsync()) return; // Don't send email to users that are not verified
+
+        var mailMessageObjectPath = await userProxy.CreateMailMessageAsync();
+        var mailMessageProxy = _connection.CreateProxy<IMailMessage>(_serviceName, mailMessageObjectPath);
+
+        await Task.WhenAll(
+            mailMessageProxy.SetFromAsync(from),
+            mailMessageProxy.SetSubjectAsync(subject),
+            mailMessageProxy.SetHtmlContentAsync(htmlContent),
+            mailMessageProxy.SetTextContentAsync(textContent)
+        );
+        
+        await mailMessageProxy.SendAsync();
     }
 
     private async Task InitAsync()

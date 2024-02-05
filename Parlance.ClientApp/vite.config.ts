@@ -4,6 +4,7 @@ import plugin from '@vitejs/plugin-react';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as child_process from 'child_process';
+import PolyfillGroupByPlugin from "./vite/groupby-polyfill/vite-plugin-polyfill-groupby";
 
 interface ProcessEnv {
     [key: string]: string | undefined;
@@ -40,7 +41,7 @@ const target: string = env.ASPNETCORE_HTTPS_PORT ? `https://localhost:${env.ASPN
 // https://vitejs.dev/config/
 // noinspection JSUnusedGlobalSymbols
 export default defineConfig({
-    plugins: [plugin()],
+    plugins: [plugin(), PolyfillGroupByPlugin()],
     resolve: {
         alias: {
             // @ts-ignore

@@ -7,6 +7,11 @@
     <ItemGroup>
         <PackageReference Include="BouncyCastle.Cryptography" Version="2.2.1" />
         <PackageReference Include="libgit2sharp-native" Version="0.27.0-preview-0196-gd20d81e9a4" />
+        <PackageReference Include="MessagePipe" Version="1.7.4" />
+        <PackageReference Include="MessagePipe.Analyzer" Version="1.7.4">
+          <PrivateAssets>all</PrivateAssets>
+          <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
     </ItemGroup>
 
     <ItemGroup>
