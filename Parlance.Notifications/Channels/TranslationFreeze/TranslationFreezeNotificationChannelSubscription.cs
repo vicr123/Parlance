@@ -1,6 +1,6 @@
 using System.Text.Json;
 using Parlance.Database.Models;
-using Parlance.Notifications.Generated;
+using Parlance.Notifications.Attributes;
 
 namespace Parlance.Notifications.Channels.TranslationFreeze;
 

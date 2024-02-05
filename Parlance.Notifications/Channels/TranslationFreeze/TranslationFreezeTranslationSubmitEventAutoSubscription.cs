@@ -2,7 +2,7 @@ using MessagePipe;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Parlance.Notifications.Generated;
+using Parlance.Notifications.Attributes;
 using Parlance.Notifications.Service;
 using Parlance.Project.Events;
 
