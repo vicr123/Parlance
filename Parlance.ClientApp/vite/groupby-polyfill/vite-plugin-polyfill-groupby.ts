@@ -6,7 +6,7 @@ export default function PolyfillGroupByPlugin(): Plugin {
     return {
         name: 'polyfill-groupby',
         transform(code, id) {
-            if (!/node_modules/.test(id)) {         // Ignore 'node_modules' files
+            if (!/node_modules/.test(id) && id.endsWith(".ts")) {         // Ignore 'node_modules' files
                 return {
                     code: `
             if (!Object.prototype.groupBy) {
