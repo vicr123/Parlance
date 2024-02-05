@@ -32,8 +32,7 @@ public class TranslationFreezeNotificationChannel(
 
     public async ValueTask HandleAsync(ProjectMetadataFileChangedEvent message, CancellationToken cancellationToken)
     {
-        // TODO: Ensure deadline is in the future
-        if (message.OldProject?.Deadline != message.NewProject?.Deadline && message.NewProject?.Deadline is not null)
+        if (message.OldProject?.Deadline != message.NewProject?.Deadline && message.NewProject?.Deadline is not null && message.NewProject.Deadline > DateTime.UtcNow)
         {
             await TriggerNotification(message);
         }
