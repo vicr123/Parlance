@@ -132,7 +132,10 @@ public class GitVersionControlService(
     private void ReconcileRemoteWithLocalCore(Database.Models.Project project, out bool projectMetaChanged)
     {
         using var repo = new Repository(project.VcsDirectory);
-        var oldProjectMetaRevision = repo.Commits.QueryBy(".parlance.json").FirstOrDefault()?.Commit.Sha;
+        var oldProjectMetaRevision = repo.Commits.QueryBy(".parlance.json", new CommitFilter
+        {
+            SortBy = CommitSortStrategies.Time | CommitSortStrategies.Topological
+        }).FirstOrDefault()?.Commit.Sha;
         if (repo.RetrieveStatus().IsDirty) throw new DirtyWorkingTreeException();
 
         //Attempt to reconcile the remote by rebasing
@@ -148,7 +151,10 @@ public class GitVersionControlService(
             ReconcileRemoteWithLocalCoreMerge(repo);
         }
         
-        var projectMetaRevision = repo.Commits.QueryBy(".parlance.json").FirstOrDefault()?.Commit.Sha;
+        var projectMetaRevision = repo.Commits.QueryBy(".parlance.json", new CommitFilter
+        {
+            SortBy = CommitSortStrategies.Time | CommitSortStrategies.Topological
+        }).FirstOrDefault()?.Commit.Sha;
         projectMetaChanged = projectMetaRevision != oldProjectMetaRevision;
     }
 
