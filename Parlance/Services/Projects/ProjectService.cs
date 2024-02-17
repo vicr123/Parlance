@@ -87,9 +87,9 @@ public class ProjectService(
 
     public async Task RemoveProject(Database.Models.Project project)
     {
-        Directory.Delete(project.VcsDirectory, true);
         dbContext.Projects.Remove(project);
-
         await dbContext.SaveChangesAsync();
+        
+        Directory.Delete(project.VcsDirectory, true);
     }
 }
