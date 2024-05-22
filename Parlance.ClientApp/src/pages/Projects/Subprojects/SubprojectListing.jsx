@@ -48,7 +48,6 @@ export default function SubprojectListing() {
         {deadlineInfo.valid && <WallMessage title={t("TRANSLATION_FREEZE")}
                                             message={t("TRANSLATION_FREEZE_PROMPT", {date: deadlineInfo.date})}/>}
         <BackButton text={t("BACK_TO_PROJECTS")} onClick={() => navigate("../..")}/>
-        <VerticalSpacer/>
         <ErrorCover error={error}>
             <Container>
                 <PageHeading level={3}>{t("AVAILABLE_SUBPROJECTS")}</PageHeading>
@@ -58,7 +57,6 @@ export default function SubprojectListing() {
                     onClick: () => navigate(p.systemName)
                 })) : TranslationProgressIndicator.PreloadContents()}/>
             </Container>
-            <VerticalSpacer/>
         </ErrorCover>
         {projectData?.isProjectManager &&
             <Container>

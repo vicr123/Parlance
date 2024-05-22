@@ -87,7 +87,6 @@ export default function LanguageListing() {
     return <div>
         <Hero heading={subprojectData?.projectName} subheading={subprojectData?.name} buttons={[]}/>
         <BackButton text={t("BACK_TO_SUBPROJECTS")} onClick={() => navigate("../..")}/>
-        <VerticalSpacer/>
         <ErrorCover error={error}>
             {myLanguages &&
                 <>
@@ -100,7 +99,6 @@ export default function LanguageListing() {
                             onClick: () => translationClicked(p.language)
                         })) : TranslationProgressIndicator.PreloadContents()}/>
                     </Container>
-                    <VerticalSpacer/>
                 </>
             }
             <Container>

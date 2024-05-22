@@ -67,7 +67,6 @@ export default function ServerLanguageListing() {
 
     return <div>
         <Hero heading={t("AVAILABLE_LANGUAGES")} buttons={[]}/>
-        <VerticalSpacer/>
         <ErrorCover error={error}>
             {myLanguages &&
                 <>
@@ -79,7 +78,6 @@ export default function ServerLanguageListing() {
                             onClick: () => translationClicked(p.language)
                         })) : TranslationProgressIndicator.PreloadContents()}/>
                     </Container>
-                    <VerticalSpacer/>
                 </>
             }
             <Container>

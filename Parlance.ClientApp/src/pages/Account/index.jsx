@@ -17,6 +17,7 @@ import SecurityKeys from "./SecurityKeys";
 import Attribution from "./Attribution";
 import {NotificationsSettings} from "@/pages/Account/Notifications/index";
 import {ServerInformationContext} from "@/context/ServerInformationContext";
+import Hero from "@/components/Hero";
 
 export default function Account() {
     const [ignored, forceUpdate] = useReducer(x => x + 1, 0);
@@ -28,17 +29,7 @@ export default function Account() {
 
     if (!UserManager.isLoggedIn) {
         return <div>
-            <Container bottomBorder={true} style={{
-                backgroundColor: "var(--hover-color)"
-            }}>
-                <div style={{
-                    paddingTop: "20px",
-                    paddingBottom: "20px"
-                }}>
-                    <PageHeading>{t("ACCOUNT_SETTINGS")}</PageHeading>
-                    <PageHeading level={2}>{t("ACCOUNT_SETTINGS_SUBTITLE", {account: serverInformation.accountName})}</PageHeading>
-                </div>
-            </Container>
+            <Hero heading={t("ACCOUNT_SETTINGS")} subheading={t("ACCOUNT_SETTINGS_SUBTITLE", {account: serverInformation.accountName})} />
             <Container style={{
                 paddingTop: "20px"
             }}>
@@ -49,17 +40,7 @@ export default function Account() {
     }
 
     return <div>
-        <Container bottomBorder={true} style={{
-            backgroundColor: "var(--hover-color)"
-        }}>
-            <div style={{
-                paddingTop: "20px",
-                paddingBottom: "20px"
-            }}>
-                <PageHeading>{t("ACCOUNT_SETTINGS")}</PageHeading>
-                <PageHeading level={2}>{t("ACCOUNT_SETTINGS_SUBTITLE", {account: serverInformation.accountName})}</PageHeading>
-            </div>
-        </Container>
+        <Hero heading={t("ACCOUNT_SETTINGS")} subheading={t("ACCOUNT_SETTINGS_SUBTITLE", {account: serverInformation.accountName})} />
         <TransitionGroup component={"div"}>
             <CSSTransition
                 key={location.pathname.split("/")[2]}

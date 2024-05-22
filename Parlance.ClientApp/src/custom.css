@@ -40,6 +40,10 @@ body {
 
     --preloading-block-color-1: rgba(255, 255, 255, 0.3);
     --preloading-block-color-2: rgba(255, 255, 255, 0.4);
+    
+    --layer-color: rgba(255, 255, 255, calc(10 / 255));
+    
+    --border-radius: 4px;
 
     --fixed-font: 'JetBrains Mono', monospace;
     --standard-font: 'Contemporary', sans-serif;
@@ -71,6 +75,8 @@ body {
 
         --preloading-block-color-1: rgba(0, 0, 0, 0.3);
         --preloading-block-color-2: rgba(0, 0, 0, 0.4);
+        
+        --layer-color: rgba(0, 0, 0, calc(20 / 255));
     }
 }
 

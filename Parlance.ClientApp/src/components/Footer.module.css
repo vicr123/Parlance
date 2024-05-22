@@ -5,7 +5,7 @@
     align-items: center;
     justify-content: center;
 
-    border-top: 1px solid var(--border-color);
+    background-color: var(--layer-color);
 }
 
 .footer {

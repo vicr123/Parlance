@@ -44,7 +44,7 @@ export default function AccountSettings() {
     </div>
 
     return <div>
-        <Container>
+        <Container style={{backgroundColor: "unset"}}>
             <div className={Styles.accountHeader}>
                 <span className={Styles.accountUsername}>{UserManager.currentUser.username}</span>
                 <span className={Styles.accountEmail}>{UserManager.currentUser.email}</span>
@@ -67,7 +67,11 @@ export default function AccountSettings() {
                 {
                     contents: t("ACCOUNT_SETTINGS_CHANGE_EMAIL_ADDRESS"),
                     onClick: () => navigate("email")
-                },
+                },]} 
+            />
+        </Container>
+        <Container>
+            <SelectableList items={[
                 t("ACCOUNT_SETTINGS_SECURITY"),
                 {
                     contents: t("ACCOUNT_SETTINGS_CHANGE_PASSWORD"),
@@ -81,11 +85,19 @@ export default function AccountSettings() {
                     contents: t("ACCOUNT_SETTINGS_MANAGE_SECURITY_KEYS"),
                     onClick: () => navigate("keys")
                 },
+            ]} />
+        </Container>
+        <Container>
+            <SelectableList items={[
                 t("Alerts"),
                 {
                     contents: t("Notifications"),
                     onClick: () => navigate("notifications")
                 },
+            ]} />
+        </Container>
+        <Container>
+            <SelectableList items={[
                 t("ACCOUNT_SETTINGS_PRIVACY"),
                 {
                     contents: t("ACCOUNT_SETTINGS_ATTRIBUTION"),

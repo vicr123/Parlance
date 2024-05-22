@@ -88,7 +88,6 @@ export default function ServerLanguageProjectListing() {
     return <div>
         <Hero heading={i18n.humanReadableLocale(language)} buttons={[]}/>
         <BackButton text={t("BACK_TO_LANGUAGES")} onClick={() => navigate("../")}/>
-        <VerticalSpacer/>
         <ErrorCover error={error}>
             {done ? subprojectData.map(project =>
                 <>
@@ -104,12 +103,10 @@ export default function ServerLanguageProjectListing() {
                             onClick: () => translationClicked(project, sp)
                         }))}/>
                     </Container></ErrorCover>
-                    <VerticalSpacer/>
                 </>
             ) : [1, 2, 3].map(() => <Container>
                 <PageHeading level={3}><PreloadingBlock width={20}>TEXT</PreloadingBlock></PageHeading>
                     <SelectableList items={TranslationProgressIndicator.PreloadContents()}/>
-                    <VerticalSpacer/>
                 </Container>)
             }
         </ErrorCover>

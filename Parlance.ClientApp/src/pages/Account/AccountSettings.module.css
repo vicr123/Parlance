@@ -1,6 +1,4 @@
 .accountHeader {
-    padding-top: 20px;
-
     display: grid;
 
     grid-template-columns: max-content 1fr;
