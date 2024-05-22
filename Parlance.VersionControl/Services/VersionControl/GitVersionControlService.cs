@@ -201,10 +201,13 @@ public class GitVersionControlService(
             var repoPath = Repository.Clone(cloneUrl, directory,
                 new CloneOptions
                 {
-                    CredentialsProvider = remoteCommunicationService.CredentialsHandler,
-                    CertificateCheck = remoteCommunicationService.CertificateCheckHandler,
+                    FetchOptions =
+                    {
+                        CredentialsProvider = remoteCommunicationService.CredentialsHandler,
+                        CertificateCheck = remoteCommunicationService.CertificateCheckHandler,
+                        OnTransferProgress = _ => true
+                    },
                     IsBare = false,
-                    OnTransferProgress = progress => { return true; }
                 });
 
             using var repo = new Repository(repoPath);
