@@ -41,3 +41,20 @@ export type PasswordResetChallenge = PasswordResetChallengeEmail;
 interface PasswordResetChallengeEmail {
     email: string
 }
+
+interface OtpBackupCode {
+    used: boolean
+    code: string
+}
+
+export type OtpState = OtpStateEnabled | OtpStateDisabled
+
+export interface OtpStateEnabled {
+    enabled: true
+    backupCodes: OtpBackupCode[]
+}
+
+export interface OtpStateDisabled {
+    enabled: false
+    key: string
+}

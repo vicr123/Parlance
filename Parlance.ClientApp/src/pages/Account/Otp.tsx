@@ -6,7 +6,7 @@ import LineEdit from "../../components/LineEdit";
 import SelectableList from "../../components/SelectableList";
 import {useNavigate} from "react-router-dom";
 import {useTranslation} from "react-i18next";
-import React, {useEffect, useRef, useState} from "react";
+import React, {useEffect, useRef, useState, useContext, ForwardedRef} from "react";
 import Modal from "../../components/Modal";
 import PasswordConfirmModal from "../../components/modals/account/PasswordConfirmModal";
 import Fetch from "../../helpers/Fetch";
@@ -16,45 +16,56 @@ import LoadingModal from "../../components/modals/LoadingModal";
 import ErrorModal from "../../components/modals/ErrorModal";
 import {useReactToPrint} from "react-to-print";
 import i18n from "../../helpers/i18n";
+import {OtpState, OtpStateDisabled, OtpStateEnabled} from "@/interfaces/users"
+import {ServerInformationContext} from "@/context/ServerInformationContext";
 
-function OtpBlock({otpState}) {
+function OtpBlock({otpState}: {
+    otpState: OtpStateEnabled
+}) {
     return <div className={Styles.backupCodesContainer}>
         {otpState.backupCodes.map(code => <span dir={"ltr"}
-                                                className={[Styles.backupCode, ...[code.used ? [Styles.backupCodeUsed] : []]].join(" ")}>{code.code.match(/.{1,4}/g).join(" ")}</span>)}
+                                                className={[Styles.backupCode, ...[code.used ? [Styles.backupCodeUsed] : []]].join(" ")}>{code.code.match(/.{1,4}/g)!.join(" ")}</span>)}
     </div>
 }
 
-const PrintableOtpCodes = React.forwardRef(function PrintableOtpCodes({otpState}, ref) {
-    const {t} = useTranslation();
-
-    return <div style={{display: "none"}}>
-        <div ref={ref} className={Styles.printPage}>
-            <VerticalLayout>
-                <span className={Styles.printHeader}>Parlance</span>
-                <span className={Styles.printSubtitle}>{t("BACKUP_CODES_PRINT_TITLE")}</span>
-            </VerticalLayout>
-            <hr/>
-            <VerticalLayout>
-                <span>{t("BACKUP_CODES_PRINT_PROMPT_1")}</span>
-                <span>{t("BACKUP_CODES_PRINT_PROMPT_2")}</span>
-                <span>{t("BACKUP_CODES_PRINT_PROMPT_3")}</span>
-                <span>{t("BACKUP_CODES_PRINT_PROMPT_4", {
-                    date: (new Intl.DateTimeFormat(i18n.language, {
-                        dateStyle: "full"
-                    }).format(new Date()))
-                })}</span>
-                <OtpBlock otpState={otpState}/>
-            </VerticalLayout>
-            <VerticalSpacer height={20}/>
-            <VerticalLayout>
-                <PageHeading level={3}>{t("BACKUP_CODES_PRINT_PROMPT_5")}</PageHeading>
-                <span>{t("BACKUP_CODES_PRINT_PROMPT_6")}</span>
-            </VerticalLayout>
+const PrintableOtpCodes = React.forwardRef(
+    function PrintableOtpCodes({otpState}: {otpState: OtpStateEnabled}, ref: ForwardedRef<HTMLDivElement>) {
+        const {t} = useTranslation();
+        const serverInformation = useContext(ServerInformationContext);
+    
+        return <div style={{display: "none"}}>
+            <div ref={ref} className={Styles.printPage}>
+                <VerticalLayout>
+                    <span className={Styles.printHeader}>Parlance</span>
+                    <span className={Styles.printSubtitle}>{t("BACKUP_CODES_PRINT_TITLE")}</span>
+                </VerticalLayout>
+                <hr/>
+                <VerticalLayout>
+                    <span>{t("BACKUP_CODES_PRINT_PROMPT_1")}</span>
+                    <span>{t("BACKUP_CODES_PRINT_PROMPT_2")}</span>
+                    <span>{t("BACKUP_CODES_PRINT_PROMPT_3")}</span>
+                    <span>{t("BACKUP_CODES_PRINT_PROMPT_4", {
+                        date: (new Intl.DateTimeFormat(i18n.language, {
+                            dateStyle: "full"
+                        }).format(new Date()))
+                    })}</span>
+                    <OtpBlock otpState={otpState}/>
+                </VerticalLayout>
+                <VerticalSpacer height={20}/>
+                <VerticalLayout>
+                    <PageHeading level={3}>{t("BACKUP_CODES_PRINT_PROMPT_5")}</PageHeading>
+                    <span>{t("BACKUP_CODES_PRINT_PROMPT_6", {account: serverInformation.accountName})}</span>
+                </VerticalLayout>
+            </div>
         </div>
-    </div>
-})
+    }
+)
 
-function OtpDisabledContent({otpState, onReload, password}) {
+function OtpDisabledContent({otpState, onReload, password}: {
+    otpState: OtpStateDisabled,
+    onReload: () => void,
+    password: string
+}) {
     const [otpCode, setOtpCode] = useState("");
     const {t} = useTranslation();
 
@@ -96,7 +107,7 @@ function OtpDisabledContent({otpState, onReload, password}) {
                         <QRCode className={Styles.setupQr}
                                 value={`otpauth://totp/Victor%20Tran?secret=${otpState.key}`}/>
                         <span>{t("ACCOUNT_SETTINGS_TWO_FACTOR_STEP_TWO_2")}</span>
-                        <span className={Styles.manualSetupKey}>{otpState.key.match(/.{1,4}/g).join(" ")}</span>
+                        <span className={Styles.manualSetupKey}>{otpState.key.match(/.{1,4}/g)!.join(" ")}</span>
                     </VerticalLayout>
                 </div>
 
@@ -111,19 +122,23 @@ function OtpDisabledContent({otpState, onReload, password}) {
                 <PageHeading level={3}>{t("ACCOUNT_SETTINGS_TWO_FACTOR_COMPLETE_SETUP")}</PageHeading>
                 <span>{t("ACCOUNT_SETTINGS_TWO_FACTOR_COMPLETE_SETUP_PROMPT")}</span>
                 <LineEdit placeholder={t("TWO_FACTOR_AUTHENTICATION_CODE")} value={otpCode}
-                          onChange={e => setOtpCode(e.target.value)}/>
+                          onChange={e => setOtpCode((e.target as HTMLInputElement).value)}/>
                 <SelectableList onClick={performEnable}>{t("ENABLE_TWO_FACTOR_AUTHENTICATION")}</SelectableList>
             </VerticalLayout>
         </Container>
     </>
 }
 
-function OtpEnabledContent({otpState, onReload, password}) {
+function OtpEnabledContent({otpState, onReload, password}: {
+    otpState: OtpStateEnabled,
+    onReload: () => void,
+    password: string
+}) {
     const navigate = useNavigate();
-    const printRef = useRef();
+    const printRef = useRef<HTMLDivElement>(null);
     const {t} = useTranslation();
     const handlePrint = useReactToPrint({
-        content: () => printRef.current
+        content: () => printRef.current!
     });
 
     return <>
@@ -209,14 +224,14 @@ function OtpEnabledContent({otpState, onReload, password}) {
     </>
 }
 
-export default function Otp(props) {
-    const [password, setPassword] = useState();
-    const [otpState, setOtpState] = useState(null);
+export default function Otp() {
+    const [password, setPassword] = useState("");
+    const [otpState, setOtpState] = useState<OtpState | null>(null);
     const navigate = useNavigate();
     const {t} = useTranslation();
 
     const requestPassword = () => {
-        const accept = password => {
+        const accept = (password: string) => {
             setPassword(password);
         };
 
@@ -238,7 +253,8 @@ export default function Otp(props) {
             }));
             Modal.unmount();
         } catch (error) {
-            if (error.status === 403) {
+            const responseError = error as WebFetchResponse;
+            if (responseError.status === 403) {
                 requestPassword();
             } else {
                 Modal.mount(<ErrorModal error={error} onContinue={() => {
