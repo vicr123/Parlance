@@ -13,7 +13,7 @@ import VerifyEmail from "./VerifyEmail";
 
 import "./index.css";
 import Otp from "./Otp";
-import SecurityKeys from "./SecurityKeys";
+import SecurityKeys from "./SecurityKeys.js";
 import Attribution from "./Attribution";
 import {NotificationsSettings} from "@/pages/Account/Notifications/index";
 import {ServerInformationContext} from "@/context/ServerInformationContext";

@@ -1,5 +1,5 @@
 import Modal from "../../Modal";
-import React, {useState} from "react";
+import React, {useContext, useState} from "react";
 import LoginPasswordModal from "./LoginPasswordModal";
 import UserManager from "../../../helpers/UserManager";
 import {useTranslation} from "react-i18next";
@@ -7,11 +7,13 @@ import LineEdit from "../../LineEdit";
 import CreateAccountModal from "./CreateAccountModal";
 import LoadingModal from "../LoadingModal";
 import Styles from "./LoginUsernameModal.module.css";
+import {ServerInformationContext} from "@/context/ServerInformationContext";
 
 export default function LoginUsernameModal() {
     const [username, setUsername] = useState(UserManager.loginDetail("username"));
     const [password, setPassword] = useState("");
     const {t} = useTranslation();
+    const serverInformation = useContext(ServerInformationContext);
 
     return <Modal heading={t("LOG_IN")} buttons={[
         Modal.CancelButton,
@@ -34,7 +36,7 @@ export default function LoginUsernameModal() {
         }
     ]}>
         <div style={{display: "flex", flexDirection: "column"}}>
-            {t('LOG_IN_PROMPT')}
+            {t('LOG_IN_PROMPT', {account: serverInformation.accountName})}
             <LineEdit placeholder={t('USERNAME')} value={username}
                       onChange={e => setUsername((e.target as HTMLInputElement).value)} autoComplete={"off"}/>
             <div className={Styles.password}>

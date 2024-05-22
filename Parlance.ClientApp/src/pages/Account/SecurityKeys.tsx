@@ -1,6 +1,6 @@
 import BackButton from "../../components/BackButton";
 import {useNavigate} from "react-router-dom";
-import React, {useEffect, useState} from "react";
+import React, {useEffect, useState, useContext, ReactNode} from "react";
 import {useTranslation} from "react-i18next";
 import Modal from "../../components/Modal";
 import PasswordConfirmModal from "../../components/modals/account/PasswordConfirmModal";
@@ -14,8 +14,15 @@ import SelectableList from "../../components/SelectableList";
 import RegisterSecurityKeyModal from "../../components/modals/account/securityKeys/RegisterSecurityKeyModal";
 
 import Styles from "./SecurityKeys.module.css";
+import {ServerInformationContext} from "@/context/ServerInformationContext.js";
+import {SecurityKey} from "../../interfaces/users";
 
-function KeyList({keys, title, after, onManageKey}) {
+function KeyList({keys, title, after, onManageKey}: {
+    keys: SecurityKey[]
+    after: ReactNode
+    title: string
+    onManageKey: (key: SecurityKey) => void
+}) {
     if (keys.length === 0) return null;
 
     return <VerticalLayout>
@@ -33,10 +40,15 @@ function KeyList({keys, title, after, onManageKey}) {
     </VerticalLayout>
 }
 
-function SecurityKeysUi({password, onUpdateKeys, keys}) {
+function SecurityKeysUi({password, onUpdateKeys, keys}: {
+    password: string
+    onUpdateKeys: () => void
+    keys: SecurityKey[]
+}) {
     const {t} = useTranslation();
+    const serverInformation = useContext(ServerInformationContext);
 
-    const manageKey = key => {
+    const manageKey = (key: SecurityKey) => {
         Modal.mount(<Modal heading={t("SECURITY_KEY_DEREGISTER")} buttons={[
             Modal.CancelButton,
             {
@@ -63,7 +75,7 @@ function SecurityKeysUi({password, onUpdateKeys, keys}) {
         </Modal>)
     }
 
-    const registerKey = type => {
+    const registerKey = (type: string) => {
         //Ensure the browser supports webauthn
         if (!window.PublicKeyCredential) {
             Modal.mount(<Modal heading={t("translation:UNSUPPORTED_BROWSER")} buttons={[Modal.OkButton]}>
@@ -78,7 +90,7 @@ function SecurityKeysUi({password, onUpdateKeys, keys}) {
             return;
         }
 
-        Modal.mount(<RegisterSecurityKeyModal type={type} password={password} onDone={onUpdateKeys}/>)
+        Modal.mount(<RegisterSecurityKeyModal type={type} password={password} onDone={onUpdateKeys} initialName={""}/>)
     };
 
     return <>
@@ -96,7 +108,7 @@ function SecurityKeysUi({password, onUpdateKeys, keys}) {
 
             {<KeyList keys={keys.filter(key => key.application !== "Parlance")}
                       title={t("SECURITY_KEY_OTHER_SECURITY_KEYS")}
-                      after={t("translation:SECURITY_KEY_OTHER_SECURITY_KEYS_PROMPT")}
+                      after={t("translation:SECURITY_KEY_OTHER_SECURITY_KEYS_PROMPT", {account: serverInformation.accountName})}
                       onManageKey={manageKey}/>}
 
             <VerticalSpacer/>
@@ -114,13 +126,13 @@ function SecurityKeysUi({password, onUpdateKeys, keys}) {
 }
 
 export default function SecurityKeys() {
-    const [password, setPassword] = useState();
+    const [password, setPassword] = useState("");
     const [securityKeyState, setSecurityKeyState] = useState(null);
     const navigate = useNavigate();
     const {t} = useTranslation();
 
     const requestPassword = () => {
-        const accept = password => {
+        const accept = (password: string) => {
             setPassword(password);
         };
 
@@ -142,7 +154,8 @@ export default function SecurityKeys() {
             }));
             Modal.unmount();
         } catch (error) {
-            if (error.status === 403) {
+            const responseError = error as WebFetchResponse;
+            if (responseError.status === 403) {
                 requestPassword();
             } else {
                 Modal.mount(<ErrorModal error={error} onContinue={() => {

@@ -58,3 +58,9 @@ export interface OtpStateDisabled {
     enabled: false
     key: string
 }
+
+export interface SecurityKey {
+    id: string;
+    name: string
+    application: string
+}
