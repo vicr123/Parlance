@@ -13,7 +13,7 @@
   "ACCOUNT_SETTINGS_PRIVACY": "Privacy",
   "ACCOUNT_SETTINGS_PROFILE": "Profile",
   "ACCOUNT_SETTINGS_SECURITY": "Security",
-  "ACCOUNT_SETTINGS_SUBTITLE": "Configure your Victor Tran account",
+  "ACCOUNT_SETTINGS_SUBTITLE": "Configure your {{account}} account",
   "ACCOUNT_SETTINGS_TWO_FACTOR": "Set up Two Factor Authentication",
   "ACCOUNT_SETTINGS_TWO_FACTOR_COMPLETE_SETUP": "You're almost there!",
   "ACCOUNT_SETTINGS_TWO_FACTOR_COMPLETE_SETUP_PROMPT": "To ensure that your app has been set up correctly, enter the code shown",

@@ -1,4 +1,4 @@
-import React, {useReducer} from "react";
+import React, {useReducer, useContext} from "react";
 import {CSSTransition, TransitionGroup} from "react-transition-group";
 import AccountSettings from "./AccountSettings";
 import {Route, Routes, useLocation} from "react-router-dom";
@@ -16,11 +16,13 @@ import Otp from "./Otp";
 import SecurityKeys from "./SecurityKeys";
 import Attribution from "./Attribution";
 import {NotificationsSettings} from "@/pages/Account/Notifications/index";
+import {ServerInformationContext} from "@/context/ServerInformationContext";
 
 export default function Account() {
     const [ignored, forceUpdate] = useReducer(x => x + 1, 0);
     const location = useLocation();
     const {t} = useTranslation();
+    const serverInformation = useContext(ServerInformationContext);
 
     UserManager.on("currentUserChanged", forceUpdate);
 
@@ -34,7 +36,7 @@ export default function Account() {
                     paddingBottom: "20px"
                 }}>
                     <PageHeading>{t("ACCOUNT_SETTINGS")}</PageHeading>
-                    <PageHeading level={2}>{t("ACCOUNT_SETTINGS_SUBTITLE")}</PageHeading>
+                    <PageHeading level={2}>{t("ACCOUNT_SETTINGS_SUBTITLE", {account: serverInformation.accountName})}</PageHeading>
                 </div>
             </Container>
             <Container style={{
@@ -55,7 +57,7 @@ export default function Account() {
                 paddingBottom: "20px"
             }}>
                 <PageHeading>{t("ACCOUNT_SETTINGS")}</PageHeading>
-                <PageHeading level={2}>{t("ACCOUNT_SETTINGS_SUBTITLE")}</PageHeading>
+                <PageHeading level={2}>{t("ACCOUNT_SETTINGS_SUBTITLE", {account: serverInformation.accountName})}</PageHeading>
             </div>
         </Container>
         <TransitionGroup component={"div"}>
