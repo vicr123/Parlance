@@ -12,12 +12,9 @@
 }
 
 .containerInner {
-    width: 100vw;
+    width: calc(100vw - 6px);
     max-width: var(--content-width);
-    padding-left: 9px;
-    padding-right: 9px;
-    padding-top: 9px;
-    padding-bottom: 9px;
+    padding: 9px;
     box-sizing: border-box;
     border-radius: var(--border-radius);
     background-color: var(--layer-color);

@@ -1,13 +1,14 @@
 /*TODO: Update to use CSS vars*/
 
 .ModalList {
-    border-bottom: 1px solid var(--border-color);
     max-height: calc(100vh - 300px);
     overflow-y: auto;
 }
 
 .ModalListItem {
     padding: 15px;
+    margin: 3px;
+    border-radius: var(--border-radius);
     text-align: center;
     cursor: default;
 }
@@ -18,10 +19,6 @@
 
 .ModalListItem:active {
     background-color: var(--active-color);
-}
-
-.ModalListItem:not(:last-child) {
-    border-bottom: 1px solid var(--border-color);
 }
 
 .DestructiveListItem {

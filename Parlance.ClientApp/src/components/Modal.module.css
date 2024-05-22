@@ -23,10 +23,11 @@
 
 .ModalContainer {
     background-color: var(--background-color);
-    border: 1px solid var(--border-color);
 
     flex-basis: 600px;
     max-height: 100vh;
+    
+    border-radius: var(--border-radius);
 }
 
 .PopoverContainer {
@@ -50,7 +51,7 @@
     margin: 0;
     font-size: 20pt;
     font-weight: normal;
-    border-bottom: 1px solid var(--border-color);
+    background-color: var(--layer-color);
 
     grid-area: heading;
 
@@ -59,8 +60,6 @@
 }
 
 .ModalComponent {
-    border-bottom: 1px solid var(--border-color);
-
     display: flex;
     flex-direction: column;
     align-items: stretch;
@@ -96,7 +95,6 @@
 
 .ModalText {
     padding: 20px;
-    border-bottom: 1px solid var(--border-color);
 
     overflow-y: auto;
     overflow-x: auto;
@@ -116,6 +114,7 @@
 
 .ModalButtonContainer {
     display: flex;
+    background-color: var(--layer-color);
 }
 
 .ModalButton {
@@ -128,6 +127,8 @@
     align-content: center;
 
     padding: 15px;
+    margin: 3px;
+    border-radius: var(--border-radius);
 
     cursor: default;
 }
@@ -138,14 +139,6 @@
 
 .ModalButton:active {
     background-color: var(--active-color);
-}
-
-:global(.ltr) .ModalButton:not(:last-child) {
-    border-right: 1px solid var(--border-color);
-}
-
-:global(.rtl) .ModalButton:not(:last-child) {
-    border-left: 1px solid var(--border-color);
 }
 
 .DestructiveModalButton {
@@ -174,5 +167,8 @@
         border-left: none;
         border-right: none;
         border-bottom: none;
+        
+        border-bottom-left-radius: 0;
+        border-bottom-right-radius: 0;
     }
 }
