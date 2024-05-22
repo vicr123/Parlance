@@ -1,4 +1,4 @@
-import React, {ReactNode} from 'react';
+import React, {ReactNode, useEffect, useState} from 'react';
 import Styles from './Modal.module.css';
 import {createRoot, Root} from "react-dom/client";
 import {WithTranslation, withTranslation} from "react-i18next";
@@ -101,6 +101,20 @@ let setStandardButtons = () => {
 i18n.on("initialized", setStandardButtons);
 i18n.on("languageChanged", setStandardButtons);
 i18n.on("loaded", setStandardButtons);
+
+function ModalContainer({currentModal}: {
+    currentModal: React.ReactNode
+}) {
+    const [previousModal, setPreviousModal] = useState<ReactNode>(null);
+
+    useEffect(() => {
+        setPreviousModal(currentModal);
+    }, [currentModal]);
+    
+    return <div>
+        {previousModal}
+    </div>
+}
 
 let ExportProperty = Modal as ModalExports;
 ExportProperty.mount = (modal) => {
