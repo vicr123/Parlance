@@ -4,7 +4,6 @@ import {useTranslation} from "react-i18next";
 import SelectableList from "../../components/SelectableList";
 import {VerticalLayout, VerticalSpacer} from "../../components/Layouts";
 import {useState} from "react";
-import PasswordConfirmModal from "../../components/modals/account/PasswordConfirmModal";
 import Modal from "../../components/Modal";
 import Fetch from "../../helpers/Fetch";
 import LoadingModal from "../../components/modals/LoadingModal";

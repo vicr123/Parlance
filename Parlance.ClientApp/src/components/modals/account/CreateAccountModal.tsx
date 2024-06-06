@@ -3,13 +3,14 @@ import Modal from "../../Modal";
 import LoginUsernameModal from "./LoginUsernameModal";
 import {VerticalLayout, VerticalSpacer} from "../../Layouts";
 import LineEdit from "../../LineEdit";
-import React, {useState} from "react";
+import React, {useContext, useState} from "react";
 import LoadingModal from "../LoadingModal";
 import ErrorModal from "../ErrorModal";
 import UserManager from "../../../helpers/UserManager";
 import Fetch from "../../../helpers/Fetch";
 import {RegisterSecurityKeyAdvertisement} from "./securityKeys/RegisterSecurityKeyAdvertisement";
 import {TokenResponseToken} from "../../../interfaces/users";
+import {ServerInformationContext} from "@/context/ServerInformationContext";
 
 export default function CreateAccountModal() {
     const [username, setUsername] = useState("");
@@ -17,6 +18,7 @@ export default function CreateAccountModal() {
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
     const {t} = useTranslation();
+    const serverInformation = useContext(ServerInformationContext);
     
     let modal = <Modal heading={t("CREATE_ACCOUNT")} buttons={[
         {
@@ -51,7 +53,7 @@ export default function CreateAccountModal() {
         }
     ]}>
         <VerticalLayout>
-            <span>{t("CREATE_ACCOUNT_PROMPT", {type: "Victor Tran"})}</span>
+            <span>{t("CREATE_ACCOUNT_PROMPT", {type: serverInformation.accountName})}</span>
             <LineEdit placeholder={t("USERNAME")} value={username} onChange={(e) => setUsername((e.target as HTMLInputElement).value)} />
             <LineEdit placeholder={t("EMAIL_ADDRESS")} value={email} onChange={(e) => setEmail((e.target as HTMLInputElement).value)} />
         </VerticalLayout>

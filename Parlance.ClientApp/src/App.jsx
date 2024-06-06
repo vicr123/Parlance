@@ -6,6 +6,7 @@ import './custom.css';
 import Styles from './App.module.css';
 import {useTranslation} from "react-i18next";
 import i18n from "./helpers/i18n";
+import {ServerInformationProvider} from "./context/ServerInformationContext";
 
 function ErrorIndicator({error}) {
     const {t} = useTranslation();
@@ -39,16 +40,18 @@ export default class App extends Component {
         }
 
         return (
-            <React.Suspense fallback={<div></div>}>
-                <Layout dir={this.state.dir}>
-                    <Routes>
-                        {AppRoutes.map((route, index) => {
-                            const {element, ...rest} = route;
-                            return <Route key={index} {...rest} element={element}/>;
-                        })}
-                    </Routes>
-                </Layout>
-            </React.Suspense>
+            <ServerInformationProvider>
+                <React.Suspense fallback={<div></div>}>
+                    <Layout dir={this.state.dir}>
+                        <Routes>
+                            {AppRoutes.map((route, index) => {
+                                const {element, ...rest} = route;
+                                return <Route key={index} {...rest} element={element}/>;
+                            })}
+                        </Routes>
+                    </Layout>
+                </React.Suspense>
+            </ServerInformationProvider>
         );
     }
 

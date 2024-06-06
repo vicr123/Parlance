@@ -15,4 +15,8 @@ public class ParlanceOptions
     public bool UseSqliteDatabase { get; init; }
 
     public required string DatabaseConnectionString { get; init; }
+    
+    public required string ServerName { get; set; }
+    
+    public required string AccountName { get; set; }
 }

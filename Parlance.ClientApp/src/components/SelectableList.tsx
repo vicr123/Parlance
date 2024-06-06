@@ -12,6 +12,7 @@ interface SelectableListItemObject {
     contents: ReactNode
     containerClass?: string,
     on?: boolean
+    type?: "destructive"
 }
 
 type SelectableListItem = SelectableListItemObject | string;
