@@ -14,11 +14,11 @@
 .glossaryTable {
     display: flex;
     flex-direction: column;
+    gap: 3px;
 }
 
 .match {
     padding: 9px;
-    border-bottom: 1px solid var(--border-color);
 
     display: grid;
     grid-template-areas: "term pos"
@@ -26,6 +26,9 @@
                          "buttons buttons";
     grid-template-columns: max-content 1fr;
     gap: 6px;
+    
+    background-color: var(--layer-color);
+    border-radius: var(--border-radius);
 }
 
 .term {
@@ -69,7 +72,9 @@ input.searchBox {
 .searchContainer {
     display: flex;
     flex-direction: column;
-    border-bottom: 1px solid var(--border-color);
+    
+    background-color: var(--layer-color);
+    border-radius: var(--border-radius);
 }
 
 .backButton {
