@@ -66,6 +66,7 @@ export default function(props) {
                 <p>{t("PASSWORD_CHANGE_PROMPT_1")}</p>
                 <p>{t("PASSWORD_SET_SECURITY_PROMPT")}</p>
                 <LineEdit password={true} placeholder={t("PASSWORD_CHANGE_NEW_PASSWORD")} value={newPassword} onChange={e => setNewPassword(e.target.value)} />
+                <VerticalSpacer height={3} />
                 <LineEdit password={true} placeholder={t("CONFIRM_PASSWORD")} value={newPasswordConfirm} onChange={e => setNewPasswordConfirm(e.target.value)} />
                 <VerticalSpacer height={20} />
                 <SelectableList onClick={performPasswordChange}>{t("ACCOUNT_SETTINGS_CHANGE_PASSWORD")}</SelectableList>

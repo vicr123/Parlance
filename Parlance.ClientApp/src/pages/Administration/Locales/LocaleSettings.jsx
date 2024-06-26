@@ -71,7 +71,7 @@ export default function LocaleSettings(props) {
         }
     }
 
-    return <div>
+    return <>
         <BackButton inListPage={true} onClick={() => navigate("..")}/>
         <ListPageBlock>
             <VerticalLayout>
@@ -90,5 +90,5 @@ export default function LocaleSettings(props) {
                 <SelectableList onClick={addUser}>{t("LANGUAGE_PERMISSIONS_ADD_NEW")}</SelectableList>
             </VerticalLayout>
         </ListPageBlock>
-    </div>
+    </>
 }

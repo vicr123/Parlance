@@ -1,4 +1,7 @@
 .listPageBlock {
+    background-color: var(--layer-color);
+    border-radius: var(--border-radius);
+    
     padding: 9px;
     max-width: 600px;
     

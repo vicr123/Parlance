@@ -28,14 +28,18 @@ export default function(props) {
         navigate("add");
     }
 
-    return <div>
+    return <>
         <ListPageBlock>
             <VerticalLayout>
                 <PageHeading level={3}>{t("PROJECTS")}</PageHeading>
                 <span>{t("PROJECT_LISTING_PROMPT")}</span>
                 <SelectableList items={projects} />
+            </VerticalLayout>
+        </ListPageBlock>
+        <ListPageBlock>
+            <VerticalLayout>
                 <SelectableList onClick={addProject}>{t("ADD_PROJECT")}</SelectableList>
             </VerticalLayout>
         </ListPageBlock>
-    </div>
+    </>
 }

@@ -1,7 +1,17 @@
 .container {
     display: flex;
     flex-direction: column;
-    border-bottom: 1px solid var(--border-color);
+    
+    background: var(--layer-color);
+    border-radius: 4px;
+    
+    cursor: text;
+    border: 3px solid transparent;
+    transition: border 0.1s ease-out;
+}
+
+.container:has(.input:focus) {
+    animation: focusDecoration 1s linear 0s infinite;
 }
 
 .label {
@@ -20,7 +30,7 @@
 }
 
 .input:placeholder-shown + .label {
-    transform: translateY(60%) translateX(2%);
+    transform: translateY(40%) translateX(2%);
     font-size: 12pt;
     color: var(--foreground-disabled-color);
     cursor: text;
@@ -30,4 +40,16 @@
     transform: translateY(0) translateX(2%);
     font-size: 8pt;
     color: var(--foreground-color);
+}
+
+@keyframes focusDecoration {
+    0% {
+        border: 3px solid var(--focus-decoration-start);
+    }
+    50% {
+        border: 3px solid var(--focus-decoration-end);
+    }
+    100% {
+        border: 3px solid var(--focus-decoration-start);
+    }
 }

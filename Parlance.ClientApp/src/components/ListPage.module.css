@@ -24,12 +24,13 @@
 
 .leftPaneInner {
     background-color: var(--layer-color);
+    border-radius: var(--border-radius);
     
     display: flex;
     flex-direction: column;
     align-items: flex-end;
     
-    padding: 10px;
+    padding: 6px;
     gap: 3px;
 }
 
@@ -39,8 +40,6 @@
 }
 
 .rightPaneInner {
-    background-color: var(--layer-color);
-    
     display: flex;
     flex-direction: column;
     justify-content: stretch;

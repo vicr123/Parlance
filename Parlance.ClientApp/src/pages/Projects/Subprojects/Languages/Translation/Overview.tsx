@@ -16,7 +16,7 @@ export default function Overview({data}: {
         navigate("../comments");
     }
     
-    return <div>
+    return <>
         <ListPageBlock>
             <VerticalLayout>
                 <PageHeading level={3}>{t("OVERVIEW_STATS")}</PageHeading>
@@ -34,5 +34,5 @@ export default function Overview({data}: {
                 <SelectableList onClick={goToComments}>{t("OVERVIEW_GO_TO_COMMENTS")}</SelectableList>
             </VerticalLayout>
         </ListPageBlock>
-    </div>
+    </>
 }
