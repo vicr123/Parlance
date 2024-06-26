@@ -47,20 +47,26 @@ function ListPageInner({items, isLeftPane}: {
     };
     
     return <div className={Styles.parent}>
-        <div className={`${Styles.leftPane} ${isLeftPane || Styles.desktopOnly}`}>
-            {items.map((item, i) => {
-                if (typeof (item) === "string") {
-                    return <b key={i} className={Styles.listItem}>{item.toUpperCase()}</b>
-                } else {
-                    return <ListItem key={i} {...item} />
-                }
-            })}
-        </div>
-        <div className={`${Styles.rightPane} ${isLeftPane && Styles.desktopOnly}`}>
-            <div className={Styles.mobileOnly}>
-                <BackButton inListPage={true} onClick={goBack} text={t("BACK")} />
+        <div className={Styles.widthConstrainer}>
+            <div className={`${Styles.leftPane} ${isLeftPane || Styles.desktopOnly}`}>
+                <div className={Styles.leftPaneInner}>
+                    {items.map((item, i) => {
+                        if (typeof (item) === "string") {
+                            return <b key={i} className={Styles.listItem}>{item.toUpperCase()}</b>
+                        } else {
+                            return <ListItem key={i} {...item} />
+                        }
+                    })}
+                </div>
             </div>
-            <Outlet />
+            <div className={`${Styles.rightPane} ${isLeftPane && Styles.desktopOnly}`}>
+                <div className={Styles.rightPaneInner}>
+                    <div className={Styles.mobileOnly}>
+                        <BackButton onClick={goBack} text={t("BACK")} />
+                    </div>
+                    <Outlet />
+                </div>
+            </div>
         </div>
     </div>
 }

@@ -3,33 +3,55 @@
     flex-direction: row;
     
     flex-grow: 1;
+    justify-content: center;
+}
+
+.widthConstrainer {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    place-items: stretch;
+    gap: 3px;
+    
+    flex-grow: 1;
+    
+    max-width: var(--content-width);
 }
 
 .leftPane {
-    flex-basis: 300px;
-    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.leftPaneInner {
+    background-color: var(--layer-color);
     
     display: flex;
     flex-direction: column;
     align-items: flex-end;
-}
-
-:global(.ltr) .leftPane {
-    border-right: 1px solid var(--border-color);
-}
-
-:global(.rtl) .leftPane {
-    border-left: 1px solid var(--border-color);
+    
+    padding: 10px;
+    gap: 3px;
 }
 
 .rightPane {
-    flex-basis: 600px;
-    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.rightPaneInner {
+    background-color: var(--layer-color);
+    
+    display: flex;
+    flex-direction: column;
+    justify-content: stretch;
+    
+    gap: 3px;
 }
 
 .listItem {
     width: 300px;
     padding: 3px;
+    border-radius: var(--border-radius);
 }
 
 .listItemClickable {
@@ -49,6 +71,10 @@
 }
 
 @media (max-width: 600px) {
+    .widthConstrainer {
+        grid-template-columns: 1fr;
+    }
+    
     .mobileOnly {
         display: block;
     }
@@ -57,7 +83,7 @@
         display: none;
     }
     
-    .leftPane {
+    .leftPaneInner {
         align-items: stretch;
     }
     
