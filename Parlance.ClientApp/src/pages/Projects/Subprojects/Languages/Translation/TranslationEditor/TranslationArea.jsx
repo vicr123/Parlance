@@ -23,6 +23,7 @@ import PreloadingBlock from "../../../../../../components/PreloadingBlock";
 import GlossaryLookup from "./GlossaryLookup";
 import AddToGlossaryModal from "../../../../../../components/modals/glossary/AddToGlossaryModal";
 import SearchGlossaryModal from "../../../../../../components/modals/glossary/SearchGlossaryModal";
+import {Box} from "./Box";
 
 function TranslationPart({
                              entry,
@@ -267,7 +268,7 @@ export default function TranslationArea({
             <BackButton className={Styles.backButton} text={t("BACK")} inTranslationView={true}
                         onClick={() => navigate(`../translate`)}/>
             {statusAlerts}
-            <div className={Styles.sourceTranslationContainer}>
+            <Box className={Styles.sourceTranslationContainer}>
                 <div className={Styles.sourceTranslationContainerInner}>
                     <div
                         className={Styles.sourceTranslationIndicator}>{t("TRANSLATION_AREA_SOURCE_TRANSLATION_TITLE")}</div>
@@ -285,18 +286,20 @@ export default function TranslationArea({
                 <div className={Styles.keyContainer}>
                     <span className={Styles.keyText}>{entry.key}</span>
                 </div>
-            </div>
-            <div className={Styles.commentsButton} onClick={openCommentsModal}>
-                <HorizontalLayout>
-                    <Icon icon={"edit-comment"}/>
-                    {/* TODO: Change to "n comments" when there are comments */}
-                    {loadingComments ? <PreloadingBlock>Text</PreloadingBlock> :
-                        <span>{openComments > 0 ? t("COMMENT_OPEN_THREADS", {count: openComments}) : t("COMMENT_ADD")}</span>}
-                </HorizontalLayout>
-                <HorizontalLayout>
-                    <Icon icon={"go-next"} flip={true}/>
-                </HorizontalLayout>
-            </div>
+            </Box>
+            <Box>
+                <div className={Styles.commentsButton} onClick={openCommentsModal}>
+                    <HorizontalLayout>
+                        <Icon icon={"edit-comment"}/>
+                        {/* TODO: Change to "n comments" when there are comments */}
+                        {loadingComments ? <PreloadingBlock>Text</PreloadingBlock> :
+                            <span>{openComments > 0 ? t("COMMENT_OPEN_THREADS", {count: openComments}) : t("COMMENT_ADD")}</span>}
+                    </HorizontalLayout>
+                    <HorizontalLayout>
+                        <Icon icon={"go-next"} flip={true}/>
+                    </HorizontalLayout>
+                </div>
+            </Box>
             {entry.translation.map((pform, idx) => {
                 const translationUpdate = (contents, key) => {
                     const entry = entries.find(x => x.key === key);
@@ -317,10 +320,12 @@ export default function TranslationArea({
                     });
                 };
 
-                return <TranslationPart onTranslationUpdate={translationUpdate} entry={pform} key={idx}
-                                        sourceTranslation={entry.source} translationFileType={translationFileType}
-                                        translationDirection={translationDirection} canEdit={canEdit}
-                                        tabIndex={tabIndex} placeholders={translationPlaceholders}/>
+                return <Box>
+                    <TranslationPart onTranslationUpdate={translationUpdate} entry={pform} key={idx}
+                                     sourceTranslation={entry.source} translationFileType={translationFileType}
+                                     translationDirection={translationDirection} canEdit={canEdit}
+                                     tabIndex={tabIndex} placeholders={translationPlaceholders}/>
+                </Box>
             })}
             <div style={{flexGrow: 1}}/>
             {connectedGlossaries.length > 0 && 
