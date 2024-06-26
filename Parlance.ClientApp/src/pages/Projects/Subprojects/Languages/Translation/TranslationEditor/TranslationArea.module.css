@@ -10,14 +10,6 @@
     overflow-y: auto;
 }
 
-:global(.ltr) .translationArea {
-    border-right: 1px solid var(--border-color);
-}
-
-:global(.rtl) .translationArea {
-    border-left: 1px solid var(--border-color);
-}
-
 .translationAreaInner {
     grid-area: translationArea;
 
@@ -27,6 +19,11 @@
     gap: 3px;
     
     box-sizing: border-box;
+
+    position: sticky;
+    top: 0;
+    
+    overflow-y: auto;
 }
 
 .sourceTranslationContainer {
