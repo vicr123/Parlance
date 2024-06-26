@@ -1,0 +1,6 @@
+.box {
+    display: flex;
+    flex-direction: column;
+    border-radius: var(--border-radius);
+    background-color: var(--layer-color);
+}
