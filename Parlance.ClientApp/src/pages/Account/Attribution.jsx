@@ -50,9 +50,7 @@ export default function Attribution() {
 
     return <div>
         <BackButton onClick={() => navigate("..")}/>
-        <Container style={{
-            marginTop: "20px"
-        }}>
+        <Container>
             <VerticalLayout>
                 <PageHeading level={3}>{t("ATTRIBUTION")}</PageHeading>
                 <span>{t("ATTRIBUTION_PROMPT_1")}</span>

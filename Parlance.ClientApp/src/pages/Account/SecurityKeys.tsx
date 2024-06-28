@@ -94,9 +94,7 @@ function SecurityKeysUi({password, onUpdateKeys, keys}: {
     };
 
     return <>
-        <Container style={{
-            marginTop: "20px"
-        }}>
+        <Container>
             <VerticalLayout>
                 <PageHeading level={3}>{t("ACCOUNT_SETTINGS_MANAGE_SECURITY_KEYS")}</PageHeading>
                 <span>{t("ACCOUNT_SETTINGS_MANAGE_SECURITY_KEYS_PROMPT")}</span>
@@ -177,9 +175,7 @@ export default function SecurityKeys() {
     let content;
 
     if (securityKeyState === null) {
-        content = <Container style={{
-            marginTop: "20px"
-        }}>
+        content = <Container>
             <VerticalLayout gap={0}>
                 <PageHeading level={3}>{t("ACCOUNT_SETTINGS_MANAGE_SECURITY_KEYS")}</PageHeading>
             </VerticalLayout>
