@@ -101,7 +101,6 @@ export default function EmailUnsubscribe() {
     }
     
     return <div>
-        <VerticalSpacer/>
         <Container>
             <PageHeading level={3}>{t("UNSUBSCRIBE")}</PageHeading>
             <p>
@@ -123,14 +122,12 @@ export default function EmailUnsubscribe() {
             ]}/>
         </Container>
         {emailNotificationsOn && <>
-            <VerticalSpacer/>
             <Container>
                 <PageHeading level={3}>{t("EMAIL_UNSUBSCRIBE_COMPLETELY_HEADER")}</PageHeading>
                 <p>{t("EMAIL_UNSUBSCRIBE_COMPLETELY_DESCRIPTION_1")}</p>
                 <p>{t("EMAIL_UNSUBSCRIBE_COMPLETELY_DESCRIPTION_2")}</p>
                 <SelectableList onClick={unsubscribeTotally}>{t("EMAIL_UNSUBSCRIBE_COMPLETELY")}</SelectableList>
             </Container>
-            <VerticalSpacer/>
             <Container>
                 <PageHeading level={3}>{t("EMAIL_UNSUBSCRIBE_UNVERIFY_HEADER")}</PageHeading>
                 <p>{t("EMAIL_UNSUBSCRIBE_UNVERIFY_DESCRIPTION")}</p>
