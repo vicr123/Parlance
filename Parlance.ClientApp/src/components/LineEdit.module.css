@@ -3,7 +3,7 @@
     flex-direction: column;
     
     background: var(--layer-color);
-    border-radius: 4px;
+    border-radius: var(--border-radius);
     
     cursor: text;
     border: 3px solid transparent;

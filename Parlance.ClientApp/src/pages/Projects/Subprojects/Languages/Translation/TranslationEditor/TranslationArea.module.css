@@ -186,7 +186,7 @@
     position: absolute;
     right: 0;
     padding: 9px;
-    border-radius: 4px;
+    border-radius: var(--border-radius);
     background-color: var(--layer-color);
     margin-top: 3px;
     backdrop-filter: blur(100px);
