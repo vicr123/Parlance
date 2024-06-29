@@ -3,6 +3,7 @@
 .ModalList {
     max-height: calc(100vh - 300px);
     overflow-y: auto;
+    background: var(--layer-color);
 }
 
 .ModalListItem {
