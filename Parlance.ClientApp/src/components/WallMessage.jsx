@@ -5,7 +5,7 @@ import PageHeading from "./PageHeading";
 
 export default function WallMessage({message, title}) {
     return <Container bottomBorder={true} className={Styles.wallMessage}>
-        <VerticalLayout className={Styles.wallMessageInner}>
+        <VerticalLayout>
             <PageHeading level={3}>{title}</PageHeading>
             <span>{message}</span>
         </VerticalLayout>

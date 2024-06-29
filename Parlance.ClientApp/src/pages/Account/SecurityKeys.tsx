@@ -99,19 +99,20 @@ function SecurityKeysUi({password, onUpdateKeys, keys}: {
                 <PageHeading level={3}>{t("ACCOUNT_SETTINGS_MANAGE_SECURITY_KEYS")}</PageHeading>
                 <span>{t("ACCOUNT_SETTINGS_MANAGE_SECURITY_KEYS_PROMPT")}</span>
             </VerticalLayout>
-
+        </Container>
+        {keys.filter(key => key.application === "Parlance").length > 0 && <Container>
             {<KeyList keys={keys.filter(key => key.application === "Parlance")}
                       title={t("SECURITY_KEY_REGISTERED_SECURITY_KEYS")}
                       after={t("SECURITY_KEY_REGISTERED_SECURITY_KEYS_PROMPT")} onManageKey={manageKey}/>}
-
+        </Container>}
+        {keys.filter(key => key.application !== "Parlance").length > 0 && <Container>
             {<KeyList keys={keys.filter(key => key.application !== "Parlance")}
                       title={t("SECURITY_KEY_OTHER_SECURITY_KEYS")}
                       after={t("translation:SECURITY_KEY_OTHER_SECURITY_KEYS_PROMPT", {account: serverInformation.accountName})}
                       onManageKey={manageKey}/>}
-
-            <VerticalSpacer/>
+        </Container>}
+        <Container>
             <VerticalLayout>
-                {/*<SelectableList onClick={registerKey}>{t("Register New Security Key")}</SelectableList>*/}
                 <SelectableList items={[
                     {
                         contents: t("SECURITY_KEY_REGISTER_SECURITY_KEY"),
