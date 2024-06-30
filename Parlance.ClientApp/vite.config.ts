@@ -52,7 +52,8 @@ export default defineConfig({
         proxy: {
             '^/api': {
                 target,
-                secure: false
+                secure: false,
+                ws: true
             }
         },
         port: 5173,
