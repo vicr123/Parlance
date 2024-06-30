@@ -8,16 +8,16 @@ function calculateDeadline(deadline) {
                 text: dl.fromNow(true),
                 ms: moment.duration(dl.diff(moment())),
                 date: dl.format("LL"),
-                valid: true
-            }
+                valid: true,
+            };
         }
     }
 
     return {
         text: "",
         ms: 999999999999999,
-        valid: false
-    }
+        valid: false,
+    };
 }
 
-export {calculateDeadline}
+export { calculateDeadline };

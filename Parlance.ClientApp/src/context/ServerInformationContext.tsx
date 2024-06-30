@@ -1,33 +1,40 @@
-import {ReactNode, createContext, useEffect, useState } from "react";
+import { ReactNode, createContext, useEffect, useState } from "react";
 import Fetch from "@/helpers/Fetch";
 
 export interface ServerInformation {
-    serverName: string
-    accountName: string
+    serverName: string;
+    accountName: string;
 }
 
 export const ServerInformationContext = createContext<ServerInformation>({
     serverName: "",
-    accountName: ""
+    accountName: "",
 });
 
-export function ServerInformationProvider({children}: {
-    children: ReactNode
+export function ServerInformationProvider({
+    children,
+}: {
+    children: ReactNode;
 }) {
     // @ts-ignore
-    const [serverInformation, setServerInformation] = useState<ServerInformation>(null)
+    const [serverInformation, setServerInformation] =
+        useState<ServerInformation>(null);
 
     useEffect(() => {
         (async () => {
-            setServerInformation(await Fetch.get<ServerInformation>("/api/serverinformation"));
+            setServerInformation(
+                await Fetch.get<ServerInformation>("/api/serverinformation"),
+            );
         })();
     }, []);
-    
+
     if (!serverInformation) {
         return null;
     }
-    
-    return <ServerInformationContext.Provider value={serverInformation}>
-        {children}
-    </ServerInformationContext.Provider>
+
+    return (
+        <ServerInformationContext.Provider value={serverInformation}>
+            {children}
+        </ServerInformationContext.Provider>
+    );
 }

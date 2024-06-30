@@ -1,4 +1,4 @@
-import {useEffect, useState} from "react";
+import { useEffect, useState } from "react";
 import UserManager from "./UserManager";
 
 function useForceUpdate() {
@@ -17,8 +17,8 @@ function useUserUpdateEffect(callback, deps) {
 
         return () => {
             UserManager.off("currentUserChanged", callback);
-        }
+        };
     }, deps);
 }
 
-export {useForceUpdate, useForceUpdateOnUserChange, useUserUpdateEffect}
+export { useForceUpdate, useForceUpdateOnUserChange, useUserUpdateEffect };

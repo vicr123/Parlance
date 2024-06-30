@@ -1,12 +1,13 @@
 // vite-plugin-polyfill-groupby.ts
 
-import {Plugin} from 'vite';
+import { Plugin } from "vite";
 
 export default function PolyfillGroupByPlugin(): Plugin {
     return {
-        name: 'polyfill-groupby',
+        name: "polyfill-groupby",
         transform(code, id) {
-            if (!/node_modules/.test(id) && id.endsWith(".ts")) {         // Ignore 'node_modules' files
+            if (!/node_modules/.test(id) && id.endsWith(".ts")) {
+                // Ignore 'node_modules' files
                 return {
                     code: `
             if (!Object.prototype.groupBy) {
@@ -25,9 +26,9 @@ export default function PolyfillGroupByPlugin(): Plugin {
             
             ${code}
           `,
-                    map: null
+                    map: null,
                 };
             }
-        }
+        },
     };
 }

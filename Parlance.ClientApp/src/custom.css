@@ -1,10 +1,11 @@
-@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=JetBrains+Mono&display=swap");
 
 @font-face {
-    font-family: 'Contemporary';
+    font-family: "Contemporary";
     font-style: normal;
     font-weight: 400;
-    src: local('Contemporary'), local('Contemporary-Regular'), url('https://vicr123.com/typeface/Contemporary-Regular.ttf');
+    src: local("Contemporary"), local("Contemporary-Regular"),
+        url("https://vicr123.com/typeface/Contemporary-Regular.ttf");
 }
 
 body {
@@ -40,16 +41,16 @@ body {
 
     --preloading-block-color-1: rgba(255, 255, 255, 0.3);
     --preloading-block-color-2: rgba(255, 255, 255, 0.4);
-    
+
     --layer-color: rgba(255, 255, 255, calc(10 / 255));
-    
+
     --border-radius: 4px;
-    
+
     --focus-decoration-start: rgb(20, 125, 200);
     --focus-decoration-end: rgb(20, 160, 255);
 
-    --fixed-font: 'JetBrains Mono', monospace;
-    --standard-font: 'Contemporary', sans-serif;
+    --fixed-font: "JetBrains Mono", monospace;
+    --standard-font: "Contemporary", sans-serif;
 
     background-color: var(--background-color);
     color: var(--foreground-color);
@@ -78,7 +79,7 @@ body {
 
         --preloading-block-color-1: rgba(0, 0, 0, 0.3);
         --preloading-block-color-2: rgba(0, 0, 0, 0.4);
-        
+
         --layer-color: rgba(0, 0, 0, calc(20 / 255));
     }
 }
@@ -91,7 +92,8 @@ code {
     font-family: var(--fixed-font);
 }
 
-input[type=text], input[type=password] {
+input[type="text"],
+input[type="password"] {
     background-color: transparent;
     color: var(--foreground-color);
     border: 1px solid var(--border-color);

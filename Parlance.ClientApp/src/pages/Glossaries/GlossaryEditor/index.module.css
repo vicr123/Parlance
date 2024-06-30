@@ -3,7 +3,7 @@
     grid-template-areas: "language table";
     grid-template-columns: 400px 1fr;
     overflow-y: hidden;
-    
+
     padding: 3px;
     gap: 3px;
 }
@@ -15,7 +15,7 @@
 
 .table {
     grid-area: table;
-    
+
     display: flex;
     flex-direction: column;
     align-items: stretch;
@@ -29,27 +29,27 @@
         grid-template-areas: "language";
         grid-template-columns: 1fr;
     }
-    
+
     .languageEditor.root {
         grid-template-areas: "table";
     }
-    
+
     :global(.ltr) .language {
         border: none;
     }
-    
+
     :global(.rtl) .language {
         border: none;
     }
-    
+
     .table {
         display: none;
     }
-    
+
     .languageEditor .table {
         display: flex;
     }
-    
+
     .languageEditor .language {
         display: none;
     }

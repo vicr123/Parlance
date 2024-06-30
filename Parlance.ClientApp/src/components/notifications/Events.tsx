@@ -1,64 +1,90 @@
-import {AutoSubscription, AutoSubscriptionEventName, Subscription, SubscriptionChannelName} from "@/interfaces/unsubscribe";
-import {useTranslation} from "react-i18next";
+import {
+    AutoSubscription,
+    AutoSubscriptionEventName,
+    Subscription,
+    SubscriptionChannelName,
+} from "@/interfaces/unsubscribe";
+import { useTranslation } from "react-i18next";
 
-export function UnsubscribeEvent({subscription}: {
-    subscription: Subscription
+export function UnsubscribeEvent({
+    subscription,
+}: {
+    subscription: Subscription;
 }) {
-    const {t} = useTranslation();
-    
+    const { t } = useTranslation();
+
     switch (subscription.type) {
         case "TranslationFreeze":
-            return <span>{t("Translation Freeze for project {{project}}", { project: subscription.projectName })}</span>
+            return (
+                <span>
+                    {t("Translation Freeze for project {{project}}", {
+                        project: subscription.projectName,
+                    })}
+                </span>
+            );
     }
 }
 
-export function AutoSubscribeEvent({autoSubscribeEvent}: {
-    autoSubscribeEvent: AutoSubscription
+export function AutoSubscribeEvent({
+    autoSubscribeEvent,
+}: {
+    autoSubscribeEvent: AutoSubscription;
 }) {
-    const {t} = useTranslation();
-    
+    const { t } = useTranslation();
+
     switch (autoSubscribeEvent.type) {
         case "TranslationSubmit":
-            return <span>{t("Submit translations")}</span>
+            return <span>{t("Submit translations")}</span>;
     }
 }
 
 export enum NotificationChannelType {
-    Name
+    Name,
 }
 
-export function notificationChannelText(channel: SubscriptionChannelName, type: NotificationChannelType) {
+export function notificationChannelText(
+    channel: SubscriptionChannelName,
+    type: NotificationChannelType,
+) {
     const data: Record<SubscriptionChannelName, [string]> = {
-        "TranslationFreeze": ["SUBSCRIPTION_CHANNEL_NAME_TRANSLATION_FREEZE"]
-    }
+        TranslationFreeze: ["SUBSCRIPTION_CHANNEL_NAME_TRANSLATION_FREEZE"],
+    };
 
     return data[channel][type];
 }
 
-export function NotificationChannel({channel, type}: {
-    channel: SubscriptionChannelName
-    type: NotificationChannelType
+export function NotificationChannel({
+    channel,
+    type,
+}: {
+    channel: SubscriptionChannelName;
+    type: NotificationChannelType;
 }) {
-    const {t} = useTranslation();
-    
-    return t(notificationChannelText(channel, type))
+    const { t } = useTranslation();
+
+    return t(notificationChannelText(channel, type));
 }
 
 export enum AutoSubscriptionEventType {
     Name,
-    PresentTenseAction
+    PresentTenseAction,
 }
 
-export function AutoSubscriptionEvent({event, type}: {
-    event: AutoSubscriptionEventName,
-    type: AutoSubscriptionEventType
+export function AutoSubscriptionEvent({
+    event,
+    type,
+}: {
+    event: AutoSubscriptionEventName;
+    type: AutoSubscriptionEventType;
 }) {
-
-    const {t} = useTranslation();
+    const { t } = useTranslation();
 
     const data: Record<AutoSubscriptionEventName, [string, string]> = {
-        "TranslationSubmit": ["AUTO_SUBSCRIPTION_EVENT_NAME_TRANSLATION_SUBMIT", "AUTO_SUBSCRIPTION_EVENT_PRESENT_TENSE_ACTION_TRANSLATION_SUBMIT"]
-    }
+        TranslationSubmit: [
+            "AUTO_SUBSCRIPTION_EVENT_NAME_TRANSLATION_SUBMIT",
+            "AUTO_SUBSCRIPTION_EVENT_PRESENT_TENSE_ACTION_TRANSLATION_SUBMIT",
+        ],
+    };
 
     return t(data[event][type]);
 }

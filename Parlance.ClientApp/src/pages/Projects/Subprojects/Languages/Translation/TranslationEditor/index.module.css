@@ -4,9 +4,8 @@
     grid-template-columns: 500px 1fr 500px;
     grid-template-rows: 1fr;
     gap: 3px;
-    grid-template-areas: 
-        "entryList translationArea extrasArea";
-    
+    grid-template-areas: "entryList translationArea extrasArea";
+
     margin: 3px;
 
     flex-grow: 1;

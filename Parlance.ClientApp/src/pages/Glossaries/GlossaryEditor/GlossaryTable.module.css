@@ -1,14 +1,13 @@
 .errorView {
     flex-grow: 1;
     align-self: center;
-    
+
     display: flex;
     align-items: center;
     justify-items: center;
 }
 
 .errorViewInner {
-    
 }
 
 .glossaryTable {
@@ -21,12 +20,13 @@
     padding: 9px;
 
     display: grid;
-    grid-template-areas: "term pos"
-                         "translation translation"
-                         "buttons buttons";
+    grid-template-areas:
+        "term pos"
+        "translation translation"
+        "buttons buttons";
     grid-template-columns: max-content 1fr;
     gap: 6px;
-    
+
     background-color: var(--layer-color);
     border-radius: var(--border-radius);
 }
@@ -49,7 +49,7 @@
 .buttons {
     grid-area: buttons;
     justify-self: end;
-    
+
     display: flex;
     gap: 6px;
 }
@@ -59,7 +59,7 @@
     justify-content: center;
     padding: 6px;
     gap: 6px;
-    
+
     cursor: pointer;
 }
 
@@ -72,7 +72,7 @@ input.searchBox {
 .searchContainer {
     display: flex;
     flex-direction: column;
-    
+
     background-color: var(--layer-color);
     border-radius: var(--border-radius);
 }

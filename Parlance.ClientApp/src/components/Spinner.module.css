@@ -10,9 +10,9 @@
     grid-template-columns: 1fr var(--spinner-bouncer-width);
     grid-template-rows: 1fr var(--spinner-floor-height);
     gap: 0px 0px;
-    grid-template-areas: 
-    "trail bouncer"
-    "floor floor";
+    grid-template-areas:
+        "trail bouncer"
+        "floor floor";
 
     animation: ballAnimation 0.5s linear infinite normal;
 }

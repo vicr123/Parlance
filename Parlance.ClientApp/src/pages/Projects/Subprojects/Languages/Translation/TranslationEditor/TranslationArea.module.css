@@ -17,12 +17,12 @@
     flex-direction: column;
     flex-grow: 1;
     gap: 3px;
-    
+
     box-sizing: border-box;
 
     position: sticky;
     top: 0;
-    
+
     overflow-y: auto;
 }
 
@@ -57,7 +57,7 @@
     grid-template-columns: 1fr;
     grid-template-rows: max-content max(100px, max-content);
     gap: 0px 0px;
-    grid-template-areas: 
+    grid-template-areas:
         "heading"
         "translationArea";
 }
@@ -73,7 +73,7 @@
     grid-area: translationArea;
     border: none;
 
-    font-family: 'Contemporary';
+    font-family: "Contemporary";
     font-size: 12pt;
 
     margin: 0;
@@ -141,7 +141,7 @@
     display: flex;
     flex-direction: row;
     justify-content: space-between;
-    
+
     background-color: var(--layer-color);
 }
 
