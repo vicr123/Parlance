@@ -4,8 +4,8 @@ class Fetch {
      * Define and create custom headers for Fetch requests
      */
     static headers() {
-        let headers: {[key: string]: string} = {
-            "Content-Type": "application/json"
+        let headers: { [key: string]: string } = {
+            "Content-Type": "application/json",
         };
 
         let token = window.localStorage.getItem("token");
@@ -20,33 +20,35 @@ class Fetch {
      * @param {string} url endpoint for the API call
      * @param {function} resultCallback Callback to call when the result is ready containing raw fetch data
      */
-    static async performRequest<T>(method: string, url: string, resultCallback = (result: WebFetchResponse) => {}) : Promise<FetchResponse<T>> {
+    static async performRequest<T>(
+        method: string,
+        url: string,
+        resultCallback = (result: WebFetchResponse) => {},
+    ): Promise<FetchResponse<T>> {
         let err = null;
         // Display loading animation for the user
         let headers = Fetch.headers();
 
-        let result = await fetch(url, {
+        let result = (await fetch(url, {
             method: method,
-            headers: headers
-        }).catch((error) => {
-            err = error;
-        }).finally(() => {
-
-        }) as WebFetchResponse;
+            headers: headers,
+        })
+            .catch(error => {
+                err = error;
+            })
+            .finally(() => {})) as WebFetchResponse;
 
         if (err) throw err;
         if (result.status < 200 || result.status > 299) {
             try {
                 result.jsonBody = await result.json();
-            } catch {
-
-            }
+            } catch {}
             throw result;
         }
 
         resultCallback(result);
         if (result.status === 204) return {};
-        return await result.json() as T;
+        return (await result.json()) as T;
     }
 
     /**
@@ -56,20 +58,25 @@ class Fetch {
      * @param {Object} headers Headers to include
      * @param resultCallback Callback to call after result is available but before the JSON is retrieved
      */
-    static async post<T>(url: string, data: any, headers = {}, resultCallback = (result: WebFetchResponse) => {}): Promise<T> {
+    static async post<T>(
+        url: string,
+        data: any,
+        headers = {},
+        resultCallback = (result: WebFetchResponse) => {},
+    ): Promise<T> {
         let err = null;
-        let result = await fetch(url, {
+        let result = (await fetch(url, {
             method: "POST",
             headers: {
                 ...headers,
-                ...Fetch.headers()
+                ...Fetch.headers(),
             },
-            body: JSON.stringify(data)
-        }).catch((error) => {
-            err = error;
-        }).finally(() => {
-
-        }) as WebFetchResponse;
+            body: JSON.stringify(data),
+        })
+            .catch(error => {
+                err = error;
+            })
+            .finally(() => {})) as WebFetchResponse;
 
         if (err) throw err;
         if (result.status < 200 || result.status > 299) throw result;
@@ -86,14 +93,15 @@ class Fetch {
      */
     static async patch<T>(url: string, data: any): Promise<FetchResponse<T>> {
         let err = null;
-        let result = await fetch(`/api${url}`, {
+        let result = (await fetch(`/api${url}`, {
             method: "PATCH",
             headers: Fetch.headers(),
-            body: JSON.stringify(data)
-        }).catch((error) => {
-            err = error;
-        }).finally(() => {
-        }) as WebFetchResponse;
+            body: JSON.stringify(data),
+        })
+            .catch(error => {
+                err = error;
+            })
+            .finally(() => {})) as WebFetchResponse;
 
         if (err) throw err;
         if (result.status === 204) return {};
@@ -106,7 +114,7 @@ class Fetch {
      * @param {string} url url to perform API request
      * @param {function} resultCallback Callback to call when the result is ready containing raw fetch data
      */
-    static get<T>(url: string, resultCallback = () => {}) : Promise<T> {
+    static get<T>(url: string, resultCallback = () => {}): Promise<T> {
         return Fetch.performRequest("GET", url, resultCallback) as Promise<T>;
     }
 

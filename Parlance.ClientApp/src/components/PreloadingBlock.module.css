@@ -26,11 +26,21 @@ div.preloadingBlock {
 }
 
 :global(.ltr) div.preloadingBlock {
-    background-image: linear-gradient(to right, var(--preloading-block-color-1) 0%, var(--preloading-block-color-2) 10%, var(--preloading-block-color-1) 20%);
+    background-image: linear-gradient(
+        to right,
+        var(--preloading-block-color-1) 0%,
+        var(--preloading-block-color-2) 10%,
+        var(--preloading-block-color-1) 20%
+    );
     animation: preloadingBlockKeyframeLtr 3s linear 0s infinite;
 }
 
 :global(.rtl) div.preloadingBlock {
-    background-image: linear-gradient(to left, var(--preloading-block-color-1) 0%, var(--preloading-block-color-2) 10%, var(--preloading-block-color-1) 20%);
+    background-image: linear-gradient(
+        to left,
+        var(--preloading-block-color-1) 0%,
+        var(--preloading-block-color-2) 10%,
+        var(--preloading-block-color-1) 20%
+    );
     animation: preloadingBlockKeyframeRtl 3s linear 0s infinite;
 }

@@ -1,26 +1,27 @@
-import {VerticalSpacer} from "../../components/Layouts";
+import { VerticalSpacer } from "../../components/Layouts";
 import Container from "../../components/Container";
 import PageHeading from "../../components/PageHeading";
 import SelectableList from "../../components/SelectableList";
 import i18n from "../../helpers/i18n";
-import React, {useEffect, useState} from "react";
-import {useNavigate} from "react-router-dom";
-import {useTranslation} from "react-i18next";
+import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import Hero from "../../components/Hero";
 import ErrorCover from "../../components/ErrorCover";
 import Fetch from "../../helpers/Fetch";
-import {Glossary} from "../../interfaces/glossary";
+import { Glossary } from "../../interfaces/glossary";
 
 export default function ServerGlossaryListing() {
     const navigate = useNavigate();
-    const {t} = useTranslation();
+    const { t } = useTranslation();
     const [glossaries, setGlossaries] = useState<Glossary[]>([]);
     const [done, setDone] = useState<boolean>(false);
     const [error, setError] = useState<any>();
 
     const updateGlossaries = async () => {
         try {
-            let glossaryData = await Fetch.get<Glossary[]>(`/api/glossarymanager`);
+            let glossaryData =
+                await Fetch.get<Glossary[]>(`/api/glossarymanager`);
             setGlossaries(glossaryData);
             setDone(true);
         } catch (err) {
@@ -31,21 +32,29 @@ export default function ServerGlossaryListing() {
     useEffect(() => {
         updateGlossaries();
     }, []);
-    
+
     const glossaryClicked = (glossary: Glossary) => {
         navigate(glossary.id);
-    }
-    
-    return <div>
-        <Hero heading={t("AVAILABLE_GLOSSARIES")} buttons={[]}/>
-        <ErrorCover error={error}>
-            <Container>
-                <PageHeading level={3}>{t("GLOSSARIES")}</PageHeading>
-                <SelectableList items={done ? glossaries.map(g => ({
-                    contents: g.name,
-                    onClick: () => glossaryClicked(g)
-                })) : SelectableList.PreloadingText()}/>
-            </Container>
-        </ErrorCover>
-    </div>
+    };
+
+    return (
+        <div>
+            <Hero heading={t("AVAILABLE_GLOSSARIES")} buttons={[]} />
+            <ErrorCover error={error}>
+                <Container>
+                    <PageHeading level={3}>{t("GLOSSARIES")}</PageHeading>
+                    <SelectableList
+                        items={
+                            done
+                                ? glossaries.map(g => ({
+                                      contents: g.name,
+                                      onClick: () => glossaryClicked(g),
+                                  }))
+                                : SelectableList.PreloadingText()
+                        }
+                    />
+                </Container>
+            </ErrorCover>
+        </div>
+    );
 }

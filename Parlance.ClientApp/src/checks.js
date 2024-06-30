@@ -1,22 +1,28 @@
 function checkDuplicate(source, translation) {
-    if (source === translation) return {
-        checkSeverity: "warn",
-        message: "Source is equal to translation"
-    }
+    if (source === translation)
+        return {
+            checkSeverity: "warn",
+            message: "Source is equal to translation",
+        };
 }
 
 function checkLeadingSpace(source, translation) {
-    if (translation.trimLeft() !== translation && source.trimLeft() === source) return {
-        checkSeverity: "warn",
-        message: "Leading space exists"
-    };
+    if (translation.trimLeft() !== translation && source.trimLeft() === source)
+        return {
+            checkSeverity: "warn",
+            message: "Leading space exists",
+        };
 }
 
 function checkTrailingSpace(source, translation) {
-    if (translation.trimRight() !== translation && source.trimRight() === source) return {
-        checkSeverity: "warn",
-        message: "Trailing space exists"
-    };
+    if (
+        translation.trimRight() !== translation &&
+        source.trimRight() === source
+    )
+        return {
+            checkSeverity: "warn",
+            message: "Trailing space exists",
+        };
 }
 
 function checkQtPlaceholders(source, translation) {
@@ -25,17 +31,18 @@ function checkQtPlaceholders(source, translation) {
         if (!translation.includes(`%${num}`)) {
             return {
                 checkSeverity: "error",
-                message: `Placeholder %${num} not present in translation`
-            }
+                message: `Placeholder %${num} not present in translation`,
+            };
         }
     });
 }
 
 function checkQtNumericPlaceholders(source, translation) {
-    if (source.includes("%n") && !translation.includes("%n")) return {
-        checkSeverity: "error",
-        message: "Placeholder %n not present in translation"
-    };
+    if (source.includes("%n") && !translation.includes("%n"))
+        return {
+            checkSeverity: "error",
+            message: "Placeholder %n not present in translation",
+        };
 }
 
 function checki18nextPlaceholders(source, translation) {
@@ -44,8 +51,8 @@ function checki18nextPlaceholders(source, translation) {
         if (!translation.includes(`{{${ph}}}`)) {
             return {
                 checkSeverity: "error",
-                message: `Placeholder {{${ph}}} not present in translation`
-            }
+                message: `Placeholder {{${ph}}} not present in translation`,
+            };
         }
     });
 }
@@ -56,8 +63,8 @@ function checki18nextHtmlPlaceholders(source, translation) {
         if (!translation.includes(`<${ph}>`)) {
             return {
                 checkSeverity: "error",
-                message: `Placeholder <${ph}> not present in translation`
-            }
+                message: `Placeholder <${ph}> not present in translation`,
+            };
         }
     });
 }
@@ -68,8 +75,8 @@ function checkResxPlaceholders(source, translation) {
         if (!translation.includes(`{${ph}}`)) {
             return {
                 checkSeverity: "error",
-                message: `Placeholder {${ph}} not present in translation`
-            }
+                message: `Placeholder {${ph}} not present in translation`,
+            };
         }
     });
 }
@@ -80,8 +87,8 @@ function checkVueI18nPlaceholders(source, translation) {
         if (!translation.includes(`{${ph}}`)) {
             return {
                 checkSeverity: "error",
-                message: `Placeholder {${ph}} not present in translation`
-            }
+                message: `Placeholder {${ph}} not present in translation`,
+            };
         }
     });
 }
@@ -89,19 +96,19 @@ function checkVueI18nPlaceholders(source, translation) {
 function checkJavaPlaceholders(source, translation) {
     return [..."abcdefghnostx"].flatMap(placeholder => {
         let ph = `%${placeholder}`;
-        let sourceMatches = [...source.matchAll(new RegExp(ph, 'g'))];
-        let translationMatches = [...translation.matchAll(new RegExp(ph, 'g'))];
-        
+        let sourceMatches = [...source.matchAll(new RegExp(ph, "g"))];
+        let translationMatches = [...translation.matchAll(new RegExp(ph, "g"))];
+
         const difference = translationMatches.length - sourceMatches.length;
         if (difference < 0) {
             return Array(-difference).fill({
                 checkSeverity: "error",
-                message: `Placeholder ${ph} not present in translation`
+                message: `Placeholder ${ph} not present in translation`,
             });
         } else if (difference > 0) {
             return Array(difference).fill({
                 checkSeverity: "error",
-                message: `Extraneous placeholder ${ph} in translation`
+                message: `Extraneous placeholder ${ph} in translation`,
             });
         }
     });
@@ -113,75 +120,56 @@ function checkGettextPlaceholders(source, translation) {
         if (!translation.includes(`{${ph}}`)) {
             return {
                 checkSeverity: "error",
-                message: `Placeholder {${ph}} not present in translation`
-            }
+                message: `Placeholder {${ph}} not present in translation`,
+            };
         }
     });
 }
 
 const Checks = {
-    "common": [
-        checkDuplicate,
-        checkLeadingSpace,
-        checkTrailingSpace
-    ],
-    "qt": [
-        checkQtPlaceholders,
-        checkQtNumericPlaceholders,
-        "common"
-    ],
-    "i18next": [
-        checki18nextPlaceholders,
-        checki18nextHtmlPlaceholders,
-        "common"
-    ],
-    "resx": [
-        checkResxPlaceholders,
-        "common"
-    ],
-    "vue-i18n": [
-        checkVueI18nPlaceholders,
-        "common"
-    ],
-    "minecraft-fabric": [
-        checkJavaPlaceholders,
-        "common"
-    ],
-    "gettext": [
-        checkGettextPlaceholders,
-        "common"
-    ]
-}
+    common: [checkDuplicate, checkLeadingSpace, checkTrailingSpace],
+    qt: [checkQtPlaceholders, checkQtNumericPlaceholders, "common"],
+    i18next: [checki18nextPlaceholders, checki18nextHtmlPlaceholders, "common"],
+    resx: [checkResxPlaceholders, "common"],
+    "vue-i18n": [checkVueI18nPlaceholders, "common"],
+    "minecraft-fabric": [checkJavaPlaceholders, "common"],
+    gettext: [checkGettextPlaceholders, "common"],
+};
 
 function checkTranslation(source, translation, checkSuite) {
     if (translation === "") return [];
 
     let suite = Checks[checkSuite];
     if (!suite) return [];
-    return suite.map(check => {
-        if (typeof (check) === "string") {
-            return checkTranslation(source, translation, check);
-        } else {
-            try {
-                return check(source, translation);
-            } catch (ex) {
-                console?.log?.(ex);
-                return {
-                    checkSeverity: "error",
-                    message: `Unable to run the check`
+    return suite
+        .map(check => {
+            if (typeof check === "string") {
+                return checkTranslation(source, translation, check);
+            } else {
+                try {
+                    return check(source, translation);
+                } catch (ex) {
+                    console?.log?.(ex);
+                    return {
+                        checkSeverity: "error",
+                        message: `Unable to run the check`,
+                    };
                 }
             }
-        }
-    }).flat().filter(result => result);
+        })
+        .flat()
+        .filter(result => result);
 }
 
 function mostSevereType(checks) {
-    let severities = checks.map(check => typeof (check) === "string" ? check : check?.checkSeverity);
+    let severities = checks.map(check =>
+        typeof check === "string" ? check : check?.checkSeverity,
+    );
     if (severities.includes("error")) return "error";
     if (severities.includes("warn")) return "warn";
     return null;
 }
 
-export {Checks};
-export {checkTranslation};
-export {mostSevereType};
+export { Checks };
+export { checkTranslation };
+export { mostSevereType };

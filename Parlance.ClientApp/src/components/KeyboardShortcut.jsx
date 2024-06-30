@@ -1,12 +1,10 @@
 import Styles from "./KeyboardShortcut.module.css";
 
-function KeyboardShortcutPart({text}) {
-    return <div className={Styles.shortcut}>
-        {text}
-    </div>
+function KeyboardShortcutPart({ text }) {
+    return <div className={Styles.shortcut}>{text}</div>;
 }
 
-export default function KeyboardShortcut({shortcut}) {
+export default function KeyboardShortcut({ shortcut }) {
     let isMac = navigator.userAgent.toLowerCase().includes("mac");
     const resolvedShortcut = shortcut[0].map(key => {
         if (isMac) {
@@ -44,7 +42,11 @@ export default function KeyboardShortcut({shortcut}) {
         }
     });
 
-    return <div className={Styles.shortcutContainer}>
-        {resolvedShortcut.map((key, i) => <KeyboardShortcutPart text={key} key={i}/>)}
-    </div>
+    return (
+        <div className={Styles.shortcutContainer}>
+            {resolvedShortcut.map((key, i) => (
+                <KeyboardShortcutPart text={key} key={i} />
+            ))}
+        </div>
+    );
 }

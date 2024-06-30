@@ -1,37 +1,37 @@
 export interface TokenResponseToken {
-    token: string
+    token: string;
 }
 
 export interface TokenResponseFido {
-    options: TokenResponseFidoOptions
-    id: number
+    options: TokenResponseFidoOptions;
+    id: number;
 }
 
 interface TokenResponseFidoOptions {
-    challenge: string
-    timeout: number
-    rpId: string
-    allowCredentials: TokenResponseFidoOptionsCredentials[]
-    userVerification: "discouraged" | "preferred" | "required"
-    extensions: Record<string, boolean>
-    status: string
-    errorMessage: string
+    challenge: string;
+    timeout: number;
+    rpId: string;
+    allowCredentials: TokenResponseFidoOptionsCredentials[];
+    userVerification: "discouraged" | "preferred" | "required";
+    extensions: Record<string, boolean>;
+    status: string;
+    errorMessage: string;
 }
 
 export interface TokenResponseFidoOptionsCredentials {
-    type: "public-key"
-    id: string
+    type: "public-key";
+    id: string;
 }
 
 export type LoginType = "password" | "fido";
 
 export interface User {
-    id: string
-    username: string
-    email: string
-    emailVerified: boolean
-    superuser: boolean
-    languagePermissions: string[] 
+    id: string;
+    username: string;
+    email: string;
+    emailVerified: boolean;
+    superuser: boolean;
+    languagePermissions: string[];
 }
 
 export type PasswordResetType = "email";
@@ -39,28 +39,28 @@ export type PasswordResetType = "email";
 export type PasswordResetChallenge = PasswordResetChallengeEmail;
 
 interface PasswordResetChallengeEmail {
-    email: string
+    email: string;
 }
 
 interface OtpBackupCode {
-    used: boolean
-    code: string
+    used: boolean;
+    code: string;
 }
 
-export type OtpState = OtpStateEnabled | OtpStateDisabled
+export type OtpState = OtpStateEnabled | OtpStateDisabled;
 
 export interface OtpStateEnabled {
-    enabled: true
-    backupCodes: OtpBackupCode[]
+    enabled: true;
+    backupCodes: OtpBackupCode[];
 }
 
 export interface OtpStateDisabled {
-    enabled: false
-    key: string
+    enabled: false;
+    key: string;
 }
 
 export interface SecurityKey {
     id: string;
-    name: string
-    application: string
+    name: string;
+    application: string;
 }

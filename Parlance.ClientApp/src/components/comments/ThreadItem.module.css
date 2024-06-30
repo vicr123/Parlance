@@ -3,7 +3,7 @@
     grid-template-columns: 1fr max-content;
     grid-template-rows: max-content max-content max-content;
     gap: 6px 0px;
-    grid-template-areas: 
+    grid-template-areas:
         "threadTitle goButton"
         "lastMessageDate goButton"
         "lastMessage goButton";
@@ -45,7 +45,7 @@
 
 .threadCreator {
     font-size: 10pt;
-    
+
     display: inline-flex;
     align-items: center;
     gap: 6px;

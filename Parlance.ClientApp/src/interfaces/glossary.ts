@@ -2,22 +2,22 @@ export enum PartOfSpeech {
     Unknown = 0,
     Noun,
     Verb,
-    Adjective
+    Adjective,
 }
 
 export interface Glossary {
-    id: string,
-    name: string,
-    createdDate: string,
-    usedByProjects: number
+    id: string;
+    name: string;
+    createdDate: string;
+    usedByProjects: number;
 }
 
 export interface GlossaryItem {
-    id: string
-    term: string
-    translation: string
-    partOfSpeech: PartOfSpeech
-    lang: string
+    id: string;
+    term: string;
+    translation: string;
+    partOfSpeech: PartOfSpeech;
+    lang: string;
 }
 
 export function PartOfSpeechTranslationString(pos: PartOfSpeech) {

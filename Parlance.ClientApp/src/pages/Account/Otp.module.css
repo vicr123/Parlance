@@ -24,7 +24,7 @@
     grid-template-columns: 1fr 1fr;
     grid-template-rows: max-content max-content max-content max-content max-content;
     gap: 9px 9px;
-    
+
     justify-items: center;
 }
 
