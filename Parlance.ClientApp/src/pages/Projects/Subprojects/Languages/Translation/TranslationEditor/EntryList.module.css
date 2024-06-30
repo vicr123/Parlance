@@ -178,7 +178,6 @@ input.searchBox {
     align-items: center;
     padding: 6px;
     gap: 6px;
-    border-bottom: 1px solid var(--border-color);
 }
 
 .connectionBoxSignal {
