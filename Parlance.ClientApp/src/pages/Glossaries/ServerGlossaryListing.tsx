@@ -38,7 +38,6 @@ export default function ServerGlossaryListing() {
     
     return <div>
         <Hero heading={t("AVAILABLE_GLOSSARIES")} buttons={[]}/>
-        <VerticalSpacer/>
         <ErrorCover error={error}>
             <Container>
                 <PageHeading level={3}>{t("GLOSSARIES")}</PageHeading>

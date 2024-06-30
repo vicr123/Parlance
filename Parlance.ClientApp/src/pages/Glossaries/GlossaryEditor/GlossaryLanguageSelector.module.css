@@ -1,6 +1,8 @@
 .language {
     padding: 6px;
     cursor: pointer;
+    
+    border-radius: var(--border-radius);
 }
 
 .languageGroup {
@@ -9,4 +11,11 @@
 
 .selected {
     background: var(--active-color);
+}
+
+.languageListInner {
+    background: var(--layer-color);
+    border-radius: var(--border-radius);
+    
+    padding: 3px;
 }

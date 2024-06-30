@@ -98,7 +98,7 @@ function GlossaryManager() : ReactElement {
     return <>
         <div className={`${Styles.glossaryManagerRootContainer} ${mobileSwitch && Styles.mobileSwitch}`}>
             <div className={Styles.glossaryManagerRoot}>
-                <VerticalLayout>
+                <VerticalLayout className={Styles.glossaryManagerSide}>
                     <GlossaryList title={t("CONNECTED_GLOSSARIES")} glossaries={connectedGlossaries} shiftGlossary={disconnectGlossary} onLeft={true} />
                     <div className={Styles.mobileSwitcher}>
                         <SelectableList onClick={() => setMobileSwitch(true)}>
@@ -106,8 +106,7 @@ function GlossaryManager() : ReactElement {
                         </SelectableList>
                     </div>
                 </VerticalLayout>
-                <div></div>
-                <VerticalLayout>
+                <VerticalLayout className={Styles.glossaryManagerSide}>
                     <GlossaryList title={t("AVAILABLE_GLOSSARIES")} glossaries={disconnectedGlossaries} shiftGlossary={connectGlossary} onLeft={false} />
                     <div className={Styles.mobileSwitcher}>
                         <SelectableList onClick={() => setMobileSwitch(false)}>
@@ -126,16 +125,14 @@ export default function Glossaries() : ReactElement {
     
     return <div>
         <BackButton text={t("BACK_TO_SUBPROJECTS")} onClick={() => navigate("..")}/>
-        <VerticalSpacer/>
         <Container>
             <VerticalLayout>
                 <PageHeading level={3}>{t("MANAGE_GLOSSARIES")}</PageHeading>
                 <span>{t("MANAGE_GLOSSARIES_PROMPT_1")}</span>
                 <br />
                 <span>{t("MANAGE_GLOSSARIES_PROMPT_2")}</span>
-                <VerticalSpacer/>
-                <GlossaryManager />
             </VerticalLayout>
         </Container>
+        <GlossaryManager />
     </div>
 }

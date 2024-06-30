@@ -12,7 +12,7 @@ interface HeroButton {
 interface HeroProps {
     heading: string
     subheading?: string
-    buttons: HeroButton[]
+    buttons?: HeroButton[]
 }
 
 export default function Hero({heading, subheading, buttons}: HeroProps) {
@@ -21,7 +21,7 @@ export default function Hero({heading, subheading, buttons}: HeroProps) {
             <PageHeading>{heading}</PageHeading>
             <PageHeading level={2}>{subheading}</PageHeading>
             <div className={Styles.buttonBox}>
-                {buttons.map((button, i) => <SmallButton key={i} onClick={button.onClick}>{button.text}</SmallButton>)}
+                {buttons?.map((button, i) => <SmallButton key={i} onClick={button.onClick}>{button.text}</SmallButton>)}
             </div>
         </div>
     </Container>

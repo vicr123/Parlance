@@ -55,32 +55,31 @@ export function NotificationsSettings() {
 
     return <div>
         <BackButton onClick={() => navigate("..")}/>
-        <Container>
-            <ListPage items={[
-                t("NOTIFICATIONS"),
-                {
-                    slug: "general",
-                    name: t("GENERAL"),
-                    render: <GeneralNotificationSettings />,
-                    default: true
-                },
-                {
-                    slug: "automatic-subscriptions",
-                    name: t("AUTO_SUBSCRIPTION_SETTINGS_TITLE"),
-                    render: <AutomaticSubscriptions />
-                },
-                t("NOTIFICATIONS_CHANNELS"),
-                ...Object.keys(groups).map(groupString => {
-                    const group = groupString as SubscriptionChannelName;
-                    
-                    return {
-                        slug: group,
-                        name: t(notificationChannelText(group, NotificationChannelType.Name)),
-                        render: <Channel channel={group} channels={channels} dispatchChannels={dispatchChannels} />
-                    };
-                })
-            ]} />
-        </Container>
+        
+        <ListPage items={[
+            t("NOTIFICATIONS"),
+            {
+                slug: "general",
+                name: t("GENERAL"),
+                render: <GeneralNotificationSettings />,
+                default: true
+            },
+            {
+                slug: "automatic-subscriptions",
+                name: t("AUTO_SUBSCRIPTION_SETTINGS_TITLE"),
+                render: <AutomaticSubscriptions />
+            },
+            t("NOTIFICATIONS_CHANNELS"),
+            ...Object.keys(groups).map(groupString => {
+                const group = groupString as SubscriptionChannelName;
+                
+                return {
+                    slug: group,
+                    name: t(notificationChannelText(group, NotificationChannelType.Name)),
+                    render: <Channel channel={group} channels={channels} dispatchChannels={dispatchChannels} />
+                };
+            })
+        ]} />
     </div>
 }
 

@@ -15,6 +15,7 @@ import Fetch from "../../../helpers/Fetch";
 import ErrorModal from "../../../components/modals/ErrorModal";
 import React, {useState} from "react";
 import BackButton from "../../../components/BackButton";
+import i18n from "@/helpers/i18n";
 
 interface GlossaryTableProps {
     className: string
@@ -79,7 +80,7 @@ export default function GlossaryTable({className, glossaryData, onGlossaryItemAd
             {visibleGlossaryItems.map(match => <div key={match.id} className={Styles.match}>
                 <span className={Styles.term}>{match.term}</span>
                 {match.translation && <span className={Styles.pos}>{t(PartOfSpeechTranslationString(match.partOfSpeech))}</span>}
-                <span className={Styles.translation}>{match.translation || "?"}</span>
+                <span dir={i18n.dir(language)} className={Styles.translation}>{match.translation || "?"}</span>
                 <span className={Styles.buttons}>
                     {canTranslate && <SmallButton onClick={() => onDelete(match)}>{t("DELETE")}</SmallButton>}
                     </span>

@@ -10,7 +10,7 @@ import {useNavigate} from "react-router-dom";
 import ParlanceLogo from "../images/parlance.svg";
 
 export default function NavMenu() {
-    const [currentUser, setCurrentUser] = useState();
+    const [currentUser, setCurrentUser] = useState<string>();
     const {t} = useTranslation();
     const navigate = useNavigate();
 

@@ -91,30 +91,33 @@ export function AutomaticSubscriptions() {
     
     const groups = Object.groupBy(subscriptions, subscription => subscription.channel);
 
-    return <div>
+    return <>
         <ListPageBlock>
             <VerticalLayout>
                 <PageHeading level={3}>{t("AUTO_SUBSCRIPTION_SETTINGS_TITLE")}</PageHeading>
                 <span>{t("AUTO_SUBSCRIPTION_SETTINGS_DESCRIPTION")}</span>
-                <SelectableList items={
-                    Object.keys(groups).flatMap(groupString => {
-                        const group = groupString as SubscriptionChannelName;
-                        const autoSubscriptions = groups[group];
-                        
-                        return [
-                            t(notificationChannelText(group, NotificationChannelType.Name)),
-                            ...autoSubscriptions.map(subscription => ({
-                                contents: <Trans i18nKey={"AUTO_SUBSCRIPTION_SETTINGS_EVENT"}>
-                                    When&nbsp;
-                                    <AutoSubscriptionEvent event={subscription.event} type={AutoSubscriptionEventType.PresentTenseAction} />
-                                </Trans>,
-                                onClick: () => setAutoSubscription(subscription.channel, subscription.event, !subscription.subscribed),
-                                on: subscription.subscribed
-                            }))
-                        ]
-                    })
-                } />
             </VerticalLayout>
         </ListPageBlock>
-    </div>
+        {Object.keys(groups).map(groupString => {
+            const group = groupString as SubscriptionChannelName;
+            const autoSubscriptions = groups[group];
+            
+            return <ListPageBlock key={groupString}>
+                <VerticalLayout>
+                    <SelectableList items={[
+                        t(notificationChannelText(group, NotificationChannelType.Name)),
+                        ...autoSubscriptions.map(subscription => ({
+                            contents: <Trans i18nKey={"AUTO_SUBSCRIPTION_SETTINGS_EVENT"}>
+                                When&nbsp;
+                                <AutoSubscriptionEvent event={subscription.event}
+                                                       type={AutoSubscriptionEventType.PresentTenseAction}/>
+                            </Trans>,
+                            onClick: () => setAutoSubscription(subscription.channel, subscription.event, !subscription.subscribed),
+                            on: subscription.subscribed
+                        }))
+                    ]} />
+                </VerticalLayout>
+            </ListPageBlock>;
+        })}
+    </>
 }

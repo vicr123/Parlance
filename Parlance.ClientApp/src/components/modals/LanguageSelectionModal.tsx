@@ -19,7 +19,7 @@ export default function LanguageSelectionModal() {
         })();
     }, []);
 
-    const setLang = async lang => {
+    const setLang = async (lang: string) => {
         Modal.mount(<LoadingModal/>)
         if (lang === "system") {
             localStorage.removeItem("lang");

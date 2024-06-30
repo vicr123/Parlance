@@ -50,9 +50,7 @@ export default function(props) {
     
     return <div>
         <BackButton onClick={() => navigate("..")} />
-        <Container style={{
-            marginTop: "20px"
-        }}>
+        <Container>
             <VerticalLayout gap={0}>
                 <PageHeading level={3}>{t("ACCOUNT_SETTINGS_CHANGE_USERNAME")}</PageHeading>
                 <p>{t("CHANGE_USERNAME_PROMPT_1")}</p>

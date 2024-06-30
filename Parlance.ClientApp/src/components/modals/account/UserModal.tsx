@@ -2,9 +2,11 @@ import Modal from "../../Modal";
 import UserManager from "../../../helpers/UserManager";
 import {useTranslation} from "react-i18next";
 import ModalList from "../../ModalList";
-import {useNavigate} from "react-router-dom";
+import { NavigateFunction } from "react-router-dom";
 
-export default function({navigate}) {
+export default function({navigate}: {
+    navigate: NavigateFunction
+}) {
     const {t} = useTranslation();
     
     let bottomButtons = [];
@@ -39,7 +41,7 @@ export default function({navigate}) {
             }
         }
     ]}>
-        {t('USER_MANAGEMENT_PROMPT', {username: UserManager.currentUser.username})}
+        {t('USER_MANAGEMENT_PROMPT', {username: UserManager.currentUser!.username})}
         <ModalList>
             {bottomButtons}
         </ModalList>

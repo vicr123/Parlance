@@ -3,32 +3,26 @@
 
     display: flex;
     flex-direction: column;
+    gap: 3px;
 
     overflow-y: auto;
-}
-
-:global(.ltr) .rootList {
-    border-right: 1px solid var(--border-color);
-}
-
-:global(.rtl) .rootList {
-    border-left: 1px solid var(--border-color);
 }
 
 .entriesContainer {
     overflow-y: auto;
+    padding: 3px;
+    gap: 3px;
 }
 
 input.searchBox {
     border: none;
+    background-color: transparent;
     padding: 9px;
     font-size: 12pt;
 }
 
 .topBox {
     padding: 9px;
-    border-top: 1px solid var(--border-color);
-    border-bottom: 1px solid var(--border-color);
 
     display: grid;
     grid-template-columns: max-content 1fr;
@@ -36,7 +30,7 @@ input.searchBox {
 
 .shownTypesSelect {
     appearance: none;
-    background-color: var(--background-color);
+    background-color: transparent;
     border: none;
 
     font: var(--standard-font);
@@ -46,8 +40,6 @@ input.searchBox {
 }
 
 .shownTypesSelectContainer {
-    border-top: 1px solid var(--border-color);
-
     display: grid;
     grid-template-areas: 
          "icon select";
@@ -109,6 +101,7 @@ input.searchBox {
         ". translation";
 
     cursor: pointer;
+    border-radius: var(--border-radius);
 }
 
 .selected {
@@ -171,8 +164,10 @@ input.searchBox {
     top: 0;
 
     padding: 3px;
-    background-color: var(--foreground-color);
-    color: var(--background-color);
+    background-color: var(--layer-color);
+    /*color: var(--background-color);*/
+    border-radius: var(--border-radius);
+    backdrop-filter: blur(100px);
 }
 
 .scrim {

@@ -6,7 +6,7 @@ import {useTranslation} from "react-i18next";
 import SelectableList from "../../components/SelectableList";
 import Modal from "../../components/Modal";
 import LoadingModal from "../../components/modals/LoadingModal";
-import {VerticalLayout} from "../../components/Layouts";
+import {VerticalLayout, VerticalSpacer} from "../../components/Layouts";
 
 export default function (props) {
     const [haveSshKey, setHaveSshKey] = useState(null);
@@ -67,8 +67,9 @@ export default function (props) {
         <>
             <p>{t("SERVER_SSH_KEY_VALID_PROMPT")}</p>
             <code style={{
-                overflowWrap: "word-break"
+                overflowWrap: "anywhere"
             }}>{sshKey}</code>
+            <VerticalSpacer />
             <SelectableList items={[
                 {
                     contents: t("SERVER_SSH_KEY_COPY"),

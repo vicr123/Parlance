@@ -87,7 +87,7 @@ export default function(props) {
         </Modal>)
     }
     
-    return <div>
+    return <>
         <ListPageBlock>
             <VerticalLayout>
                 <PageHeading level={3}>{t("SUPERUSERS")}</PageHeading>
@@ -105,5 +105,5 @@ export default function(props) {
                 <SelectableList onClick={promote}>{t("PROMOTE_TO_SUPERUSER")}</SelectableList>
             </VerticalLayout>
         </ListPageBlock>
-    </div>
+    </>
 }

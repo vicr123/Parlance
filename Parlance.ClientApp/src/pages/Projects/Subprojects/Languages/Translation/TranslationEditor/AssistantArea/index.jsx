@@ -7,6 +7,7 @@ import useTranslationEntries from "../EntryUtils";
 import {useEffect, useState} from "react";
 import SmallButton from "../../../../../../../components/SmallButton";
 import PreloadingBlock from "../../../../../../../components/PreloadingBlock";
+import {Box} from "../Box";
 
 function SuggestedTranslation({suggestion, index, translationDirection}) {
     const {t} = useTranslation();
@@ -70,18 +71,22 @@ export default function AssistantArea({entries, searchParams, translationDirecti
 
     return <div className={Styles.assistantArea}>
         <div className={Styles.assistantAreaInner}>
-            <VerticalLayout className={Styles.pane}>
-                <div className={Styles.heading}>
-                    <PageHeading level={3}>{t("ASSISTANT")}</PageHeading>
-                    <span>{t("ASSISTANT_DESCRIPTION")}</span>
-                </div>
-            </VerticalLayout>
-            <VerticalLayout className={`${Styles.pane} ${Styles.heading}`}>
-                <PageHeading level={3}>{t("ASSISTANT_SUGGESTED_TRANSLATIONS")}</PageHeading>
-                <div className={Styles.suggestionsContainer}>
-                    {suggestions}
-                </div>
-            </VerticalLayout>
+            <Box>
+                <VerticalLayout className={Styles.pane}>
+                    <div className={Styles.heading}>
+                        <PageHeading level={3}>{t("ASSISTANT")}</PageHeading>
+                        <span>{t("ASSISTANT_DESCRIPTION")}</span>
+                    </div>
+                </VerticalLayout>
+            </Box>
+            <Box>
+                <VerticalLayout className={`${Styles.pane} ${Styles.heading}`}>
+                    <PageHeading level={3}>{t("ASSISTANT_SUGGESTED_TRANSLATIONS")}</PageHeading>
+                    <div className={Styles.suggestionsContainer}>
+                        {suggestions}
+                    </div>
+                </VerticalLayout>
+            </Box>
             {/*<VerticalLayout className={`${Styles.pane} ${Styles.heading}`}>*/}
             {/*    <PageHeading level={3}>{t("ASSISTANT_RESOURCES")}</PageHeading>*/}
             {/*</VerticalLayout>*/}

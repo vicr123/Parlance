@@ -40,6 +40,13 @@ body {
 
     --preloading-block-color-1: rgba(255, 255, 255, 0.3);
     --preloading-block-color-2: rgba(255, 255, 255, 0.4);
+    
+    --layer-color: rgba(255, 255, 255, calc(10 / 255));
+    
+    --border-radius: 4px;
+    
+    --focus-decoration-start: rgb(20, 125, 200);
+    --focus-decoration-end: rgb(20, 160, 255);
 
     --fixed-font: 'JetBrains Mono', monospace;
     --standard-font: 'Contemporary', sans-serif;
@@ -71,6 +78,8 @@ body {
 
         --preloading-block-color-1: rgba(0, 0, 0, 0.3);
         --preloading-block-color-2: rgba(0, 0, 0, 0.4);
+        
+        --layer-color: rgba(0, 0, 0, calc(20 / 255));
     }
 }
 
@@ -83,7 +92,7 @@ code {
 }
 
 input[type=text], input[type=password] {
-    background-color: var(--background-color);
+    background-color: transparent;
     color: var(--foreground-color);
     border: 1px solid var(--border-color);
     padding: 3px;
@@ -95,4 +104,9 @@ hr {
     border-right: none;
     border-bottom: 1px solid var(--border-color);
     width: 100%;
+}
+
+* {
+    scrollbar-width: thin;
+    scrollbar-color: var(--active-color) transparent;
 }

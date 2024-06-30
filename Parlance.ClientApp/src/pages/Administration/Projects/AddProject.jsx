@@ -40,7 +40,7 @@ export default function (props) {
         }
     };
 
-    return <div>
+    return <>
         <BackButton inListPage={true} onClick={() => navigate("..")}/>
         <ListPageBlock>
             <VerticalLayout>
@@ -58,5 +58,5 @@ export default function (props) {
                 <SelectableList onClick={addProject}>{t("ADD_PROJECT")}</SelectableList>
             </VerticalLayout>
         </ListPageBlock>
-    </div>
+    </>
 }

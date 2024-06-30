@@ -7,6 +7,7 @@ import {useTranslation} from "react-i18next";
 import useTranslationEntries from "./EntryUtils";
 import {Fragment, useEffect, useRef} from "react";
 import {isEmptyTranslation} from "./EntryHelper";
+import {Box} from "./Box";
 
 function EntryListItem({
                            entries,
@@ -89,43 +90,48 @@ export default function EntryList({
 
     return <div className={Styles.rootList}>
         <div className={`${Styles.scrim} ${key && Styles.haveKey}`}/>
-        <BackButton text={t("QUIT")} onClick={() => navigate("..")} inTranslationView={true}/>
-        <input type={"text"} className={Styles.searchBox} placeholder={t("SEARCH")} value={searchParams.query}
-               onChange={e => setSearchParam("query", e.target.value)}/>
-        <div className={Styles.shownTypesSelectContainer}>
-            <svg className={Styles.filterIcon}
-                 height="16"
-                 width="16"
-                 version="1.1"
-                 id="svg5"
-                 xmlns="http://www.w3.org/2000/svg">
-                <path
-                    className={Styles.filterPath}
-                    d="m 1.5,1.5 5,5 v 4 l 3,3 v -7 l 5,-5 z"
-                    id="path4486"/>
-            </svg>
-
-            <select className={Styles.shownTypesSelect} value={searchParams.filter}
-                    onChange={e => setSearchParam("filter", e.target.value)}>
-                <option value={"all"}>{t("FILTER_ALL_STRINGS")}</option>
-                <option value={"unfinished"}>{t("FILTER_UNFINISHED_STRINGS")}</option>
-                <option value={"alerts"}>{t("FILTER_ALERT_STRINGS")}</option>
-            </select>
-
-            <svg
-                className={Styles.selectDownArrow}
-                height="16"
-                width="16"
-                id="svg2"
-                version="1.1">
-                <path
-                    className={Styles.selectDownArrowPath}
-                    d="M 1.4999999,4.7500108 14.5,4.7500108 8.0000003,11.25001 Z"
-                    id="path4137"/>
-            </svg>
-
-        </div>
-        <div className={Styles.entriesContainer}>
+        <Box>
+            <BackButton text={t("QUIT")} onClick={() => navigate("..")} inTranslationView={true}/>
+        </Box>
+        <Box>
+            <input type={"text"} className={Styles.searchBox} placeholder={t("SEARCH")} value={searchParams.query}
+                   onChange={e => setSearchParam("query", e.target.value)}/>
+        </Box>
+        <Box>
+            <div className={Styles.shownTypesSelectContainer}>
+                <svg className={Styles.filterIcon}
+                     height="16"
+                     width="16"
+                     version="1.1"
+                     id="svg5"
+                     xmlns="http://www.w3.org/2000/svg">
+                    <path
+                        className={Styles.filterPath}
+                        d="m 1.5,1.5 5,5 v 4 l 3,3 v -7 l 5,-5 z"
+                        id="path4486"/>
+                </svg>
+    
+                <select className={Styles.shownTypesSelect} value={searchParams.filter}
+                        onChange={e => setSearchParam("filter", e.target.value)}>
+                    <option value={"all"}>{t("FILTER_ALL_STRINGS")}</option>
+                    <option value={"unfinished"}>{t("FILTER_UNFINISHED_STRINGS")}</option>
+                    <option value={"alerts"}>{t("FILTER_ALERT_STRINGS")}</option>
+                </select>
+    
+                <svg
+                    className={Styles.selectDownArrow}
+                    height="16"
+                    width="16"
+                    id="svg2"
+                    version="1.1">
+                    <path
+                        className={Styles.selectDownArrowPath}
+                        d="M 1.4999999,4.7500108 14.5,4.7500108 8.0000003,11.25001 Z"
+                        id="path4137"/>
+                </svg>
+            </div>
+        </Box>
+        <Box className={Styles.entriesContainer}>
             {Object.keys(contexts).map((context, idx) => <Fragment key={idx}>
                 <div className={Styles.categoryHeader}>{context}</div>
                 {contexts[context].map((entry, idx) => <EntryListItem entries={entries} entry={entry} key={idx}
@@ -135,6 +141,6 @@ export default function EntryList({
                                                                       searchParams={searchParams}
                 />)}
             </Fragment>)}
-        </div>
+        </Box>
     </div>
 }

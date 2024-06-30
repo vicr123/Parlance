@@ -3,6 +3,8 @@
     padding-bottom: 6px;
 
     cursor: default;
+    background-color: unset;
+    border-radius: var(--border-radius);
 }
 
 .backButton:hover {
@@ -14,12 +16,7 @@
 }
 
 .listPageContainer {
-    border-bottom: 1px solid var(--border-color);
     max-width: 600px;
-}
-
-.translationViewContainer {
-    border-bottom: 1px solid var(--border-color);
 }
 
 .listPageContainer.backButton {

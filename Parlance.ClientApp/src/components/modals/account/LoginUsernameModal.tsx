@@ -8,6 +8,7 @@ import CreateAccountModal from "./CreateAccountModal";
 import LoadingModal from "../LoadingModal";
 import Styles from "./LoginUsernameModal.module.css";
 import {ServerInformationContext} from "@/context/ServerInformationContext";
+import {VerticalSpacer} from "@/components/Layouts";
 
 export default function LoginUsernameModal() {
     const [username, setUsername] = useState(UserManager.loginDetail("username"));
@@ -37,6 +38,7 @@ export default function LoginUsernameModal() {
     ]}>
         <div style={{display: "flex", flexDirection: "column"}}>
             {t('LOG_IN_PROMPT', {account: serverInformation.accountName})}
+            <VerticalSpacer height={3} />
             <LineEdit placeholder={t('USERNAME')} value={username}
                       onChange={e => setUsername((e.target as HTMLInputElement).value)} autoComplete={"off"}/>
             <div className={Styles.password}>

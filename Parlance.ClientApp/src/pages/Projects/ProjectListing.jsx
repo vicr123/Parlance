@@ -32,7 +32,6 @@ export default function ProjectListing() {
     }, []);
 
     return <div>
-        <VerticalSpacer/>
         <ErrorCover error={error}>
             <Container>
                 <PageHeading level={3}>{t("AVAILABLE_PROJECTS")}</PageHeading>

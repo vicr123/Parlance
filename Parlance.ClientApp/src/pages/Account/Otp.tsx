@@ -83,25 +83,23 @@ function OtpDisabledContent({otpState, onReload, password}: {
     }
 
     return <>
-        <Container style={{
-            marginTop: "20px"
-        }}>
+        <Container>
             <VerticalLayout>
                 <PageHeading level={3}>{t("ACCOUNT_SETTINGS_TWO_FACTOR")}</PageHeading>
                 <span>{t("ACCOUNT_SETTINGS_TWO_FACTOR_WELCOME_PROMPT")}</span>
+                <span>{t("ACCOUNT_SETTINGS_TWO_FACTOR_PREAMBLE")}</span>
             </VerticalLayout>
         </Container>
-        <Container style={{
-            marginTop: "20px"
-        }}>
+        <Container>
             <div className={Styles.setupContainer}>
-                <span className={Styles.setupPrompt}>{t("ACCOUNT_SETTINGS_TWO_FACTOR_PREAMBLE")}</span>
-
-                <span className={`${Styles.setupNumber} ${Styles.setupNumberOne}`}>1</span>
-                <span className={Styles.setupStepOne}>{t("ACCOUNT_SETTINGS_TWO_FACTOR_STEP_ONE")}</span>
-
-                <span className={`${Styles.setupNumber} ${Styles.setupNumberTwo}`}>2</span>
-                <div className={Styles.setupStepTwo}>
+                <span className={Styles.setupNumber}>1</span>
+                <span>{t("ACCOUNT_SETTINGS_TWO_FACTOR_STEP_ONE")}</span>
+            </div>
+        </Container>
+        <Container>
+            <div className={Styles.setupContainer}>
+                <span className={Styles.setupNumber}>2</span>
+                <div>
                     <VerticalLayout>
                         <span>{t("ACCOUNT_SETTINGS_TWO_FACTOR_STEP_TWO_1")}</span>
                         <QRCode className={Styles.setupQr}
@@ -110,9 +108,12 @@ function OtpDisabledContent({otpState, onReload, password}: {
                         <span className={Styles.manualSetupKey}>{otpState.key.match(/.{1,4}/g)!.join(" ")}</span>
                     </VerticalLayout>
                 </div>
-
-                <span className={`${Styles.setupNumber} ${Styles.setupNumberThree}`}>3</span>
-                <span className={Styles.setupStepThree}>{t("ACCOUNT_SETTINGS_TWO_FACTOR_STEP_THREE")}</span>
+            </div>
+        </Container>
+        <Container>
+            <div className={Styles.setupContainer}>
+                <span className={Styles.setupNumber}>3</span>
+                <span>{t("ACCOUNT_SETTINGS_TWO_FACTOR_STEP_THREE")}</span>
             </div>
         </Container>
         <Container style={{
@@ -142,9 +143,7 @@ function OtpEnabledContent({otpState, onReload, password}: {
     });
 
     return <>
-        <Container style={{
-            marginTop: "20px"
-        }}>
+        <Container>
             <VerticalLayout>
                 <PageHeading level={3}>{t("ACCOUNT_SETTINGS_TWO_FACTOR")}</PageHeading>
                 <span>{t("ACCOUNT_SETTINGS_TWO_FACTOR_ENABLED_PROMPT_1")}</span>
@@ -154,9 +153,7 @@ function OtpEnabledContent({otpState, onReload, password}: {
             </VerticalLayout>
         </Container>
         <PrintableOtpCodes otpState={otpState} ref={printRef}/>
-        <Container style={{
-            marginTop: "20px"
-        }}>
+        <Container>
             <VerticalLayout>
                 <PageHeading level={3}>{t("ACTIONS")}</PageHeading>
                 <SelectableList items={[
@@ -276,9 +273,7 @@ export default function Otp() {
     let content;
 
     if (otpState === null) {
-        content = <Container style={{
-            marginTop: "20px"
-        }}>
+        content = <Container>
             <VerticalLayout gap={0}>
                 <PageHeading level={3}>{t("ACCOUNT_SETTINGS_TWO_FACTOR")}</PageHeading>
             </VerticalLayout>

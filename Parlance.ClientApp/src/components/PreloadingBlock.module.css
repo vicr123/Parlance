@@ -22,6 +22,7 @@ div.preloadingBlock {
     background-size: 200% 100%;
     color: transparent;
     user-select: none;
+    border-radius: var(--border-radius);
 }
 
 :global(.ltr) div.preloadingBlock {

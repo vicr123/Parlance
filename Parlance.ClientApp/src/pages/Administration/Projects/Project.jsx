@@ -102,7 +102,7 @@ export default function Project(props) {
         }
     }
 
-    return <div>
+    return <>
         <BackButton inListPage={true} onClick={() => navigate("..")}/>
         <ListPageBlock>
             <VerticalLayout>
@@ -127,5 +127,5 @@ export default function Project(props) {
                 <SelectableList onClick={deleteProject} type={"destructive"}>{t("PROJECT_DELETE")}</SelectableList>
             </VerticalLayout>
         </ListPageBlock>
-    </div>
+    </>
 }

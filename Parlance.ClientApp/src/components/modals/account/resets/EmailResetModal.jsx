@@ -3,6 +3,8 @@ import Modal from "../../../Modal";
 import PasswordResetModal from "./PasswordResetModal";
 import UserManager from "../../../../helpers/UserManager";
 import {withTranslation} from "react-i18next";
+import LineEdit from "../../../../components/LineEdit";
+import {VerticalSpacer} from "../../../../components/Layouts";
 
 export default withTranslation()(class EmailResetModal extends React.Component {
     constructor(props) {
@@ -34,7 +36,8 @@ export default withTranslation()(class EmailResetModal extends React.Component {
         ]}>
             <div style={{display: "flex", flexDirection: "column"}}>
                 {this.props.t('PASSWORD_RECOVERY_EMAIL_PROMPT_1')}
-                <input type={"text"} placeholder={`${this.props.method.user}∙∙∙@${this.props.method.domain}∙∙∙`} value={this.state.email} onChange={this.emailTextChanged.bind(this)} />
+                <VerticalSpacer height={3} />
+                <LineEdit type={"text"} placeholder={`${this.props.method.user}∙∙∙@${this.props.method.domain}∙∙∙`} value={this.state.email} onChange={this.emailTextChanged.bind(this)} />
             </div>
         </Modal>
     }

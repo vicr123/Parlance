@@ -1,45 +1,13 @@
 .setupContainer {
     display: grid;
     grid-template-columns: max-content 1fr;
-    grid-template-rows: max-content max-content max-content max-content;
     gap: 9px 9px;
-    grid-template-areas: 
-        "setupPrompt setupPrompt"
-        "setupNumberOne setupStepOne"
-        "setupNumberTwo setupStepTwo"
-        "setupNumberThree setupStepThree";
-}
-
-.setupPrompt {
-    grid-area: setupPrompt;
+    align-items: center;
 }
 
 .setupNumber {
     font-size: 30pt;
-}
-
-.setupNumberOne {
-    grid-area: setupNumberOne;
-}
-
-.setupStepOne {
-    grid-area: setupStepOne;
-}
-
-.setupNumberTwo {
-    grid-area: setupNumberTwo;
-}
-
-.setupStepTwo {
-    grid-area: setupStepTwo;
-}
-
-.setupNumberThree {
-    grid-area: setupNumberThree;
-}
-
-.setupStepThree {
-    grid-area: setupStepThree;
+    align-self: start;
 }
 
 .manualSetupKey {

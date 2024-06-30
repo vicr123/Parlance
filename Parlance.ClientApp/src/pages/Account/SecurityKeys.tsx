@@ -94,26 +94,25 @@ function SecurityKeysUi({password, onUpdateKeys, keys}: {
     };
 
     return <>
-        <Container style={{
-            marginTop: "20px"
-        }}>
+        <Container>
             <VerticalLayout>
                 <PageHeading level={3}>{t("ACCOUNT_SETTINGS_MANAGE_SECURITY_KEYS")}</PageHeading>
                 <span>{t("ACCOUNT_SETTINGS_MANAGE_SECURITY_KEYS_PROMPT")}</span>
             </VerticalLayout>
-
+        </Container>
+        {keys.filter(key => key.application === "Parlance").length > 0 && <Container>
             {<KeyList keys={keys.filter(key => key.application === "Parlance")}
                       title={t("SECURITY_KEY_REGISTERED_SECURITY_KEYS")}
                       after={t("SECURITY_KEY_REGISTERED_SECURITY_KEYS_PROMPT")} onManageKey={manageKey}/>}
-
+        </Container>}
+        {keys.filter(key => key.application !== "Parlance").length > 0 && <Container>
             {<KeyList keys={keys.filter(key => key.application !== "Parlance")}
                       title={t("SECURITY_KEY_OTHER_SECURITY_KEYS")}
                       after={t("translation:SECURITY_KEY_OTHER_SECURITY_KEYS_PROMPT", {account: serverInformation.accountName})}
                       onManageKey={manageKey}/>}
-
-            <VerticalSpacer/>
+        </Container>}
+        <Container>
             <VerticalLayout>
-                {/*<SelectableList onClick={registerKey}>{t("Register New Security Key")}</SelectableList>*/}
                 <SelectableList items={[
                     {
                         contents: t("SECURITY_KEY_REGISTER_SECURITY_KEY"),
@@ -177,9 +176,7 @@ export default function SecurityKeys() {
     let content;
 
     if (securityKeyState === null) {
-        content = <Container style={{
-            marginTop: "20px"
-        }}>
+        content = <Container>
             <VerticalLayout gap={0}>
                 <PageHeading level={3}>{t("ACCOUNT_SETTINGS_MANAGE_SECURITY_KEYS")}</PageHeading>
             </VerticalLayout>

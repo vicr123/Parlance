@@ -1,10 +1,21 @@
 .glossaryManagerRootContainer {
     overflow-x: hidden;
+    display: flex;
+    justify-content: center;
 }
 
 .glossaryManagerRoot {
     display: grid;
-    grid-template-columns: 1fr 50px 1fr;
+    grid-template-columns: 1fr 1fr;
+    gap: 3px;
+    max-width: var(--content-width);
+    width: calc(100vw - 6px);
+}
+
+.glossaryManagerSide {
+    padding: 10px;
+    background: var(--layer-color);
+    border-radius: var(--border-radius);
 }
 
 .glossaryItem {
@@ -56,12 +67,12 @@
     
     .glossaryManagerRoot {
         display: grid;
-        grid-template-columns: 100% 0 100%;
+        grid-template-columns: 100% 100%;
         
         transition: transform 0.25s ease-in-out;
     }
     
     .mobileSwitch .glossaryManagerRoot {
-        transform: translateX(-100%);
+        transform: translateX(calc(-100% - 3px));
     }
 }
