@@ -76,7 +76,7 @@
   "scripts": {
     "dev": "node genlangindex.js && vite",
     "build": "node genlangindex.js && vite build",
-    "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",
+    "lint": "prettier . --check",
     "preview": "vite preview"
   },
   "eslintConfig": {
