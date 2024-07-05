@@ -1,7 +1,7 @@
 import Styles from "./EntryList.module.css";
 import { useNavigate, useParams } from "react-router-dom";
-import { useForceUpdate } from "../../../../../../helpers/Hooks";
-import { checkTranslation, mostSevereType } from "../../../../../../checks";
+import { useForceUpdate } from "@/helpers/Hooks";
+import { checkTranslation, mostSevereType } from "@/checks";
 import BackButton from "../../../../../../components/BackButton";
 import { useTranslation } from "react-i18next";
 import useTranslationEntries from "./EntryUtils";

@@ -40,3 +40,38 @@ export interface LanguageSubprojectMeta {
     systemName: string;
     completionData: CompletionData;
 }
+
+export type PluralType = "zero" | "one" | "two" | "few" | "many" | "other";
+
+export interface BaseEntry {
+    key: string;
+    context: string;
+    source: string;
+    oldSourceString?: string;
+    translation: TranslationEntry[];
+}
+
+interface SingularTranslationEntry {
+    pluralType: "singular";
+    translationContent: string;
+}
+
+interface SingularEntry extends BaseEntry {
+    requiresPluralisation: false;
+    translation: [SingularTranslationEntry];
+}
+
+interface PluralTranslationEntry {
+    pluralType: PluralType;
+    translationContent: string;
+}
+
+interface PluralEntry extends BaseEntry {
+    requiresPluralisation: true;
+    translation: PluralTranslationEntry[];
+}
+
+export type Entry = SingularEntry | PluralEntry;
+export type TranslationEntry =
+    | SingularTranslationEntry
+    | PluralTranslationEntry;

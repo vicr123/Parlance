@@ -13,6 +13,7 @@
     ],
     "strict": true,
     "target": "ES2022",
+    "lib": ["ES2023"],
     "types": ["vite/client"],
     "paths": {
       "@/*": ["./*"]

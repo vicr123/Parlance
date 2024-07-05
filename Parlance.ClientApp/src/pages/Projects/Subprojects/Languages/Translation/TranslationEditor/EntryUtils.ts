@@ -1,18 +1,20 @@
 import { useNavigate, useParams } from "react-router-dom";
-import { isEmptyTranslation } from "./EntryHelper";
+import { isEmptyTranslation } from "./EntryHelper.js";
 import { useMemo } from "react";
-import { checkTranslation, mostSevereType } from "../../../../../../checks";
+import { checkTranslation, mostSevereType } from "@/checks";
+import { Entry } from "@/interfaces/projects";
+import { PushUpdateFunction, SearchParams } from "./EditorInterfaces";
 
 export default function useTranslationEntries(
-    entries,
-    searchParams,
-    translationFileType,
-    onPushUpdate,
+    entries: Entry[],
+    searchParams: SearchParams,
+    translationFileType: string,
+    onPushUpdate: PushUpdateFunction,
 ) {
     const { project, subproject, language, key } = useParams();
     const navigate = useNavigate();
 
-    const goToEntry = key => {
+    const goToEntry = (key: string) => {
         navigate(
             `/projects/${project}/${subproject}/${language}/translate/${key}`,
             { replace: true },
@@ -103,7 +105,7 @@ export default function useTranslationEntries(
         },
         goToNextUnfinished: () => {
             if (entry.oldSourceString) {
-                onPushUpdate(key, {
+                onPushUpdate(key!, {
                     translationStrings: entry.translation.map(pform2 => ({
                         pluralType: pform2.pluralType,
                         translationContent: pform2.translationContent,

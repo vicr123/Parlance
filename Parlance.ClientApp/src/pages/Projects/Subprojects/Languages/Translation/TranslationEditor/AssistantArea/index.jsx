@@ -1,6 +1,6 @@
 import Styles from "./index.module.css";
 import { useParams } from "react-router-dom";
-import { VerticalLayout } from "../../../../../../../components/Layouts";
+import { VerticalLayout } from "@/components/Layouts";
 import PageHeading from "../../../../../../../components/PageHeading";
 import { useTranslation } from "react-i18next";
 import useTranslationEntries from "../EntryUtils";
