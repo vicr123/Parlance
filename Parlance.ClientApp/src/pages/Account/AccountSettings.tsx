@@ -12,7 +12,7 @@ import LoadingModal from "../../components/modals/LoadingModal";
 import Fetch from "../../helpers/Fetch";
 
 export default function AccountSettings() {
-    const [ignored, forceUpdate] = useReducer(x => x + 1, 0);
+    const [, forceUpdate] = useReducer(x => x + 1, 0);
     const navigate = useNavigate();
     const { t } = useTranslation();
 

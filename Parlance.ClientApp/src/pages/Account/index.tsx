@@ -1,26 +1,26 @@
 import React, { useReducer, useContext } from "react";
 import { CSSTransition, TransitionGroup } from "react-transition-group";
-import AccountSettings from "./AccountSettings";
+import AccountSettings from "./AccountSettings.js";
 import { Route, Routes, useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import UserManager from "../../helpers/UserManager";
 import Container from "../../components/Container";
 import PageHeading from "../../components/PageHeading";
-import UsernameChange from "./UsernameChange";
-import EmailChange from "./EmailChange";
-import PasswordChange from "./PasswordChange";
-import VerifyEmail from "./VerifyEmail";
+import UsernameChange from "./UsernameChange.js";
+import EmailChange from "./EmailChange.js";
+import PasswordChange from "./PasswordChange.js";
+import VerifyEmail from "./VerifyEmail.js";
 
 import "./index.css";
 import Otp from "./Otp";
 import SecurityKeys from "./SecurityKeys";
-import Attribution from "./Attribution";
-import { NotificationsSettings } from "@/pages/Account/Notifications/index";
+import Attribution from "./Attribution.js";
+import { NotificationsSettings } from "@/pages/Account/Notifications";
 import { ServerInformationContext } from "@/context/ServerInformationContext";
 import Hero from "@/components/Hero";
 
 export default function Account() {
-    const [ignored, forceUpdate] = useReducer(x => x + 1, 0);
+    const [, forceUpdate] = useReducer(x => x + 1, 0);
     const location = useLocation();
     const { t } = useTranslation();
     const serverInformation = useContext(ServerInformationContext);

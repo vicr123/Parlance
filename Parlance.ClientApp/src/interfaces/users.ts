@@ -72,3 +72,8 @@ export interface PasswordResetMethodEmail {
     domain: string;
     user: string;
 }
+
+export interface NotificationConsent {
+    consentProvided: boolean;
+    preferredUserName: string;
+}

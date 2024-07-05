@@ -1,7 +1,7 @@
 import BackButton from "../../components/BackButton";
 import { useNavigate } from "react-router-dom";
 import Container from "../../components/Container";
-import { VerticalLayout, VerticalSpacer } from "../../components/Layouts";
+import { VerticalLayout, VerticalSpacer } from "@/components/Layouts.js";
 import PageHeading from "../../components/PageHeading";
 import LineEdit from "../../components/LineEdit";
 import SelectableList from "../../components/SelectableList";
@@ -11,6 +11,7 @@ import LoadingModal from "../../components/modals/LoadingModal";
 import Modal from "../../components/Modal";
 import ErrorModal from "../../components/modals/ErrorModal";
 import Fetch from "../../helpers/Fetch";
+import { NotificationConsent } from "@/interfaces/users";
 
 export default function Attribution() {
     const [haveConsent, setHaveConsent] = useState(false);
@@ -23,7 +24,7 @@ export default function Attribution() {
         (async () => {
             Modal.mount(<LoadingModal />);
             try {
-                const consentDetails = await Fetch.get(
+                const consentDetails = await Fetch.get<NotificationConsent>(
                     "/api/user/attribution/consent",
                 );
                 setHaveConsent(consentDetails.consentProvided);
@@ -76,7 +77,11 @@ export default function Attribution() {
                             <LineEdit
                                 placeholder={t("PREFERRED_NAME")}
                                 value={preferredName}
-                                onChange={e => setPreferredName(e.target.value)}
+                                onChange={e =>
+                                    setPreferredName(
+                                        (e.target as HTMLInputElement).value,
+                                    )
+                                }
                             />
                         </>
                     )}

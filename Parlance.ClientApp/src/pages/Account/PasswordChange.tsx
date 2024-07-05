@@ -2,7 +2,7 @@ import Container from "../../components/Container";
 import PageHeading from "../../components/PageHeading";
 import { useTranslation } from "react-i18next";
 import SelectableList from "../../components/SelectableList";
-import { VerticalLayout, VerticalSpacer } from "../../components/Layouts";
+import { VerticalLayout, VerticalSpacer } from "@/components/Layouts";
 import { useState } from "react";
 import PasswordConfirmModal from "../../components/modals/account/PasswordConfirmModal";
 import Modal from "../../components/Modal";
@@ -13,7 +13,7 @@ import UserManager from "../../helpers/UserManager";
 import BackButton from "../../components/BackButton";
 import LineEdit from "../../components/LineEdit";
 
-export default function (props) {
+export default function PasswordChange() {
     const [newPassword, setNewPassword] = useState("");
     const [newPasswordConfirm, setNewPasswordConfirm] = useState("");
     const navigate = useNavigate();
@@ -34,7 +34,7 @@ export default function (props) {
             return;
         }
 
-        const accept = async password => {
+        const accept = async (password: string) => {
             //Perform the username change
             Modal.mount(<LoadingModal />);
             try {
@@ -45,7 +45,8 @@ export default function (props) {
                 await UserManager.updateDetails();
                 navigate("..");
                 Modal.unmount();
-            } catch (ex) {
+            } catch (exception) {
+                const ex = exception as WebFetchResponse;
                 if (ex.status === 403) {
                     //Incorrect password
                     performPasswordChange();
@@ -80,14 +81,20 @@ export default function (props) {
                         password={true}
                         placeholder={t("PASSWORD_CHANGE_NEW_PASSWORD")}
                         value={newPassword}
-                        onChange={e => setNewPassword(e.target.value)}
+                        onChange={e =>
+                            setNewPassword((e.target as HTMLInputElement).value)
+                        }
                     />
                     <VerticalSpacer height={3} />
                     <LineEdit
                         password={true}
                         placeholder={t("CONFIRM_PASSWORD")}
                         value={newPasswordConfirm}
-                        onChange={e => setNewPasswordConfirm(e.target.value)}
+                        onChange={e =>
+                            setNewPasswordConfirm(
+                                (e.target as HTMLInputElement).value,
+                            )
+                        }
                     />
                     <VerticalSpacer height={20} />
                     <SelectableList onClick={performPasswordChange}>

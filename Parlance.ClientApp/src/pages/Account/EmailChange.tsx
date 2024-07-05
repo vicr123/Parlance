@@ -2,7 +2,7 @@ import Container from "../../components/Container";
 import PageHeading from "../../components/PageHeading";
 import { useTranslation } from "react-i18next";
 import SelectableList from "../../components/SelectableList";
-import { VerticalLayout, VerticalSpacer } from "../../components/Layouts";
+import { VerticalLayout, VerticalSpacer } from "@/components/Layouts";
 import { useState } from "react";
 import PasswordConfirmModal from "../../components/modals/account/PasswordConfirmModal";
 import Modal from "../../components/Modal";
@@ -13,7 +13,7 @@ import UserManager from "../../helpers/UserManager";
 import BackButton from "../../components/BackButton";
 import LineEdit from "../../components/LineEdit";
 
-export default function (props) {
+export default function EmailChange() {
     const [newEmail, setNewEmail] = useState("");
     const navigate = useNavigate();
     const { t } = useTranslation();
@@ -21,7 +21,7 @@ export default function (props) {
     const performEmailChange = () => {
         if (newEmail === "") return;
 
-        const accept = async password => {
+        const accept = async (password: string) => {
             //Perform the username change
             Modal.mount(<LoadingModal />);
             try {
@@ -32,7 +32,8 @@ export default function (props) {
                 await UserManager.updateDetails();
                 navigate("..");
                 Modal.unmount();
-            } catch (ex) {
+            } catch (exception) {
+                const ex = exception as WebFetchResponse;
                 if (ex.status === 403) {
                     //Incorrect password
                     performEmailChange();
@@ -65,7 +66,9 @@ export default function (props) {
                     <LineEdit
                         placeholder={t("CHANGE_EMAIL_NEW_EMAIL")}
                         value={newEmail}
-                        onChange={e => setNewEmail(e.target.value)}
+                        onChange={e =>
+                            setNewEmail((e.target as HTMLInputElement).value)
+                        }
                     />
                     <VerticalSpacer height={20} />
                     <SelectableList onClick={performEmailChange}>

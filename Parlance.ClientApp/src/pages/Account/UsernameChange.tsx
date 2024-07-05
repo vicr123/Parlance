@@ -2,7 +2,7 @@ import Container from "../../components/Container";
 import PageHeading from "../../components/PageHeading";
 import { useTranslation } from "react-i18next";
 import SelectableList from "../../components/SelectableList";
-import { VerticalLayout, VerticalSpacer } from "../../components/Layouts";
+import { VerticalLayout, VerticalSpacer } from "@/components/Layouts";
 import { useState } from "react";
 import PasswordConfirmModal from "../../components/modals/account/PasswordConfirmModal";
 import Modal from "../../components/Modal";
@@ -13,7 +13,7 @@ import UserManager from "../../helpers/UserManager";
 import BackButton from "../../components/BackButton";
 import LineEdit from "../../components/LineEdit";
 
-export default function (props) {
+export default function UsernameChange() {
     const [newUsername, setNewUsername] = useState("");
     const navigate = useNavigate();
     const { t } = useTranslation();
@@ -21,7 +21,7 @@ export default function (props) {
     const performUsernameChange = () => {
         if (newUsername === "") return;
 
-        const accept = async password => {
+        const accept = async (password: string) => {
             //Perform the username change
             Modal.mount(<LoadingModal />);
             try {
@@ -32,7 +32,8 @@ export default function (props) {
                 await UserManager.updateDetails();
                 navigate("..");
                 Modal.unmount();
-            } catch (ex) {
+            } catch (exception) {
+                const ex = exception as WebFetchResponse;
                 if (ex.status === 403) {
                     //Incorrect password
                     performUsernameChange();
@@ -65,7 +66,9 @@ export default function (props) {
                     <LineEdit
                         placeholder={t("CHANGE_USERNAME_NEW_USERNAME")}
                         value={newUsername}
-                        onChange={e => setNewUsername(e.target.value)}
+                        onChange={e =>
+                            setNewUsername((e.target as HTMLInputElement).value)
+                        }
                     />
                     <VerticalSpacer height={20} />
                     <SelectableList onClick={performUsernameChange}>
