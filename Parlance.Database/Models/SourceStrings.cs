@@ -10,7 +10,6 @@ public class SourceStrings
     public Guid Id { get; set; }
 
     public string Project { get; set; }
-    public string Branch { get; set; }
     public string Subproject { get; set; }
     public string Language { get; set; }
     public string Key { get; set; }

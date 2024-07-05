@@ -9,7 +9,6 @@ public class ParlanceContext(DbContextOptions options) : DbContext(options)
     public DbSet<SshTrustedServer> SshTrustedServers { get; set; } = null!;
     public DbSet<Superuser> Superusers { get; set; } = null!;
     public DbSet<Project> Projects { get; set; } = null!;
-    public DbSet<ProjectBranch> ProjectBranches { get; set; } = null!;
     public DbSet<Permission> Permissions { get; set; } = null!;
     public DbSet<IndexItem> Index { get; set; } = null!;
     public DbSet<Alert> Alerts { get; set; } = null!;
@@ -33,7 +32,6 @@ public class ParlanceContext(DbContextOptions options) : DbContext(options)
         modelBuilder.Entity<Superuser>().ToTable("Superusers");
         modelBuilder.Entity<Project>().ToTable("Projects")
             .HasIndex(p => p.Name).IsUnique();
-        modelBuilder.Entity<ProjectBranch>().ToTable("ProjectBranches");
         modelBuilder.Entity<Permission>().ToTable("Permissions");
         modelBuilder.Entity<IndexItem>().ToTable("Index");
         modelBuilder.Entity<Alert>().ToTable("Alerts");

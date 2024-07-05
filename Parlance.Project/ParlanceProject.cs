@@ -14,7 +14,7 @@ public class ParlanceProject : IParlanceProject
 
     private readonly Database.Models.Project _project;
 
-    public ParlanceProject(Database.Models.Project project, string branch)
+    public ParlanceProject(Database.Models.Project project)
     {
         _project = project;
         using var file = File.OpenRead(Path.Combine(project.VcsDirectory, ".parlance.json"));
