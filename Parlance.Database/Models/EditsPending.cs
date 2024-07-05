@@ -13,6 +13,7 @@ public class EditsPending
 
     public ulong UserId { get; set; }
     public string Project { get; set; } = null!;
+    public string Branch { get; set; } = null!;
     public string Subproject { get; set; } = null!;
     public string Language { get; set; } = null!;
 }
