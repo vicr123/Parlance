@@ -1,10 +1,14 @@
 import Styles from "./KeyboardShortcut.module.css";
 
-function KeyboardShortcutPart({ text }) {
+function KeyboardShortcutPart({ text }: {
+    text: string
+}) {
     return <div className={Styles.shortcut}>{text}</div>;
 }
 
-export default function KeyboardShortcut({ shortcut }) {
+export default function KeyboardShortcut({ shortcut }: {
+    shortcut: string[][]
+}) {
     let isMac = navigator.userAgent.toLowerCase().includes("mac");
     const resolvedShortcut = shortcut[0].map(key => {
         if (isMac) {

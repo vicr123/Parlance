@@ -2,11 +2,17 @@ import Styles from "./TranslationProgressIndicator.module.css";
 import { useTranslation } from "react-i18next";
 import React from "react";
 import PreloadingBlock from "./PreloadingBlock";
-import { calculateDeadline } from "../helpers/Misc";
+import { calculateDeadline } from "@/helpers/Misc";
+import {CompletionData} from "@/interfaces/projects";
 
-const percent = value => `${value * 100}%`;
+const percent = (value: number) => `${value * 100}%`;
 
-function TranslationProgressMetric({ value, title, shortTitle, className }) {
+function TranslationProgressMetric({ value, title, shortTitle, className }: {
+    value: number | string
+    title: string
+    shortTitle: string
+    className: string
+}) {
     if (typeof value === "number") {
         if (value > 10000) {
             value = `${(value / 1000).toFixed(0)}k`;
@@ -24,7 +30,10 @@ function TranslationProgressMetric({ value, title, shortTitle, className }) {
     );
 }
 
-function TranslationProgressBar({ data, className }) {
+function TranslationProgressBar({ data, className }: {
+    data?: CompletionData
+    className: string
+}) {
     if (data?.count) {
         return (
             <div className={className}>
@@ -52,6 +61,11 @@ export default function TranslationProgressIndicator({
     data,
     deadline,
     badges = [],
+}: {
+    title: string,
+    data: CompletionData,
+    deadline: number,
+    badges?: string[]
 }) {
     const { t } = useTranslation();
     const deadlineData = calculateDeadline(deadline);

@@ -3,8 +3,8 @@ import { CSSProperties, ReactElement, ReactNode } from "react";
 
 interface PreloadingBlockProps {
     className?: string;
-    children: ReactNode;
-    width?: number;
+    children?: ReactNode;
+    width?: number | null;
 }
 
 export default function PreloadingBlock({

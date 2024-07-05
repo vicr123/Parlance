@@ -1,6 +1,6 @@
 import moment from "moment/moment";
 
-function calculateDeadline(deadline) {
+function calculateDeadline(deadline: number) {
     if (deadline) {
         let dl = moment(deadline);
         if (dl.isAfter(moment())) {
@@ -15,7 +15,7 @@ function calculateDeadline(deadline) {
 
     return {
         text: "",
-        ms: 999999999999999,
+        ms: moment.duration(999999999999999),
         valid: false,
     };
 }
