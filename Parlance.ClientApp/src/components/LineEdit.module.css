@@ -1,10 +1,10 @@
 .container {
     display: flex;
     flex-direction: column;
-    
+
     background: var(--layer-color);
     border-radius: var(--border-radius);
-    
+
     cursor: text;
     border: 3px solid transparent;
     transition: border 0.1s ease-out;
@@ -17,15 +17,16 @@
 .label {
     font-size: 8pt;
     position: absolute;
-    
+
     transition: all 0.2s;
 }
 
-.input[type=text], .input[type=password] {
+.input[type="text"],
+.input[type="password"] {
     border: none;
     margin-top: 10pt;
     outline: none;
-    
+
     transition: all 0.2s;
 }
 
@@ -36,7 +37,8 @@
     cursor: text;
 }
 
-.input:not(:placeholder-shown) + .label, .input:focus + .label {
+.input:not(:placeholder-shown) + .label,
+.input:focus + .label {
     transform: translateY(0) translateX(2%);
     font-size: 8pt;
     color: var(--foreground-color);

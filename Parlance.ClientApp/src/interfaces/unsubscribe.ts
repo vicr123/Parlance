@@ -21,6 +21,6 @@ interface TranslationFreezeSubscription extends BaseSubscription {
 export type Subscription = TranslationFreezeSubscription;
 
 export interface UnsubscribeInformation {
-    emailNotificationsOn: boolean,
-    subscription: Subscription
+    emailNotificationsOn: boolean;
+    subscription: Subscription;
 }

@@ -1,0 +1,20 @@
+name: Lint Frontend
+on:
+    push:
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          submodules: 'recursive'
+      - name: Restore npm dependencies
+        working-directory: Parlance.ClientApp
+        run: |
+          npm ci
+      - name: Lint
+        working-directory: Parlance.ClientApp
+        run: |
+          npm run lint

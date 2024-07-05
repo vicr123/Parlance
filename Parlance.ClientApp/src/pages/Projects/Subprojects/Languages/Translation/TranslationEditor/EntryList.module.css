@@ -41,8 +41,7 @@ input.searchBox {
 
 .shownTypesSelectContainer {
     display: grid;
-    grid-template-areas: 
-         "icon select";
+    grid-template-areas: "icon select";
     grid-template-columns: max-content 1fr;
     grid-template-rows: 1fr;
     gap: 6px;
@@ -67,7 +66,7 @@ input.searchBox {
     stroke-miterlimit: 4;
     stroke-dasharray: none;
     stroke-dashoffset: 0;
-    stroke-opacity: 1
+    stroke-opacity: 1;
 }
 
 .selectDownArrow {
@@ -87,7 +86,7 @@ input.searchBox {
     stroke-linejoin: round;
     stroke-miterlimit: 4;
     stroke-dasharray: none;
-    stroke-opacity: 1
+    stroke-opacity: 1;
 }
 
 .entryItem {
@@ -96,7 +95,7 @@ input.searchBox {
     grid-template-columns: min-content 1fr;
     grid-template-rows: 1fr 1fr;
     gap: 6px 6px;
-    grid-template-areas: 
+    grid-template-areas:
         "icon source"
         ". translation";
 
@@ -129,11 +128,11 @@ input.searchBox {
 }
 
 .iconWarningAlerts {
-    border-color: #FFA000;
+    border-color: #ffa000;
 }
 
 .iconErrorAlerts {
-    border-color: #C80000;
+    border-color: #c80000;
 }
 
 .iconOk {
@@ -141,7 +140,7 @@ input.searchBox {
 }
 
 .iconPending {
-    background-color: #FFA000;
+    background-color: #ffa000;
 }
 
 .entrySource {

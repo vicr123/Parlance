@@ -3,10 +3,10 @@
     grid-template-columns: max-content 1fr;
     grid-template-rows: 1fr 1fr 1fr;
     gap: 6px 6px;
-    grid-template-areas: 
-    "authorIcon authorDetails"
-    ". commentText"
-    ". commentDetails";
+    grid-template-areas:
+        "authorIcon authorDetails"
+        ". commentText"
+        ". commentDetails";
     align-items: center;
 
     padding: 9px;
@@ -42,8 +42,7 @@
     grid-template-columns: max-content 1fr;
     grid-template-rows: 1fr;
     gap: 6px 6px;
-    grid-template-areas: 
-    "authorIcon authorDetails";
+    grid-template-areas: "authorIcon authorDetails";
     align-items: center;
 
     padding: 9px;

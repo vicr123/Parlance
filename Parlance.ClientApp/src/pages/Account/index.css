@@ -13,10 +13,10 @@
     min-height: 700px;
     background-color: var(--background-color);
     z-index: 10;
-    
+
     opacity: 0;
     transform: translateY(10%);
-    
+
     transition: all 0.25s;
 }
 

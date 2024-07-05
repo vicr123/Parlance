@@ -1,7 +1,7 @@
 .language {
     padding: 6px;
     cursor: pointer;
-    
+
     border-radius: var(--border-radius);
 }
 
@@ -16,6 +16,6 @@
 .languageListInner {
     background: var(--layer-color);
     border-radius: var(--border-radius);
-    
+
     padding: 3px;
 }

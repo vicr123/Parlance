@@ -22,8 +22,5 @@
   "typeAcquisition": {
     "enable": true
   },
-  "include": [
-    "src",
-    "vite/**/*.d.ts"
-  ]
+  "include": ["src", "vite/**/*.d.ts"]
 }

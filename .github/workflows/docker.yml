@@ -23,7 +23,7 @@ jobs:
           if_true: false
           if_false: true
       - name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         with:
           submodules: 'recursive'
 
