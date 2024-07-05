@@ -18,3 +18,25 @@ export interface CompletionData {
     passedChecks: number;
     needsAttention: number;
 }
+
+export interface LanguageMeta {
+    language: string;
+    languageName: string;
+    completionData: CompletionData;
+}
+
+export interface LanguageProjectMeta {
+    deadline?: number;
+    name: string;
+    systemName: string;
+    subprojects: LanguageSubprojectMeta[];
+    error?: any;
+}
+
+export interface LanguageSubprojectMeta {
+    name: string;
+    preferRegionAgnosticLanguage: boolean;
+    realLocale: string;
+    systemName: string;
+    completionData: CompletionData;
+}

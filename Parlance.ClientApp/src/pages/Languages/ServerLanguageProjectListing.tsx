@@ -11,19 +11,24 @@ import Modal from "../../components/Modal";
 import { useTranslation } from "react-i18next";
 import ErrorModal from "../../components/modals/ErrorModal";
 import LoadingModal from "../../components/modals/LoadingModal";
-import { VerticalSpacer } from "../../components/Layouts";
 import BackButton from "../../components/BackButton";
 import ErrorCover from "../../components/ErrorCover";
 import Hero from "../../components/Hero";
 import PreloadingBlock from "../../components/PreloadingBlock";
 import LoginUsernameModal from "../../components/modals/account/LoginUsernameModal";
+import {
+    LanguageProjectMeta,
+    LanguageSubprojectMeta,
+} from "@/interfaces/projects";
 
 export default function ServerLanguageProjectListing() {
     const [ignored, forceUpdate] = useReducer(x => x + 1, 0);
     const { language } = useParams();
-    const [subprojectData, setSubprojectData] = useState([]);
+    const [subprojectData, setSubprojectData] = useState<LanguageProjectMeta[]>(
+        [],
+    );
     const [done, setDone] = useState(false);
-    const [error, setError] = useState();
+    const [error, setError] = useState<any>();
     const navigate = useNavigate();
     const { t } = useTranslation();
 
@@ -31,7 +36,7 @@ export default function ServerLanguageProjectListing() {
 
     const updateProjects = async () => {
         try {
-            let subprojectData = await Fetch.get(
+            let subprojectData = await Fetch.get<LanguageProjectMeta[]>(
                 `/api/projects/languages/${language}`,
             );
             setSubprojectData(subprojectData);
@@ -45,7 +50,10 @@ export default function ServerLanguageProjectListing() {
         updateProjects();
     }, []);
 
-    const translationClicked = (project, subproject) => {
+    const translationClicked = (
+        project: LanguageProjectMeta,
+        subproject: LanguageSubprojectMeta,
+    ) => {
         if (subproject.completionData) {
             navigate(
                 `../../projects/${project.systemName}/${subproject.systemName}/${subproject.realLocale}`,
@@ -109,7 +117,7 @@ export default function ServerLanguageProjectListing() {
 
     return (
         <div>
-            <Hero heading={i18n.humanReadableLocale(language)} buttons={[]} />
+            <Hero heading={i18n.humanReadableLocale(language!)} buttons={[]} />
             <BackButton
                 text={t("BACK_TO_LANGUAGES")}
                 onClick={() => navigate("../")}

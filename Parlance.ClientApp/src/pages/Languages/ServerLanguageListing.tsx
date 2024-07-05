@@ -1,8 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import React, { useEffect, useReducer, useState } from "react";
 import Hero from "../../components/Hero";
-import BackButton from "../../components/BackButton";
-import { VerticalSpacer } from "../../components/Layouts";
 import ErrorCover from "../../components/ErrorCover";
 import PageHeading from "../../components/PageHeading";
 import SelectableList from "../../components/SelectableList";
@@ -13,12 +11,13 @@ import i18n from "../../helpers/i18n";
 import Modal from "../../components/Modal";
 import TranslationProgressIndicator from "../../components/TranslationProgressIndicator";
 import Container from "../../components/Container";
+import { CompletionData, LanguageMeta } from "@/interfaces/projects";
 
 export default function ServerLanguageListing() {
     const [ignored, forceUpdate] = useReducer(x => x + 1, 0);
-    const [languages, setLanguages] = useState([]);
+    const [languages, setLanguages] = useState<LanguageMeta[]>([]);
     const [done, setDone] = useState(false);
-    const [error, setError] = useState();
+    const [error, setError] = useState<any>();
     const navigate = useNavigate();
     const { t } = useTranslation();
 
@@ -26,7 +25,9 @@ export default function ServerLanguageListing() {
 
     const updateProjects = async () => {
         try {
-            let subprojectData = await Fetch.get(`/api/projects/languages`);
+            let subprojectData = await Fetch.get<LanguageMeta[]>(
+                `/api/projects/languages`,
+            );
             setLanguages(subprojectData);
             setDone(true);
         } catch (err) {
@@ -38,12 +39,14 @@ export default function ServerLanguageListing() {
         updateProjects();
     }, []);
 
-    const seenLanguages = [];
+    const seenLanguages: string[] = [];
     const showLanguages = [
         ...languages,
-        ...(UserManager.currentUser?.languagePermissions?.map(language => ({
+        ...(UserManager.currentUser?.languagePermissions?.map<{
+            language: string;
+            completionData?: CompletionData;
+        }>(language => ({
             language,
-            completionData: {},
         })) || []),
     ]
         .filter(x => {
@@ -51,13 +54,13 @@ export default function ServerLanguageListing() {
             seenLanguages.push(x.language);
             return true;
         })
-        .sort(
-            (a, b) =>
-                i18n.humanReadableLocale(a.language) >
-                i18n.humanReadableLocale(b.language),
+        .sort((a, b) =>
+            i18n
+                .humanReadableLocale(a.language)
+                .localeCompare(i18n.humanReadableLocale(b.language)),
         );
 
-    const translationClicked = language => {
+    const translationClicked = (language: string) => {
         if (languages.some(l => l.language === language)) {
             navigate(language);
         } else {
@@ -75,12 +78,14 @@ export default function ServerLanguageListing() {
     const myLanguages =
         UserManager.currentUser?.languagePermissions &&
         showLanguages.filter(lang =>
-            UserManager.currentUser.languagePermissions.includes(lang.language),
+            UserManager.currentUser!.languagePermissions.includes(
+                lang.language,
+            ),
         );
     const otherLanguages = UserManager.currentUser?.languagePermissions
         ? showLanguages.filter(
               lang =>
-                  !UserManager.currentUser.languagePermissions.includes(
+                  !UserManager.currentUser!.languagePermissions.includes(
                       lang.language,
                   ),
           )

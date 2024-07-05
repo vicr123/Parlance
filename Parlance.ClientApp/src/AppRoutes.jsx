@@ -4,9 +4,9 @@ import { lazy } from "react";
 import Spinner from "./components/Spinner";
 
 const Administration = lazy(() => import("./pages/Administration"));
-const Account = lazy(() => import("./pages/Account/index.js"));
+const Account = lazy(() => import("./pages/Account/index"));
 const Projects = lazy(() => import("./pages/Projects"));
-const Languages = lazy(() => import("./pages/Languages"));
+const Languages = lazy(() => import("./pages/Languages/index"));
 const Glossaries = lazy(() => import("./pages/Glossaries"));
 const EmailUnsubscribe = lazy(() => import("./pages/EmailUnsubscribe"));
 

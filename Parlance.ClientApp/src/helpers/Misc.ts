@@ -1,6 +1,6 @@
 import moment from "moment/moment";
 
-function calculateDeadline(deadline: number) {
+function calculateDeadline(deadline?: number) {
     if (deadline) {
         let dl = moment(deadline);
         if (dl.isAfter(moment())) {

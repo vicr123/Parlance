@@ -3,15 +3,20 @@ import { useTranslation } from "react-i18next";
 import React from "react";
 import PreloadingBlock from "./PreloadingBlock";
 import { calculateDeadline } from "@/helpers/Misc";
-import {CompletionData} from "@/interfaces/projects";
+import { CompletionData } from "@/interfaces/projects";
 
 const percent = (value: number) => `${value * 100}%`;
 
-function TranslationProgressMetric({ value, title, shortTitle, className }: {
-    value: number | string
-    title: string
-    shortTitle: string
-    className: string
+function TranslationProgressMetric({
+    value,
+    title,
+    shortTitle,
+    className,
+}: {
+    value: number | string;
+    title: string;
+    shortTitle: string;
+    className: string;
 }) {
     if (typeof value === "number") {
         if (value > 10000) {
@@ -30,9 +35,12 @@ function TranslationProgressMetric({ value, title, shortTitle, className }: {
     );
 }
 
-function TranslationProgressBar({ data, className }: {
-    data?: CompletionData
-    className: string
+function TranslationProgressBar({
+    data,
+    className,
+}: {
+    data?: CompletionData;
+    className: string;
 }) {
     if (data?.count) {
         return (
@@ -62,10 +70,10 @@ export default function TranslationProgressIndicator({
     deadline,
     badges = [],
 }: {
-    title: string,
-    data: CompletionData,
-    deadline: number,
-    badges?: string[]
+    title: string;
+    data?: CompletionData;
+    deadline?: number;
+    badges?: string[];
 }) {
     const { t } = useTranslation();
     const deadlineData = calculateDeadline(deadline);
@@ -99,21 +107,21 @@ export default function TranslationProgressIndicator({
             />,
         ]);
     }
-    if (data?.warnings > 0)
+    if (data?.warnings ?? 0 > 0)
         metrics.push(
             <TranslationProgressMetric
                 key={"warnings"}
-                value={data.warnings}
+                value={data!.warnings}
                 title={t("TRANSLATION_PROGRESS_INDICATOR_WARNINGS")}
                 shortTitle={"!"}
                 className={Styles.warnings}
             />,
         );
-    if (data?.errors > 0)
+    if (data?.errors ?? 0 > 0)
         metrics.push(
             <TranslationProgressMetric
                 key={"errors"}
-                value={data.errors}
+                value={data!.errors}
                 title={t("TRANSLATION_PROGRESS_INDICATOR_ERRORS")}
                 shortTitle={"✖"}
                 className={Styles.errors}
