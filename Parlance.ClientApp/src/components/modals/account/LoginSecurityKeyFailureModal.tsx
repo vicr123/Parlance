@@ -1,9 +1,9 @@
 import { useTranslation } from "react-i18next";
 import Modal from "../../Modal";
-import UserManager from "../../../helpers/UserManager";
-import LoginPasswordModal from "./LoginPasswordModal";
+import UserManager from "@/helpers/UserManager";
+import { LoginPasswordModal } from "./LoginPasswordModal";
 
-export default function LoginSecurityKeyFailureModal() {
+export function LoginSecurityKeyFailureModal() {
     const { t } = useTranslation();
 
     return (

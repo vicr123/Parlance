@@ -5,7 +5,9 @@ interface ModalListProps {
     children?: ModalListItem | ModalListItem[];
 }
 
-interface ModalListItem {
+type ModalListItem = ModalListItemInterface | undefined;
+
+interface ModalListItemInterface {
     type?: "destructive";
     onClick: () => void;
     dir?: "rtl" | "ltr";
@@ -25,6 +27,8 @@ function ModalList({ children }: ModalListProps) {
     return (
         <div className={Styles.ModalList}>
             {items?.map((item, index) => {
+                if (!item) return null;
+
                 let styles = [Styles.ModalListItem];
                 if (item.type === "destructive")
                     styles.push(Styles.DestructiveListItem);

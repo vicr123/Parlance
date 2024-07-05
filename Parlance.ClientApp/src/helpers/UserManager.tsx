@@ -1,35 +1,29 @@
 import Modal from "../components/Modal";
 import LoadingModal from "../components/modals/LoadingModal";
 import Fetch from "./Fetch";
-import LoginPasswordModal from "../components/modals/account/LoginPasswordModal";
-// @ts-ignore
-import LoginOtpModal from "../components/modals/account/LoginOtpModal";
+import { LoginPasswordModal } from "@/components/modals/account/LoginPasswordModal";
+import { LoginOtpModal } from "@/components/modals/account/LoginOtpModal";
 import EventEmitter from "eventemitter3";
-// @ts-ignore
-import LoginPasswordResetModal from "../components/modals/account/LoginPasswordResetModal";
-// @ts-ignore
-import PasswordResetModal from "../components/modals/account/resets/PasswordResetModal";
+import { LoginPasswordResetModal } from "@/components/modals/account/LoginPasswordResetModal";
+import { PasswordResetModal } from "@/components/modals/account/resets/PasswordResetModal";
 import i18n from "./i18n";
 import CryptoJS from "crypto-js";
-// @ts-ignore
-import LoginErrorModal from "../components/modals/account/LoginErrorModal";
+import { LoginErrorModal } from "@/components/modals/account/LoginErrorModal";
 import React from "react";
-// @ts-ignore
-import LoginSecurityKeyModal from "../components/modals/account/LoginSecurityKeyModal";
-// @ts-ignore
-import LoginSecurityKeyFailureModal from "../components/modals/account/LoginSecurityKeyFailureModal";
+import { LoginSecurityKeyModal } from "@/components/modals/account/LoginSecurityKeyModal";
+import { LoginSecurityKeyFailureModal } from "@/components/modals/account/LoginSecurityKeyFailureModal";
 import { decode, encode } from "./Base64";
-// @ts-ignore
-import { RegisterSecurityKeyAdvertisement } from "../components/modals/account/securityKeys/RegisterSecurityKeyAdvertisement";
+import { RegisterSecurityKeyAdvertisement } from "@/components/modals/account/securityKeys/RegisterSecurityKeyAdvertisement";
 import {
     LoginType,
     PasswordResetChallenge,
+    PasswordResetMethod,
     PasswordResetType,
     TokenResponseFido,
     TokenResponseFidoOptionsCredentials,
     TokenResponseToken,
     User,
-} from "../interfaces/users";
+} from "@/interfaces/users";
 
 class UserManager extends EventEmitter {
     #loginSessionDetails: Record<string, any>;
@@ -146,9 +140,7 @@ class UserManager extends EventEmitter {
             this.setLoginDetail("keyResponse", null);
 
             if (fido2Details) {
-                Modal.mount(
-                    <LoginSecurityKeyFailureModal details={fido2Details} />,
-                );
+                Modal.mount(<LoginSecurityKeyFailureModal />);
                 return;
             }
 
@@ -194,9 +186,12 @@ class UserManager extends EventEmitter {
     async triggerPasswordReset() {
         Modal.mount(<LoadingModal />);
         try {
-            let response = await Fetch.post(`/api/user/reset/methods`, {
-                username: this.#loginSessionDetails.username,
-            });
+            let response = await Fetch.post<PasswordResetMethod[]>(
+                `/api/user/reset/methods`,
+                {
+                    username: this.#loginSessionDetails.username,
+                },
+            );
             Modal.mount(<PasswordResetModal resetMethods={response} />);
         } catch (e) {
             Modal.mount(

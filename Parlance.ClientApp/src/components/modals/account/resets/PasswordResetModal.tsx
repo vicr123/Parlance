@@ -1,11 +1,16 @@
 import React from "react";
 import Modal from "../../../Modal";
 import ModalList from "../../../ModalList";
-import EmailResetModal from "./EmailResetModal";
-import LoginPasswordModal from "../LoginPasswordModal";
+import { EmailResetModal } from "./EmailResetModal";
+import { LoginPasswordModal } from "../LoginPasswordModal";
 import { useTranslation } from "react-i18next";
+import { PasswordResetMethod } from "@/interfaces/users";
 
-export default function PasswordResetModal(props) {
+export function PasswordResetModal({
+    resetMethods,
+}: {
+    resetMethods: PasswordResetMethod[];
+}) {
     let { t } = useTranslation();
 
     return (
@@ -22,7 +27,7 @@ export default function PasswordResetModal(props) {
                 {t("PASSWORD_RECOVERY_PROMPT_1")}
             </div>
             <ModalList>
-                {props.resetMethods.map(method => {
+                {resetMethods.map(method => {
                     switch (method.type) {
                         case "email":
                             return {
@@ -32,13 +37,13 @@ export default function PasswordResetModal(props) {
                                 onClick: () =>
                                     Modal.mount(
                                         <EmailResetModal
-                                            resetMethods={props.resetMethods}
+                                            resetMethods={resetMethods}
                                             method={method}
                                         />,
                                     ),
                             };
                         default:
-                            return null;
+                            return undefined;
                     }
                 })}
             </ModalList>

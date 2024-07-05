@@ -1,7 +1,7 @@
 import Modal from "../../Modal";
 import React, { FormEvent, ReactElement } from "react";
 import UserManager from "../../../helpers/UserManager";
-import LoginPasswordModal from "./LoginPasswordModal";
+import { LoginPasswordModal } from "./LoginPasswordModal";
 import { TFunction, withTranslation } from "react-i18next";
 import LineEdit from "../../LineEdit";
 import { VerticalLayout, VerticalSpacer } from "../../Layouts";
@@ -15,7 +15,7 @@ interface LoginOtpModalState {
     otp: string;
 }
 
-class LoginOtpModal extends React.Component<
+class LoginOtpModalComponent extends React.Component<
     LoginOtpModalProps,
     LoginOtpModalState
 > {
@@ -81,4 +81,4 @@ class LoginOtpModal extends React.Component<
     }
 }
 
-export default withTranslation()(LoginOtpModal);
+export const LoginOtpModal = withTranslation()(LoginOtpModalComponent);

@@ -4,7 +4,7 @@ import UserManager from "../../../helpers/UserManager";
 import LoginUsernameModal from "./LoginUsernameModal";
 import React from "react";
 
-export default function LoginErrorModal() {
+export function LoginErrorModal() {
     const { t } = useTranslation();
 
     return (

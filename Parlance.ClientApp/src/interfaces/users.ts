@@ -64,3 +64,11 @@ export interface SecurityKey {
     name: string;
     application: string;
 }
+
+export type PasswordResetMethod = PasswordResetMethodEmail;
+
+export interface PasswordResetMethodEmail {
+    type: "email";
+    domain: string;
+    user: string;
+}

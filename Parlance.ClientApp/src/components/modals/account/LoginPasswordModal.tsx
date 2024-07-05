@@ -7,7 +7,7 @@ import LineEdit from "../../LineEdit";
 import ModalList from "../../ModalList";
 import { VerticalSpacer } from "@/components/Layouts";
 
-export default function LoginPasswordModal() {
+export function LoginPasswordModal() {
     const [password, setPassword] = useState(
         UserManager.loginDetail("prePassword"),
     );
@@ -17,7 +17,7 @@ export default function LoginPasswordModal() {
         UserManager.setLoginDetail("prePassword");
     }, []);
 
-    const loginTypes = UserManager.loginTypes.map(type => {
+    const loginTypes = UserManager.loginTypes!.map(type => {
         switch (type) {
             case "password":
                 return (

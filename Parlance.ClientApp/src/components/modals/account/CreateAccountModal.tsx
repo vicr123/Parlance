@@ -6,13 +6,13 @@ import LineEdit from "../../LineEdit";
 import React, { useContext, useState } from "react";
 import LoadingModal from "../LoadingModal";
 import ErrorModal from "../ErrorModal";
-import UserManager from "../../../helpers/UserManager";
-import Fetch from "../../../helpers/Fetch";
+import UserManager from "@/helpers/UserManager";
+import Fetch from "@/helpers/Fetch";
 import { RegisterSecurityKeyAdvertisement } from "./securityKeys/RegisterSecurityKeyAdvertisement";
-import { TokenResponseToken } from "../../../interfaces/users";
+import { TokenResponseToken } from "@/interfaces/users";
 import { ServerInformationContext } from "@/context/ServerInformationContext";
 
-export default function CreateAccountModal() {
+export function CreateAccountModal() {
     const [username, setUsername] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
