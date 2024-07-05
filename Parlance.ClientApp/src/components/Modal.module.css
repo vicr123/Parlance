@@ -197,4 +197,16 @@
         border-bottom-left-radius: 0;
         border-bottom-right-radius: 0;
     }
+
+    @keyframes modal-in {
+        0% {
+            transform: translateY(50px);
+            opacity: 0;
+        }
+
+        100% {
+            transform: translateY(0px);
+            opacity: 1;
+        }
+    }
 }
