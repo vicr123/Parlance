@@ -6,6 +6,7 @@ import Pseudo from "i18next-pseudo";
 import Fetch from "./Fetch";
 import moment from "moment/moment";
 import "moment/min/locales";
+import { TextDirection } from "@/interfaces/misc";
 
 type i18next = typeof i18n;
 
@@ -15,7 +16,7 @@ interface ParlanceI18nExport extends i18next {
     list: (locale: string, items: any[]) => string;
     pluralPatterns: (locale: string) => Promise<PluralPattern[]>;
     isRegionAgnostic: (locale: string) => boolean;
-    dir: (lng?: string) => "ltr" | "rtl";
+    dir: (lng?: string) => TextDirection;
     t: typeof i18n.t;
 }
 

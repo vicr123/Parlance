@@ -75,3 +75,9 @@ export type Entry = SingularEntry | PluralEntry;
 export type TranslationEntry =
     | SingularTranslationEntry
     | PluralTranslationEntry;
+
+export interface AssistantSuggestion {
+    type: string;
+    source: string;
+    translation: string;
+}

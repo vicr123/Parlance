@@ -3,7 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import i18n from "../../../../../../helpers/i18n";
 import { Fragment, useEffect, useMemo, useRef, useState } from "react";
-import { checkTranslation } from "../../../../../../checks";
+import { checkTranslation } from "@/checks";
 import {
     HorizontalLayout,
     VerticalLayout,

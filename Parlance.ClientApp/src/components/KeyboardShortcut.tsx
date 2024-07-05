@@ -1,13 +1,14 @@
 import Styles from "./KeyboardShortcut.module.css";
+import { KeyboardShortcut as KeyboardShortcutType } from "@/pages/Projects/Subprojects/Languages/Translation/TranslationEditor/KeyboardShortcuts";
 
-function KeyboardShortcutPart({ text }: {
-    text: string
-}) {
+function KeyboardShortcutPart({ text }: { text: string }) {
     return <div className={Styles.shortcut}>{text}</div>;
 }
 
-export default function KeyboardShortcut({ shortcut }: {
-    shortcut: string[][]
+export default function KeyboardShortcut({
+    shortcut,
+}: {
+    shortcut: KeyboardShortcutType[];
 }) {
     let isMac = navigator.userAgent.toLowerCase().includes("mac");
     const resolvedShortcut = shortcut[0].map(key => {

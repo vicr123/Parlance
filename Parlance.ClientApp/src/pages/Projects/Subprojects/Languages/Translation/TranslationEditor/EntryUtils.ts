@@ -8,8 +8,8 @@ import { PushUpdateFunction, SearchParams } from "./EditorInterfaces";
 export default function useTranslationEntries(
     entries: Entry[],
     searchParams: SearchParams,
-    translationFileType: string,
-    onPushUpdate: PushUpdateFunction,
+    translationFileType?: string,
+    onPushUpdate?: PushUpdateFunction,
 ) {
     const { project, subproject, language, key } = useParams();
     const navigate = useNavigate();
@@ -39,7 +39,7 @@ export default function useTranslationEntries(
                                         checkTranslation(
                                             entry.source,
                                             pform.translationContent,
-                                            translationFileType,
+                                            translationFileType!,
                                         ),
                                     ),
                                 ),

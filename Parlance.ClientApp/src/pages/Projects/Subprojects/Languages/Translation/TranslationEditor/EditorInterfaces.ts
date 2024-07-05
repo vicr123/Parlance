@@ -12,3 +12,8 @@ export type PushUpdateFunction = (
         forceUpdate: boolean;
     },
 ) => Promise<void>;
+
+export interface PlaceholderInterface {
+    number: number;
+    placeholder: any;
+}

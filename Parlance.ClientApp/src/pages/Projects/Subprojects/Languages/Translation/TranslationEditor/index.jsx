@@ -17,7 +17,7 @@ import useTranslatorSignalRConnection from "./TranslatorSignalRConnection";
 
 const EntryList = lazy(() => import("./EntryList"));
 const TranslationArea = lazy(() => import("./TranslationArea"));
-const AssistantArea = lazy(() => import("./AssistantArea"));
+const AssistantArea = lazy(() => import("./AssistantArea/index"));
 
 export default function TranslationEditor() {
     const { project, subproject, language, key } = useParams();

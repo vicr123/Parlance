@@ -8,11 +8,21 @@ import { useEffect, useState } from "react";
 import SmallButton from "../../../../../../../components/SmallButton";
 import PreloadingBlock from "../../../../../../../components/PreloadingBlock";
 import { Box } from "../Box";
+import { AssistantSuggestion, Entry } from "@/interfaces/projects";
+import { SearchParams } from "@/pages/Projects/Subprojects/Languages/Translation/TranslationEditor/EditorInterfaces";
+import { TextDirection } from "@/interfaces/misc";
 
-function SuggestedTranslation({ suggestion, index, translationDirection }) {
+function SuggestedTranslation({
+    suggestion,
+    index,
+    translationDirection,
+}: {
+    suggestion?: AssistantSuggestion;
+    index?: number;
+    translationDirection?: TextDirection;
+}) {
     const { t } = useTranslation();
 
-    let type;
     switch (suggestion?.type) {
         default:
             break;
@@ -53,9 +63,13 @@ export default function AssistantArea({
     entries,
     searchParams,
     translationDirection,
+}: {
+    entries: Entry[];
+    searchParams: SearchParams;
+    translationDirection: TextDirection;
 }) {
     const { project, subproject, language, key } = useParams();
-    const [suggested, setSuggested] = useState([]);
+    const [suggested, setSuggested] = useState<AssistantSuggestion[]>([]);
     const [loading, setLoading] = useState(false);
     const { entry } = useTranslationEntries(entries, searchParams);
     const { t } = useTranslation();

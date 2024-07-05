@@ -1,6 +1,17 @@
 const PLACEHOLDER_TRANSLATION_STRING = "EDITOR_PLACEHOLDER";
 const NUMERIC_PLACEHOLDER_TRANSLATION_STRING = "EDITOR_NUMERIC_PLACEHOLDER";
 
+interface PreviewSettings {
+    pluralExample: string;
+}
+
+interface PlaceholderDefinition {
+    name: string;
+    regex: RegExp;
+    type: "placeholder";
+    preview?: (settings: PreviewSettings) => string;
+}
+
 export default {
     qt: [
         {
@@ -12,7 +23,7 @@ export default {
             name: NUMERIC_PLACEHOLDER_TRANSLATION_STRING,
             regex: /%n/gim,
             type: "placeholder",
-            preview: ({ pluralExample }) => pluralExample,
+            preview: ({ pluralExample }: PreviewSettings) => pluralExample,
         },
     ],
     i18next: [
@@ -30,7 +41,7 @@ export default {
             name: NUMERIC_PLACEHOLDER_TRANSLATION_STRING,
             regex: /{{count}}/g,
             type: "placeholder",
-            preview: ({ pluralExample }) => pluralExample,
+            preview: ({ pluralExample }: PreviewSettings) => pluralExample,
         },
     ],
     resx: [
@@ -50,7 +61,7 @@ export default {
             name: NUMERIC_PLACEHOLDER_TRANSLATION_STRING,
             regex: /{count}/g,
             type: "placeholder",
-            preview: ({ pluralExample }) => pluralExample,
+            preview: ({ pluralExample }: PreviewSettings) => pluralExample,
         },
     ],
     "minecraft-fabric": [
@@ -70,7 +81,7 @@ export default {
             name: NUMERIC_PLACEHOLDER_TRANSLATION_STRING,
             regex: /%d/gim,
             type: "placeholder",
-            preview: ({ pluralExample }) => pluralExample,
+            preview: ({ pluralExample }: PreviewSettings) => pluralExample,
         },
     ],
-};
+} as Record<string, PlaceholderDefinition[]>;
