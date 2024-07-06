@@ -8,6 +8,11 @@ import useTranslationEntries from "./EntryUtils";
 import { Fragment, useEffect, useRef } from "react";
 import { isEmptyTranslation } from "./EntryHelper";
 import { Box } from "./Box";
+import { Entry } from "@/interfaces/projects";
+import { TextDirection } from "@/interfaces/misc";
+import { SearchParams } from "@/pages/Projects/Subprojects/Languages/Translation/TranslationEditor/EditorInterfaces";
+import { UpdateManager } from "./UpdateManager";
+import { TranslatorSignalR } from "./TranslatorSignalRConnection";
 
 function EntryListItem({
     entries,
@@ -16,6 +21,13 @@ function EntryListItem({
     translationDirection,
     translationFileType,
     searchParams,
+}: {
+    entry: Entry;
+    entries: Entry[];
+    updateManager: UpdateManager;
+    translationDirection: TextDirection;
+    translationFileType: string;
+    searchParams: SearchParams;
 }) {
     const { project, subproject, language, key } = useParams();
     const { goToEntry } = useTranslationEntries(
@@ -23,7 +35,7 @@ function EntryListItem({
         searchParams,
         translationFileType,
     );
-    const ref = useRef();
+    const ref = useRef<HTMLDivElement>(null);
 
     const navigateToKey = () => {
         goToEntry(entry.key);
@@ -93,11 +105,15 @@ function EntryListItem({
     );
 }
 
-function ConnectionBox({ signalRConnection }) {
+function ConnectionBox({
+    signalRConnection,
+}: {
+    signalRConnection: TranslatorSignalR;
+}) {
     const { t } = useTranslation();
 
-    let circleClass;
-    let text;
+    let circleClass = "";
+    let text = "";
     switch (signalRConnection.connected) {
         case 0:
             circleClass = Styles.disconnected;
@@ -129,6 +145,14 @@ export default function EntryList({
     searchParams,
     setSearchParam,
     signalRConnection,
+}: {
+    entries: Entry[];
+    translationDirection: TextDirection;
+    updateManager: UpdateManager;
+    translationFileType: string;
+    searchParams: SearchParams;
+    setSearchParam: (param: keyof SearchParams, value: string) => void;
+    signalRConnection: TranslatorSignalR;
 }) {
     const { key } = useParams();
     const { t } = useTranslation();
@@ -142,11 +166,14 @@ export default function EntryList({
 
     updateManager.on("keyStateChanged", forceUpdate);
 
-    const contexts = filteredEntries.reduce((prev, current) => {
-        if (!prev[current.context]) prev[current.context] = [];
-        prev[current.context].push(current);
-        return prev;
-    }, {});
+    const contexts = filteredEntries.reduce<Record<string, Entry[]>>(
+        (prev, current) => {
+            if (!prev[current.context]) prev[current.context] = [];
+            prev[current.context].push(current);
+            return prev;
+        },
+        {},
+    );
 
     return (
         <div className={Styles.rootList}>

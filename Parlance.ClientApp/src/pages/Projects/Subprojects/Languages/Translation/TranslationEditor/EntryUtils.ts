@@ -105,7 +105,7 @@ export default function useTranslationEntries(
         },
         goToNextUnfinished: () => {
             if (entry.oldSourceString) {
-                onPushUpdate(key!, {
+                onPushUpdate?.(key!, {
                     translationStrings: entry.translation.map(pform2 => ({
                         pluralType: pform2.pluralType,
                         translationContent: pform2.translationContent,

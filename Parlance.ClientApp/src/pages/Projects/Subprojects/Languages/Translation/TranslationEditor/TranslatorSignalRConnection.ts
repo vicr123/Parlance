@@ -12,7 +12,7 @@ type OnTranslationUpdatedCallback = (
     data: Record<string, TranslationWithPluralType[]>,
 ) => void;
 
-interface TranslatorSignalR {
+export interface TranslatorSignalR {
     connected: ConnectionState;
     connection: HubConnection | undefined;
 }

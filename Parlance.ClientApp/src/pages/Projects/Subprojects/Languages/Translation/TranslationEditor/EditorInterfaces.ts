@@ -7,11 +7,13 @@ export interface SearchParams {
 
 export type PushUpdateFunction = (
     key: string,
-    update: {
-        translationStrings: TranslationEntry[];
-        forceUpdate: boolean;
-    },
+    update: TranslationUpdate,
 ) => Promise<void>;
+
+export interface TranslationUpdate {
+    translationStrings: TranslationEntry[];
+    forceUpdate: boolean;
+}
 
 export interface PlaceholderInterface {
     number: number;

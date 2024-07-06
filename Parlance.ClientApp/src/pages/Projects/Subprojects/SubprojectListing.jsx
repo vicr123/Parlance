@@ -8,7 +8,6 @@ import i18n from "../../../helpers/i18n";
 import TranslationProgressIndicator from "../../../components/TranslationProgressIndicator";
 import { useTranslation } from "react-i18next";
 import BackButton from "../../../components/BackButton";
-import { VerticalSpacer } from "../../../components/Layouts";
 import ErrorCover from "../../../components/ErrorCover";
 import Hero from "../../../components/Hero";
 import WallMessage from "../../../components/WallMessage";
