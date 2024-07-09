@@ -1,10 +1,10 @@
 import { Route, Routes } from "react-router-dom";
 import SubprojectListing from "./SubprojectListing";
-import Languages from "./Languages";
-import VersionControl from "./VersionControl";
+import Languages from "./Languages/index";
+import VersionControl from "./VersionControl/index";
 import Glossaries from "./Glossaries";
 
-export default function (props) {
+export default function () {
     return (
         <Routes>
             <Route element={<SubprojectListing />} path={"/"} />

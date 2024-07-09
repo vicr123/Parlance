@@ -12,6 +12,11 @@ export interface Glossary {
     usedByProjects: number;
 }
 
+export interface ConnectedGlossary {
+    id: string;
+    name: string;
+}
+
 export interface GlossaryItem {
     id: string;
     term: string;

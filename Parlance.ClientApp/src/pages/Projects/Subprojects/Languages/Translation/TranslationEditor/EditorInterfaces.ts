@@ -11,7 +11,7 @@ export type PushUpdateFunction = (
 ) => Promise<void>;
 
 export interface TranslationUpdate {
-    translationStrings: TranslationEntry[];
+    translationStrings: TranslationEntry;
     forceUpdate?: boolean;
 }
 

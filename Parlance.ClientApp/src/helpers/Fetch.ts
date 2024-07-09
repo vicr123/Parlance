@@ -114,7 +114,10 @@ class Fetch {
      * @param {string} url url to perform API request
      * @param {function} resultCallback Callback to call when the result is ready containing raw fetch data
      */
-    static get<T>(url: string, resultCallback = () => {}): Promise<T> {
+    static get<T>(
+        url: string,
+        resultCallback = (result: WebFetchResponse) => {},
+    ): Promise<T> {
         return Fetch.performRequest("GET", url, resultCallback) as Promise<T>;
     }
 

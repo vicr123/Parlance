@@ -13,6 +13,16 @@ import { useTabIndex } from "react-tabindex";
 import UserManager from "../../../../../../helpers/UserManager";
 import AddToGlossaryModal from "../../../../../../components/modals/glossary/AddToGlossaryModal";
 import SearchGlossaryModal from "../../../../../../components/modals/glossary/SearchGlossaryModal";
+import { SearchParams, TranslationUpdate } from "./EditorInterfaces";
+import {
+    Entry,
+    SubprojectLanguageResponse,
+    SubprojectResponse,
+} from "@/interfaces/projects";
+import {
+    ConnectedGlossary,
+    GlossaryItem,
+} from "../../../../../../interfaces/glossary";
 import useTranslatorSignalRConnection from "./TranslatorSignalRConnection";
 
 const EntryList = lazy(() => import("./EntryList"));
@@ -20,25 +30,34 @@ const TranslationArea = lazy(() => import("./TranslationArea"));
 const AssistantArea = lazy(() => import("./AssistantArea/index"));
 
 export default function TranslationEditor() {
-    const { project, subproject, language, key } = useParams();
-    const [entries, setEntries] = useState([]);
-    const [subprojectData, setSubprojectData] = useState({});
-    const [subprojectLanguageData, setSubprojectLanguageData] = useState({});
-    const [glossaryData, setGlossaryData] = useState([]);
-    const [connectedGlossaries, setConnectedGlossaries] = useState([]);
+    const { project, subproject, language } = useParams();
+    const [entries, setEntries] = useState<Entry[]>([]);
+    const [subprojectData, setSubprojectData] = useState<SubprojectResponse>(
+        // @ts-expect-error
+        {},
+    );
+    const [subprojectLanguageData, setSubprojectLanguageData] =
+        useState<SubprojectLanguageResponse>(
+            // @ts-expect-error
+            {},
+        );
+    const [glossaryData, setGlossaryData] = useState<GlossaryItem[]>([]);
+    const [connectedGlossaries, setConnectedGlossaries] = useState<
+        ConnectedGlossary[]
+    >([]);
     const [searchParams, setSearchParams] = useState({
         query: "",
         filter: "all",
     });
     const [ready, setReady] = useState(false);
 
-    const setSearchParam = (key, value) => {
+    const setSearchParam = (key: keyof SearchParams, value: string) => {
         let params = { ...searchParams };
         params[key] = value;
         setSearchParams(params);
     };
 
-    const pushUpdate = async (key, update) => {
+    const pushUpdate = async (key: string, update: TranslationUpdate) => {
         if (!canEdit) return;
 
         if (
@@ -60,7 +79,7 @@ export default function TranslationEditor() {
                 }
 
                 entry.translation = update.translationStrings;
-                entry.oldSourceString = null;
+                entry.oldSourceString = undefined;
                 return entry;
             }),
         );
@@ -91,7 +110,7 @@ export default function TranslationEditor() {
             connectedGlossaries.length &&
             Modal.mount(
                 <AddToGlossaryModal
-                    language={language}
+                    language={language!}
                     connectedGlossaries={connectedGlossaries}
                     onGlossaryItemAdded={onGlossaryItemAdded}
                 />,
@@ -103,7 +122,7 @@ export default function TranslationEditor() {
             connectedGlossaries.length &&
             Modal.mount(
                 <SearchGlossaryModal
-                    language={language}
+                    language={language!}
                     glossaryData={glossaryData}
                 />,
             ),
@@ -160,9 +179,9 @@ export default function TranslationEditor() {
         setEntries(
             await Fetch.get(
                 `/api/Projects/${project}/${subproject}/${language}/entries`,
-                result => {
+                (result: WebFetchResponse) => {
                     updateManager.setEtag(
-                        result.headers.get("X-Parlance-Hash"),
+                        result.headers.get("X-Parlance-Hash")!,
                     );
                 },
             ),
@@ -195,7 +214,7 @@ export default function TranslationEditor() {
         );
     };
 
-    const onGlossaryItemAdded = item => {
+    const onGlossaryItemAdded = (item: GlossaryItem) => {
         setGlossaryData([...glossaryData, item]);
     };
 
@@ -232,7 +251,7 @@ export default function TranslationEditor() {
             updateSubprojectLanguage(),
             updateGlossaries(),
             updateConnectedGlossaries(),
-            i18n.pluralPatterns(language),
+            i18n.pluralPatterns(language!),
         ]);
         setReady(true);
     };

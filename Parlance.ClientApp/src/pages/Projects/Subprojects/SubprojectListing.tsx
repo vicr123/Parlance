@@ -11,22 +11,25 @@ import BackButton from "../../../components/BackButton";
 import ErrorCover from "../../../components/ErrorCover";
 import Hero from "../../../components/Hero";
 import WallMessage from "../../../components/WallMessage";
-import { calculateDeadline } from "../../../helpers/Misc";
-import { useUserUpdateEffect } from "../../../helpers/Hooks";
+import { calculateDeadline } from "@/helpers/Misc";
+import { useUserUpdateEffect } from "@/helpers/Hooks";
+import { ProjectResponse } from "@/interfaces/projects";
 
 export default function SubprojectListing() {
     const { project } = useParams();
-    const [projectData, setProjectData] = useState();
+    const [projectData, setProjectData] = useState<Partial<ProjectResponse>>();
     const [done, setDone] = useState(false);
-    const [error, setError] = useState();
+    const [error, setError] = useState<any>();
     const navigate = useNavigate();
     const { t } = useTranslation();
 
     const updateProjects = async () => {
         try {
-            setProjectData(await Fetch.get(`/api/projects/${project}`));
+            setProjectData(
+                await Fetch.get<ProjectResponse>(`/api/projects/${project}`),
+            );
             setDone(true);
-        } catch (err) {
+        } catch (err: any) {
             setProjectData({
                 isProjectManager: err.jsonBody.isProjectManager,
             });
@@ -44,7 +47,7 @@ export default function SubprojectListing() {
 
     return (
         <div>
-            <Hero heading={projectData?.name} buttons={[]} />
+            <Hero heading={projectData?.name ?? ""} buttons={[]} />
             {deadlineInfo.valid && (
                 <WallMessage
                     title={t("TRANSLATION_FREEZE")}

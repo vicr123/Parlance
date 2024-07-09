@@ -48,7 +48,7 @@ export interface BaseEntry {
     context: string;
     source: string;
     oldSourceString?: string;
-    translation: TranslationEntry[];
+    translation: TranslationEntry;
 }
 
 interface SingularTranslationEntry {
@@ -73,11 +73,49 @@ interface PluralEntry extends BaseEntry {
 
 export type Entry = SingularEntry | PluralEntry;
 export type TranslationEntry =
-    | SingularTranslationEntry
-    | PluralTranslationEntry;
+    | [SingularTranslationEntry]
+    | PluralTranslationEntry[];
 
 export interface AssistantSuggestion {
     type: string;
     source: string;
     translation: string;
+}
+
+export interface PartialProjectResponse {
+    completionData: CompletionData;
+    name: string;
+    systemName: string;
+    deadline: number | null;
+}
+
+export interface ProjectResponse {
+    completionData: CompletionData;
+    name: string;
+    deadline: number | null;
+    isProjectManager: boolean;
+    canManage: boolean;
+    subprojects: {
+        completionData: CompletionData;
+        systemName: string;
+        name: string;
+    }[];
+}
+
+export interface SubprojectResponse {
+    completionData: CompletionData;
+    translationFileType: string;
+    name: string;
+    preferRegionAgnosticLanguage: boolean;
+    projectName: string;
+    availableLanguages: LanguageMeta[];
+}
+
+export interface SubprojectLanguageResponse {
+    completionData: CompletionData;
+    projectName: string;
+    subprojectName: string;
+    language: string;
+    canEdit: boolean;
+    openThreads: Thread[];
 }

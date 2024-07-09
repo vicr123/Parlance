@@ -10,12 +10,16 @@ import SmallButton from "../../../../components/SmallButton";
 import Modal from "../../../../components/Modal";
 import LoadingModal from "../../../../components/modals/LoadingModal";
 import ErrorModal from "../../../../components/modals/ErrorModal";
-import { VerticalLayout, VerticalSpacer } from "../../../../components/Layouts";
+import { VerticalLayout, VerticalSpacer } from "@/components/Layouts";
 import BackButton from "../../../../components/BackButton";
 import PreloadingBlock from "../../../../components/PreloadingBlock";
 import ErrorCover from "../../../../components/ErrorCover";
+import {
+    Commit as CommitType,
+    VersionControlState,
+} from "@/interfaces/versionControl";
 
-function Commit({ commit }) {
+function Commit({ commit }: { commit?: CommitType }) {
     if (!commit) {
         return (
             <div className={Styles.commitContainer}>
@@ -42,8 +46,8 @@ function Commit({ commit }) {
 }
 
 export default function VersionControl() {
-    const [vcsState, setVcsState] = useState();
-    const [error, setError] = useState();
+    const [vcsState, setVcsState] = useState<VersionControlState>();
+    const [error, setError] = useState<any>();
     const { project } = useParams();
     const { t } = useTranslation();
     const navigate = useNavigate();
@@ -77,7 +81,7 @@ export default function VersionControl() {
         Modal.mount(<LoadingModal />);
 
         try {
-            await Fetch.post(`/api/projects/${project}/vcs/pull`);
+            await Fetch.post(`/api/projects/${project}/vcs/pull`, undefined);
             await updateVcs();
             Modal.unmount();
         } catch (err) {
@@ -139,7 +143,7 @@ export default function VersionControl() {
         Modal.mount(<LoadingModal />);
 
         try {
-            await Fetch.post(`/api/projects/${project}/vcs/push`);
+            await Fetch.post(`/api/projects/${project}/vcs/push`, undefined);
             await updateVcs();
             Modal.unmount();
         } catch (err) {
@@ -171,7 +175,7 @@ export default function VersionControl() {
     };
 
     const commit = () => {
-        if (vcsState.changedFiles.length === 0) {
+        if (vcsState!.changedFiles.length === 0) {
             Modal.mount(
                 <Modal
                     heading={t("VCS_NOTHING_TO_COMMIT")}
@@ -196,8 +200,9 @@ export default function VersionControl() {
                             Modal.mount(<LoadingModal />);
 
                             try {
-                                let commit = await Fetch.post(
+                                let commit = await Fetch.post<CommitType>(
                                     `/api/projects/${project}/vcs/commit`,
+                                    undefined,
                                 );
                                 await updateVcs();
                                 Modal.mount(
@@ -232,11 +237,11 @@ export default function VersionControl() {
                 <VerticalLayout>
                     <span>
                         {t("VCS_COMMIT_PROMPT", {
-                            count: vcsState.changedFiles.length,
+                            count: vcsState!.changedFiles.length,
                         })}
                     </span>
                     <VerticalLayout>
-                        {vcsState.changedFiles.map(file => (
+                        {vcsState!.changedFiles.map(file => (
                             <span
                                 key={file}
                                 className={Styles.commitFileChange}
@@ -277,11 +282,11 @@ export default function VersionControl() {
                 <VerticalLayout>
                     <span>
                         {t("VCS_DISCARD_UNCOMMITTED_CHANGES_PROMPT", {
-                            count: vcsState.changedFiles.length,
+                            count: vcsState!.changedFiles.length,
                         })}
                     </span>
                     <VerticalLayout>
-                        {vcsState.changedFiles.map(file => (
+                        {vcsState!.changedFiles.map(file => (
                             <span
                                 key={file}
                                 className={Styles.commitFileChange}

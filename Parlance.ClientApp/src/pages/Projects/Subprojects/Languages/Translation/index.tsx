@@ -1,8 +1,8 @@
 import { Route, Routes } from "react-router-dom";
 import Dashboard from "./Dashboard";
-import TranslationEditor from "./TranslationEditor";
+import TranslationEditor from "./TranslationEditor/index";
 
-export default function Translation(props) {
+export default function Translation() {
     return (
         <Routes>
             <Route element={<Dashboard />} path={"/"} />

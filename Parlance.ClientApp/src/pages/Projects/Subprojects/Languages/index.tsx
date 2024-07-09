@@ -1,8 +1,8 @@
 import { Route, Routes } from "react-router-dom";
 import LanguageListing from "./LanguageListing";
-import Translation from "./Translation";
+import Translation from "./Translation/index";
 
-export default function (props) {
+export default function () {
     return (
         <Routes>
             <Route element={<LanguageListing />} path={"/"} />

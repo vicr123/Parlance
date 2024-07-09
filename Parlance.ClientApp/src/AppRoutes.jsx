@@ -5,7 +5,7 @@ import Spinner from "./components/Spinner";
 
 const Administration = lazy(() => import("./pages/Administration"));
 const Account = lazy(() => import("./pages/Account/index"));
-const Projects = lazy(() => import("./pages/Projects"));
+const Projects = lazy(() => import("./pages/Projects/index"));
 const Languages = lazy(() => import("./pages/Languages/index"));
 const Glossaries = lazy(() => import("./pages/Glossaries"));
 const EmailUnsubscribe = lazy(() => import("./pages/EmailUnsubscribe"));
