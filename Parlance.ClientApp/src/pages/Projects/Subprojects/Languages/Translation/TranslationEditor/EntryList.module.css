@@ -187,15 +187,15 @@ input.searchBox {
 }
 
 .disconnected {
-    background: #C80000;
+    background: #c80000;
 }
 
 .connecting {
-    background: #FFA000;
+    background: #ffa000;
 }
 
 .connected {
-    background: #00A000;
+    background: #00a000;
 }
 
 @media (max-width: 1024px) {

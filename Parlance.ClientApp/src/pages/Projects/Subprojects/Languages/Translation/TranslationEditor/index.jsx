@@ -141,17 +141,18 @@ export default function TranslationEditor() {
         );
     });
     updateManager.on("conflictCleared", (key, resolution) => {
-        setEntries(entries => entries.map(entry => {
-            if (entry.key !== key) {
+        setEntries(entries =>
+            entries.map(entry => {
+                if (entry.key !== key) {
+                    return entry;
+                }
+
+                entry.translation = resolution;
+                entry.oldSourceString = null;
                 return entry;
-            }
-
-            entry.translation = resolution;
-            entry.oldSourceString = null;
-            return entry;
-        }));
-    })
-
+            }),
+        );
+    });
 
     const translationDirection = i18n.dir(language); //Intl textinfo not supported by Firefox //(new Intl.Locale(language)).textInfo?.direction || "ltr";
 
@@ -199,17 +200,25 @@ export default function TranslationEditor() {
     };
 
     const signalRConnection = useTranslatorSignalRConnection((hash, data) => {
-        setEntries(entries => entries.map(entry => {
-            if (entry.key === key && JSON.stringify(data[entry.key]) !== JSON.stringify(entry.translation)) {
-                updateManager.setConflict(entry.key, data[entry.key]);
-                return entry;
-            }
-            return {
-                ...entry,
-                translation: data[entry.key] || entry.translation,
-                oldSourceString: data[entry.key] ? null : entry.oldSourceString
-            };
-        }));
+        setEntries(entries =>
+            entries.map(entry => {
+                if (
+                    entry.key === key &&
+                    JSON.stringify(data[entry.key]) !==
+                        JSON.stringify(entry.translation)
+                ) {
+                    updateManager.setConflict(entry.key, data[entry.key]);
+                    return entry;
+                }
+                return {
+                    ...entry,
+                    translation: data[entry.key] || entry.translation,
+                    oldSourceString: data[entry.key]
+                        ? null
+                        : entry.oldSourceString,
+                };
+            }),
+        );
         updateManager.setEtag(hash);
     });
 
