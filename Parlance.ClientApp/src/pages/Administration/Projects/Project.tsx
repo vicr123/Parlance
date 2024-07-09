@@ -1,8 +1,10 @@
 import BackButton from "../../../components/BackButton";
 import ListPageBlock from "../../../components/ListPageBlock";
-import { VerticalLayout, VerticalSpacer } from "../../../components/Layouts";
+import { VerticalLayout, VerticalSpacer } from "@/components/Layouts";
 import PageHeading from "../../../components/PageHeading";
-import SelectableList from "../../../components/SelectableList";
+import SelectableList, {
+    SelectableListItem,
+} from "../../../components/SelectableList";
 import { useNavigate, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import Modal from "../../../components/Modal";
@@ -12,10 +14,14 @@ import LoadingModal from "../../../components/modals/LoadingModal";
 import { useEffect, useState } from "react";
 import LineEdit from "../../../components/LineEdit";
 import ModalList from "../../../components/ModalList";
+import { ProjectResponse } from "@/interfaces/projects";
 
-export default function Project(props) {
-    const [projectInfo, setProjectInfo] = useState({});
-    const [maintainers, setMaintainers] = useState([]);
+export default function Project() {
+    const [projectInfo, setProjectInfo] = useState<ProjectResponse>(
+        // @ts-expect-error
+        {},
+    );
+    const [maintainers, setMaintainers] = useState<SelectableListItem[]>([]);
     const [addingUser, setAddingUser] = useState("");
     const { project } = useParams();
     const navigate = useNavigate();
@@ -23,8 +29,8 @@ export default function Project(props) {
 
     const updateProjectInfo = async () => {
         const [projectInfo, maintainers] = await Promise.all([
-            await Fetch.get(`/api/projects/${project}`),
-            await Fetch.get(`/api/projects/${project}/maintainers`),
+            await Fetch.get<ProjectResponse>(`/api/projects/${project}`),
+            await Fetch.get<string[]>(`/api/projects/${project}/maintainers`),
         ]);
         setProjectInfo(projectInfo);
         setMaintainers(
@@ -47,7 +53,6 @@ export default function Project(props) {
                                             try {
                                                 await Fetch.delete(
                                                     `/api/projects/${project}/maintainers/${encodeURIComponent(x)}`,
-                                                    {},
                                                 );
                                                 await updateProjectInfo();
 
@@ -93,7 +98,6 @@ export default function Project(props) {
                                 Modal.mount(<ErrorModal error={error} />);
                             }
                         },
-                        type: "destructive",
                     },
                 ]}
             >
@@ -147,12 +151,11 @@ export default function Project(props) {
                         style={{
                             marginBottom: "9px",
                         }}
-                        onChange={e => setAddingUser(e.target.value)}
+                        onChange={e =>
+                            setAddingUser((e.target as HTMLInputElement).value)
+                        }
                     />
-                    <SelectableList
-                        onClick={addMaintainer}
-                        type={"destructive"}
-                    >
+                    <SelectableList onClick={addMaintainer}>
                         {t("PROJECT_MAINTAINERS_ADD")}
                     </SelectableList>
                 </VerticalLayout>
@@ -165,10 +168,7 @@ export default function Project(props) {
                             project: projectInfo.name,
                         })}
                     </span>
-                    <SelectableList
-                        onClick={deleteProject}
-                        type={"destructive"}
-                    >
+                    <SelectableList onClick={deleteProject}>
                         {t("PROJECT_DELETE")}
                     </SelectableList>
                 </VerticalLayout>

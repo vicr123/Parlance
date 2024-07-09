@@ -78,11 +78,11 @@ class Modal extends React.Component<ModalProps, ModalState> {
                                 );
                             } else {
                                 // deprecated
-                                // @ts-ignore
                                 return (
                                     <div
                                         onClick={this.props.onButtonClick?.bind(
                                             this,
+                                            // @ts-ignore
                                             button,
                                         )}
                                         className={Styles.ModalButton}
@@ -102,6 +102,7 @@ class Modal extends React.Component<ModalProps, ModalState> {
     private renderModalList() {
         // @ts-ignore
         let children = React.Children.toArray(this.props.children).filter(
+            // @ts-ignore
             child => child.type?.displayName === "ModalList",
         );
 
@@ -111,6 +112,7 @@ class Modal extends React.Component<ModalProps, ModalState> {
     private renderModalText() {
         // @ts-ignore
         let children = React.Children.toArray(this.props.children).filter(
+            // @ts-ignore
             child => child.type?.displayName !== "ModalList",
         );
 

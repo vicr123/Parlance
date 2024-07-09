@@ -3,7 +3,7 @@ import PageHeading from "../../../components/PageHeading";
 import { Trans, useTranslation } from "react-i18next";
 import BackButton from "../../../components/BackButton";
 import { useNavigate } from "react-router-dom";
-import { VerticalLayout } from "../../../components/Layouts";
+import { VerticalLayout } from "@/components/Layouts";
 import { useState } from "react";
 import SelectableList from "../../../components/SelectableList";
 import LineEdit from "../../../components/LineEdit";
@@ -11,7 +11,7 @@ import Fetch from "../../../helpers/Fetch";
 import LoadingModal from "../../../components/modals/LoadingModal";
 import Modal from "../../../components/Modal";
 
-export default function (props) {
+export default function () {
     const [projectName, setProjectName] = useState("");
     const [cloneUrl, setCloneUrl] = useState("");
     const [branch, setBranch] = useState("main");
@@ -29,7 +29,8 @@ export default function (props) {
             });
             Modal.unmount();
             navigate("..");
-        } catch (ex) {
+        } catch (exception) {
+            const ex = exception as WebFetchResponse;
             let message = t("ADD_PROJECT_ERROR_PROMPT");
             if (ex.status === 400) {
                 message = (await ex.json()).extraData;
@@ -54,17 +55,23 @@ export default function (props) {
                     <span>{t("ADD_PROJECT_PROMPT_1")}</span>
                     <LineEdit
                         value={projectName}
-                        onChange={e => setProjectName(e.target.value)}
+                        onChange={e =>
+                            setProjectName((e.target as HTMLInputElement).value)
+                        }
                         placeholder={t("PROJECT_NAME")}
                     />
                     <LineEdit
                         value={cloneUrl}
-                        onChange={e => setCloneUrl(e.target.value)}
+                        onChange={e =>
+                            setCloneUrl((e.target as HTMLInputElement).value)
+                        }
                         placeholder={t("GIT_CLONE_URL")}
                     />
                     <LineEdit
                         value={branch}
-                        onChange={e => setBranch(e.target.value)}
+                        onChange={e =>
+                            setBranch((e.target as HTMLInputElement).value)
+                        }
                         placeholder={t("BRANCH")}
                     />
                     <span>

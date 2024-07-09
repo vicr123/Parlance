@@ -5,7 +5,7 @@ import Container from "../../components/Container";
 import PageHeading from "../../components/PageHeading";
 import Superusers from "./Superusers";
 import SSH from "./SSH";
-import Projects from "./Projects";
+import Projects from "./Projects/index";
 import Locales from "./Locales/index";
 import Glossaries from "./Glossaries";
 

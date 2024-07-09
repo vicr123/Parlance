@@ -3,7 +3,7 @@ import { Route, Routes } from "react-router-dom";
 import AddProject from "./AddProject";
 import Project from "./Project";
 
-export default function (props) {
+export default function () {
     return (
         <Routes>
             <Route element={<AddProject />} path={"/add"} />
