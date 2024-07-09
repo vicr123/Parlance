@@ -3,7 +3,7 @@ import UnknownPage from "./pages/UnknownPage";
 import { lazy } from "react";
 import Spinner from "./components/Spinner";
 
-const Administration = lazy(() => import("./pages/Administration"));
+const Administration = lazy(() => import("./pages/Administration/index"));
 const Account = lazy(() => import("./pages/Account/index"));
 const Projects = lazy(() => import("./pages/Projects/index"));
 const Languages = lazy(() => import("./pages/Languages/index"));

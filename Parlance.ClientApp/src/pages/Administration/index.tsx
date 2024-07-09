@@ -9,7 +9,7 @@ import Projects from "./Projects/index";
 import Locales from "./Locales/index";
 import Glossaries from "./Glossaries";
 
-export default function (props) {
+export default function () {
     const { t } = useTranslation();
 
     const items = [

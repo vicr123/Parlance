@@ -1,23 +1,24 @@
-import Container from "../../components/Container";
 import PageHeading from "../../components/PageHeading";
 import { useTranslation } from "react-i18next";
 import ListPageBlock from "../../components/ListPageBlock";
-import SelectableList from "../../components/SelectableList";
+import SelectableList, {
+    SelectableListItem,
+} from "../../components/SelectableList";
 import { useEffect, useState } from "react";
 import Fetch from "../../helpers/Fetch";
 import Modal from "../../components/Modal";
 import LoadingModal from "../../components/modals/LoadingModal";
 import UserManager from "../../helpers/UserManager";
 import LineEdit from "../../components/LineEdit";
-import { VerticalLayout } from "../../components/Layouts";
+import { VerticalLayout } from "@/components/Layouts";
 
-export default function (props) {
-    const [superusers, setSuperusers] = useState([]);
+export default function () {
+    const [superusers, setSuperusers] = useState<SelectableListItem[]>([]);
     const [promotingUser, setPromotingUser] = useState("");
     const { t } = useTranslation();
 
     const updateSuperusers = async () => {
-        let superusers = await Fetch.get("/api/superusers");
+        let superusers = await Fetch.get<string[]>("/api/superusers");
         setSuperusers(
             superusers.map(x => ({
                 contents: x,
@@ -129,7 +130,11 @@ export default function (props) {
                         style={{
                             marginBottom: "9px",
                         }}
-                        onChange={e => setPromotingUser(e.target.value)}
+                        onChange={e =>
+                            setPromotingUser(
+                                (e.target as HTMLInputElement).value,
+                            )
+                        }
                     />
                     <SelectableList onClick={promote}>
                         {t("PROMOTE_TO_SUPERUSER")}

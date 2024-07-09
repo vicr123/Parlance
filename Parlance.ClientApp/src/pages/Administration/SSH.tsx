@@ -6,16 +6,20 @@ import { useTranslation } from "react-i18next";
 import SelectableList from "../../components/SelectableList";
 import Modal from "../../components/Modal";
 import LoadingModal from "../../components/modals/LoadingModal";
-import { VerticalLayout, VerticalSpacer } from "../../components/Layouts";
+import { VerticalLayout, VerticalSpacer } from "@/components/Layouts";
 
-export default function (props) {
-    const [haveSshKey, setHaveSshKey] = useState(null);
-    const [sshKey, setSshKey] = useState();
+interface SshKeyData {
+    publicKey: string;
+}
+
+export default function () {
+    const [haveSshKey, setHaveSshKey] = useState<boolean | null>(null);
+    const [sshKey, setSshKey] = useState<string>("");
     const { t } = useTranslation();
 
     const updateSshKey = async () => {
         try {
-            let keyDetails = await Fetch.get("/api/ssh");
+            let keyDetails = await Fetch.get<SshKeyData>("/api/ssh");
             setSshKey(keyDetails.publicKey);
             setHaveSshKey(true);
         } catch {
@@ -52,7 +56,7 @@ export default function (props) {
                         text: t("SERVER_SSH_KEY_DELETE"),
                         onClick: async () => {
                             Modal.mount(<LoadingModal />);
-                            await Fetch.delete("/api/ssh", {});
+                            await Fetch.delete("/api/ssh");
                             await updateSshKey();
                             Modal.unmount();
                         },
