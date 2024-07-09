@@ -2,8 +2,10 @@ import React, {
     ReactNode,
     useCallback,
     useEffect,
+    useImperativeHandle,
     useMemo,
     useState,
+    forwardRef,
 } from "react";
 import {
     Editable,
@@ -97,7 +99,7 @@ function Leaf({ attributes, children, leaf }: RenderLeafProps) {
                             shortcut={
                                 KeyboardShortcuts.CopyPlaceholder[
                                     leaf.placeholderNumber
-                                ] as KeyboardShortcutType[]
+                                ]
                             }
                         />
                     )}
@@ -108,20 +110,29 @@ function Leaf({ attributes, children, leaf }: RenderLeafProps) {
     }
 }
 
-export function TranslationSlateEditor(props: {
-    value: string;
-    translationFileType: string;
-    translationDirection: TextDirection;
-    readOnly: boolean;
-    onChange: (newValue: string) => void;
-    pluralExample: string;
-    diffWith: string;
-    hasFocus: boolean;
-    tabIndex: number;
-    placeholders: PlaceholderInterface[];
-    showPlaceholders: boolean;
-    onTranslationUpdate: (contents: string, key: string) => void;
-}) {
+export interface EditorFunctions {
+    setContents: (text: string) => void;
+    forceSave: () => void;
+    insertText: (text: string) => void;
+}
+
+export const TranslationSlateEditor = forwardRef<
+    EditorFunctions,
+    {
+        value: string;
+        translationFileType: string;
+        translationDirection: TextDirection;
+        readOnly: boolean;
+        onChange: (newValue: string) => void;
+        pluralExample?: string;
+        diffWith?: string;
+        hasFocus?: boolean;
+        tabIndex: number;
+        placeholders: PlaceholderInterface[];
+        showPlaceholders: boolean;
+        onTranslationUpdate?: (contents: string, key: string) => void;
+    }
+>((props, ref) => {
     const editor = useMemo(() => withReact(createEditor()), []);
     const [currentKey, setCurrentKey] = useState<string | undefined>();
 
@@ -155,6 +166,16 @@ export function TranslationSlateEditor(props: {
         );
     };
 
+    const insertText = (text: string) => {
+        Transforms.insertText(editor, text);
+    };
+
+    useImperativeHandle(ref, () => ({
+        setContents,
+        forceSave,
+        insertText,
+    }));
+
     return (
         <TranslationSlateEditorInner
             {...props}
@@ -165,7 +186,7 @@ export function TranslationSlateEditor(props: {
             setContents={setContents}
         />
     );
-}
+});
 
 function TranslationSlateEditorInner({
     value,
@@ -190,9 +211,9 @@ function TranslationSlateEditorInner({
     translationDirection: TextDirection;
     readOnly: boolean;
     onChange: (newValue: string) => void;
-    pluralExample: string;
-    diffWith: string;
-    hasFocus: boolean;
+    pluralExample?: string;
+    diffWith?: string;
+    hasFocus?: boolean;
     tabIndex: number;
     forceSave: () => void;
     editor: ReactEditor;
@@ -314,7 +335,7 @@ function TranslationSlateEditorInner({
                 label: highlight.name || "warning",
                 hasFocus: hasFocus,
                 preview: highlight.preview?.({
-                    pluralExample: pluralExample,
+                    pluralExample: pluralExample ?? "",
                 }),
                 showPlaceholders: showPlaceholders,
             }));

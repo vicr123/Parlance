@@ -2,14 +2,24 @@ import Styles from "./TranslationArea.module.css";
 import { useNavigate, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import i18n from "../../../../../../helpers/i18n";
-import { Fragment, useEffect, useMemo, useRef, useState } from "react";
-import { checkTranslation } from "@/checks";
+import {
+    Fragment,
+    useEffect,
+    useMemo,
+    useRef,
+    useState,
+    FocusEvent,
+} from "react";
+import { CheckResult, checkTranslation } from "@/checks";
 import {
     HorizontalLayout,
     VerticalLayout,
     VerticalSpacer,
-} from "../../../../../../components/Layouts";
-import { TranslationSlateEditor } from "./TranslationSlateEditor";
+} from "@/components/Layouts";
+import {
+    EditorFunctions,
+    TranslationSlateEditor,
+} from "./TranslationSlateEditor";
 import Button from "../../../../../../components/Button";
 import useTranslationEntries from "./EntryUtils";
 import KeyboardShortcut from "../../../../../../components/KeyboardShortcut";
@@ -18,7 +28,7 @@ import SmallButton from "../../../../../../components/SmallButton";
 import { Untabbable, useTabIndex } from "react-tabindex";
 import BackButton from "../../../../../../components/BackButton";
 import Placeholders from "./Placeholders";
-import { useForceUpdateOnUserChange } from "../../../../../../helpers/Hooks";
+import { useForceUpdateOnUserChange } from "@/helpers/Hooks";
 import Icon from "../../../../../../components/Icon";
 import Modal from "../../../../../../components/Modal";
 import { CommentsModal } from "./Comments/CommentsModal";
@@ -28,6 +38,15 @@ import GlossaryLookup from "./GlossaryLookup";
 import AddToGlossaryModal from "../../../../../../components/modals/glossary/AddToGlossaryModal";
 import SearchGlossaryModal from "../../../../../../components/modals/glossary/SearchGlossaryModal";
 import { Box } from "./Box";
+import { Entry, TranslationEntry } from "@/interfaces/projects";
+import { TextDirection } from "@/interfaces/misc";
+import {
+    PlaceholderInterface,
+    PluralExample,
+    PushUpdateFunction,
+    SearchParams,
+} from "./EditorInterfaces";
+import { Thread } from "@/interfaces/comments";
 
 function TranslationPart({
     entry,
@@ -38,17 +57,28 @@ function TranslationPart({
     canEdit,
     tabIndex,
     placeholders,
+}: {
+    entry: TranslationEntry;
+    translationDirection: TextDirection;
+    sourceTranslation: string;
+    translationFileType: string;
+    onTranslationUpdate: (contents: string, key: string) => void;
+    canEdit: boolean;
+    tabIndex: number;
+    placeholders: PlaceholderInterface[];
 }) {
     const [translationContent, setTranslationContent] = useState(
         entry.translationContent,
     );
-    const [checkState, setCheckState] = useState([]);
-    const [pluralExample, setPluralExample] = useState({});
+    const [checkState, setCheckState] = useState<CheckResult[]>([]);
+    const [pluralExample, setPluralExample] = useState<Partial<PluralExample>>(
+        {},
+    );
     const [hasFocus, setHasFocus] = useState(false);
     const { language } = useParams();
     const { t } = useTranslation();
-    const rootRef = useRef();
-    const editorRef = useRef();
+    const rootRef = useRef<HTMLDivElement>(null);
+    const editorRef = useRef<EditorFunctions>(null);
     tabIndex = useTabIndex(tabIndex);
     useForceUpdateOnUserChange();
 
@@ -66,7 +96,7 @@ function TranslationPart({
     );
     useEffect(() => {
         (async () => {
-            let patterns = await i18n.pluralPatterns(language);
+            let patterns = await i18n.pluralPatterns(language!);
             let numbers = patterns[entry.pluralType];
             if (numbers) {
                 let explanation;
@@ -97,8 +127,8 @@ function TranslationPart({
     }, [sourceTranslation, language, entry.pluralType]);
 
     const copySource = () => {
-        editorRef.current.setContents(sourceTranslation);
-        editorRef.current.forceSave();
+        editorRef.current!.setContents(sourceTranslation);
+        editorRef.current!.forceSave();
     };
 
     useKeyboardShortcut(KeyboardShortcuts.CopySource, copySource, hasFocus);
@@ -107,7 +137,7 @@ function TranslationPart({
         const copyPlaceholder = () => {
             let placeholder = placeholders.find(x => x.number === i);
             if (!placeholder) return;
-            editorRef.current.insertText(placeholder.placeholder);
+            editorRef.current!.insertText(placeholder.placeholder);
         };
 
         // eslint-disable-next-line react-hooks/rules-of-hooks
@@ -118,13 +148,13 @@ function TranslationPart({
         );
     }
 
-    const textChange = text => {
+    const textChange = (text: string) => {
         setTranslationContent(text);
     };
 
     let headings = [
         t("TRANSLATION_AREA_TITLE", {
-            lang: i18n.humanReadableLocale(language),
+            lang: i18n.humanReadableLocale(language!),
         }),
     ];
     if (pluralExample?.explanation) headings.push(pluralExample.explanation);
@@ -133,8 +163,8 @@ function TranslationPart({
         setHasFocus(true);
     };
 
-    const blur = e => {
-        if (!rootRef.current.contains(e.relatedTarget)) setHasFocus(false);
+    const blur = (e: FocusEvent<HTMLDivElement>) => {
+        if (!rootRef.current!.contains(e.relatedTarget)) setHasFocus(false);
     };
 
     return (
@@ -177,8 +207,8 @@ function TranslationPart({
                     onChange={textChange}
                     pluralExample={
                         pluralExample?.number !== undefined
-                            ? i18n.number(language, pluralExample.number)
-                            : null
+                            ? i18n.number(language!, pluralExample.number)
+                            : undefined
                     }
                     showPlaceholders={false}
                     placeholders={placeholders}
@@ -233,6 +263,17 @@ export default function TranslationArea({
     glossary,
     connectedGlossaries,
     onGlossaryItemAdded,
+}: {
+    entries: Entry[];
+    translationDirection: TextDirection;
+    translationFileType: string;
+    onPushUpdate: PushUpdateFunction;
+    canEdit: boolean;
+    tabIndex: number;
+    searchParams: SearchParams;
+    glossary: any;
+    connectedGlossaries: any;
+    onGlossaryItemAdded: any;
 }) {
     const { project, subproject, language, key } = useParams();
     const { t } = useTranslation();
@@ -253,7 +294,7 @@ export default function TranslationArea({
         onPushUpdate,
     );
     const [altDown, setAltDown] = useState(false);
-    const [commentThreads, setCommentThreads] = useState([]);
+    const [commentThreads, setCommentThreads] = useState<Thread[]>([]);
     const [loadingComments, setLoadingComments] = useState(true);
     const navigate = useNavigate();
     tabIndex = useTabIndex(tabIndex);
@@ -285,7 +326,7 @@ export default function TranslationArea({
         const currentKey = key;
         setLoadingComments(true);
 
-        const results = await Fetch.get(
+        const results = await Fetch.get<Thread[]>(
             `/api/comments/${project}/${subproject}/${language}/${key}`,
         );
         if (key === currentKey) {
@@ -298,11 +339,11 @@ export default function TranslationArea({
         updateThreads();
     }, [key]);
 
-    const keyDownHandler = e => {
+    const keyDownHandler = (e: KeyboardEvent) => {
         if (e.key === "Alt") setAltDown(true);
     };
 
-    const keyUpHandler = e => {
+    const keyUpHandler = (e: KeyboardEvent) => {
         if (e.key === "Alt") setAltDown(false);
     };
 
@@ -343,24 +384,27 @@ export default function TranslationArea({
             <CommentsModal
                 threads={commentThreads}
                 onUpdateThreads={updateThreads}
-                project={project}
-                subproject={subproject}
-                language={language}
-                tkey={key}
+                project={project!}
+                subproject={subproject!}
+                language={language!}
+                tkey={key!}
             />,
         );
     };
 
     const searchGlossary = () => {
         Modal.mount(
-            <SearchGlossaryModal language={language} glossaryData={glossary} />,
+            <SearchGlossaryModal
+                language={language!}
+                glossaryData={glossary}
+            />,
         );
     };
 
     const addToGlossary = () => {
         Modal.mount(
             <AddToGlossaryModal
-                language={language}
+                language={language!}
                 connectedGlossaries={connectedGlossaries}
                 onGlossaryItemAdded={onGlossaryItemAdded}
             />,
@@ -433,10 +477,13 @@ export default function TranslationArea({
                     </div>
                 </Box>
                 {entry.translation.map((pform, idx) => {
-                    const translationUpdate = (contents, key) => {
+                    const translationUpdate = (
+                        contents: string,
+                        key: string,
+                    ) => {
                         const entry = entries.find(x => x.key === key);
                         onPushUpdate(key, {
-                            translationStrings: entry.translation.map(
+                            translationStrings: entry!.translation.map(
                                 (pform2, idx2) => {
                                     if (idx === idx2) {
                                         return {

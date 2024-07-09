@@ -12,10 +12,15 @@ export type PushUpdateFunction = (
 
 export interface TranslationUpdate {
     translationStrings: TranslationEntry[];
-    forceUpdate: boolean;
+    forceUpdate?: boolean;
 }
 
 export interface PlaceholderInterface {
     number: number;
     placeholder: any;
+}
+
+export interface PluralExample {
+    explanation: string;
+    number: number;
 }

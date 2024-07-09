@@ -8,7 +8,7 @@ function KeyboardShortcutPart({ text }: { text: string }) {
 export default function KeyboardShortcut({
     shortcut,
 }: {
-    shortcut: KeyboardShortcutType[];
+    shortcut: readonly KeyboardShortcutType[];
 }) {
     let isMac = navigator.userAgent.toLowerCase().includes("mac");
     const resolvedShortcut = shortcut[0].map(key => {
