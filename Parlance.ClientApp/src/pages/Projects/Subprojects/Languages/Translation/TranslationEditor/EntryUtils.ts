@@ -2,7 +2,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { isEmptyTranslation } from "./EntryHelper.js";
 import { useMemo } from "react";
 import { checkTranslation, mostSevereType } from "@/checks";
-import { Entry } from "@/interfaces/projects";
+import { Entry, PluralType } from "@/interfaces/projects";
 import { PushUpdateFunction, SearchParams } from "./EditorInterfaces";
 
 export default function useTranslationEntries(
@@ -107,7 +107,7 @@ export default function useTranslationEntries(
             if (entry.oldSourceString) {
                 onPushUpdate?.(key!, {
                     translationStrings: entry.translation.map(pform2 => ({
-                        pluralType: pform2.pluralType,
+                        pluralType: pform2.pluralType as PluralType, // could also be singular but let's make TS happy
                         translationContent: pform2.translationContent,
                     })),
                     forceUpdate: true,

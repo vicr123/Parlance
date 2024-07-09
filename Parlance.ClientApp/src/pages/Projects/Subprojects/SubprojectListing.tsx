@@ -43,7 +43,7 @@ export default function SubprojectListing() {
 
     useUserUpdateEffect(updateProjects, []);
 
-    const deadlineInfo = calculateDeadline(projectData?.deadline);
+    const deadlineInfo = calculateDeadline(projectData?.deadline ?? undefined);
 
     return (
         <div>

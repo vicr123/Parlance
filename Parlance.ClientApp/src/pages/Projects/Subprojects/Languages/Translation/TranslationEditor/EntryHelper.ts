@@ -1,9 +1,10 @@
-import { BaseEntry } from "@/interfaces/projects";
+import { BaseEntry, BaseTranslationEntry } from "@/interfaces/projects";
 
 function isEmptyTranslation(entry: BaseEntry) {
     return (
-        entry.translation.every(entry => entry.translationContent === "") ||
-        entry.oldSourceString
+        (entry.translation as BaseTranslationEntry[]).every(
+            entry => entry.translationContent === "",
+        ) || entry.oldSourceString
     );
 }
 

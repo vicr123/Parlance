@@ -23,7 +23,7 @@ export default function () {
             superusers.map(x => ({
                 contents: x,
                 onClick: () => {
-                    if (x === UserManager.currentUser.username) return;
+                    if (x === UserManager.currentUser?.username) return;
 
                     Modal.mount(
                         <Modal

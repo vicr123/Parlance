@@ -22,10 +22,7 @@ import { diffWords } from "diff";
 import { useLocation, useParams } from "react-router-dom";
 import { useTabIndex } from "react-tabindex";
 import KeyboardShortcut from "../../../../../../components/KeyboardShortcut";
-import {
-    KeyboardShortcuts,
-    KeyboardShortcut as KeyboardShortcutType,
-} from "./KeyboardShortcuts";
+import { KeyboardShortcuts } from "./KeyboardShortcuts";
 import { TextDirection } from "@/interfaces/misc";
 import { PlaceholderInterface } from "@/pages/Projects/Subprojects/Languages/Translation/TranslationEditor/EditorInterfaces";
 

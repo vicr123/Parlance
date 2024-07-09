@@ -16,9 +16,8 @@ export function ServerInformationProvider({
 }: {
     children: ReactNode;
 }) {
-    // @ts-ignore
     const [serverInformation, setServerInformation] =
-        useState<ServerInformation>(null);
+        useState<ServerInformation>();
 
     useEffect(() => {
         (async () => {

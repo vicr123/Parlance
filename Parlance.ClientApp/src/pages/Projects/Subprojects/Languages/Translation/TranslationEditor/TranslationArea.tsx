@@ -38,7 +38,12 @@ import GlossaryLookup from "./GlossaryLookup";
 import AddToGlossaryModal from "../../../../../../components/modals/glossary/AddToGlossaryModal";
 import SearchGlossaryModal from "../../../../../../components/modals/glossary/SearchGlossaryModal";
 import { Box } from "./Box";
-import { Entry, TranslationEntry } from "@/interfaces/projects";
+import {
+    Entry,
+    PluralType,
+    TranslationEntry,
+    TranslationEntryUnion,
+} from "@/interfaces/projects";
 import { TextDirection } from "@/interfaces/misc";
 import {
     PlaceholderInterface,
@@ -58,7 +63,7 @@ function TranslationPart({
     tabIndex,
     placeholders,
 }: {
-    entry: TranslationEntry;
+    entry: TranslationEntryUnion;
     translationDirection: TextDirection;
     sourceTranslation: string;
     translationFileType: string;
@@ -487,12 +492,14 @@ export default function TranslationArea({
                                 (pform2, idx2) => {
                                     if (idx === idx2) {
                                         return {
-                                            pluralType: pform2.pluralType,
+                                            pluralType:
+                                                pform2.pluralType as PluralType,
                                             translationContent: contents,
                                         };
                                     } else {
                                         return {
-                                            pluralType: pform2.pluralType,
+                                            pluralType:
+                                                pform2.pluralType as PluralType,
                                             translationContent:
                                                 pform2.translationContent,
                                         };

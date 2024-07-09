@@ -17,7 +17,8 @@
     "types": ["vite/client"],
     "paths": {
       "@/*": ["./*"]
-    }
+    },
+    "skipLibCheck": true
     //    "noImplicitAny": false
   },
   "typeAcquisition": {

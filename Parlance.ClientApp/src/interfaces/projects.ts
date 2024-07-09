@@ -51,9 +51,12 @@ export interface BaseEntry {
     translation: TranslationEntry;
 }
 
-interface SingularTranslationEntry {
-    pluralType: "singular";
+export interface BaseTranslationEntry {
     translationContent: string;
+}
+
+interface SingularTranslationEntry extends BaseTranslationEntry {
+    pluralType: "singular";
 }
 
 interface SingularEntry extends BaseEntry {
@@ -61,9 +64,8 @@ interface SingularEntry extends BaseEntry {
     translation: [SingularTranslationEntry];
 }
 
-interface PluralTranslationEntry {
+interface PluralTranslationEntry extends BaseTranslationEntry {
     pluralType: PluralType;
-    translationContent: string;
 }
 
 interface PluralEntry extends BaseEntry {
@@ -75,6 +77,9 @@ export type Entry = SingularEntry | PluralEntry;
 export type TranslationEntry =
     | [SingularTranslationEntry]
     | PluralTranslationEntry[];
+export type TranslationEntryUnion =
+    | SingularTranslationEntry
+    | PluralTranslationEntry;
 
 export interface AssistantSuggestion {
     type: string;
