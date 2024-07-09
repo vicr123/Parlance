@@ -3,9 +3,12 @@ import Container from "./Container";
 import { VerticalLayout } from "./Layouts";
 import PageHeading from "./PageHeading";
 
-export default function WallMessage({ message, title }: {
-    message: string,
-    title: string
+export default function WallMessage({
+    message,
+    title,
+}: {
+    message: string;
+    title: string;
 }) {
     return (
         <Container bottomBorder={true} className={Styles.wallMessage}>
