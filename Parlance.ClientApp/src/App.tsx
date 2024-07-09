@@ -7,8 +7,9 @@ import Styles from "./App.module.css";
 import { useTranslation } from "react-i18next";
 import i18n from "./helpers/i18n";
 import { ServerInformationProvider } from "./context/ServerInformationContext";
+import { TextDirection } from "@/interfaces/misc";
 
-function ErrorIndicator({ error }) {
+function ErrorIndicator({ error }: { error: any }) {
     const { t } = useTranslation();
 
     return (
@@ -18,10 +19,17 @@ function ErrorIndicator({ error }) {
     );
 }
 
-export default class App extends Component {
+interface AppProps {}
+
+interface AppState {
+    error: any;
+    dir: TextDirection;
+}
+
+export default class App extends Component<AppProps, AppState> {
     static displayName = App.name;
 
-    constructor(props) {
+    constructor(props: AppProps) {
         super(props);
 
         this.state = {
@@ -63,7 +71,7 @@ export default class App extends Component {
         );
     }
 
-    componentDidCatch(error, errorInfo) {
+    componentDidCatch(error: any, errorInfo: any) {
         console.log(error);
         this.setState({
             error: error,
