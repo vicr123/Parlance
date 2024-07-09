@@ -2,7 +2,7 @@ import { Route, Routes } from "react-router-dom";
 import LocaleSelection from "./LocaleSelection";
 import LocaleSettings from "./LocaleSettings";
 
-export default function Locales(props) {
+export default function Locales() {
     return (
         <Routes>
             <Route element={<LocaleSelection />} path={"/"} />

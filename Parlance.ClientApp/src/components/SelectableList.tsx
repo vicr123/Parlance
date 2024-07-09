@@ -15,7 +15,7 @@ interface SelectableListItemObject {
     type?: "destructive";
 }
 
-type SelectableListItem = SelectableListItemObject | string;
+export type SelectableListItem = SelectableListItemObject | string;
 
 interface SelectableListOneItemProps {
     children?: React.ReactElement;
@@ -32,7 +32,7 @@ type SelectableListProps =
     | SelectableListMultiItemProps;
 
 interface SelectableListLocaleProps {
-    locales: string[];
+    locales?: string[];
     onLocaleSelected: (locale: string) => void;
 }
 

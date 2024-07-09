@@ -1,11 +1,13 @@
 import { useNavigate, useParams } from "react-router-dom";
 import BackButton from "../../../components/BackButton";
 import ListPageBlock from "../../../components/ListPageBlock";
-import { VerticalLayout } from "../../../components/Layouts";
+import { VerticalLayout } from "@/components/Layouts";
 import PageHeading from "../../../components/PageHeading";
 import LineEdit from "../../../components/LineEdit";
 import { useTranslation } from "react-i18next";
-import SelectableList from "../../../components/SelectableList";
+import SelectableList, {
+    SelectableListItem,
+} from "../../../components/SelectableList";
 import i18n from "../../../helpers/i18n";
 import { useEffect, useState } from "react";
 import Fetch from "../../../helpers/Fetch";
@@ -14,15 +16,17 @@ import Modal from "../../../components/Modal";
 import ModalList from "../../../components/ModalList";
 import ErrorModal from "../../../components/modals/ErrorModal";
 
-export default function LocaleSettings(props) {
-    const [users, setUsers] = useState([]);
+export default function LocaleSettings() {
+    const [users, setUsers] = useState<SelectableListItem[]>([]);
     const [addingUser, setAddingUser] = useState("");
     const { locale } = useParams();
     const navigate = useNavigate();
     const { t } = useTranslation();
 
     const updateUsers = async () => {
-        let users = await Fetch.get(`/api/permissions/language/${locale}`);
+        let users = await Fetch.get<string[]>(
+            `/api/permissions/language/${locale}`,
+        );
         setUsers(
             users.map(x => ({
                 contents: x,
@@ -40,7 +44,7 @@ export default function LocaleSettings(props) {
                                             "LANGUAGE_PERMISSION_REVOKE_BUTTON",
                                             {
                                                 lang: i18n.humanReadableLocale(
-                                                    locale,
+                                                    locale!,
                                                 ),
                                             },
                                         ),
@@ -50,7 +54,6 @@ export default function LocaleSettings(props) {
                                             try {
                                                 await Fetch.delete(
                                                     `/api/permissions/language/${locale}/${encodeURIComponent(x)}`,
-                                                    {},
                                                 );
                                                 await updateUsers();
 
@@ -101,11 +104,11 @@ export default function LocaleSettings(props) {
             <ListPageBlock>
                 <VerticalLayout>
                     <PageHeading level={3}>
-                        {i18n.humanReadableLocale(locale)}
+                        {i18n.humanReadableLocale(locale!)}
                     </PageHeading>
                     <span>
                         {t("LANGUAGE_PERMISSIONS_PROMPT", {
-                            lang: i18n.humanReadableLocale(locale),
+                            lang: i18n.humanReadableLocale(locale!),
                         })}
                     </span>
                     <SelectableList items={users} />
@@ -118,7 +121,7 @@ export default function LocaleSettings(props) {
                     </PageHeading>
                     <span>
                         {t("translation:LANGUAGE_PERMISSIONS_ADD_NEW_PROMPT", {
-                            lang: i18n.humanReadableLocale(locale),
+                            lang: i18n.humanReadableLocale(locale!),
                         })}
                     </span>
                     <LineEdit
@@ -127,7 +130,9 @@ export default function LocaleSettings(props) {
                         style={{
                             marginBottom: "9px",
                         }}
-                        onChange={e => setAddingUser(e.target.value)}
+                        onChange={e =>
+                            setAddingUser((e.target as HTMLInputElement).value)
+                        }
                     />
                     <SelectableList onClick={addUser}>
                         {t("LANGUAGE_PERMISSIONS_ADD_NEW")}

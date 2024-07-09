@@ -6,7 +6,7 @@ import PageHeading from "../../components/PageHeading";
 import Superusers from "./Superusers";
 import SSH from "./SSH";
 import Projects from "./Projects";
-import Locales from "./Locales";
+import Locales from "./Locales/index";
 import Glossaries from "./Glossaries";
 
 export default function (props) {
