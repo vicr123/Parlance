@@ -1,21 +1,21 @@
 import Modal from "../../../../../../../components/Modal";
 import { useTranslation } from "react-i18next";
-import { VerticalLayout } from "../../../../../../../components/Layouts";
-import { TranslationWithPluralType } from "../../../../../../../interfaces/translation";
+import { VerticalLayout } from "@/components/Layouts";
 import { UpdateManager } from "../UpdateManager";
 import PageHeading from "../../../../../../../components/PageHeading";
 
 import Styles from "./ConflictResolutionModal.module.css";
+import { TranslationEntry } from "@/interfaces/projects";
 
 interface ConflictResolutionModalProps {
-    incoming: TranslationWithPluralType[];
-    current: TranslationWithPluralType[];
+    incoming: TranslationEntry;
+    current: TranslationEntry;
     translationKey: string;
     updateManager: UpdateManager;
 }
 
 interface ConflictResolutionPartProps {
-    translations: TranslationWithPluralType[];
+    translations: TranslationEntry;
 }
 
 function ConflictResolutionPart({ translations }: ConflictResolutionPartProps) {

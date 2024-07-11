@@ -18,6 +18,7 @@ import {
     Entry,
     SubprojectLanguageResponse,
     SubprojectResponse,
+    TranslationEntry,
 } from "@/interfaces/projects";
 import {
     ConnectedGlossary,
@@ -30,7 +31,7 @@ const TranslationArea = lazy(() => import("./TranslationArea"));
 const AssistantArea = lazy(() => import("./AssistantArea/index"));
 
 export default function TranslationEditor() {
-    const { project, subproject, language } = useParams();
+    const { project, subproject, language, key } = useParams();
     const [entries, setEntries] = useState<Entry[]>([]);
     const [subprojectData, setSubprojectData] = useState<SubprojectResponse>(
         // @ts-expect-error
@@ -128,7 +129,7 @@ export default function TranslationEditor() {
             ),
     );
 
-    const updateManager = useUpdateManager(setEntries);
+    const updateManager = useUpdateManager();
     updateManager.on("outOfDate", () => {
         Modal.mount(
             <Modal
@@ -167,7 +168,7 @@ export default function TranslationEditor() {
                 }
 
                 entry.translation = resolution;
-                entry.oldSourceString = null;
+                entry.oldSourceString = undefined;
                 return entry;
             }),
         );
@@ -231,9 +232,9 @@ export default function TranslationEditor() {
                 }
                 return {
                     ...entry,
-                    translation: data[entry.key] || entry.translation,
+                    translation: (data[entry.key] || entry.translation) as any, // Make TS shut up
                     oldSourceString: data[entry.key]
-                        ? null
+                        ? undefined
                         : entry.oldSourceString,
                 };
             }),

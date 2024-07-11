@@ -2,19 +2,19 @@ import EventEmitter from "eventemitter3";
 import Fetch from "../../../../../../helpers/Fetch";
 import { useParams } from "react-router-dom";
 import { useState } from "react";
-import { TranslationWithPluralType } from "../../../../../../interfaces/translation";
 import Modal from "../../../../../../components/Modal";
 import ConflictResolutionModal from "./Modals/ConflictResolutionModal";
+import { TranslationEntry } from "@/interfaces/projects";
 
 interface Update {
-    translationStrings: TranslationWithPluralType[];
+    translationStrings: TranslationEntry;
 }
 
 export class UpdateManager extends EventEmitter {
-    private nextUpdate: { [key: string]: Update };
+    private nextUpdate: Record<string, Update>;
     private updating: boolean;
-    private submitting: { [key: string]: Update };
-    private conflicts: { [key: string]: TranslationWithPluralType[] };
+    private submitting: Record<string, Update>;
+    private readonly conflicts: Record<string, TranslationEntry>;
 
     private readonly project: string;
     private readonly subproject: string;
@@ -104,16 +104,16 @@ export class UpdateManager extends EventEmitter {
         );
     }
 
-    setConflict(key: string, data: TranslationWithPluralType[]) {
+    setConflict(key: string, data: TranslationEntry) {
         this.conflicts[key] = data;
     }
 
-    clearConflict(key: string, resolution: TranslationWithPluralType[]) {
+    clearConflict(key: string, resolution: TranslationEntry) {
         delete this.conflicts[key];
         this.emit("conflictCleared", key, resolution);
     }
 
-    getConflict(key: string): TranslationWithPluralType[] | null {
+    getConflict(key: string): TranslationEntry | null {
         return this.conflicts[key];
     }
 }
