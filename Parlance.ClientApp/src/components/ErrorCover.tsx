@@ -4,8 +4,8 @@ import SilentInformation from "./SilentInformation";
 import { ReactNode, useEffect, useState } from "react";
 
 interface CustomError {
-    title: string;
-    text: string;
+    title?: string;
+    text?: string;
 }
 
 interface ErrorCoverProps {
@@ -38,8 +38,8 @@ export default function ErrorCover({ error, children }: ErrorCoverProps) {
         })();
     }, [error]);
 
-    const title = customError?.title ?? t("ERROR");
-    const text = customError?.text ?? t("ERROR_PROMPT");
+    const title = customError?.title ?? t("ERROR")!;
+    const text = customError?.text ?? t("ERROR_PROMPT")!;
 
     return (
         <div className={Styles.cover}>

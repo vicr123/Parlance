@@ -13,10 +13,12 @@
     ],
     "strict": true,
     "target": "ES2022",
+    "lib": ["ES2023", "dom"],
     "types": ["vite/client"],
     "paths": {
       "@/*": ["./*"]
-    }
+    },
+    "skipLibCheck": true
     //    "noImplicitAny": false
   },
   "typeAcquisition": {

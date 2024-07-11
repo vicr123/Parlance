@@ -9,7 +9,7 @@ export default function ({
     onRejected,
 }: {
     onAccepted: (password: string) => void;
-    onRejected: () => void;
+    onRejected?: () => void;
 }) {
     const [password, setPassword] = useState("");
     const { t } = useTranslation();

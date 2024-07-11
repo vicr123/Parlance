@@ -4,10 +4,7 @@ export type KeyboardModifier = "Control" | "Alt" | "Shift";
 
 export type KeyboardShortcut = readonly [...KeyboardModifier[], string];
 
-export const KeyboardShortcuts: Record<
-    string,
-    KeyboardShortcut[] | KeyboardShortcut[][]
-> = {
+export const KeyboardShortcuts = {
     NextUnfinished: [
         ["Control", "Enter"],
         ["Control", "L"],
@@ -56,10 +53,13 @@ export const KeyboardShortcuts: Record<
     ],
     SearchGlossary: [["Control", "G"]],
     AddToGlossary: [["Control", "Shift", "G"]],
-};
+} as const;
 
 export function useKeyboardShortcut(
-    shortcut: KeyboardShortcut,
+    shortcut:
+        | KeyboardShortcut
+        | readonly KeyboardShortcut[]
+        | readonly KeyboardShortcut[][],
     callback: (e: KeyboardEvent) => void,
     enabled = true,
 ) {

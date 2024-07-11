@@ -1,6 +1,6 @@
 import { ReactElement, useId, useState } from "react";
 import Modal from "../../Modal";
-import { Trans, useTranslation } from "react-i18next";
+import { useTranslation } from "react-i18next";
 import {
     HorizontalLayout,
     VerticalLayout,
@@ -8,11 +8,11 @@ import {
 } from "../../Layouts";
 import LineEdit from "../../LineEdit";
 import {
-    Glossary,
+    ConnectedGlossary,
     GlossaryItem,
     PartOfSpeech,
     PartOfSpeechTranslationString,
-} from "../../../interfaces/glossary";
+} from "@/interfaces/glossary";
 import SelectableList from "../../SelectableList";
 
 import Styles from "./AddToGlossaryModal.module.css";
@@ -25,7 +25,7 @@ import ErrorText from "../../ErrorText";
 
 interface AddToGlossaryModalProps {
     initialTerm?: string;
-    connectedGlossaries: Glossary[];
+    connectedGlossaries: ConnectedGlossary[];
     language: string;
     onGlossaryItemAdded: (item: GlossaryItem) => void;
 }
@@ -39,7 +39,7 @@ export default function AddToGlossaryModal({
     const [term, setTerm] = useState<string>(initialTerm || "");
     const [pos, setPos] = useState<PartOfSpeech>(PartOfSpeech.Unknown);
     const [translation, setTranslation] = useState<string>("");
-    const [addGlossary, setAddGlossary] = useState<Glossary>(
+    const [addGlossary, setAddGlossary] = useState<ConnectedGlossary>(
         connectedGlossaries[0],
     );
     const [regionAgnostic, setRegionAgnostic] = useState<boolean>(true);

@@ -1,10 +1,10 @@
 import Modal from "../../Modal";
 import React, { useContext, useState } from "react";
-import LoginPasswordModal from "./LoginPasswordModal";
+import { LoginPasswordModal } from "./LoginPasswordModal";
 import UserManager from "../../../helpers/UserManager";
 import { useTranslation } from "react-i18next";
 import LineEdit from "../../LineEdit";
-import CreateAccountModal from "./CreateAccountModal";
+import { CreateAccountModal } from "./CreateAccountModal";
 import LoadingModal from "../LoadingModal";
 import Styles from "./LoginUsernameModal.module.css";
 import { ServerInformationContext } from "@/context/ServerInformationContext";

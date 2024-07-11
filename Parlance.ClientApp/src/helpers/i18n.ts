@@ -6,6 +6,7 @@ import Pseudo from "i18next-pseudo";
 import Fetch from "./Fetch";
 import moment from "moment/moment";
 import "moment/min/locales";
+import { TextDirection } from "@/interfaces/misc";
 
 type i18next = typeof i18n;
 
@@ -13,9 +14,9 @@ interface ParlanceI18nExport extends i18next {
     humanReadableLocale: (locale: string, selectedLanguage?: string) => string;
     number: (locale: string, number: number) => string;
     list: (locale: string, items: any[]) => string;
-    pluralPatterns: (locale: string) => Promise<PluralPattern[]>;
+    pluralPatterns: (locale: string) => Promise<PluralCategoryDictionary>;
     isRegionAgnostic: (locale: string) => boolean;
-    dir: (lng?: string) => "ltr" | "rtl";
+    dir: (lng?: string) => TextDirection;
     t: typeof i18n.t;
 }
 
@@ -25,14 +26,16 @@ interface PluralPattern {
     index: number;
 }
 
-type PluralCategoryDictionary = { [key: string]: any };
+type PluralCategoryDictionary = Record<string, number[]>;
 
 let exportMember = i18n as ParlanceI18nExport;
 
 let instance = i18n.use(HttpBackend);
 
-const pluralPatternsCache: PluralCategoryDictionary | Promise<PluralPattern[]> =
-    {};
+const pluralPatternsCache: Record<
+    string,
+    PluralCategoryDictionary | Promise<PluralPattern[]>
+> = {};
 
 if (import.meta.env.REACT_APP_USE_PSEUDOTRANSLATION) {
     instance.use(
@@ -125,7 +128,7 @@ exportMember.pluralPatterns = async locale => {
     if (pluralPatternsCache[locale]) {
         promise = pluralPatternsCache[locale];
         if (!(promise instanceof Promise)) {
-            return pluralPatternsCache[locale];
+            return pluralPatternsCache[locale] as PluralCategoryDictionary;
         }
     } else {
         promise = Fetch.get<PluralPattern[]>(`/api/cldr/${locale}/plurals`);

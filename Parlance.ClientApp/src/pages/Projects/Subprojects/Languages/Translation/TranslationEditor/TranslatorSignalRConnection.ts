@@ -1,18 +1,14 @@
-import {
-    HubConnection,
-    HubConnectionBuilder,
-    LogLevel,
-} from "@microsoft/signalr";
+import { HubConnection, HubConnectionBuilder } from "@microsoft/signalr";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { TranslationWithPluralType } from "../../../../../../interfaces/translation";
+import { Entry, TranslationEntry } from "@/interfaces/projects";
 
 type OnTranslationUpdatedCallback = (
     hash: string,
-    data: Record<string, TranslationWithPluralType[]>,
+    data: Record<string, TranslationEntry>,
 ) => void;
 
-interface TranslatorSignalR {
+export interface TranslatorSignalR {
     connected: ConnectionState;
     connection: HubConnection | undefined;
 }
