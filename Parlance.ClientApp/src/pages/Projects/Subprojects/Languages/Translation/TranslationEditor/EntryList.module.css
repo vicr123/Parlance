@@ -173,6 +173,31 @@ input.searchBox {
     display: none;
 }
 
+.connectionBox {
+    display: flex;
+    align-items: center;
+    padding: 6px;
+    gap: 6px;
+}
+
+.connectionBoxSignal {
+    aspect-ratio: 1 / 1;
+    height: 80%;
+    border-radius: 50%;
+}
+
+.disconnected {
+    background: #c80000;
+}
+
+.connecting {
+    background: #ffa000;
+}
+
+.connected {
+    background: #00a000;
+}
+
 @media (max-width: 1024px) {
     .rootList {
         border-right: none;

@@ -4,6 +4,7 @@
   "private": true,
   "type": "module",
   "dependencies": {
+    "@microsoft/signalr": "^7.0.9",
     "@reecelucas/react-use-hotkeys": "^2.0.0",
     "@types/node": "^20.4.5",
     "@types/react": "^18.2.18",

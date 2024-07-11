@@ -13,6 +13,7 @@ import { useTabIndex } from "react-tabindex";
 import UserManager from "../../../../../../helpers/UserManager";
 import AddToGlossaryModal from "../../../../../../components/modals/glossary/AddToGlossaryModal";
 import SearchGlossaryModal from "../../../../../../components/modals/glossary/SearchGlossaryModal";
+import useTranslatorSignalRConnection from "./TranslatorSignalRConnection";
 
 const EntryList = lazy(() => import("./EntryList"));
 const TranslationArea = lazy(() => import("./TranslationArea"));
@@ -108,7 +109,7 @@ export default function TranslationEditor() {
             ),
     );
 
-    const updateManager = useUpdateManager();
+    const updateManager = useUpdateManager(setEntries);
     updateManager.on("outOfDate", () => {
         Modal.mount(
             <Modal
@@ -137,6 +138,19 @@ export default function TranslationEditor() {
             >
                 {t("TRANSLATION_SUBMIT_ERROR_PROMPT")}
             </Modal>,
+        );
+    });
+    updateManager.on("conflictCleared", (key, resolution) => {
+        setEntries(entries =>
+            entries.map(entry => {
+                if (entry.key !== key) {
+                    return entry;
+                }
+
+                entry.translation = resolution;
+                entry.oldSourceString = null;
+                return entry;
+            }),
         );
     });
 
@@ -185,6 +199,29 @@ export default function TranslationEditor() {
         setGlossaryData([...glossaryData, item]);
     };
 
+    const signalRConnection = useTranslatorSignalRConnection((hash, data) => {
+        setEntries(entries =>
+            entries.map(entry => {
+                if (
+                    entry.key === key &&
+                    JSON.stringify(data[entry.key]) !==
+                        JSON.stringify(entry.translation)
+                ) {
+                    updateManager.setConflict(entry.key, data[entry.key]);
+                    return entry;
+                }
+                return {
+                    ...entry,
+                    translation: data[entry.key] || entry.translation,
+                    oldSourceString: data[entry.key]
+                        ? null
+                        : entry.oldSourceString,
+                };
+            }),
+        );
+        updateManager.setEtag(hash);
+    });
+
     const canEdit = subprojectLanguageData?.canEdit;
 
     const updateData = async () => {
@@ -217,6 +254,7 @@ export default function TranslationEditor() {
                         translationDirection={translationDirection}
                         updateManager={updateManager}
                         translationFileType={subprojectData.translationFileType}
+                        signalRConnection={signalRConnection}
                     />
                     <TranslationArea
                         tabIndex={tabIndex}

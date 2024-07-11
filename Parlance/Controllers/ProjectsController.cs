@@ -4,12 +4,14 @@ using MessagePipe;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Primitives;
 using Npgsql;
 using Parlance.CldrData;
 using Parlance.Glossary.Services;
 using Parlance.Helpers;
+using Parlance.Hubs;
 using Parlance.Project;
 using Parlance.Project.Events;
 using Parlance.Project.Exceptions;
@@ -20,6 +22,7 @@ using Parlance.Services.Comments;
 using Parlance.Services.Permissions;
 using Parlance.Services.ProjectMaintainers;
 using Parlance.Services.Projects;
+using Parlance.VersionControl.Services.PendingEdits;
 using Parlance.Vicr123Accounts.Authentication;
 using Parlance.Vicr123Accounts.Services;
 using Tmds.DBus;
@@ -32,13 +35,15 @@ namespace Parlance.Controllers;
 public class ProjectsController(
     IProjectService projectService,
     IPermissionsService permissionsService,
+    IPendingEditsService pendingEditsService,
     IParlanceIndexingService indexingService,
     IParlanceSourceStringsService sourceStringsService,
     IVicr123AccountsService accountsService,
     IProjectMaintainersService projectMaintainersService,
     IGlossaryService glossaryService,
     ICommentsService commentsService,
-    IAsyncPublisher<TranslationSubmitEvent> translationSubmitEventPublisher)
+    IAsyncPublisher<TranslationSubmitEvent> translationSubmitEventPublisher,
+    IHubContext<TranslatorHub, ITranslatorClient> translatorHubContext)
     : Controller
 {
     [HttpGet]
@@ -579,6 +584,13 @@ public class ProjectsController(
             });
 
             await translationFile.Save();
+            
+            // Tell SignalR
+            await translatorHubContext.Clients.Group(TranslatorHub.GetGroup(project, subproject, language.ToLocale()))
+                .TranslationUpdated(translationFile.Hash, new Dictionary<string, IList<TranslationWithPluralType>>()
+                {
+                    {key, data.TranslationStrings}
+                });
 
             Response.Headers["X-Parlance-Hash"] = new StringValues(translationFile.Hash);
             return NoContent();
@@ -612,6 +624,7 @@ public class ProjectsController(
 
             if (!Request.Headers.IfMatch.Contains(translationFile.Hash)) return StatusCode(412); //Precondition Failed
 
+            var updatedData = new Dictionary<string, IList<TranslationWithPluralType>>();
             foreach (var (key, translationData) in data)
             {
                 var entry = translationFile.Entries.Single(entry => entry.Key == key);
@@ -628,9 +641,15 @@ public class ProjectsController(
                     Entry = entry,
                     User = user
                 });
+            
+                updatedData.Add(key, translationData.TranslationStrings);
             }
 
             await translationFile.Save();
+            
+            // Tell SignalR
+            await translatorHubContext.Clients.Group(TranslatorHub.GetGroup(project, subproject, language.ToLocale()))
+                .TranslationUpdated(translationFile.Hash, updatedData);
 
             Response.Headers["X-Parlance-Hash"] = new StringValues(translationFile.Hash);
             return NoContent();
