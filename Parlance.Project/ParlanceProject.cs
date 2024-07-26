@@ -17,10 +17,10 @@ public class ParlanceProject : IParlanceProject
     public ParlanceProject(Database.Models.Project project)
     {
         _project = project;
-        using var file = File.OpenRead(Path.Combine(project.VcsDirectory, ".parlance.json"));
-
         try
         {
+            using var file = File.OpenRead(Path.Combine(project.VcsDirectory, ".parlance.json"));
+
             var subprojectDefs = JsonSerializer.Deserialize<ParlanceJson>(file, JsonOptions);
 
             if (subprojectDefs is null)
@@ -39,6 +39,10 @@ public class ParlanceProject : IParlanceProject
             throw new ParlanceJsonFileParseException("The Parlance project definition is invalid.", ex);
         }
         catch (DirectoryNotFoundException ex)
+        {
+            throw new ParlanceJsonFileParseException("Unable to find the .parlance.json file.", ex);
+        }
+        catch (FileNotFoundException ex)
         {
             throw new ParlanceJsonFileParseException("Unable to find the .parlance.json file.", ex);
         }
