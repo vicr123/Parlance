@@ -72,6 +72,11 @@ public class GitVersionControlService(
         }
     }
 
+    public Task CheckoutBranch(Database.Models.Project project, string branch)
+    {
+        return Task.Run(() => CheckoutBranchCore(project, branch));
+    }
+
     public VersionControlStatus VersionControlStatus(Database.Models.Project project)
     {
         using var repo = new Repository(project.VcsDirectory);
@@ -82,7 +87,9 @@ public class GitVersionControlService(
             LatestRemoteCommit = new VersionControlCommit(repo.Head.TrackedBranch.Tip),
             Ahead = repo.Head.TrackingDetails.AheadBy.GetValueOrDefault(),
             Behind = repo.Head.TrackingDetails.BehindBy.GetValueOrDefault(),
-            ChangedFiles = repo.RetrieveStatus().Select(x => x.FilePath)
+            ChangedFiles = repo.RetrieveStatus().Select(x => x.FilePath),
+            Branch = repo.Head.FriendlyName,
+            UpstreamUrl = repo.Network.Remotes["origin"].Url
         };
     }
 
@@ -290,6 +297,45 @@ public class GitVersionControlService(
             CredentialsProvider = remoteCommunicationService.CredentialsHandler,
             CertificateCheck = remoteCommunicationService.CertificateCheckHandler
         });
+    }
+
+    private void CheckoutBranchCore(Database.Models.Project project, string branch)
+    {
+        // Fetch the remote in order to get up to date information about branches
+        UpdateVersionControlMetadataCore(project);
+        
+        var repo = new Repository(project.VcsDirectory);
+        var currentBranch = repo.Head;
+        if (currentBranch.CanonicalName == $"refs/heads/{branch}")
+        {
+            throw new InvalidOperationException("Unable to checkout the same branch");
+        }
+        
+        var remoteBranch = repo.Branches.SingleOrDefault(b => b.IsRemote && b.CanonicalName == $"refs/remotes/origin/{branch}");
+        if (remoteBranch is null)
+        {
+            throw new BranchNotFoundException()
+            {
+                Branch = branch
+            };
+        }
+        
+        // Delete any local branches with that name
+        var existingLocalBranch = repo.Branches.SingleOrDefault(b => b.CanonicalName == $"refs/heads/{branch}");
+        if (existingLocalBranch is not null)
+        {
+            repo.Branches.Remove(existingLocalBranch);
+        }
+        
+        // Create a local branch that tracks the upstream branch
+        var localBranch = repo.CreateBranch(branch, remoteBranch.Tip);
+        repo.Branches.Update(localBranch, b => b.TrackedBranch = remoteBranch.CanonicalName);
+        
+        // Checkout the new local branch
+        Commands.Checkout(repo, localBranch);
+        
+        // Delete the old branch
+        repo.Branches.Remove(currentBranch);
     }
 
     public Task DeleteUnpublishedChanges(Database.Models.Project project)

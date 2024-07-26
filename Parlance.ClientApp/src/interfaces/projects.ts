@@ -1,4 +1,5 @@
 import { Thread } from "./comments";
+import { VersionControlState } from "@/interfaces/versionControl";
 
 export interface SubprojectLocaleMeta {
     completionData: CompletionData;
@@ -105,6 +106,7 @@ export interface ProjectResponse {
         systemName: string;
         name: string;
     }[];
+    versionControlInformation?: VersionControlState;
 }
 
 export interface SubprojectResponse {

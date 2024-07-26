@@ -3,12 +3,13 @@ using Parlance.Project;
 
 namespace Parlance.VersionControl.Services.VersionControl;
 
-public class MergeConflictException : Exception
-{
-}
+public class MergeConflictException : Exception;
 
-public class DirtyWorkingTreeException : Exception
+public class DirtyWorkingTreeException : Exception;
+
+public class BranchNotFoundException : InvalidOperationException
 {
+    public required string Branch { get; set; }
 }
 
 public class VersionControlCommit(Commit commit)
@@ -19,11 +20,14 @@ public class VersionControlCommit(Commit commit)
 
 public class VersionControlStatus
 {
-    public VersionControlCommit LatestLocalCommit { get; init; }
-    public VersionControlCommit LatestRemoteCommit { get; set; }
-    public int Ahead { get; init; }
-    public int Behind { get; init; }
-    public IEnumerable<string> ChangedFiles { get; init; }
+    public required VersionControlCommit LatestLocalCommit { get; init; }
+    public required VersionControlCommit LatestRemoteCommit { get; set; }
+    public required int Ahead { get; init; }
+    public required int Behind { get; init; }
+    public required IEnumerable<string> ChangedFiles { get; init; }
+    public required string Branch { get; init; }
+    
+    public required string UpstreamUrl { get; set; }
 }
 
 public interface IVersionControlService
@@ -37,4 +41,5 @@ public interface IVersionControlService
     VersionControlStatus VersionControlStatus(Database.Models.Project project);
     string CloneUrl(Database.Models.Project project);
     string CloneUrl(IParlanceProject project);
+    Task CheckoutBranch(Database.Models.Project project, string branch);
 }

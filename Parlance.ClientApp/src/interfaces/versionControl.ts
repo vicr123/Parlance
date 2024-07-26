@@ -4,6 +4,8 @@ export interface VersionControlState {
     ahead: number;
     behind: number;
     changedFiles: string[];
+    branch: string;
+    upstreamUrl: string;
 }
 
 export interface Commit {

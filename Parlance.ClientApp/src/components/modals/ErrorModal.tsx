@@ -2,6 +2,7 @@ import { useTranslation } from "react-i18next";
 import Modal from "../Modal";
 import { VerticalLayout } from "../Layouts";
 import { ReactElement, ReactNode, useEffect, useState } from "react";
+import { ParlanceError } from "@/interfaces/error";
 
 interface ErrorModalProps {
     error: any;
@@ -27,15 +28,13 @@ export default function ErrorModal({
             try {
                 if (!error) return;
 
-                let json = await error.json();
-                let jsonError = json.error;
-
-                if (specialRenderings && specialRenderings[jsonError]) {
-                    setSpecialRendering(specialRenderings[jsonError]);
+                let json = (await error.json()) as ParlanceError;
+                if (specialRenderings && specialRenderings[json.error]) {
+                    setSpecialRendering(specialRenderings[json.error]);
                     return;
                 }
 
-                switch (jsonError) {
+                switch (json.error) {
                     case "UnknownUser":
                         setMessage(t("ERROR_UNKNOWN_USER"));
                         return;
@@ -69,12 +68,19 @@ export default function ErrorModal({
                     case "BadTokenRequestType":
                         setMessage(t("ERROR_BAD_TOKEN_REQUEST_TYPE"));
                         return;
+                    case "BranchNotFound":
+                        setMessage(
+                            t("ERROR_BRANCH_NOT_FOUND", {
+                                branch: json.extraData.branch,
+                            }),
+                        );
+                        return;
                 }
             } catch {}
         })();
     }, [error]);
 
-    if (specialRendering) return <>specialRendering</>;
+    if (specialRendering) return <>{specialRendering}</>;
 
     return (
         <Modal

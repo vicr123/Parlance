@@ -15,6 +15,7 @@ import { useEffect, useState } from "react";
 import LineEdit from "../../../components/LineEdit";
 import ModalList from "../../../components/ModalList";
 import { ProjectResponse } from "@/interfaces/projects";
+import { ChangeBranchModal } from "@/pages/Administration/Projects/ChangeBranchModal";
 
 export default function Project() {
     const [projectInfo, setProjectInfo] = useState<ProjectResponse>(
@@ -112,6 +113,28 @@ export default function Project() {
         );
     };
 
+    const changeBranch = () => {
+        Modal.mount(
+            <ChangeBranchModal
+                initialBranch={
+                    projectInfo.versionControlInformation?.branch ?? ""
+                }
+                onChangeBranch={async branch => {
+                    Modal.mount(<LoadingModal />);
+                    try {
+                        await Fetch.post(`/api/projects/${project}/branch`, {
+                            branch: branch,
+                        });
+                        await updateProjectInfo();
+                        Modal.unmount();
+                    } catch (error) {
+                        Modal.mount(<ErrorModal error={error} />);
+                    }
+                }}
+            />,
+        );
+    };
+
     const addMaintainer = async () => {
         if (addingUser === "") return;
 
@@ -157,6 +180,18 @@ export default function Project() {
                     />
                     <SelectableList onClick={addMaintainer}>
                         {t("PROJECT_MAINTAINERS_ADD")}
+                    </SelectableList>
+                </VerticalLayout>
+            </ListPageBlock>
+            <ListPageBlock>
+                <VerticalLayout>
+                    <PageHeading level={3}>
+                        {t("PROJECT_SOURCE_REPOSITORY")}
+                    </PageHeading>
+                    {projectInfo.versionControlInformation?.upstreamUrl}@
+                    {projectInfo.versionControlInformation?.branch}
+                    <SelectableList onClick={changeBranch}>
+                        {t("PROJECT_CHANGE_BRANCH")}
                     </SelectableList>
                 </VerticalLayout>
             </ListPageBlock>

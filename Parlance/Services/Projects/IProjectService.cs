@@ -11,4 +11,5 @@ public interface IProjectService
     public Task<IEnumerable<Database.Models.Project>> Projects();
     public Task<Database.Models.Project> ProjectBySystemName(string systemName);
     public Task RemoveProject(Database.Models.Project project);
+    Task ChangeBranch(Database.Models.Project project, string branch);
 }

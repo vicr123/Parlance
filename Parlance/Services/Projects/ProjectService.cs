@@ -92,4 +92,9 @@ public class ProjectService(
         
         Directory.Delete(project.VcsDirectory, true);
     }
+
+    public async Task ChangeBranch(Database.Models.Project project, string branch)
+    {
+        await versionControlService.CheckoutBranch(project, branch);
+    }
 }

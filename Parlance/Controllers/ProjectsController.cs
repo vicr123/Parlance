@@ -22,7 +22,9 @@ using Parlance.Services.Comments;
 using Parlance.Services.Permissions;
 using Parlance.Services.ProjectMaintainers;
 using Parlance.Services.Projects;
+using Parlance.Services.Superuser;
 using Parlance.VersionControl.Services.PendingEdits;
+using Parlance.VersionControl.Services.VersionControl;
 using Parlance.Vicr123Accounts.Authentication;
 using Parlance.Vicr123Accounts.Services;
 using Tmds.DBus;
@@ -42,6 +44,8 @@ public class ProjectsController(
     IProjectMaintainersService projectMaintainersService,
     IGlossaryService glossaryService,
     ICommentsService commentsService,
+    ISuperuserService superuserService,
+    IVersionControlService versionControlService,
     IAsyncPublisher<TranslationSubmitEvent> translationSubmitEventPublisher,
     IHubContext<TranslatorHub, ITranslatorClient> translatorHubContext)
     : Controller
@@ -203,6 +207,11 @@ public class ProjectsController(
 
                 var indexResults = await indexingService.OverallResults(proj);
 
+                VersionControlStatus? versionControlInformation = null;
+                if (username is not null && await superuserService.IsSuperuser(username))
+                {
+                    versionControlInformation = versionControlService.VersionControlStatus(p);
+                }
 
                 return Json(new
                 {
@@ -219,7 +228,8 @@ public class ProjectsController(
                             subproject.SystemName, subproject.Name
                         };
                     })),
-                    CanManage = await permissionsService.HasManageProjectPermission(username, project)
+                    CanManage = await permissionsService.HasManageProjectPermission(username, project),
+                    VersionControlInformation = versionControlInformation
                 });
             }
             catch (ParlanceJsonFileParseException)
@@ -237,6 +247,33 @@ public class ProjectsController(
         }
     }
 
+    [Authorize(Policy = "Superuser")]
+    [Route("{project}/branch")]
+    [HttpPost]
+    public async Task<IActionResult> ChangeProjectBranch(string project, [FromBody] ChangeProjectBranchRequestData data)
+    {
+        try
+        {
+            var p = await projectService.ProjectBySystemName(project);
+            await projectService.ChangeBranch(p, data.Branch);
+            return NoContent();
+        }
+        catch (ProjectNotFoundException)
+        {
+            return NotFound();
+        }
+        catch (BranchNotFoundException ex)
+        {
+            return this.ClientError(ParlanceClientError.BranchNotFound, new
+            {
+                ex.Branch
+            });
+        }
+        catch (InvalidOperationException ex)
+        {
+            return this.ClientError(ParlanceClientError.GitError, ex.Message);
+        }
+    }
 
     [HttpPost]
     [Authorize(Policy = "ProjectManager")]
@@ -729,5 +766,10 @@ public class ProjectsController(
     public class SearchGlossaryRequestData
     {
         public required string? SearchTerm { get; set; }
+    }
+
+    public class ChangeProjectBranchRequestData
+    {
+        public required string Branch { get; set; }
     }
 }
