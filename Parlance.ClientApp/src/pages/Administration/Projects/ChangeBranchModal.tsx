@@ -16,6 +16,7 @@ export function ChangeBranchModal({
 
     return (
         <Modal
+            heading={t("PROJECT_CHANGE_BRANCH")}
             buttons={[
                 Modal.CancelButton,
                 {

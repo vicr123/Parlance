@@ -242,6 +242,7 @@
   "PROJECT_DELETE": "Project Verwijderen",
   "PROJECT_DELETE_CONFIRM_PROMPT": "Door {{project}} te verwijderen wordt het onbeschikbaar in Parlance totdat je het weer toevoegt.",
   "PROJECT_DELETE_PROMPT": "Als je {{project}} niet meer nodig hebt, kun je het hier verwijderen.",
+  "PROJECT_HAS_ERRORS": "",
   "PROJECT_LISTING_PROMPT": "Registreer projecten in Parlance om ze beschikbaar te stellen voor vertaling.",
   "PROJECT_MAINTAINERS": "Project Maintainer",
   "PROJECT_MAINTAINERS_ADD": "Nieuwe Onderhouder Toevoegen",

@@ -250,6 +250,7 @@
   "PROJECT_DELETE": "Delete Project",
   "PROJECT_DELETE_CONFIRM_PROMPT": "Deleting {{project}} will make it unavailable within Parlance until you add it again.",
   "PROJECT_DELETE_PROMPT": "If you don't need {{project}} any more, you can delete it here.",
+  "PROJECT_HAS_ERRORS": "Has Errors",
   "PROJECT_LISTING_PROMPT": "Register projects in Parlance in order to make them available for translation.",
   "PROJECT_MAINTAINERS": "Project Maintainers",
   "PROJECT_MAINTAINERS_ADD": "Add New Maintainer",

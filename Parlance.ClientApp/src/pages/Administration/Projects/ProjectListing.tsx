@@ -9,6 +9,7 @@ import Fetch from "../../../helpers/Fetch";
 import { VerticalLayout } from "@/components/Layouts";
 import { useNavigate } from "react-router-dom";
 import { PartialProjectResponse } from "@/interfaces/projects";
+import Styles from "./ProjectListing.module.css";
 
 export default function () {
     const [projects, setProjects] = useState<SelectableListItem[]>([]);
@@ -20,7 +21,16 @@ export default function () {
             await Fetch.get<PartialProjectResponse[]>("/api/projects");
         setProjects(
             projects.map(project => ({
-                contents: project.name,
+                contents: (
+                    <VerticalLayout>
+                        <span>{project.name}</span>
+                        {project.error && (
+                            <span className={Styles.helperText}>
+                                {t("PROJECT_HAS_ERRORS")}
+                            </span>
+                        )}
+                    </VerticalLayout>
+                ),
                 onClick: () => navigate(project.systemName),
             })),
         );

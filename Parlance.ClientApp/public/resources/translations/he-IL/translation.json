@@ -246,6 +246,7 @@
   "PROJECT_DELETE": "מחק פרוייקט",
   "PROJECT_DELETE_CONFIRM_PROMPT": "הסרת {{project}} יעשה אותו לא זמין ב-Parlance עד שתוסיף אותו שוב.",
   "PROJECT_DELETE_PROMPT": "אם אינך זקוק ל-{{project}} יותר, אתה יכול להסיר אותו פה.",
+  "PROJECT_HAS_ERRORS": "",
   "PROJECT_LISTING_PROMPT": "רשום פרויקטים ב-Parlance כדי להפוך אותם לזמינים לתרגום.",
   "PROJECT_MAINTAINERS": "מנהלי פרויקט",
   "PROJECT_MAINTAINERS_ADD": "הוסף מנהל נוסף",

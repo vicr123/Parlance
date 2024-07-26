@@ -23,57 +23,71 @@ export default function Project() {
         {},
     );
     const [maintainers, setMaintainers] = useState<SelectableListItem[]>([]);
+    const [error, setError] = useState<any>();
     const [addingUser, setAddingUser] = useState("");
     const { project } = useParams();
     const navigate = useNavigate();
     const { t } = useTranslation();
 
     const updateProjectInfo = async () => {
-        const [projectInfo, maintainers] = await Promise.all([
-            await Fetch.get<ProjectResponse>(`/api/projects/${project}`),
-            await Fetch.get<string[]>(`/api/projects/${project}/maintainers`),
+        const [projectInfo, maintainers] = await Promise.allSettled([
+            Fetch.get<ProjectResponse>(`/api/projects/${project}`),
+            Fetch.get<string[]>(`/api/projects/${project}/maintainers`),
         ]);
-        setProjectInfo(projectInfo);
-        setMaintainers(
-            maintainers.map(x => ({
-                contents: x,
-                onClick: () => {
-                    Modal.mount(
-                        <Modal
-                            heading={t("USER_PERMISSIONS_TITLE", { user: x })}
-                            buttons={[Modal.CancelButton]}
-                        >
-                            <span>{t("GENERIC_PROMPT")}</span>
-                            <ModalList>
-                                {[
-                                    {
-                                        text: t("PROJECT_MAINTAINER_REMOVE"),
-                                        type: "destructive",
-                                        onClick: async () => {
-                                            Modal.mount(<LoadingModal />);
-                                            try {
-                                                await Fetch.delete(
-                                                    `/api/projects/${project}/maintainers/${encodeURIComponent(x)}`,
-                                                );
-                                                await updateProjectInfo();
 
-                                                Modal.unmount();
-                                            } catch (error) {
-                                                Modal.mount(
-                                                    <ErrorModal
-                                                        error={error}
-                                                    />,
-                                                );
-                                            }
+        if (projectInfo.status == "fulfilled") {
+            setProjectInfo(projectInfo.value);
+            setError(undefined);
+        } else {
+            setError(projectInfo.reason);
+        }
+
+        if (maintainers.status == "fulfilled") {
+            setMaintainers(
+                maintainers.value.map(x => ({
+                    contents: x,
+                    onClick: () => {
+                        Modal.mount(
+                            <Modal
+                                heading={t("USER_PERMISSIONS_TITLE", {
+                                    user: x,
+                                })}
+                                buttons={[Modal.CancelButton]}
+                            >
+                                <span>{t("GENERIC_PROMPT")}</span>
+                                <ModalList>
+                                    {[
+                                        {
+                                            text: t(
+                                                "PROJECT_MAINTAINER_REMOVE",
+                                            ),
+                                            type: "destructive",
+                                            onClick: async () => {
+                                                Modal.mount(<LoadingModal />);
+                                                try {
+                                                    await Fetch.delete(
+                                                        `/api/projects/${project}/maintainers/${encodeURIComponent(x)}`,
+                                                    );
+                                                    await updateProjectInfo();
+
+                                                    Modal.unmount();
+                                                } catch (error) {
+                                                    Modal.mount(
+                                                        <ErrorModal
+                                                            error={error}
+                                                        />,
+                                                    );
+                                                }
+                                            },
                                         },
-                                    },
-                                ]}
-                            </ModalList>
-                        </Modal>,
-                    );
-                },
-            })),
-        );
+                                    ]}
+                                </ModalList>
+                            </Modal>,
+                        );
+                    },
+                })),
+            );
+        }
     };
 
     useEffect(() => {
@@ -155,6 +169,18 @@ export default function Project() {
     return (
         <>
             <BackButton inListPage={true} onClick={() => navigate("..")} />
+            {error && (
+                <ListPageBlock>
+                    <VerticalLayout>
+                        <PageHeading level={3}>{t("ERROR")}</PageHeading>
+                        <span>
+                            {t(
+                                "This project has a problem preventing it from loading correctly. Correct the error by checking the .parlance.json file",
+                            )}
+                        </span>
+                    </VerticalLayout>
+                </ListPageBlock>
+            )}
             <ListPageBlock>
                 <VerticalLayout>
                     <PageHeading level={3}>
@@ -188,8 +214,8 @@ export default function Project() {
                     <PageHeading level={3}>
                         {t("PROJECT_SOURCE_REPOSITORY")}
                     </PageHeading>
-                    {projectInfo.versionControlInformation?.upstreamUrl}@
-                    {projectInfo.versionControlInformation?.branch}
+                    {!error &&
+                        `${projectInfo.versionControlInformation?.upstreamUrl ?? ""}@${projectInfo.versionControlInformation?.branch ?? ""}`}
                     <SelectableList onClick={changeBranch}>
                         {t("PROJECT_CHANGE_BRANCH")}
                     </SelectableList>

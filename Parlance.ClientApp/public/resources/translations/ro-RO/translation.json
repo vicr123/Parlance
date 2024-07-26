@@ -243,6 +243,7 @@
   "PROJECT_DELETE": "Șterge proiectul",
   "PROJECT_DELETE_CONFIRM_PROMPT": "Ștergerea proiectului {{project}} îl va face indisponibil din Parlance până la readăugarea acestuia.",
   "PROJECT_DELETE_PROMPT": "Dacă nu mai ai nevoie de proiectul  {{project}}, îl poți șterge de-aici.",
+  "PROJECT_HAS_ERRORS": "",
   "PROJECT_LISTING_PROMPT": "Înregistrează proiecte în Parlance pentru a le face disponibile pentru traducere.",
   "PROJECT_MAINTAINERS": "Întreținători proiect",
   "PROJECT_MAINTAINERS_ADD": "Adaugă un întreținător",

@@ -242,6 +242,7 @@
   "PROJECT_DELETE": "Xóa dự án",
   "PROJECT_DELETE_CONFIRM_PROMPT": "Xóa {{project}} sẽ làm cho nó không được khả dụng trong Parlance cho đến khi bạn thêm lại.",
   "PROJECT_DELETE_PROMPT": "Nếu bạn không cần {{project}} nữa, bạn có thể xóa nó tại đây",
+  "PROJECT_HAS_ERRORS": "",
   "PROJECT_LISTING_PROMPT": "Đăng ký dự án trong Parlance để cung cấp nó cho bản dịch..",
   "PROJECT_MAINTAINERS": "Người bảo trì dự án",
   "PROJECT_MAINTAINERS_ADD": "thêm người bảo trì",

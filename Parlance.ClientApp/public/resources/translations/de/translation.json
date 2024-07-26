@@ -241,6 +241,7 @@
   "PROJECT_DELETE": "Projekt löschen",
   "PROJECT_DELETE_CONFIRM_PROMPT": "Wenn du {{project}} löschst, wird es auf Parlance nicht verfügbar sein, bis du es wieder hinzufügst.",
   "PROJECT_DELETE_PROMPT": "Wenn du {{project}} nicht mehr brauchst, kannst du es hier löschen.",
+  "PROJECT_HAS_ERRORS": "",
   "PROJECT_LISTING_PROMPT": "Füge Projekte zu Parlance hinzu, um sie zur Übersetzung freizugeben.",
   "PROJECT_MAINTAINERS": "",
   "PROJECT_MAINTAINERS_ADD": "",

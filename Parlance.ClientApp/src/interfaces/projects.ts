@@ -88,11 +88,22 @@ export interface AssistantSuggestion {
     translation: string;
 }
 
-export interface PartialProjectResponse {
+export type PartialProjectResponse =
+    | PartialProjectResponseSuccess
+    | PartialProjectResponseError;
+
+interface PartialProjectResponseSuccess {
     completionData: CompletionData;
     name: string;
     systemName: string;
     deadline: number | null;
+    error: false;
+}
+
+interface PartialProjectResponseError {
+    name: string;
+    systemName: string;
+    error: true;
 }
 
 export interface ProjectResponse {
