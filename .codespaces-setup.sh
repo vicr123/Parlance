@@ -43,4 +43,5 @@ popd
 
 
 mkdir /var/vicr123-accounts
-ln -s /usr/local/lib/libgit2.so /usr/lib/x86_64-linux-gnu/libgit2.so
+echo /usr/local/lib > /etc/ld.so.conf.d/libgit2.conf
+ldconfig
