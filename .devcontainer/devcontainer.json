@@ -1,12 +1,12 @@
 {
-  "image": "mcr.microsoft.com/dotnet/sdk:8.0-jammy",
+  "image": "mcr.microsoft.com/dotnet/sdk:8.0-alpine",
   "features": {
   },
   "onCreateCommand": [
-    "./.codespaces-setup.sh"
+    "./.codespaces-bootstrap.sh"
   ],
   "postStartCommand": [
-	"./.codespaces-run.sh"
+	  "./.codespaces-run.sh"
   ],
 
 	// Configure tool-specific properties.
