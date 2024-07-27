@@ -78,7 +78,7 @@
     "nth-check": "^3.0.1"
   },
   "scripts": {
-    "dev": "node genlangindex.js && vite",
+    "dev": "node genlangindex.js && vite --host",
     "build": "node genlangindex.js && vite build",
     "lint": "tsc --noEmit && prettier . --check",
     "preview": "vite preview"
