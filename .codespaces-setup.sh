@@ -4,8 +4,8 @@ export DEBIAN_FRONTEND=noninteractive
 export LANGUAGE="en_US.UTF-8"
 export LC_ALL="en_US.UTF-8"
 
-curl -fsSL https://deb.nodesource.com/setup_18.x | bash - &&\
-apt-get update && apt-get install -y --no-install-recommends git cmake postgresql postgresql-contrib libqt6core6 qt6-base-dev build-essential nodejs libqt6sql6-psql dbus-daemon libssh2-1-dev
+curl -fsSL https://deb.nodesource.com/setup_20.x | bash - &&\
+apt-get update && apt-get install -y --no-install-recommends git cmake postgresql postgresql-contrib libqt6core6 qt6-base-dev build-essential nodejs libqt6sql6-psql dbus-daemon libssh2-1-dev openssh-client
 
 echo "en_US.UTF-8 UTF-8" > /etc/locale.gen
 locale-gen
@@ -33,7 +33,7 @@ popd
 
 git clone --recursive https://github.com/libgit2/libgit2
 pushd libgit2
-git checkout v1.5.0
+git checkout v1.8.1
 mkdir build
 cd build
 cmake .. -DUSE_SSH=ON -DBUILD_TESTS=OFF -DBUILD_CLI=OFF
@@ -43,4 +43,11 @@ popd
 
 
 mkdir /var/vicr123-accounts
-ln -s /usr/local/lib/libgit2.so /usr/lib/x86_64-linux-gnu/libgit2.so
+echo /usr/local/lib > /etc/ld.so.conf.d/libgit2.conf
+ldconfig
+
+cat << \EOF >> ~/.bash_profile
+# Add .NET Core SDK tools
+export PATH="$PATH:/root/.dotnet/tools"
+EOF
+dotnet tool install --global dotnet-ef
