@@ -18,16 +18,21 @@ export default function EmailChange() {
     const navigate = useNavigate();
     const { t } = useTranslation();
 
-    const performEmailChange = () => {
+    const performEmailChange = async () => {
         if (newEmail === "") return;
 
-        const accept = async (password: string) => {
-            //Perform the username change
+        try {
+            const token = await UserManager.obtainToken(
+                UserManager.currentUser?.username!,
+                "accountModification",
+            );
+
+            //Perform the email change
             Modal.mount(<LoadingModal />);
             try {
                 await Fetch.post("/api/user/email", {
                     newEmail: newEmail,
-                    password: password,
+                    password: token,
                 });
                 await UserManager.updateDetails();
                 navigate("..");
@@ -49,9 +54,7 @@ export default function EmailChange() {
                     </Modal>,
                 );
             }
-        };
-
-        Modal.mount(<PasswordConfirmModal onAccepted={accept} />);
+        } catch {}
     };
 
     return (

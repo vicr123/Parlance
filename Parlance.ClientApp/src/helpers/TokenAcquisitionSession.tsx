@@ -66,7 +66,11 @@ export class TokenAcquisitionSession {
         try {
             let response = await Fetch.post<TokenResponseToken>(
                 `/api/user/token`,
-                { ...this.loginSessionDetails, username: this._username },
+                {
+                    ...this.loginSessionDetails,
+                    username: this._username,
+                    purpose: this.purpose,
+                },
             );
             Modal.unmount();
             this._successFunction(response.token);

@@ -59,14 +59,21 @@ class UserManager extends EventEmitter {
         return `https://www.gravatar.com/avatar/${md5}`;
     }
 
-    obtainToken(username: string, purpose: TokenPurpose, prePassword: string) {
+    obtainToken(
+        username: string,
+        purpose: TokenPurpose,
+        prePassword: string = "",
+    ) {
         return new Promise<string>(async (res, rej) => {
             const acquisitionSession = new TokenAcquisitionSession(
                 username,
                 purpose,
                 prePassword,
                 res,
-                rej,
+                () => {
+                    Modal.unmount();
+                    rej();
+                },
             );
             Modal.mount(<LoadingModal />);
             await acquisitionSession.loadLoginTypes();

@@ -28,6 +28,7 @@ import {
     OtpStateEnabled,
 } from "@/interfaces/users";
 import { ServerInformationContext } from "@/context/ServerInformationContext";
+import UserManager from "@/helpers/UserManager";
 
 function OtpBlock({ otpState }: { otpState: OtpStateEnabled }) {
     return (
@@ -354,19 +355,17 @@ export default function Otp() {
     const navigate = useNavigate();
     const { t } = useTranslation();
 
-    const requestPassword = () => {
-        const accept = (password: string) => {
-            setPassword(password);
-        };
-
-        const reject = () => {
+    const requestPassword = async () => {
+        try {
+            const token = await UserManager.obtainToken(
+                UserManager.currentUser?.username!,
+                "accountModification",
+            );
+            setPassword(token);
+        } catch {
             navigate("..");
             Modal.unmount();
-        };
-
-        Modal.mount(
-            <PasswordConfirmModal onAccepted={accept} onRejected={reject} />,
-        );
+        }
     };
 
     const updateState = async () => {

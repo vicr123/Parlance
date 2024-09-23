@@ -19,7 +19,7 @@ export default function PasswordChange() {
     const navigate = useNavigate();
     const { t } = useTranslation();
 
-    const performPasswordChange = () => {
+    const performPasswordChange = async () => {
         if (newPassword === "") return;
 
         if (newPassword !== newPasswordConfirm) {
@@ -34,13 +34,18 @@ export default function PasswordChange() {
             return;
         }
 
-        const accept = async (password: string) => {
+        try {
+            const token = await UserManager.obtainToken(
+                UserManager.currentUser?.username!,
+                "accountModification",
+            );
+
             //Perform the username change
             Modal.mount(<LoadingModal />);
             try {
                 await Fetch.post("/api/user/password", {
                     newPassword: newPassword,
-                    password: password,
+                    password: token,
                 });
                 await UserManager.updateDetails();
                 navigate("..");
@@ -62,9 +67,9 @@ export default function PasswordChange() {
                     </Modal>,
                 );
             }
-        };
-
-        Modal.mount(<PasswordConfirmModal onAccepted={accept} />);
+        } catch {
+            // Do nothing
+        }
     };
 
     return (
