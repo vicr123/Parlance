@@ -53,7 +53,8 @@ public class UserController(
             var token = await accountsService.ProvisionTokenAsync(new ProvisionTokenParameters
             {
                 Username = data.Username,
-                Password = data.Password
+                Password = data.Password,
+                Purpose = "login"
             });
 
             return Json(new
@@ -69,11 +70,11 @@ public class UserController(
 
     [HttpPost]
     [Route("tokenTypes")]
-    public async Task<IActionResult> GetOpportunitiesForLogin([FromBody] UsernameRequestData data)
+    public async Task<IActionResult> GetOpportunitiesForLogin([FromBody] LoginOpportunitiesData data)
     {
         try
         {
-            return Json(await accountsService.LoginMethods(data.Username));
+            return Json(await accountsService.LoginMethods(data.Username, data.Purpose));
         }
         catch (DBusException ex)
         {
@@ -99,7 +100,7 @@ public class UserController(
     {
         try
         {
-            var methods = await accountsService.LoginMethods(data.Username);
+            var methods = await accountsService.LoginMethods(data.Username, data.Purpose);
             if (!methods.Contains(data.Type)) return this.ClientError(ParlanceClientError.IncorrectParameters);
 
             switch (data.Type)
@@ -115,6 +116,7 @@ public class UserController(
                     {
                         Username = pwData.Username,
                         Password = pwData.Password,
+                        Purpose = data.Purpose,
                         OtpToken = pwData.OtpToken,
                         NewPassword = pwData.NewPassword
                     });
@@ -140,7 +142,7 @@ public class UserController(
 
                     return Json(new
                     {
-                        Token = await accountsService.ProvisionTokenViaFido(fidoData.KeyTokenId.Value,
+                        Token = await accountsService.ProvisionTokenViaFido(fidoData.KeyTokenId.Value, data.Purpose,
                             fidoData.KeyResponse)
                     });
             }
@@ -214,7 +216,7 @@ public class UserController(
         var userId = ulong.Parse(HttpContext.User.Claims.First(claim => claim.Type == Claims.UserId).Value);
         var user = await accountsService.UserById(userId);
 
-        if (!await accountsService.VerifyUserPassword(user, data.Password)) return Forbid();
+        if (!await accountsService.VerifyAccountModificationToken(user, data.Password)) return Forbid();
 
         user.Username = data.NewUsername;
         await accountsService.UpdateUser(user);
@@ -230,7 +232,7 @@ public class UserController(
         var userId = ulong.Parse(HttpContext.User.Claims.First(claim => claim.Type == Claims.UserId).Value);
         var user = await accountsService.UserById(userId);
 
-        if (!await accountsService.VerifyUserPassword(user, data.Password)) return Forbid();
+        if (!await accountsService.VerifyAccountModificationToken(user, data.Password)) return Forbid();
 
         user.Email = data.NewEmail;
         await accountsService.UpdateUser(user);
@@ -246,7 +248,7 @@ public class UserController(
         var userId = ulong.Parse(HttpContext.User.Claims.First(claim => claim.Type == Claims.UserId).Value);
         var user = await accountsService.UserById(userId);
 
-        if (!await accountsService.VerifyUserPassword(user, data.Password)) return Forbid();
+        if (!await accountsService.VerifyAccountModificationToken(user, data.Password)) return Forbid();
 
         await accountsService.UpdateUserPassword(user, data.NewPassword);
 
@@ -291,7 +293,7 @@ public class UserController(
         var userId = ulong.Parse(HttpContext.User.Claims.First(claim => claim.Type == Claims.UserId).Value);
         var user = await accountsService.UserById(userId);
 
-        if (!await accountsService.VerifyUserPassword(user, data.Password)) return Forbid();
+        if (!await accountsService.VerifyAccountModificationToken(user, data.Password)) return Forbid();
 
         if (await accountsService.OtpEnabled(user))
             return Json(new
@@ -315,7 +317,7 @@ public class UserController(
         var userId = ulong.Parse(HttpContext.User.Claims.First(claim => claim.Type == Claims.UserId).Value);
         var user = await accountsService.UserById(userId);
 
-        if (!await accountsService.VerifyUserPassword(user, data.Password)) return Forbid();
+        if (!await accountsService.VerifyAccountModificationToken(user, data.Password)) return Forbid();
 
         try
         {
@@ -341,7 +343,7 @@ public class UserController(
         var userId = ulong.Parse(HttpContext.User.Claims.First(claim => claim.Type == Claims.UserId).Value);
         var user = await accountsService.UserById(userId);
 
-        if (!await accountsService.VerifyUserPassword(user, data.Password)) return Forbid();
+        if (!await accountsService.VerifyAccountModificationToken(user, data.Password)) return Forbid();
 
         try
         {
@@ -367,7 +369,7 @@ public class UserController(
         var userId = ulong.Parse(HttpContext.User.Claims.First(claim => claim.Type == Claims.UserId).Value);
         var user = await accountsService.UserById(userId);
 
-        if (!await accountsService.VerifyUserPassword(user, data.Password)) return Forbid();
+        if (!await accountsService.VerifyAccountModificationToken(user, data.Password)) return Forbid();
 
         try
         {
@@ -392,7 +394,7 @@ public class UserController(
         var userId = ulong.Parse(HttpContext.User.Claims.First(claim => claim.Type == Claims.UserId).Value);
         var user = await accountsService.UserById(userId);
 
-        if (!await accountsService.VerifyUserPassword(user, data.Password)) return Forbid();
+        if (!await accountsService.VerifyAccountModificationToken(user, data.Password)) return Forbid();
 
         return Json(await accountsService.GetFidoKeys(user));
     }
@@ -406,7 +408,7 @@ public class UserController(
         var userId = ulong.Parse(HttpContext.User.Claims.First(claim => claim.Type == Claims.UserId).Value);
         var user = await accountsService.UserById(userId);
 
-        if (!await accountsService.VerifyUserPassword(user, data.Password)) return Forbid();
+        if (!await accountsService.VerifyAccountModificationToken(user, data.Password)) return Forbid();
 
         var keys = await accountsService.GetFidoKeys(user);
         if (keys.All(x => x.Id != key)) return NotFound();
@@ -423,7 +425,7 @@ public class UserController(
         var userId = ulong.Parse(HttpContext.User.Claims.First(claim => claim.Type == Claims.UserId).Value);
         var user = await accountsService.UserById(userId);
 
-        if (!await accountsService.VerifyUserPassword(user, data.Password)) return Forbid();
+        if (!await accountsService.VerifyAccountModificationToken(user, data.Password)) return Forbid();
 
         var response =
             await accountsService.PrepareRegisterFidoKey(user, data.AuthenticatorAttachmentType switch
@@ -448,7 +450,7 @@ public class UserController(
         var userId = ulong.Parse(HttpContext.User.Claims.First(claim => claim.Type == Claims.UserId).Value);
         var user = await accountsService.UserById(userId);
 
-        if (!await accountsService.VerifyUserPassword(user, data.Password)) return Forbid();
+        if (!await accountsService.VerifyAccountModificationToken(user, data.Password)) return Forbid();
 
         await accountsService.FinishRegisterFidoKey(user, data.Response, data.Name);
 
@@ -499,6 +501,7 @@ public class UserController(
     {
         public string Username { get; set; } = null!;
         public string Type { get; set; } = null!;
+        public string Purpose { get; set; } = "login";
     }
 
     public class UserTokenRequestDataPassword : UserTokenRequestData
@@ -532,6 +535,12 @@ public class UserController(
         {
             JsonSerializer.Serialize(writer, value, options);
         }
+    }
+
+    public class LoginOpportunitiesData
+    {
+        public required string Username { get; set; }
+        public string Purpose { get; set; } = "login";
     }
 
     public class UsernameRequestData

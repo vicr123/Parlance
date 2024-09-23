@@ -66,7 +66,7 @@ public class Vicr123AccountsDummyService : IVicr123AccountsService
         throw new NotSupportedException();
     }
 
-    public Task<bool> VerifyUserPassword(User user, string password)
+    public Task<bool> VerifyAccountModificationToken(User user, string token)
     {
         return Task.FromResult(true);
     }
@@ -131,7 +131,7 @@ public class Vicr123AccountsDummyService : IVicr123AccountsService
         throw new NotSupportedException();
     }
 
-    public Task<IEnumerable<string>> LoginMethods(string username)
+    public Task<IEnumerable<string>> LoginMethods(string username, string purpose)
     {
         return Task.FromResult<IEnumerable<string>>(new List<string>
         {
@@ -151,7 +151,7 @@ public class Vicr123AccountsDummyService : IVicr123AccountsService
         throw new NotSupportedException();
     }
 
-    public Task<string> ProvisionTokenViaFido(int id, AuthenticatorAssertionRawResponse response)
+    public Task<string> ProvisionTokenViaFido(int id, string purpose, AuthenticatorAssertionRawResponse response)
     {
         throw new NotSupportedException();
     }
