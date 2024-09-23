@@ -1,84 +1,60 @@
 import Modal from "../../Modal";
-import React, { FormEvent, ReactElement } from "react";
-import UserManager from "../../../helpers/UserManager";
+import React, { useState } from "react";
 import { LoginPasswordModal } from "./LoginPasswordModal";
-import { TFunction, withTranslation } from "react-i18next";
+import { useTranslation } from "react-i18next";
 import LineEdit from "../../LineEdit";
 import { VerticalLayout, VerticalSpacer } from "../../Layouts";
 import Styles from "./LoginOtpModal.module.css";
+import { TokenAcquisitionSession } from "@/helpers/TokenAcquisitionSession";
 
-interface LoginOtpModalProps {
-    t: TFunction;
-}
+export function LoginOtpModal({
+    acquisitionSession,
+}: {
+    acquisitionSession: TokenAcquisitionSession;
+}) {
+    const [otp, setOtp] = useState("");
+    const { t } = useTranslation();
 
-interface LoginOtpModalState {
-    otp: string;
-}
-
-class LoginOtpModalComponent extends React.Component<
-    LoginOtpModalProps,
-    LoginOtpModalState
-> {
-    constructor(props: LoginOtpModalProps) {
-        super(props);
-
-        this.state = {
-            otp: "",
-        };
-    }
-
-    otpTextChanged(e: FormEvent) {
-        this.setState({
-            otp: (e.target as HTMLInputElement).value,
-        });
-    }
-
-    render() {
-        return (
-            <Modal
-                heading={this.props.t("TWO_FACTOR_AUTHENTICATION")}
-                buttons={[
-                    {
-                        text: this.props.t("BACK"),
-                        onClick: () => Modal.mount(<LoginPasswordModal />),
+    return (
+        <Modal
+            heading={t("TWO_FACTOR_AUTHENTICATION")}
+            buttons={[
+                {
+                    text: t("BACK"),
+                    onClick: () =>
+                        Modal.mount(
+                            <LoginPasswordModal
+                                acquisitionSession={acquisitionSession}
+                            />,
+                        ),
+                },
+                {
+                    text: t("NEXT"),
+                    onClick: () => {
+                        acquisitionSession.setLoginDetail("otpToken", otp);
+                        acquisitionSession.attemptLogin();
                     },
-                    {
-                        text: this.props.t("NEXT"),
-                        onClick: () => {
-                            UserManager.setLoginDetail(
-                                "otpToken",
-                                this.state.otp,
-                            );
-                            UserManager.attemptLogin();
-                        },
-                    },
-                ]}
-            >
-                <div style={{ display: "flex", flexDirection: "column" }}>
-                    <VerticalLayout>
-                        <span>
-                            {this.props.t(
-                                "LOG_IN_TWO_FACTOR_AUTHENTICATION_PROMPT_1",
-                            )}
-                        </span>
-                        <span className={Styles.hint}>
-                            {this.props.t(
-                                "LOG_IN_TWO_FACTOR_AUTHENTICATION_PROMPT_2",
-                            )}
-                        </span>
-                        <VerticalSpacer height={10} />
-                        <LineEdit
-                            placeholder={this.props.t(
-                                "TWO_FACTOR_AUTHENTICATION_CODE",
-                            )}
-                            value={this.state.otp}
-                            onChange={this.otpTextChanged.bind(this)}
-                        />
-                    </VerticalLayout>
-                </div>
-            </Modal>
-        );
-    }
+                },
+            ]}
+        >
+            <div style={{ display: "flex", flexDirection: "column" }}>
+                <VerticalLayout>
+                    <span>
+                        {t("LOG_IN_TWO_FACTOR_AUTHENTICATION_PROMPT_1")}
+                    </span>
+                    <span className={Styles.hint}>
+                        {t("LOG_IN_TWO_FACTOR_AUTHENTICATION_PROMPT_2")}
+                    </span>
+                    <VerticalSpacer height={10} />
+                    <LineEdit
+                        placeholder={t("TWO_FACTOR_AUTHENTICATION_CODE")}
+                        value={otp}
+                        onChange={e =>
+                            setOtp((e.target as HTMLInputElement).value)
+                        }
+                    />
+                </VerticalLayout>
+            </div>
+        </Modal>
+    );
 }
-
-export const LoginOtpModal = withTranslation()(LoginOtpModalComponent);

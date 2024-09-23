@@ -77,3 +77,5 @@ export interface NotificationConsent {
     consentProvided: boolean;
     preferredUserName: string;
 }
+
+export type TokenPurpose = "login" | "accountModification";

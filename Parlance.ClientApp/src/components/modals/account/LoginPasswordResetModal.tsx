@@ -1,11 +1,14 @@
 import Modal from "../../Modal";
 import React, { useState } from "react";
-import LoginUsernameModal from "./LoginUsernameModal";
-import UserManager from "../../../helpers/UserManager";
 import { useTranslation } from "react-i18next";
 import LineEdit from "../../LineEdit";
+import { TokenAcquisitionSession } from "@/helpers/TokenAcquisitionSession";
 
-export function LoginPasswordResetModal() {
+export function LoginPasswordResetModal({
+    acquisitionSession,
+}: {
+    acquisitionSession: TokenAcquisitionSession;
+}) {
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
     const { t } = useTranslation();
@@ -16,7 +19,7 @@ export function LoginPasswordResetModal() {
             buttons={[
                 {
                     text: t("CANCEL"),
-                    onClick: () => Modal.mount(<LoginUsernameModal />),
+                    onClick: () => acquisitionSession.quit(),
                 },
                 {
                     text: t("OK"),
@@ -25,8 +28,11 @@ export function LoginPasswordResetModal() {
                             return;
                         }
 
-                        UserManager.setLoginDetail("newPassword", password);
-                        UserManager.attemptLogin();
+                        acquisitionSession.setLoginDetail(
+                            "newPassword",
+                            password,
+                        );
+                        acquisitionSession.attemptLogin();
                     },
                 },
             ]}
