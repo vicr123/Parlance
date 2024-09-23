@@ -176,8 +176,7 @@ export class TokenAcquisitionSession {
     }
 
     async attemptFido2Login() {
-        Modal.mount(<LoginSecurityKeyModal />);
-
+        Modal.mount(<LoadingModal />);
         let details: TokenResponseFido;
         try {
             details = await this.updateFidoToken();
@@ -187,6 +186,8 @@ export class TokenAcquisitionSession {
             );
             return;
         }
+
+        Modal.mount(<LoginSecurityKeyModal />);
 
         //Perform webauthn authentication
         // noinspection ExceptionCaughtLocallyJS
