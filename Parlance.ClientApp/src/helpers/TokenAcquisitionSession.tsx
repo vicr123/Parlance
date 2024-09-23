@@ -29,6 +29,7 @@ export class TokenAcquisitionSession {
     private readonly _successFunction: (token: string) => void;
     private readonly _failureFunction: () => void;
     private loginSessionDetails: Record<string, any> = {};
+    private fidoTokenResponse: Promise<TokenResponseFido> | undefined;
 
     constructor(
         username: string,
@@ -162,15 +163,24 @@ export class TokenAcquisitionSession {
         }
     }
 
+    updateFidoToken() {
+        if (this.fidoTokenResponse) return this.fidoTokenResponse;
+        this.fidoTokenResponse = Fetch.post<TokenResponseFido>(
+            "/api/user/token",
+            {
+                type: "fido",
+                username: this._username,
+            },
+        );
+        return this.fidoTokenResponse;
+    }
+
     async attemptFido2Login() {
         Modal.mount(<LoginSecurityKeyModal />);
 
         let details: TokenResponseFido;
         try {
-            details = await Fetch.post<TokenResponseFido>("/api/user/token", {
-                type: "fido",
-                username: this._username,
-            });
+            details = await this.updateFidoToken();
         } catch {
             Modal.mount(
                 <LoginSecurityKeyFailureModal acquisitionSession={this} />,
@@ -196,7 +206,10 @@ export class TokenAcquisitionSession {
             })) as PublicKeyCredential;
 
             console.log(assertion);
-            if (!assertion) throw assertion;
+            if (!assertion) {
+                // noinspection ExceptionCaughtLocallyJS
+                throw assertion;
+            }
 
             const response =
                 assertion.response as AuthenticatorAssertionResponse;
@@ -215,6 +228,9 @@ export class TokenAcquisitionSession {
                     userHandle: encode(response.userHandle!),
                 },
             });
+
+            // Require a new FIDO challenge next time in case this fails
+            this.fidoTokenResponse = undefined;
 
             await this.attemptLogin({
                 fido2Details: details,

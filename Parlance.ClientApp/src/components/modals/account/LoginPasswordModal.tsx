@@ -58,6 +58,13 @@ export function LoginPasswordModal({
         }
     });
 
+    useEffect(() => {
+        if (acquisitionSession.loginTypes.includes("fido")) {
+            // Start getting the FIDO token now to save time later
+            void acquisitionSession.updateFidoToken();
+        }
+    }, []);
+
     return (
         <Modal
             heading={
