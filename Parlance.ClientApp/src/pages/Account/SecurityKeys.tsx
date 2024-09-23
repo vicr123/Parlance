@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 import React, { useEffect, useState, useContext, ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import Modal from "../../components/Modal";
-import PasswordConfirmModal from "../../components/modals/account/PasswordConfirmModal";
 import LoadingModal from "../../components/modals/LoadingModal";
 import Fetch from "../../helpers/Fetch";
 import ErrorModal from "../../components/modals/ErrorModal";

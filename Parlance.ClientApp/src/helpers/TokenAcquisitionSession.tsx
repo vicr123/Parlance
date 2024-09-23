@@ -22,7 +22,7 @@ import { decode, encode } from "@/helpers/Base64";
 import { PasswordResetModal } from "@/components/modals/account/resets/PasswordResetModal";
 
 export class TokenAcquisitionSession {
-    private readonly purpose: TokenPurpose;
+    private readonly _purpose: TokenPurpose;
     private readonly _username: string;
     private readonly _prePassword: string;
     private _availableLoginTypes: LoginType[] = [];
@@ -39,9 +39,13 @@ export class TokenAcquisitionSession {
     ) {
         this._username = username;
         this._prePassword = prePassword;
-        this.purpose = purpose;
+        this._purpose = purpose;
         this._successFunction = successFunction;
         this._failureFunction = failureFunction;
+    }
+
+    get purpose() {
+        return this._purpose;
     }
 
     get prePassword() {
@@ -53,7 +57,7 @@ export class TokenAcquisitionSession {
             "/api/user/tokentypes",
             {
                 username: this._username,
-                purpose: this.purpose,
+                purpose: this._purpose,
             },
         );
     }
@@ -69,7 +73,7 @@ export class TokenAcquisitionSession {
                 {
                     ...this.loginSessionDetails,
                     username: this._username,
-                    purpose: this.purpose,
+                    purpose: this._purpose,
                 },
             );
             Modal.unmount();
@@ -79,7 +83,7 @@ export class TokenAcquisitionSession {
                 !fido2Details &&
                 window.PublicKeyCredential &&
                 !localStorage.getItem("passkey-advertisement-never-ask") &&
-                this.purpose == "login"
+                this._purpose == "login"
             ) {
                 Modal.mount(
                     <RegisterSecurityKeyAdvertisement

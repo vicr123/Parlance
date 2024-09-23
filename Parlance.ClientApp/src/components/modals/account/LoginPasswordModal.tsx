@@ -24,7 +24,9 @@ export function LoginPasswordModal({
                         key={"password"}
                         style={{ display: "flex", flexDirection: "column" }}
                     >
-                        {t("LOG_IN_PASSWORD_PROMPT")}
+                        {acquisitionSession.purpose == "login"
+                            ? t("LOG_IN_PASSWORD_PROMPT")
+                            : t("CONFIRM_PASSWORD_PROMPT")}
                         <VerticalSpacer height={3} />
                         <LineEdit
                             password={true}
@@ -58,18 +60,27 @@ export function LoginPasswordModal({
 
     return (
         <Modal
-            heading={t("LOG_IN_PASSWORD_TITLE", {
-                username: acquisitionSession.username,
-            })}
+            heading={
+                acquisitionSession.purpose == "login"
+                    ? t("LOG_IN_PASSWORD_TITLE", {
+                          username: acquisitionSession.username,
+                      })
+                    : t("CONFIRM_PASSWORD")
+            }
             buttons={[
                 {
                     text: t("BACK"),
                     onClick: () => acquisitionSession.quit(),
                 },
-                {
-                    text: t("FORGOT_PASSWORD"),
-                    onClick: () => acquisitionSession.triggerPasswordReset(),
-                },
+                ...(acquisitionSession.purpose == "login"
+                    ? [
+                          {
+                              text: t("FORGOT_PASSWORD"),
+                              onClick: () =>
+                                  acquisitionSession.triggerPasswordReset(),
+                          },
+                      ]
+                    : []),
                 {
                     text: t("NEXT"),
                     onClick: () => {

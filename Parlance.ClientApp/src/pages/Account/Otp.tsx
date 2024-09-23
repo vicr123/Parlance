@@ -14,7 +14,6 @@ import React, {
     ForwardedRef,
 } from "react";
 import Modal from "../../components/Modal";
-import PasswordConfirmModal from "../../components/modals/account/PasswordConfirmModal";
 import Fetch from "../../helpers/Fetch";
 import Styles from "./Otp.module.css";
 import QRCode from "react-qr-code";
