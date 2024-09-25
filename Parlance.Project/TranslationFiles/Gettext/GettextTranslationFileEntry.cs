@@ -14,4 +14,5 @@ public class GettextTranslationFileEntry : IParlanceTranslationFileEntry
     public string? RealContext { get; set; }
     public IList<string> PreLines { get; set; } = new List<string>();
     public bool RequiresPluralisation { get; set; }
+    public string? Comment { get; set; } = "";
 }

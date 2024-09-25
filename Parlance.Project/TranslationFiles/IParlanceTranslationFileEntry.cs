@@ -13,4 +13,5 @@ public interface IParlanceTranslationFileEntry
     public IList<TranslationWithPluralType> Translation { get; set; }
     public string Context { get; }
     public bool RequiresPluralisation { get; set; }
+    public string? Comment { get; }
 }

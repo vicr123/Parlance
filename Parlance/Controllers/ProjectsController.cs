@@ -505,7 +505,7 @@ public class ProjectsController(
 
             return Json(await Task.WhenAll(translationFile.Entries.Select(async entry => new
             {
-                entry.Key, entry.Context, entry.Source, entry.Translation, entry.RequiresPluralisation,
+                entry.Key, entry.Context, entry.Source, entry.Translation, entry.RequiresPluralisation, entry.Comment,
                 OldSourceString = await sourceStringsService.GetSourceStringChange(subprojectLanguage, entry)
             })));
         }
