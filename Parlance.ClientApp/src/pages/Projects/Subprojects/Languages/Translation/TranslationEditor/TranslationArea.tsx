@@ -456,6 +456,16 @@ export default function TranslationArea({
                         <span className={Styles.keyText}>{entry.key}</span>
                     </div>
                 </Box>
+                {entry.comment && (
+                    <Box className={Styles.sourceTranslationContainer}>
+                        <div className={Styles.sourceTranslationContainerInner}>
+                            <div className={Styles.sourceTranslationIndicator}>
+                                {t("TRANSLATION_AREA_DEVELOPER_COMMENT_TITLE")}
+                            </div>
+                            {entry.comment}
+                        </div>
+                    </Box>
+                )}
                 <Box>
                     <div
                         className={Styles.commentsButton}

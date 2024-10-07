@@ -100,7 +100,8 @@ public class DotNetResourcesTranslationFile : ParlanceTranslationFile, IParlance
                 Source = bases[key],
                 Context = Path.GetFileName(file),
                 RequiresPluralisation = false,
-                Translation = translationEntry
+                Translation = translationEntry,
+                Comment = null,
             };
         }).Cast<IParlanceTranslationFileEntry>().ToList();
     }

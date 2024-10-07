@@ -122,6 +122,7 @@ public class VueI18nTranslationFile(
             {
                 Key = path.ToString(),
                 Source = isPlural ? source.Split(pluralSeparator).Last() : source,
+                Comment = null,
                 Translation = isPlural
                     ? translation?.Split(pluralSeparator).Where((x, i) => pluralRules.Length > i).Select(
                         (x, i) => new TranslationWithPluralType

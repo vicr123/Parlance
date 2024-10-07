@@ -49,6 +49,7 @@ export interface BaseEntry {
     source: string;
     oldSourceString?: string;
     translation: TranslationEntry;
+    comment?: string;
 }
 
 export interface BaseTranslationEntry {

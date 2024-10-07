@@ -65,6 +65,7 @@ public class WebextensionJsonTranslationFile(
                 Description = tItem?.description,
                 Placeholders = tItem?.placeholders,
                 RequiresPluralisation = false,
+                Comment = null,
                 Translation = new List<TranslationWithPluralType>
                 {
                     new()

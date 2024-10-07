@@ -75,6 +75,7 @@ public class AppleStringsTranslationFile(
             Source = x.Source,
             Context = Path.GetFileName(file),
             RequiresPluralisation = false,
+            Comment = null,
             Translation = new List<TranslationWithPluralType>
             {
                 new()
