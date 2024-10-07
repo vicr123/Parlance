@@ -5,11 +5,14 @@ import { EmailResetModal } from "./EmailResetModal";
 import { LoginPasswordModal } from "../LoginPasswordModal";
 import { useTranslation } from "react-i18next";
 import { PasswordResetMethod } from "@/interfaces/users";
+import { TokenAcquisitionSession } from "@/helpers/TokenAcquisitionSession";
 
 export function PasswordResetModal({
     resetMethods,
+    acquisitionSession,
 }: {
     resetMethods: PasswordResetMethod[];
+    acquisitionSession: TokenAcquisitionSession;
 }) {
     let { t } = useTranslation();
 
@@ -19,7 +22,12 @@ export function PasswordResetModal({
             buttons={[
                 {
                     text: t("CANCEL"),
-                    onClick: () => Modal.mount(<LoginPasswordModal />),
+                    onClick: () =>
+                        Modal.mount(
+                            <LoginPasswordModal
+                                acquisitionSession={acquisitionSession}
+                            />,
+                        ),
                 },
             ]}
         >
@@ -39,6 +47,9 @@ export function PasswordResetModal({
                                         <EmailResetModal
                                             resetMethods={resetMethods}
                                             method={method}
+                                            acquisitionSession={
+                                                acquisitionSession
+                                            }
                                         />,
                                     ),
                             };

@@ -9,13 +9,16 @@ import {
     PasswordResetMethod,
     PasswordResetMethodEmail,
 } from "@/interfaces/users";
+import { TokenAcquisitionSession } from "@/helpers/TokenAcquisitionSession";
 
 export function EmailResetModal({
     method,
     resetMethods,
+    acquisitionSession,
 }: {
     method: PasswordResetMethodEmail;
     resetMethods: PasswordResetMethod[];
+    acquisitionSession: TokenAcquisitionSession;
 }) {
     const [email, setEmail] = useState("");
     const { t } = useTranslation();
@@ -28,13 +31,16 @@ export function EmailResetModal({
                     text: t("BACK"),
                     onClick: () =>
                         Modal.mount(
-                            <PasswordResetModal resetMethods={resetMethods} />,
+                            <PasswordResetModal
+                                resetMethods={resetMethods}
+                                acquisitionSession={acquisitionSession}
+                            />,
                         ),
                 },
                 {
                     text: t("RESET_PASSWORD"),
                     onClick: () =>
-                        UserManager.performPasswordReset("email", {
+                        acquisitionSession.performPasswordReset("email", {
                             email: email,
                         }),
                 },

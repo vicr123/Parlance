@@ -2,8 +2,13 @@ import { useTranslation } from "react-i18next";
 import Modal from "../../Modal";
 import UserManager from "@/helpers/UserManager";
 import { LoginPasswordModal } from "./LoginPasswordModal";
+import { TokenAcquisitionSession } from "@/helpers/TokenAcquisitionSession";
 
-export function LoginSecurityKeyFailureModal() {
+export function LoginSecurityKeyFailureModal({
+    acquisitionSession,
+}: {
+    acquisitionSession: TokenAcquisitionSession;
+}) {
     const { t } = useTranslation();
 
     return (
@@ -12,12 +17,16 @@ export function LoginSecurityKeyFailureModal() {
                 {
                     text: t("SECURITY_KEY_USE_PASSWORD_INSTEAD"),
                     onClick: () => {
-                        Modal.mount(<LoginPasswordModal />);
+                        Modal.mount(
+                            <LoginPasswordModal
+                                acquisitionSession={acquisitionSession}
+                            />,
+                        );
                     },
                 },
                 {
                     text: t("SECURITY_KEY_RETRY_LOGIN"),
-                    onClick: () => UserManager.attemptFido2Login(),
+                    onClick: () => acquisitionSession.attemptFido2Login(),
                 },
             ]}
         >

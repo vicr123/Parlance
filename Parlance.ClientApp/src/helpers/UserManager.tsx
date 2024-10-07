@@ -19,20 +19,19 @@ import {
     PasswordResetChallenge,
     PasswordResetMethod,
     PasswordResetType,
+    TokenPurpose,
     TokenResponseFido,
     TokenResponseFidoOptionsCredentials,
     TokenResponseToken,
     User,
 } from "@/interfaces/users";
+import { TokenAcquisitionSession } from "@/helpers/TokenAcquisitionSession";
 
 class UserManager extends EventEmitter {
-    #loginSessionDetails: Record<string, any>;
     #currentUser: User | null;
-    #availableLoginTypes?: LoginType[];
 
     constructor() {
         super();
-        this.#loginSessionDetails = {};
         this.#currentUser = null;
 
         this.updateDetails();
@@ -60,8 +59,28 @@ class UserManager extends EventEmitter {
         return `https://www.gravatar.com/avatar/${md5}`;
     }
 
-    get loginTypes() {
-        return this.#availableLoginTypes;
+    obtainToken(
+        username: string,
+        purpose: TokenPurpose,
+        prePassword: string = "",
+    ) {
+        return new Promise<string>(async (res, rej) => {
+            const acquisitionSession = new TokenAcquisitionSession(
+                username,
+                purpose,
+                prePassword,
+                res,
+                () => {
+                    Modal.unmount();
+                    rej();
+                },
+            );
+            Modal.mount(<LoadingModal />);
+            await acquisitionSession.loadLoginTypes();
+            Modal.mount(
+                <LoginPasswordModal acquisitionSession={acquisitionSession} />,
+            );
+        });
     }
 
     async updateDetails() {
@@ -81,168 +100,6 @@ class UserManager extends EventEmitter {
         }
     }
 
-    setLoginDetail(key: string, value?: any) {
-        this.#loginSessionDetails[key] = value;
-    }
-
-    loginDetail(key: string) {
-        return this.#loginSessionDetails[key] || "";
-    }
-
-    clearLoginDetails() {
-        this.#loginSessionDetails = {};
-    }
-
-    async setUsername(username: string) {
-        this.#availableLoginTypes = await Fetch.post("/api/user/tokentypes", {
-            username: username,
-        });
-        this.setLoginDetail("username", username);
-    }
-
-    async attemptLogin({ fido2Details = null } = {}) {
-        Modal.mount(<LoadingModal />);
-
-        try {
-            let response = await Fetch.post<TokenResponseToken>(
-                `/api/user/token`,
-                this.#loginSessionDetails,
-            );
-            await this.setToken(response.token);
-
-            if (
-                !fido2Details &&
-                window.PublicKeyCredential &&
-                !localStorage.getItem("passkey-advertisement-never-ask")
-            ) {
-                Modal.mount(
-                    <RegisterSecurityKeyAdvertisement
-                        password={
-                            this.#loginSessionDetails.newPassword ||
-                            this.#loginSessionDetails.password
-                        }
-                    />,
-                );
-                return;
-            }
-
-            Modal.unmount();
-        } catch (e: FetchResponse<any>) {
-            let json = await e.json();
-
-            if (this.#loginSessionDetails.newPassword) {
-                this.#loginSessionDetails.password =
-                    this.#loginSessionDetails.newPassword;
-                delete this.#loginSessionDetails.newPassword;
-            }
-
-            this.setLoginDetail("keyTokenId", null);
-            this.setLoginDetail("keyResponse", null);
-
-            if (fido2Details) {
-                Modal.mount(<LoginSecurityKeyFailureModal />);
-                return;
-            }
-
-            switch (json.status) {
-                case "DisabledAccount":
-                    Modal.mount(
-                        <Modal
-                            heading={i18n.t("ACCOUNT_DISABLED_TITLE")}
-                            buttons={[Modal.OkButton]}
-                        >
-                            {i18n.t("ACCOUNT_DISABLED_PROMPT")}
-                        </Modal>,
-                    );
-                    return;
-                case "OtpRequired":
-                    Modal.mount(<LoginOtpModal />);
-                    return;
-                case "PasswordResetRequired":
-                    Modal.mount(<LoginPasswordResetModal />);
-                    return;
-                case "PasswordResetRequestRequired":
-                    Modal.mount(
-                        <Modal
-                            heading={i18n.t("RESET_PASSWORD")}
-                            buttons={[
-                                Modal.CancelButton,
-                                {
-                                    text: i18n.t("RESET_PASSWORD"),
-                                    onClick: () => this.triggerPasswordReset(),
-                                },
-                            ]}
-                        >
-                            {i18n.t("RESET_PASSWORD_PROMPT")}
-                        </Modal>,
-                    );
-                    return;
-                default:
-                    Modal.mount(<LoginPasswordModal />);
-            }
-        }
-    }
-
-    async triggerPasswordReset() {
-        Modal.mount(<LoadingModal />);
-        try {
-            let response = await Fetch.post<PasswordResetMethod[]>(
-                `/api/user/reset/methods`,
-                {
-                    username: this.#loginSessionDetails.username,
-                },
-            );
-            Modal.mount(<PasswordResetModal resetMethods={response} />);
-        } catch (e) {
-            Modal.mount(
-                <Modal
-                    heading={i18n.t("PASSWORD_RECOVERY_TITLE")}
-                    buttons={[
-                        {
-                            text: i18n.t("OK"),
-                            onClick: () => Modal.mount(<LoginPasswordModal />),
-                        },
-                    ]}
-                >
-                    {i18n.t("PASSWORD_RECOVERY_ERROR_PROMPT")}
-                </Modal>,
-            );
-        }
-    }
-
-    async performPasswordReset(
-        type: PasswordResetType,
-        challenge: PasswordResetChallenge,
-    ) {
-        Modal.mount(<LoadingModal />);
-        try {
-            await Fetch.post("/api/user/reset", {
-                username: this.#loginSessionDetails.username,
-                type,
-                challenge,
-            });
-            Modal.mount(
-                <Modal
-                    heading={i18n.t("PASSWORD_RECOVERY_TITLE")}
-                    buttons={[
-                        {
-                            text: i18n.t("OK"),
-                            onClick: () => Modal.mount(<LoginPasswordModal />),
-                        },
-                    ]}
-                >
-                    {i18n.t("PASSWORD_RECOVERY_SUCCESS_PROMPT")}
-                </Modal>,
-            );
-        } catch (e) {
-            Modal.mount(
-                <Modal heading={"Recovery"} buttons={[Modal.OkButton]}>
-                    {i18n.t("PASSWORD_RECOVERY_ERROR_PROMPT_2")}
-                </Modal>,
-            );
-        }
-    }
-
     async setToken(token: string) {
         localStorage.setItem("token", token);
         await this.updateDetails();
@@ -251,67 +108,6 @@ class UserManager extends EventEmitter {
     async logout() {
         localStorage.removeItem("token");
         await this.updateDetails();
-    }
-
-    async attemptFido2Login() {
-        Modal.mount(<LoginSecurityKeyModal />);
-
-        let details: any;
-        try {
-            details = await Fetch.post<TokenResponseFido>("/api/user/token", {
-                type: "fido",
-                username: this.loginDetail("username"),
-            });
-        } catch {
-            Modal.mount(<LoginSecurityKeyFailureModal />);
-            return;
-        }
-
-        //Perform webauthn authentication
-        // noinspection ExceptionCaughtLocallyJS
-        try {
-            let assertion = (await navigator.credentials.get({
-                publicKey: {
-                    challenge: decode(details.options.challenge),
-                    allowCredentials: details.options.allowCredentials.map(
-                        (x: TokenResponseFidoOptionsCredentials) => ({
-                            type: x.type,
-                            id: decode(x.id),
-                        }),
-                    ),
-                    userVerification: details.options.userVerification,
-                    extensions: details.options.extensions,
-                },
-            })) as PublicKeyCredential;
-
-            console.log(assertion);
-            if (!assertion) throw assertion;
-
-            const response =
-                assertion.response as AuthenticatorAssertionResponse;
-
-            this.setLoginDetail("type", "fido");
-            this.setLoginDetail("keyTokenId", details.id);
-            this.setLoginDetail("keyResponse", {
-                authenticatorAttachment: assertion.authenticatorAttachment,
-                id: assertion.id,
-                rawId: encode(assertion.rawId),
-                type: assertion.type,
-                response: {
-                    authenticatorData: encode(response.authenticatorData),
-                    clientDataJSON: encode(response.clientDataJSON),
-                    signature: encode(response.signature),
-                    userHandle: encode(response.userHandle!),
-                },
-            });
-
-            await this.attemptLogin({
-                fido2Details: details,
-            });
-        } catch (e) {
-            console.log(e);
-            Modal.mount(<LoginPasswordModal />);
-        }
     }
 }
 

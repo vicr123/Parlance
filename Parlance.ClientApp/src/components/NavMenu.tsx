@@ -25,7 +25,6 @@ export default function NavMenu() {
         if (UserManager.isLoggedIn) {
             Modal.mount(<UserModal navigate={navigate} />);
         } else {
-            UserManager.clearLoginDetails();
             Modal.mount(<LoginUsernameModal />);
         }
     };

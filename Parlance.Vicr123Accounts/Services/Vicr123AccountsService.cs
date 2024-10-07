@@ -28,13 +28,16 @@ public class Vicr123AccountsService : IVicr123AccountsService
 
     public async Task<string> ProvisionTokenAsync(ProvisionTokenParameters parameters)
     {
-        var extraOptions = new Dictionary<string, object>();
+        var extraOptions = new Dictionary<string, object>
+        {
+            { "password", parameters.Password },
+            { "purpose", parameters.Purpose }
+        };
         if (parameters.OtpToken is not null) extraOptions.Add("otpToken", parameters.OtpToken);
-
         if (parameters.NewPassword is not null) extraOptions.Add("newPassword", parameters.NewPassword);
 
-        return await _manager.ProvisionTokenAsync(parameters.Username, parameters.Password, _applicationName,
-            extraOptions);
+        var dbusResponse = await _manager.ProvisionTokenByMethodAsync("password", parameters.Username, _applicationName, extraOptions);
+        return dbusResponse["token"].ToString()!;
     }
 
     public async Task<string> ForceProvisionTokenAsync(ulong userId)
@@ -88,11 +91,18 @@ public class Vicr123AccountsService : IVicr123AccountsService
         await passwordResetProxy.ResetPasswordAsync(type, challenge);
     }
 
-    public async Task<bool> VerifyUserPassword(User user, string password)
+    public async Task<bool> VerifyAccountModificationToken(User user, string token)
     {
-        var objectPath = await _manager.UserByIdAsync(user.Id);
-        var userProxy = _connection.CreateProxy<IUser>(_serviceName, objectPath);
-        return await userProxy.VerifyPasswordAsync(password);
+        try
+        {
+            var objectPath = await _manager.UserForTokenWithPurposeAsync(token, "accountModification");
+            var userProxy = _connection.CreateProxy<IUser>(_serviceName, objectPath);
+            return await userProxy.GetIdAsync() == user.Id;
+        }
+        catch (DBusException)
+        {
+            return false;
+        }
     }
 
     public async Task<User> UpdateUser(User user)
@@ -210,9 +220,9 @@ public class Vicr123AccountsService : IVicr123AccountsService
         await fidoProxy.CompleteRegisterAsync(response.GetRawText(), _fidoOptions.Value.Origins.ToArray(), name);
     }
 
-    public async Task<IEnumerable<string>> LoginMethods(string username)
+    public async Task<IEnumerable<string>> LoginMethods(string username, string purpose)
     {
-        return await _manager.TokenProvisioningMethodsAsync(username, _applicationName);
+        return await _manager.TokenProvisioningMethodsWithPurposeAsync(username, purpose, _applicationName);
     }
 
     public async Task<IDictionary<string, object>> ProvisionTokenByMethodAsync(string method, string username,
@@ -238,7 +248,7 @@ public class Vicr123AccountsService : IVicr123AccountsService
         return (id, assertionOptions);
     }
 
-    public async Task<string> ProvisionTokenViaFido(int id, AuthenticatorAssertionRawResponse response)
+    public async Task<string> ProvisionTokenViaFido(int id, string purpose, AuthenticatorAssertionRawResponse response)
     {
         var (username, assertionOptions) = CachedAssertionOptions[id];
         CachedAssertionOptions.Remove(id);
@@ -247,6 +257,7 @@ public class Vicr123AccountsService : IVicr123AccountsService
             new Dictionary<string, object>
             {
                 { "rpname", _applicationName },
+                { "purpose", purpose },
                 { "rpid", _fidoOptions.Value.ServerDomain },
                 { "pregetOptions", JsonSerializer.SerializeToUtf8Bytes(assertionOptions) },
                 { "response", JsonSerializer.SerializeToUtf8Bytes(response) },

@@ -14,7 +14,6 @@ export function LoginErrorModal() {
                 {
                     text: t("LOG_IN_AGAIN"),
                     onClick: () => {
-                        UserManager.clearLoginDetails();
                         Modal.mount(<LoginUsernameModal />);
                     },
                 },

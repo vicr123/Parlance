@@ -4,7 +4,6 @@ import { useTranslation } from "react-i18next";
 import SelectableList from "../../components/SelectableList";
 import { VerticalLayout, VerticalSpacer } from "@/components/Layouts";
 import { useState } from "react";
-import PasswordConfirmModal from "../../components/modals/account/PasswordConfirmModal";
 import Modal from "../../components/Modal";
 import Fetch from "../../helpers/Fetch";
 import LoadingModal from "../../components/modals/LoadingModal";
@@ -18,16 +17,21 @@ export default function EmailChange() {
     const navigate = useNavigate();
     const { t } = useTranslation();
 
-    const performEmailChange = () => {
+    const performEmailChange = async () => {
         if (newEmail === "") return;
 
-        const accept = async (password: string) => {
-            //Perform the username change
+        try {
+            const token = await UserManager.obtainToken(
+                UserManager.currentUser?.username!,
+                "accountModification",
+            );
+
+            //Perform the email change
             Modal.mount(<LoadingModal />);
             try {
                 await Fetch.post("/api/user/email", {
                     newEmail: newEmail,
-                    password: password,
+                    password: token,
                 });
                 await UserManager.updateDetails();
                 navigate("..");
@@ -49,9 +53,7 @@ export default function EmailChange() {
                     </Modal>,
                 );
             }
-        };
-
-        Modal.mount(<PasswordConfirmModal onAccepted={accept} />);
+        } catch {}
     };
 
     return (

@@ -6,18 +6,17 @@ import { useTranslation } from "react-i18next";
 import LineEdit from "../../LineEdit";
 import ModalList from "../../ModalList";
 import { VerticalSpacer } from "@/components/Layouts";
+import { TokenAcquisitionSession } from "@/helpers/TokenAcquisitionSession";
 
-export function LoginPasswordModal() {
-    const [password, setPassword] = useState(
-        UserManager.loginDetail("prePassword"),
-    );
+export function LoginPasswordModal({
+    acquisitionSession,
+}: {
+    acquisitionSession: TokenAcquisitionSession;
+}) {
+    const [password, setPassword] = useState(acquisitionSession.prePassword);
     const { t } = useTranslation();
 
-    useEffect(() => {
-        UserManager.setLoginDetail("prePassword");
-    }, []);
-
-    const loginTypes = UserManager.loginTypes!.map(type => {
+    const loginTypes = acquisitionSession.loginTypes.map(type => {
         switch (type) {
             case "password":
                 return (
@@ -25,7 +24,9 @@ export function LoginPasswordModal() {
                         key={"password"}
                         style={{ display: "flex", flexDirection: "column" }}
                     >
-                        {t("LOG_IN_PASSWORD_PROMPT")}
+                        {acquisitionSession.purpose == "login"
+                            ? t("LOG_IN_PASSWORD_PROMPT")
+                            : t("CONFIRM_PASSWORD_PROMPT")}
                         <VerticalSpacer height={3} />
                         <LineEdit
                             password={true}
@@ -48,7 +49,8 @@ export function LoginPasswordModal() {
                         {[
                             {
                                 text: t("LOG_IN_USE_SECURITY_KEY_PROMPT"),
-                                onClick: () => UserManager.attemptFido2Login(),
+                                onClick: () =>
+                                    acquisitionSession.attemptFido2Login(),
                             },
                         ]}
                     </ModalList>
@@ -56,26 +58,42 @@ export function LoginPasswordModal() {
         }
     });
 
+    useEffect(() => {
+        if (acquisitionSession.loginTypes.includes("fido")) {
+            // Start getting the FIDO token now to save time later
+            void acquisitionSession.updateFidoToken();
+        }
+    }, []);
+
     return (
         <Modal
-            heading={t("LOG_IN_PASSWORD_TITLE", {
-                username: UserManager.loginDetail("username"),
-            })}
+            heading={
+                acquisitionSession.purpose == "login"
+                    ? t("LOG_IN_PASSWORD_TITLE", {
+                          username: acquisitionSession.username,
+                      })
+                    : t("CONFIRM_PASSWORD")
+            }
             buttons={[
                 {
                     text: t("BACK"),
-                    onClick: () => Modal.mount(<LoginUsernameModal />),
+                    onClick: () => acquisitionSession.quit(),
                 },
-                {
-                    text: t("FORGOT_PASSWORD"),
-                    onClick: () => UserManager.triggerPasswordReset(),
-                },
+                ...(acquisitionSession.purpose == "login"
+                    ? [
+                          {
+                              text: t("FORGOT_PASSWORD"),
+                              onClick: () =>
+                                  acquisitionSession.triggerPasswordReset(),
+                          },
+                      ]
+                    : []),
                 {
                     text: t("NEXT"),
                     onClick: () => {
-                        UserManager.setLoginDetail("password", password);
-                        UserManager.setLoginDetail("type", "password");
-                        UserManager.attemptLogin();
+                        acquisitionSession.setLoginDetail("password", password);
+                        acquisitionSession.setLoginDetail("type", "password");
+                        acquisitionSession.attemptLogin();
                     },
                 },
             ]}

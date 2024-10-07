@@ -5,8 +5,9 @@ namespace Parlance.Vicr123Accounts.Services;
 
 public class ProvisionTokenParameters
 {
-    public string Username { get; init; } = null!;
-    public string Password { get; init; } = null!;
+    public required string Purpose { get; init; }
+    public required string Username { get; init; }
+    public required string Password { get; init; }
     public string? OtpToken { get; init; }
     public string? NewPassword { get; init; }
 }
@@ -69,7 +70,7 @@ public interface IVicr123AccountsService
     public Task<User> CreateUser(string username, string password, string email);
     public Task<IEnumerable<IPasswordResetMethod>> PasswordResetMethods(User user);
     public Task PerformPasswordReset(User user, string type, IDictionary<string, object> challenge);
-    public Task<bool> VerifyUserPassword(User user, string password);
+    public Task<bool> VerifyAccountModificationToken(User user, string token);
     public Task<User> UpdateUser(User user);
     public Task UpdateUserPassword(User user, string newPassword);
     public Task ResendVerificationEmail(User user);
@@ -83,13 +84,13 @@ public interface IVicr123AccountsService
 
     public Task<string> PrepareRegisterFidoKey(User user, int crossPlatformAttachment);
     public Task FinishRegisterFidoKey(User user, JsonElement response, string name);
-    public Task<IEnumerable<string>> LoginMethods(string username);
+    public Task<IEnumerable<string>> LoginMethods(string username, string purpose);
 
     public Task<IDictionary<string, object>> ProvisionTokenByMethodAsync(string method, string username,
         IDictionary<string, object> parameters);
 
     public Task<(int, AssertionOptions)> GetFidoAssertionOptions(string username);
-    public Task<string> ProvisionTokenViaFido(int id, AuthenticatorAssertionRawResponse response);
+    public Task<string> ProvisionTokenViaFido(int id, string purpose, AuthenticatorAssertionRawResponse response);
     public Task<IEnumerable<FidoKey>> GetFidoKeys(User user);
     public Task DeleteFidoKey(User user, int id);
 

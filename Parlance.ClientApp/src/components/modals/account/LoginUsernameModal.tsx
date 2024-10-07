@@ -11,9 +11,7 @@ import { ServerInformationContext } from "@/context/ServerInformationContext";
 import { VerticalSpacer } from "@/components/Layouts";
 
 export default function LoginUsernameModal() {
-    const [username, setUsername] = useState(
-        UserManager.loginDetail("username"),
-    );
+    const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const { t } = useTranslation();
     const serverInformation = useContext(ServerInformationContext);
@@ -31,14 +29,12 @@ export default function LoginUsernameModal() {
                     text: t("NEXT"),
                     onClick: async () => {
                         try {
-                            Modal.mount(<LoadingModal />);
-                            await UserManager.setUsername(username);
-                            if (password)
-                                await UserManager.setLoginDetail(
-                                    "prePassword",
-                                    password,
-                                );
-                            Modal.mount(<LoginPasswordModal />);
+                            const token = await UserManager.obtainToken(
+                                username,
+                                "login",
+                                password ?? "",
+                            );
+                            await UserManager.setToken(token);
                         } catch {
                             Modal.mount(<LoginUsernameModal />);
                         }
