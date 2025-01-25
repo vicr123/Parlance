@@ -348,6 +348,7 @@
   "THREAD_REOPEN_FAILURE_PROMPT": "Unable to reopen the thread",
   "THREAD_TITLE": "Thread title",
   "TRANSLATE": "Translate",
+  "TRANSLATION_AREA_DEVELOPER_COMMENT_TITLE": "Comment from the developer",
   "TRANSLATION_AREA_INDICATOR_PLURAL_FORM": "Plural form {{numbers}}",
   "TRANSLATION_AREA_MARK_COMPLETE": "Mark as Complete",
   "TRANSLATION_AREA_NEXT": "Next",

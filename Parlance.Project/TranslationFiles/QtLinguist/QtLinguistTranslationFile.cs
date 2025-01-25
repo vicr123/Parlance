@@ -46,25 +46,23 @@ public class QtLinguistTranslationFile(
                 RealKey = (string)msg.Element("source")! + "-" + (string)msg.Parent!.Element("name")!,
                 Context = ((string)msg.Parent!.Element("name"))!,
                 Source = (string)msg.Element("source")!,
+                TsComment = (string?)msg.Element("comment"),
+                TsExtraComment = (string?)msg.Element("extracomment"),
                 Translation = msg.Attribute("numerus")?.Value == "yes"
-                    // ? msg.Descendants("numerusform").Select((content, idx2) => new TranslationWithPluralType
-                    // {
-                    //     PluralType = pluralRules[idx2].Category,
-                    //     TranslationContent = (string)content
-                    // }).ToList()
                     ? pluralRules.Select((rule, idx2) => new TranslationWithPluralType
                     {
                         PluralType = rule.Category,
                         TranslationContent = pluralDescendants.Count > idx2 ? (string)pluralDescendants[idx2] : ""
                     }).ToList()
-                    : new List<TranslationWithPluralType>
-                    {
+                    :
+                    [
                         new()
                         {
                             PluralType = "singular",
                             TranslationContent = (string)msg.Element("translation")!
                         }
-                    },
+                    ],
+                Type = (string?)msg.Element("translation")!.Attribute("type") ?? "finished",
                 RequiresPluralisation = msg.Attribute("numerus")?.Value == "yes",
                 Locations = msg.Elements("location")
                     .Where(loc => loc.Attribute("filename") is not null && loc.Attribute("line") is not null).Select(
@@ -72,7 +70,7 @@ public class QtLinguistTranslationFile(
                             new QtLinguistTranslationFileEntry.Location((string)loc.Attribute("filename")!,
                                 (string)loc.Attribute("line")!))
             };
-        }).Cast<IParlanceTranslationFileEntry>().ToList();
+        }).Where(entry => entry.Type != "vanished").Cast<IParlanceTranslationFileEntry>().ToList();
     }
 
     private protected override Task UseAsBaseImpl(string filename, Locale locale)
@@ -102,7 +100,7 @@ public class QtLinguistTranslationFile(
 
         var doc = new XDocument(
             new XElement("TS", new XAttribute("version", "2.1"), new XAttribute("language", _locale.ToUnderscored()),
-                Entries.GroupBy(entry => entry.Context).Select(context =>
+                Entries.Cast<QtLinguistTranslationFileEntry>().GroupBy(entry => entry.Context).Select(context =>
                     new XElement("context",
                         new XElement("name", new XText(context.Key)),
                         context.Select(entry => new XElement("message",
@@ -120,10 +118,12 @@ public class QtLinguistTranslationFile(
                                 : new XElement("translation",
                                     new XText(entry.Translation.Single(x => x.PluralType == "singular")
                                         .TranslationContent)),
-                            ((QtLinguistTranslationFileEntry)entry).Locations.Select(location =>
+                            entry.Locations.Select(location =>
                                 new XElement("location", new XAttribute("filename", location.Filename),
                                     new XAttribute("line", location.Line))),
-                            new XElement("source", new XText(((QtLinguistTranslationFileEntry)entry).Source))
+                            new XElement("source", new XText(entry.Source)),
+                            new XElement("comment", entry.TsComment),
+                            new XElement("extracomment", entry.TsExtraComment)
                         ))
                     )
                 )
