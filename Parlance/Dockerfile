@@ -32,6 +32,7 @@ WORKDIR "/src/Parlance"
 RUN dotnet build "Parlance.csproj" -c Release -o /app/build
 
 FROM build AS publish
+RUN mkdir -p ~/.aspnet/https
 RUN dotnet publish "Parlance.csproj" -c Release -o /app/publish
 RUN ls /app/publish/wwwroot
 
