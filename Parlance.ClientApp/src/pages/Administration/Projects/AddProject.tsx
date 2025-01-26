@@ -10,6 +10,7 @@ import LineEdit from "../../../components/LineEdit";
 import Fetch from "../../../helpers/Fetch";
 import LoadingModal from "../../../components/modals/LoadingModal";
 import Modal from "../../../components/Modal";
+import { ClientError } from "@/interfaces/error";
 
 export default function () {
     const [projectName, setProjectName] = useState("");
@@ -33,7 +34,12 @@ export default function () {
             const ex = exception as WebFetchResponse;
             let message = t("ADD_PROJECT_ERROR_PROMPT");
             if (ex.status === 400) {
-                message = (await ex.json()).extraData;
+                const error: ClientError = await ex.json();
+                if (error.error == "InvalidRef") {
+                    message = t("ADD_PROJECT_ERROR_INVALID_REF");
+                } else {
+                    message = error.extraData;
+                }
             }
             Modal.mount(
                 <Modal

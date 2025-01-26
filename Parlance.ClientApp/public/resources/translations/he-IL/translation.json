@@ -38,6 +38,7 @@
   "ADD_GLOSSARY_PROJECTS_CONNECTED_two": "{{count}} פרוייקטים מחוברים",
   "ADD_PROJECT": "הוסף פרויקט חדש",
   "ADD_PROJECT_ERROR": "לא ניתן להוסיף פרויקט חדש",
+  "ADD_PROJECT_ERROR_INVALID_REF": "",
   "ADD_PROJECT_ERROR_PROMPT": "לא ניתן להוסיף את הפרויקט. נסה שוב במועד מאוחר יותר.",
   "ADD_PROJECT_PROMPT_1": "הזן את הנתונים הדרושים כדי להוסיף פרויקט",
   "ADD_PROJECT_PROMPT_2": "ודא שהפרויקט מכיל קובץ <1>.parlance.json</1> בשורש תיקיית הפרויקט.",

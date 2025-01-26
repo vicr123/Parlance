@@ -35,6 +35,7 @@
   "ADD_GLOSSARY_PROJECTS_CONNECTED": "",
   "ADD_PROJECT": "Tilføj nyt projekt",
   "ADD_PROJECT_ERROR": "Kunne ikke tilføje projekt",
+  "ADD_PROJECT_ERROR_INVALID_REF": "",
   "ADD_PROJECT_ERROR_PROMPT": "",
   "ADD_PROJECT_PROMPT_1": "Indtast de påkrævede data for at tilføje projektet",
   "ADD_PROJECT_PROMPT_2": "Sørg for at projektet indeholder en <1>.parlance.json</1>-fil i rodmappen.",

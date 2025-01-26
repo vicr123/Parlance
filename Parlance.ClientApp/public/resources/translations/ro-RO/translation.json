@@ -35,6 +35,7 @@
   "ADD_GLOSSARY_PROJECTS_CONNECTED": "",
   "ADD_PROJECT": "Adaugă un proiect nou",
   "ADD_PROJECT_ERROR": "Nu am putut adăuga proiectul",
+  "ADD_PROJECT_ERROR_INVALID_REF": "",
   "ADD_PROJECT_ERROR_PROMPT": "Nu am putut adăuga proiectul. Încearcă mai târziu.",
   "ADD_PROJECT_PROMPT_1": "Introdu datele necesare pentru a adăuga un proiect",
   "ADD_PROJECT_PROMPT_2": "Asigură-te că proiectul conține un fișier <1>.parlance.json</1> la rădăcină.",

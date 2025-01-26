@@ -16,7 +16,8 @@ public enum ParlanceClientError
     MergeConflict,
     DirtyWorkingTree,
     BadTokenRequestType,
-    IncorrectParameters
+    IncorrectParameters,
+    InvalidRef
 }
 
 public static class ControllerExtensions

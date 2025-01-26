@@ -211,8 +211,19 @@ public class GitVersionControlService(
                 });
 
             using var repo = new Repository(repoPath);
-            var remoteBranch = repo.Branches.Where(b => b.IsRemote)
-                .Single(b => b.CanonicalName == $"refs/remotes/origin/{branch}");
+            Branch remoteBranch;
+            try
+            {
+                remoteBranch = repo.Branches.Where(b => b.IsRemote)
+                    .Single(b => b.CanonicalName == $"refs/remotes/origin/{branch}");
+            }
+            catch (InvalidOperationException)
+            {
+                throw new InvalidRefException($"Ref refs/remotes/origin/{branch} not found")
+                {
+                    Ref = $"refs/remotes/origin/{branch}"
+                };
+            }
 
             Branch localBranch;
             try
@@ -225,7 +236,7 @@ public class GitVersionControlService(
                     .Single(b => b.CanonicalName == $"refs/heads/{branch}");
             }
 
-            repo.Checkout(localBranch.Tip.Tree, new[] { "*" }, new CheckoutOptions
+            repo.Checkout(localBranch.Tip.Tree, ["*"], new CheckoutOptions
             {
                 CheckoutModifiers = CheckoutModifiers.Force
             });
