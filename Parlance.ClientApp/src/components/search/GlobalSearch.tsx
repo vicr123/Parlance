@@ -79,14 +79,21 @@ export function GlobalSearch({
                 setSelected(x =>
                     x == undefined
                         ? searchResults.length - 1
-                        : (x - 1 + searchResults.length) % searchResults.length,
+                        : x == 0
+                          ? undefined
+                          : (x - 1 + searchResults.length) %
+                            searchResults.length,
                 );
                 setInnerSelected(undefined);
                 event.preventDefault();
                 break;
             case "ArrowDown":
                 setSelected(x =>
-                    x == undefined ? 0 : (x + 1) % searchResults.length,
+                    x == undefined
+                        ? 0
+                        : x == searchResults.length - 1
+                          ? undefined
+                          : (x + 1) % searchResults.length,
                 );
                 setInnerSelected(undefined);
                 event.preventDefault();
@@ -144,6 +151,7 @@ export function GlobalSearch({
                         placeholder={t("Search for anything")}
                         ref={searchBoxRef}
                         onKeyDown={keyPress}
+                        spellCheck={false}
                     />
                 </div>
                 <div className={Styles.searchResultsContainer}>
