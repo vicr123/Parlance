@@ -43,6 +43,8 @@
     align-items: center;
     padding-bottom: 3px;
     padding-top: 20px;
+    border-bottom-left-radius: var(--border-radius);
+    border-bottom-right-radius: var(--border-radius);
 }
 
 .searchResult {

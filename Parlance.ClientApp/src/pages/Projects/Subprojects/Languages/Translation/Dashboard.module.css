@@ -1,0 +1,15 @@
+.translateButton {
+    background: var(--positive-color);
+    font-size: 15pt;
+    margin-bottom: 4px;
+
+    display: flex;
+}
+
+.translateButton:hover {
+    background: var(--positive-hover-color);
+}
+
+.translateButton:active {
+    background: var(--positive-active-color);
+}

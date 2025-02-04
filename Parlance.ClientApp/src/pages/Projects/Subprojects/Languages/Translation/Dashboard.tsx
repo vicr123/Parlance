@@ -11,6 +11,10 @@ import Spinner from "../../../../../components/Spinner";
 import GlossariesDashboard from "./GlossariesDashboard";
 import { SubprojectLocaleMeta } from "../../../../../interfaces/projects";
 import { CommentsDashboard } from "./CommentsDashboard";
+import useHotkeys from "@reecelucas/react-use-hotkeys";
+import SmallButton from "@/components/SmallButton";
+import Styles from "./Dashboard.module.css";
+import Icon from "@/components/Icon";
 
 export default function Dashboard() {
     const { project, subproject, language } = useParams();
@@ -29,6 +33,15 @@ export default function Dashboard() {
     useEffect(() => {
         updateData();
     }, []);
+
+    useHotkeys(
+        navigator.userAgent.toLowerCase().includes("mac")
+            ? "Meta+Enter"
+            : "Control+Enter",
+        () => {
+            navigate("translate");
+        },
+    );
 
     //TODO
     if (!data) return <Spinner.Container />;
@@ -62,14 +75,20 @@ export default function Dashboard() {
             <Hero
                 heading={i18n.humanReadableLocale(language!)}
                 subheading={data.subprojectName}
-                buttons={[
-                    {
-                        text: t("TRANSLATE"),
-                        onClick: () => navigate("translate"),
-                    },
-                ]}
             />
-            <ListPage items={items} />
+            <ListPage
+                items={items}
+                additionalContent={
+                    <SmallButton
+                        className={Styles.translateButton}
+                        onClick={() => navigate("translate")}
+                    >
+                        {t("TRANSLATE")}
+                        <div style={{ flexGrow: 1 }} />
+                        <Icon icon={"go-next"} />
+                    </SmallButton>
+                }
+            />
         </div>
     );
 }

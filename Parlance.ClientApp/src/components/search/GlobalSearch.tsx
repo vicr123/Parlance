@@ -66,7 +66,7 @@ export function GlobalSearch({
     }, [open]);
 
     const innerSelectionLength = useMemo(() => {
-        if (!selected) return 0;
+        if (selected == undefined) return 0;
         if (searchResults[selected].type != "subproject") return 0;
         return filterUserLanguages(searchResults[selected].languages).length;
     }, [selected, searchResults]);
@@ -76,6 +76,7 @@ export function GlobalSearch({
     const keyPress = (event: KeyboardEvent<HTMLInputElement>) => {
         switch (event.key) {
             case "ArrowUp":
+                if (searchResults.length == 0) return;
                 setSelected(x =>
                     x == undefined
                         ? searchResults.length - 1
@@ -88,6 +89,7 @@ export function GlobalSearch({
                 event.preventDefault();
                 break;
             case "ArrowDown":
+                if (searchResults.length == 0) return;
                 setSelected(x =>
                     x == undefined
                         ? 0
@@ -99,7 +101,7 @@ export function GlobalSearch({
                 event.preventDefault();
                 break;
             case "ArrowRight":
-                if (selected && innerSelectionLength > 0) {
+                if (selected != undefined && innerSelectionLength > 0) {
                     setInnerSelected(x =>
                         x == undefined
                             ? 0
@@ -111,7 +113,7 @@ export function GlobalSearch({
                 }
                 break;
             case "ArrowLeft":
-                if (selected && innerSelectionLength > 0) {
+                if (selected != undefined && innerSelectionLength > 0) {
                     setInnerSelected(x =>
                         x == undefined
                             ? innerSelectionLength - 1
@@ -148,7 +150,7 @@ export function GlobalSearch({
                         value={searchQuery}
                         onChange={e => setSearchQuery(e.target.value)}
                         className={Styles.searchBox}
-                        placeholder={t("Search for anything")}
+                        placeholder={t("SEARCH_PLACEHOLDER")}
                         ref={searchBoxRef}
                         onKeyDown={keyPress}
                         spellCheck={false}
@@ -161,7 +163,7 @@ export function GlobalSearch({
                                 level={3}
                                 className={Styles.searchTitle}
                             >
-                                {t("Search Results")}
+                                {t("SEARCH_RESULTS")}
                             </PageHeading>
                             {searchResults.map((result, i) => (
                                 <div
@@ -238,7 +240,7 @@ function SubprojectMenuItemContent({
                             }}
                         >
                             {languages.length == 1
-                                ? t("Jump to {{language}}", {
+                                ? t("SEARCH_JUMP", {
                                       language: i18n.humanReadableLocale(lang),
                                   })
                                 : lang}

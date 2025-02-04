@@ -30,6 +30,10 @@ body {
     --destructive-hover-color: rgba(255, 0, 0, 0.5);
     --destructive-active-color: rgba(255, 0, 0, 0.7);
 
+    --positive-color: rgba(0, 150, 0, 0.3);
+    --positive-hover-color: rgba(0, 150, 0, 0.5);
+    --positive-active-color: rgba(0, 150, 0, 0.7);
+
     --content-width: 900px;
 
     --translation-progress-indicator-complete: rgb(0, 150, 0);
