@@ -7,5 +7,6 @@ public interface IParlanceProject
     public string VcsDirectory { get; }
     public DateTime? Deadline { get; }
     public IReadOnlyList<IParlanceSubproject> Subprojects { get; }
+    string SystemName { get; }
     public IParlanceSubproject SubprojectBySystemName(string systemName);
 }

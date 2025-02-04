@@ -51,6 +51,8 @@ public class ParlanceProject : IParlanceProject
 
     public string ReadableName { get; }
 
+    public string SystemName => _project.SystemName;
+
     public string Name => _project.Name;
     public string VcsDirectory => _project.VcsDirectory;
     public DateTime? Deadline { get; }

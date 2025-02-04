@@ -8,11 +8,14 @@ import UserModal from "./modals/account/UserModal";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import ParlanceLogo from "../images/parlance.svg";
+import Icon from "@/components/Icon";
+import { GlobalSearch } from "@/components/search/GlobalSearch";
 
 export default function NavMenu() {
     const [currentUser, setCurrentUser] = useState<string>();
     const { t } = useTranslation();
     const navigate = useNavigate();
+    const [globalSearchOpen, setGlobalSearchOpen] = useState(false);
 
     UserManager.on("currentUserChanged", () => {
         setCurrentUser(UserManager.currentUser?.username || t("LOG_IN"));
@@ -65,10 +68,17 @@ export default function NavMenu() {
                         </Button>
                     </div>
                     <div className={Styles.navbarButtonContainer}>
+                        <Button onClick={() => setGlobalSearchOpen(true)}>
+                            <Icon icon={"edit-find"} />
+                        </Button>
                         <Button onClick={manageAccount}>{currentUser}</Button>
                     </div>
                 </div>
             </div>
+            <GlobalSearch
+                open={globalSearchOpen}
+                onClose={() => setGlobalSearchOpen(false)}
+            />
         </header>
     );
 }
