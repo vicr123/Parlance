@@ -20,16 +20,17 @@ public class SearchController(IProjectService projectService) : Controller
         
         var projects = (await projectService.Projects()).ToList();
         var subprojects = projects.SelectMany(project => project.GetParlanceProject().Subprojects);
-        return Json(projects.Where(project => project.Name.IndexOf(data.Query, StringComparison.InvariantCultureIgnoreCase) > 0).Select(project => new
+        return Json(projects.Where(project => project.Name.IndexOf(data.Query, StringComparison.InvariantCultureIgnoreCase) != -1).Select(project => new
         {
             Name = project.Name,
             Href = $"/projects/{project.SystemName}",
             Type = "project"
-        }).Union(subprojects.Where(subproject => subproject.Name.IndexOf(data.Query, StringComparison.InvariantCultureIgnoreCase) > 0).Select(subproject => new
+        }).Union<object>(subprojects.Where(subproject => subproject.Name.IndexOf(data.Query, StringComparison.InvariantCultureIgnoreCase) != -1).Select(subproject => new
         {
             Name = subproject.Name,
             Href = $"projects/{subproject.Project.SystemName}/{subproject.SystemName}",
-            Type = "subproject"
+            Type = "subproject",
+            Languages = subproject.AvailableLanguages().Select(x => x.ToDashed())
         })));
     }
 

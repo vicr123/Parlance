@@ -6,6 +6,7 @@
     bottom: 0;
 
     background: rgba(0, 0, 0, 0.5);
+    z-index: 1;
 }
 
 .searchContainer {
@@ -17,6 +18,7 @@
     display: flex;
     flex-direction: column;
     align-items: stretch;
+    z-index: 2;
 }
 
 .searchBoxContainer {
@@ -61,6 +63,47 @@
 }
 
 .selectedSearchResult {
+    background: var(--hover-color);
+}
+
+.subprojectSearchResult {
+    display: grid;
+    grid-template-columns: 1fr max-content;
+    grid-template-rows: max-content max-content;
+    grid-template-areas: "name name" ". languages";
+}
+
+.subprojectSearchResult:hover:has(.searchResultLanguages:hover) {
+    background: none;
+}
+
+.searchResultName {
+    grid-area: name;
+}
+
+.searchResultLanguages {
+    grid-area: languages;
+
+    display: flex;
+    gap: 2px;
+    background: var(--layer-color);
+    border-radius: var(--border-radius);
+}
+
+.searchResultLanguage {
+    border-radius: var(--border-radius);
+    padding: 2px;
+}
+
+.searchResultLanguage:hover {
+    background: var(--hover-color);
+}
+
+.searchResultLanguage:active {
+    background: var(--active-color);
+}
+
+.searchResultLanguageSelected {
     background: var(--hover-color);
 }
 

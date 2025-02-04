@@ -10,12 +10,22 @@ import { useNavigate } from "react-router-dom";
 import ParlanceLogo from "../images/parlance.svg";
 import Icon from "@/components/Icon";
 import { GlobalSearch } from "@/components/search/GlobalSearch";
+import useHotkeys from "@reecelucas/react-use-hotkeys";
 
 export default function NavMenu() {
     const [currentUser, setCurrentUser] = useState<string>();
     const { t } = useTranslation();
     const navigate = useNavigate();
     const [globalSearchOpen, setGlobalSearchOpen] = useState(false);
+
+    useHotkeys(
+        navigator.userAgent.toLowerCase().includes("mac")
+            ? "Meta+k"
+            : "Control+k",
+        () => {
+            setGlobalSearchOpen(x => !x);
+        },
+    );
 
     UserManager.on("currentUserChanged", () => {
         setCurrentUser(UserManager.currentUser?.username || t("LOG_IN"));
