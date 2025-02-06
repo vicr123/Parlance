@@ -25,6 +25,7 @@ import {
     GlossaryItem,
 } from "../../../../../../interfaces/glossary";
 import useTranslatorSignalRConnection from "./TranslatorSignalRConnection";
+import { KeyboardShortcutsModal } from "@/pages/Projects/Subprojects/Languages/Translation/TranslationEditor/Modals/KeyboardShortcutsModal";
 
 const EntryList = lazy(() => import("./EntryList"));
 const TranslationArea = lazy(() => import("./TranslationArea"));
@@ -88,6 +89,10 @@ export default function TranslationEditor() {
         updateManager.queueForUpdate(key, update);
     };
 
+    const showKeyboardShortcuts = () => {
+        Modal.mount(<KeyboardShortcutsModal />);
+    };
+
     const { goToPrevUnfinished, goToNextUnfinished, goToNext, goToPrev } =
         useTranslationEntries(
             entries,
@@ -127,6 +132,10 @@ export default function TranslationEditor() {
                     glossaryData={glossaryData}
                 />,
             ),
+    );
+    useKeyboardShortcut(
+        KeyboardShortcuts.ShowKeyboardShortcuts,
+        showKeyboardShortcuts,
     );
 
     const updateManager = useUpdateManager();
