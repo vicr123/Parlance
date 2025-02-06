@@ -9,7 +9,7 @@ import Hero from "../../../../../components/Hero";
 import BackButton from "../../../../../components/BackButton";
 import Spinner from "../../../../../components/Spinner";
 import GlossariesDashboard from "./GlossariesDashboard";
-import { SubprojectLocaleMeta } from "../../../../../interfaces/projects";
+import { SubprojectLocaleMeta } from "@/interfaces/projects";
 import { CommentsDashboard } from "./CommentsDashboard";
 import useHotkeys from "@reecelucas/react-use-hotkeys";
 import SmallButton from "@/components/SmallButton";
@@ -23,6 +23,7 @@ export default function Dashboard() {
     const { t } = useTranslation();
 
     const updateData = async () => {
+        setData(undefined);
         setData(
             await Fetch.get(
                 `/api/projects/${project}/${subproject}/${language}`,
@@ -32,7 +33,7 @@ export default function Dashboard() {
 
     useEffect(() => {
         updateData();
-    }, []);
+    }, [project, subproject, language]);
 
     useHotkeys(
         navigator.userAgent.toLowerCase().includes("mac")

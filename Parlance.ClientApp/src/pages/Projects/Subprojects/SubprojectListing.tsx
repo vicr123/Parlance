@@ -25,6 +25,7 @@ export default function SubprojectListing() {
 
     const updateProjects = async () => {
         try {
+            setDone(false);
             setProjectData(
                 await Fetch.get<ProjectResponse>(`/api/projects/${project}`),
             );
@@ -39,7 +40,7 @@ export default function SubprojectListing() {
 
     useEffect(() => {
         updateProjects();
-    }, []);
+    }, [project]);
 
     useUserUpdateEffect(updateProjects, []);
 
