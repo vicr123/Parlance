@@ -7,6 +7,8 @@ import { useNavigate } from "react-router-dom";
 import { SearchResult, SubprojectSearchResult } from "./SearchResult";
 import UserManager from "@/helpers/UserManager";
 import i18n from "@/helpers/i18n";
+import Icon from "@/components/Icon";
+import Button from "../Button";
 
 function filterUserLanguages(languages: string[]) {
     return languages.filter(lang =>
@@ -144,6 +146,13 @@ export function GlobalSearch({
         <div>
             <div className={Styles.scrim} onClick={onClose} />
             <div className={Styles.searchContainer}>
+                <div className={Styles.searchCloseButtonContainer}>
+                    <div className={Styles.searchCloseButton}>
+                        <Button onClick={onClose}>
+                            <Icon icon={"window-close"} />
+                        </Button>
+                    </div>
+                </div>
                 <div className={Styles.searchBoxContainer}>
                     <input
                         type={"text"}

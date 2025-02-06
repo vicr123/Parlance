@@ -23,6 +23,19 @@
     max-height: 100dvh;
 }
 
+.searchCloseButtonContainer {
+    background: var(--background-color);
+    display: flex;
+    justify-content: center;
+}
+
+.searchCloseButton {
+    max-width: var(--content-width);
+    width: 100vw;
+
+    display: flex;
+}
+
 .searchBoxContainer {
     background: var(--background-color);
     display: flex;
