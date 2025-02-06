@@ -6,7 +6,7 @@ import LoginUsernameModal from "./modals/account/LoginUsernameModal";
 import UserManager from "../helpers/UserManager";
 import UserModal from "./modals/account/UserModal";
 import { useTranslation } from "react-i18next";
-import { useNavigate } from "react-router-dom";
+import { useMatch, useNavigate } from "react-router-dom";
 import ParlanceLogo from "../images/parlance.svg";
 import Icon from "@/components/Icon";
 import { GlobalSearch } from "@/components/search/GlobalSearch";
@@ -20,13 +20,20 @@ export default function NavMenu() {
     const [globalSearchOpen, setGlobalSearchOpen] = useState(false);
     const [overlayMenuOpen, setOverlayMenuOpen] = useState(false);
     const isMobile = useMediaQuery("(max-width: 600px)");
+    const isInTranslation = useMatch(
+        "/projects/:project/:subproject/:language/translate/*",
+    );
 
     useHotkeys(
         navigator.userAgent.toLowerCase().includes("mac")
             ? "Meta+k"
             : "Control+k",
-        () => {
+        e => {
+            e.preventDefault();
             setGlobalSearchOpen(x => !x);
+        },
+        {
+            enabled: !isInTranslation,
         },
     );
 
