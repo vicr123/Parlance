@@ -86,6 +86,9 @@
 
 .searchResultName {
     grid-area: name;
+
+    display: flex;
+    gap: 4px;
 }
 
 .searchResultLanguages {
@@ -117,4 +120,8 @@
 .searchTitle {
     max-width: var(--content-width);
     width: 100vw;
+}
+
+.searchResultType {
+    color: var(--foreground-disabled-color);
 }

@@ -272,6 +272,8 @@
   "SEARCH_JUMP": "",
   "SEARCH_PLACEHOLDER": "",
   "SEARCH_RESULTS": "",
+  "SEARCH_TYPE_PROJECT": "",
+  "SEARCH_TYPE_SUBPROJECT": "",
   "SECURITY_KEY_ADD": "Đăng ký khóa truy cập mới",
   "SECURITY_KEY_ADD_ERROR_PROMPT": "Khóa truy cập không thể thêm vào.",
   "SECURITY_KEY_ADD_NAME": "Đặt tên cho khóa truy cập này",

@@ -9,6 +9,7 @@ export interface ProjectSearchResult extends BaseSearchResult {
 
 export interface SubprojectSearchResult extends BaseSearchResult {
     languages: string[];
+    parentProjectName: string;
     type: "subproject";
 }
 

@@ -264,6 +264,8 @@
   "SEARCH_JUMP": "",
   "SEARCH_PLACEHOLDER": "",
   "SEARCH_RESULTS": "",
+  "SEARCH_TYPE_PROJECT": "",
+  "SEARCH_TYPE_SUBPROJECT": "",
   "SECURITY_KEY_ADD": "Registrar nova chave de segurança",
   "SECURITY_KEY_ADD_ERROR_PROMPT": "Não foi possível adicionar chave de segurança.",
   "SECURITY_KEY_ADD_NAME": "Dê um nome a esta chave de segurança",

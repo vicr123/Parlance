@@ -274,6 +274,8 @@
   "SEARCH_JUMP": "Jump to {{language}}",
   "SEARCH_PLACEHOLDER": "Start typing to search...",
   "SEARCH_RESULTS": "Search Results",
+  "SEARCH_TYPE_PROJECT": "Project",
+  "SEARCH_TYPE_SUBPROJECT": "Subproject in \"{{parent}}\"",
   "SECURITY_KEY_ADD": "Register New Passkey",
   "SECURITY_KEY_ADD_ERROR_PROMPT": "The passkey was not able to be added.",
   "SECURITY_KEY_ADD_NAME": "Name this passkey",

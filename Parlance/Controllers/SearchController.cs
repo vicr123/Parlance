@@ -30,7 +30,8 @@ public class SearchController(IProjectService projectService) : Controller
             Name = subproject.Name,
             Href = $"projects/{subproject.Project.SystemName}/{subproject.SystemName}",
             Type = "subproject",
-            Languages = subproject.AvailableLanguages().Select(x => x.ToDashed())
+            Languages = subproject.AvailableLanguages().Select(x => x.ToDashed()),
+            ParentProjectName = subproject.Project.ReadableName
         })));
     }
 

@@ -181,7 +181,25 @@ export function GlobalSearch({
                                     onMouseEnter={() => setSelected(undefined)}
                                 >
                                     {result.type == "project" && (
-                                        <>{result.name}</>
+                                        <div
+                                            className={Styles.searchResultName}
+                                        >
+                                            <span>{result.name}</span>
+                                            <span
+                                                className={
+                                                    Styles.searchResultType
+                                                }
+                                            >
+                                                {"•"}
+                                            </span>
+                                            <span
+                                                className={
+                                                    Styles.searchResultType
+                                                }
+                                            >
+                                                {t("SEARCH_TYPE_PROJECT")}
+                                            </span>
+                                        </div>
                                     )}
                                     {result.type == "subproject" && (
                                         <SubprojectMenuItemContent
@@ -222,7 +240,15 @@ function SubprojectMenuItemContent({
 
     return (
         <>
-            <span className={Styles.searchResultName}>{subproject.name}</span>
+            <div className={Styles.searchResultName}>
+                <span>{subproject.name}</span>
+                <span className={Styles.searchResultType}>{"•"}</span>
+                <span className={Styles.searchResultType}>
+                    {t("SEARCH_TYPE_SUBPROJECT", {
+                        parent: subproject.parentProjectName,
+                    })}
+                </span>
+            </div>
             {languages.length > 0 && (
                 <div className={Styles.searchResultLanguages}>
                     {languages.map((lang, i) => (

@@ -265,6 +265,8 @@
   "SEARCH_JUMP": "",
   "SEARCH_PLACEHOLDER": "",
   "SEARCH_RESULTS": "",
+  "SEARCH_TYPE_PROJECT": "",
+  "SEARCH_TYPE_SUBPROJECT": "",
   "SECURITY_KEY_ADD": "Nieuwe Beveiligingssleutel Registreren",
   "SECURITY_KEY_ADD_ERROR_PROMPT": "De beveiligingssleutel kon niet worden toegevoegd.",
   "SECURITY_KEY_ADD_NAME": "Geef deze beveiligingssleutel een naam",

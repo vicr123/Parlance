@@ -264,6 +264,8 @@
   "SEARCH_JUMP": "",
   "SEARCH_PLACEHOLDER": "",
   "SEARCH_RESULTS": "",
+  "SEARCH_TYPE_PROJECT": "",
+  "SEARCH_TYPE_SUBPROJECT": "",
   "SECURITY_KEY_ADD": "Neuen Sicherheitsschlüssen registrieren",
   "SECURITY_KEY_ADD_ERROR_PROMPT": "Der Sicherheitsschlüssel konnte nicht hinzugefügt werden.",
   "SECURITY_KEY_ADD_NAME": "Benenne diesen Sicherheitsschlüssel",

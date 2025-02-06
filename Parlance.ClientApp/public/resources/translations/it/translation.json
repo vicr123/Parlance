@@ -274,6 +274,8 @@
   "SEARCH_JUMP": "",
   "SEARCH_PLACEHOLDER": "",
   "SEARCH_RESULTS": "",
+  "SEARCH_TYPE_PROJECT": "",
+  "SEARCH_TYPE_SUBPROJECT": "",
   "SECURITY_KEY_ADD": "Registra Nuova Passkey",
   "SECURITY_KEY_ADD_ERROR_PROMPT": "Impossibile aggiungere la passkey.",
   "SECURITY_KEY_ADD_NAME": "Dai un nome a questa passkey",
