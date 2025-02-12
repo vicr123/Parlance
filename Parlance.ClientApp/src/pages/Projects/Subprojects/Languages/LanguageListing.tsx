@@ -37,6 +37,7 @@ export default function LanguageListing() {
 
     const updateProjects = async () => {
         try {
+            setDone(false);
             let subprojectData = await Fetch.get<SubprojectResponse>(
                 `/api/projects/${project}/${subproject}`,
             );
@@ -50,7 +51,7 @@ export default function LanguageListing() {
 
     useEffect(() => {
         updateProjects();
-    }, []);
+    }, [project, subproject]);
 
     const seenLanguages: string[] = [];
     const showLanguages = [

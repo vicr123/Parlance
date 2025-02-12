@@ -42,9 +42,11 @@ function ListItem(props: { name: string; slug: string; default?: boolean }) {
 function ListPageInner({
     items,
     isLeftPane,
+    additionalContent,
 }: {
     items: ListPageItem[];
     isLeftPane: boolean;
+    additionalContent?: ReactNode;
 }) {
     const navigate = useNavigate();
     const { t } = useTranslation();
@@ -59,6 +61,7 @@ function ListPageInner({
                 <div
                     className={`${Styles.leftPane} ${isLeftPane || Styles.desktopOnly}`}
                 >
+                    {additionalContent}
                     <div className={Styles.leftPaneInner}>
                         {items.map((item, i) => {
                             if (typeof item === "string") {
@@ -88,11 +91,23 @@ function ListPageInner({
     );
 }
 
-export default function ListPage({ items }: { items: ListPageItem[] }) {
+export default function ListPage({
+    items,
+    additionalContent,
+}: {
+    items: ListPageItem[];
+    additionalContent?: ReactNode;
+}) {
     return (
         <Routes>
             <Route
-                element={<ListPageInner items={items} isLeftPane={true} />}
+                element={
+                    <ListPageInner
+                        items={items}
+                        isLeftPane={true}
+                        additionalContent={additionalContent}
+                    />
+                }
                 path={"/"}
             >
                 {(
@@ -109,7 +124,15 @@ export default function ListPage({ items }: { items: ListPageItem[] }) {
                         />
                     ))}
             </Route>
-            <Route element={<ListPageInner items={items} isLeftPane={false} />}>
+            <Route
+                element={
+                    <ListPageInner
+                        items={items}
+                        isLeftPane={false}
+                        additionalContent={additionalContent}
+                    />
+                }
+            >
                 {(
                     items.filter(
                         item => typeof item === "object",

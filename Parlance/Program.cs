@@ -42,7 +42,15 @@ builder.Services.AddParlanceProjects(builder.Configuration);
 builder.Services.AddGlossary(builder.Configuration);
 builder.Services.AddNotifications(builder.Configuration);
 builder.Services.AddMessagePipe();
-await builder.Services.AddCldrAsync(builder.Configuration);
+
+try
+{
+    await builder.Services.AddCldrAsync(builder.Configuration);
+}
+catch
+{
+    Console.WriteLine("CLDR data could not be downloaded");
+}
 
 builder.Services.AddScoped<IProjectService, ProjectService>();
 builder.Services.AddScoped<ISuperuserService, SuperuserService>();

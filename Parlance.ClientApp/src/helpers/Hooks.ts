@@ -1,17 +1,20 @@
 import { DependencyList, useEffect, useState } from "react";
 import UserManager from "./UserManager";
 
-function useForceUpdate() {
+export function useForceUpdate() {
     const [, setValue] = useState(0);
     return () => setValue(value => value + 1);
 }
 
-function useForceUpdateOnUserChange() {
+export function useForceUpdateOnUserChange() {
     const forceUpdate = useForceUpdate();
     UserManager.on("currentUserChanged", forceUpdate);
 }
 
-function useUserUpdateEffect(callback: () => void, deps: DependencyList) {
+export function useUserUpdateEffect(
+    callback: () => void,
+    deps: DependencyList,
+) {
     useEffect(() => {
         UserManager.on("currentUserChanged", callback);
 
@@ -21,4 +24,23 @@ function useUserUpdateEffect(callback: () => void, deps: DependencyList) {
     }, deps);
 }
 
-export { useForceUpdate, useForceUpdateOnUserChange, useUserUpdateEffect };
+export function useMediaQuery(mediaQuery: string) {
+    const [mediaQueryMatches, setMediaQueryMatches] = useState(false);
+
+    useEffect(() => {
+        const mediaQueryList = matchMedia(mediaQuery);
+
+        const updateMediaQueryState = () => {
+            setMediaQueryMatches(mediaQueryList.matches);
+        };
+
+        mediaQueryList.addEventListener("change", updateMediaQueryState);
+        updateMediaQueryState();
+
+        return () => {
+            mediaQueryList.removeEventListener("change", updateMediaQueryState);
+        };
+    }, [mediaQuery]);
+
+    return mediaQueryMatches;
+}
