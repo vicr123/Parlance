@@ -23,6 +23,7 @@ using Parlance.Services.Permissions;
 using Parlance.Services.ProjectMaintainers;
 using Parlance.Services.Projects;
 using Parlance.VersionControl.Services.PendingEdits;
+using Parlance.VersionControl.Services.VersionControl;
 using Parlance.Vicr123Accounts.Authentication;
 using Parlance.Vicr123Accounts.Services;
 using Tmds.DBus;
@@ -169,6 +170,13 @@ public class ProjectsController(
         catch (LibGit2SharpException ex)
         {
             return this.ClientError(ParlanceClientError.GitError, ex.Message);
+        }
+        catch (InvalidRefException ex)
+        {
+            return this.ClientError(ParlanceClientError.InvalidRef, new
+            {
+                ex.Ref
+            });
         }
     }
 

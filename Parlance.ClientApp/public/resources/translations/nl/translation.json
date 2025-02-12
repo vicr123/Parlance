@@ -35,6 +35,7 @@
   "ADD_GLOSSARY_PROJECTS_CONNECTED": "",
   "ADD_PROJECT": "Nieuw Project Toevoegen",
   "ADD_PROJECT_ERROR": "Kon project niet toevoegen",
+  "ADD_PROJECT_ERROR_INVALID_REF": "",
   "ADD_PROJECT_ERROR_PROMPT": "Kon het project niet toevoegen. Probeer het later nog eens.",
   "ADD_PROJECT_PROMPT_1": "Vul de vereiste gegevens in om een project toe te voegen",
   "ADD_PROJECT_PROMPT_2": "Zorg ervoor dat het project een <1>.parlance.json</1>-bestand bevat in de root-map.",

@@ -35,6 +35,7 @@
   "ADD_GLOSSARY_PROJECTS_CONNECTED": "",
   "ADD_PROJECT": "Neues Projekt hinzufügen",
   "ADD_PROJECT_ERROR": "Konnte Projekt nicht hinzufügen",
+  "ADD_PROJECT_ERROR_INVALID_REF": "",
   "ADD_PROJECT_ERROR_PROMPT": "",
   "ADD_PROJECT_PROMPT_1": "Gib die erforderlichen Daten, um ein Projekt hinzuzufügen, ein",
   "ADD_PROJECT_PROMPT_2": "Stelle sicher, dass das Projekt eine <1>.parlance.json</1> Datei sich im Wurzelverzeichnis befindet.",
