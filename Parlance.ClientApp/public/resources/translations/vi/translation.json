@@ -293,6 +293,7 @@
   "SECURITY_KEY_ADVERTISEMENT_LATER": "Lần khác",
   "SECURITY_KEY_ADVERTISEMENT_NEVER": "Đừng hỏi lại trên thiết bị này",
   "SECURITY_KEY_ADVERTISEMENT_OK": "Thiết lập ngay",
+  "SECURITY_KEY_ADVERTISEMENT_SETUP_FAILURE": "",
   "SECURITY_KEY_ADVERTISEMENT_SETUP_SUCCESS": "Khóa truy cập bị đăng ký với tài khoản của bạn thành công.",
   "SECURITY_KEY_ADVERTISEMENT_SETUP_SUCCESS_2": "Lần sau bạn đăng nhập vào Parlance, bạn có thể sử dụng khóa truy cập này bằng cách điền vào tên người dùng của mình, rồi chọn \"Sử dụng khóa truy cập\" khi được yêu cầu mật khẩu.",
   "SECURITY_KEY_ADVERTISEMENT_SETUP_SUCCESS_3": "Để quản lý khóa truy cập của bạn, bạn có thể truy cập Cài đặt tài khoản và chọn Quản lý khóa truy cập.",

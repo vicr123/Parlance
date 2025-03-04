@@ -295,6 +295,7 @@
   "SECURITY_KEY_ADVERTISEMENT_LATER": "Later",
   "SECURITY_KEY_ADVERTISEMENT_NEVER": "Don't ask on this device",
   "SECURITY_KEY_ADVERTISEMENT_OK": "Set up now",
+  "SECURITY_KEY_ADVERTISEMENT_SETUP_FAILURE": "Sorry, there was a problem setting up your passkey. You can try setting up the passkey again in Account Settings.",
   "SECURITY_KEY_ADVERTISEMENT_SETUP_SUCCESS": "The passkey has been successfully registered on your account.",
   "SECURITY_KEY_ADVERTISEMENT_SETUP_SUCCESS_2": "Next time you log into Parlance, you can use this passkey by entering your username, and selecting \"Use Passkey\" when asked for your password.",
   "SECURITY_KEY_ADVERTISEMENT_SETUP_SUCCESS_3": "To manage your passkeys, you can visit Account Settings and select Manage Passkeys.",
