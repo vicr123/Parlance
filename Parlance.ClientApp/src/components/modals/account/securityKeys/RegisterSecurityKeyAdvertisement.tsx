@@ -6,6 +6,10 @@ import RegisterSecurityKeyModal from "./RegisterSecurityKeyModal";
 import moment from "moment";
 
 import Styles from "./RegisterSecurityKeyAdvertisement.module.css";
+import LoadingModal from "../../LoadingModal";
+import Fetch from "@/helpers/Fetch";
+import { TokenResponseToken } from "@/interfaces/users";
+import UserManager from "@/helpers/UserManager";
 
 interface RegisterSecurityKeyAdvertisementProps {
     password: string;
@@ -94,23 +98,49 @@ export function RegisterSecurityKeyAdvertisement({
                 {[
                     {
                         text: t("SECURITY_KEY_ADVERTISEMENT_OK"),
-                        onClick: () => {
-                            const onDone = () => {
-                                Modal.mount(<SecurityKeySetupCompleteModal />);
-                            };
-                            Modal.mount(
-                                <RegisterSecurityKeyModal
-                                    type={""}
-                                    password={password}
-                                    onDone={onDone}
-                                    initialName={t(
-                                        "SECURITY_KEY_ADVERTISEMENT_INITIAL_NAME",
+                        onClick: async () => {
+                            Modal.mount(<LoadingModal />);
+                            try {
+                                let response =
+                                    await Fetch.post<TokenResponseToken>(
+                                        `/api/user/token`,
                                         {
-                                            date: moment().format("L"),
+                                            username:
+                                                UserManager.currentUser!
+                                                    .username,
+                                            password: password,
+                                            type: "password",
+                                            purpose: "accountModification",
                                         },
-                                    )}
-                                />,
-                            );
+                                    );
+
+                                const onDone = () => {
+                                    Modal.mount(
+                                        <SecurityKeySetupCompleteModal />,
+                                    );
+                                };
+                                Modal.mount(
+                                    <RegisterSecurityKeyModal
+                                        type={""}
+                                        password={response.token}
+                                        onDone={onDone}
+                                        initialName={t(
+                                            "SECURITY_KEY_ADVERTISEMENT_INITIAL_NAME",
+                                            {
+                                                date: moment().format("L"),
+                                            },
+                                        )}
+                                    />,
+                                );
+                            } catch {
+                                Modal.mount(
+                                    <Modal buttons={[Modal.OkButton]}>
+                                        {t(
+                                            "SECURITY_KEY_ADVERTISEMENT_SETUP_FAILURE",
+                                        )}
+                                    </Modal>,
+                                );
+                            }
                         },
                     },
                     {

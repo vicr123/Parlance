@@ -287,6 +287,7 @@
   "SECURITY_KEY_ADVERTISEMENT_LATER": "Mai târziu",
   "SECURITY_KEY_ADVERTISEMENT_NEVER": "Nu pe acest dispozitiv",
   "SECURITY_KEY_ADVERTISEMENT_OK": "Setează acum",
+  "SECURITY_KEY_ADVERTISEMENT_SETUP_FAILURE": "",
   "SECURITY_KEY_ADVERTISEMENT_SETUP_SUCCESS": "Cheia de acces a fost înregistrată cu succes pe acest cont",
   "SECURITY_KEY_ADVERTISEMENT_SETUP_SUCCESS_2": "Data viitoare când te conectezi la Parlance, poți folosi această cheie de acces introducându-ți numele de utilizator și selectând \"Folosește o cheie de acces\" când ți se cere parola.",
   "SECURITY_KEY_ADVERTISEMENT_SETUP_SUCCESS_3": "Pentru a-ți gestiona cheile de acces, poți să vizitezi setările contului tău și să selectezi \"Gestionare chei de acces\".",
