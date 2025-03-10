@@ -310,16 +310,18 @@ export default function TranslationArea({
         let highlights = Placeholders[translationFileType];
         if (!highlights) highlights = [];
 
-        return highlights.flatMap(highlight => {
-            const matches = entry.source.match(highlight.regex);
+        return [
+            ...new Set(
+                highlights.flatMap(highlight => {
+                    const matches = entry.source.match(highlight.regex);
 
-            return matches
-                ? matches.map((match, number) => ({
-                      number: number,
-                      placeholder: match,
-                  }))
-                : [];
-        });
+                    return matches ?? [];
+                }),
+            ),
+        ].map((match, number) => ({
+            placeholder: match,
+            number: number,
+        }));
     }, [entry]);
 
     const openComments = useMemo(

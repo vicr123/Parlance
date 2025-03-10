@@ -91,7 +91,7 @@ function Leaf({ attributes, children, leaf }: RenderLeafProps) {
                     >
                         {children}
                     </Placeholder>
-                    {leaf.showPlaceholders && leaf?.placeholderNumber < 10 && (
+                    {leaf.showPlaceholders && leaf?.placeholderNumber < 9 && (
                         <KeyboardShortcut
                             shortcut={
                                 KeyboardShortcuts.CopyPlaceholder[
