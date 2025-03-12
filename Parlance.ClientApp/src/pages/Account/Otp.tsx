@@ -206,7 +206,7 @@ function OtpEnabledContent({
     const printRef = useRef<HTMLDivElement>(null);
     const { t } = useTranslation();
     const handlePrint = useReactToPrint({
-        content: () => printRef.current!,
+        contentRef: printRef,
     });
 
     return (

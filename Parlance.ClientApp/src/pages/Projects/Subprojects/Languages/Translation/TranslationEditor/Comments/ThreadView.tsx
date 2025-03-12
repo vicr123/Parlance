@@ -12,7 +12,6 @@ import { useTranslation } from "react-i18next";
 import { Comment, Thread } from "../../../../../../../interfaces/comments";
 import PageHeading from "../../../../../../../components/PageHeading";
 import SmallButton from "../../../../../../../components/SmallButton";
-import { ButtonGroup } from "reactstrap";
 import Modal from "../../../../../../../components/Modal";
 import { useNavigate } from "react-router-dom";
 import I18n from "../../../../../../../helpers/i18n";
