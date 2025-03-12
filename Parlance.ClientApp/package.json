@@ -30,7 +30,6 @@
     "react-qr-code": "^2.0.7",
     "react-router-bootstrap": "^0.26.1",
     "react-router-dom": "^6.3.0",
-    "react-scripts": "^5.0.1",
     "react-tabindex": "^1.0.3",
     "react-to-print": "^2.14.7",
     "react-transition-group": "^4.4.5",
@@ -60,14 +59,14 @@
     "@types/react": "^18.2.43",
     "@types/react-dom": "^18.2.17",
     "@types/react-transition-group": "^4.4.10",
-    "@vitejs/plugin-react": "^4.2.1",
+    "@vitejs/plugin-react": "^4.3.4",
     "eslint": "^8.55.0",
     "eslint-plugin-react": "^7.33.2",
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-refresh": "^0.4.5",
     "prettier": "3.3.2",
     "typescript": "^5.1.6",
-    "vite": "^5.0.8"
+    "vite": "^6.2.1"
   },
   "overrides": {
     "autoprefixer": "10.4.5",
@@ -107,5 +106,6 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
-  }
+  },
+  "packageManager": "pnpm@10.5.2"
 }

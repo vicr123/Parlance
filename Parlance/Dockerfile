@@ -23,7 +23,7 @@ RUN cp /usr/local/lib/*.so* /output/
 FROM mcr.microsoft.com/dotnet/sdk:9.0-alpine AS build
 
 # Install Node.js
-RUN apk add nodejs npm
+RUN apk add nodejs pnpm
 
 WORKDIR /src
 COPY . .
