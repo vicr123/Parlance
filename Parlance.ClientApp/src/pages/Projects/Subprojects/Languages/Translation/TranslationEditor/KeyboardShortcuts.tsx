@@ -53,6 +53,7 @@ export const KeyboardShortcuts = {
     ],
     SearchGlossary: [["Control", "G"]],
     AddToGlossary: [["Control", "Shift", "G"]],
+    ShowKeyboardShortcuts: [["Control", "/"]],
 } as const;
 
 export function useKeyboardShortcut(
