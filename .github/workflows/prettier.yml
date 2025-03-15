@@ -11,10 +11,12 @@ jobs:
         with:
           submodules: 'recursive'
       - uses: pnpm/action-setup@v4
+        with:
+          package_json_file: 'Parlance.ClientApp/package.json'
       - name: Restore npm dependencies
         working-directory: Parlance.ClientApp
         run: |
-          pnpm ci
+          pnpm install
       - name: Lint
         working-directory: Parlance.ClientApp
         run: |
