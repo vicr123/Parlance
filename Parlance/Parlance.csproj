@@ -2,7 +2,7 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
     <PropertyGroup>
         <SpaRoot>..\Parlance.ClientApp</SpaRoot>
-        <SpaProxyLaunchCommand>npm run dev</SpaProxyLaunchCommand>
+        <SpaProxyLaunchCommand>pnpm run dev</SpaProxyLaunchCommand>
         <SpaProxyServerUrl>https://localhost:5173</SpaProxyServerUrl>
     </PropertyGroup>
     <ItemGroup>

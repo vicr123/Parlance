@@ -1,10 +1,23 @@
-<Project Sdk="Microsoft.VisualStudio.JavaScript.Sdk/0.5.401524-alpha">
-  <PropertyGroup>
-    <StartupCommand>npm run dev</StartupCommand>
-    <ShouldRunBuildScript>false</ShouldRunBuildScript>
-    <BuildOutputFolder>$(MSBuildProjectDirectory)\dist</BuildOutputFolder>
-  </PropertyGroup>
-  <ItemGroup>
-    <None Include="tsconfig.json" />
-  </ItemGroup>
+<Project Sdk="Microsoft.VisualStudio.JavaScript.Sdk/1.0.2125207">
+    <PropertyGroup>
+        <StartupCommand>pnpm run dev</StartupCommand>
+        <!-- Allows the build (or compile) script located on package.json to run on Build -->
+        <ShouldRunBuildScript>false</ShouldRunBuildScript>
+        <!-- Folder where production build objects will be placed -->
+        <BuildOutputFolder>$(MSBuildProjectDirectory)\dist</BuildOutputFolder>
+    
+        <ShouldRunNpmInstall>false</ShouldRunNpmInstall>
+        <NpmInstallCheck>$(BaseIntermediateOutputPath).install-check</NpmInstallCheck>
+        <ProductionBuildCommand>pnpm run build</ProductionBuildCommand>
+        <BuildCommand>pnpm run build</BuildCommand>
+        <RestoreEnableGlobalPackageReference>false</RestoreEnableGlobalPackageReference>
+    </PropertyGroup>
+    
+    <Target Name="RunPnpmInstall" BeforeTargets="RunNpmInstall" Inputs="$(PackageJsonDirectory)\package.json" Outputs="$(NpmInstallCheck)">
+        <Message Importance="high" Text="Restoring dependencies using 'pnpm'. This may take several minutes..." />
+        <Exec WorkingDirectory="$(PackageJsonDirectory)" Command="pnpm install">
+            <Output TaskParameter="ExitCode" PropertyName="ErrorCodePnpmInstall" />
+        </Exec>
+        <Touch Files="$(NpmInstallCheck)" Condition="'$(ErrorCodePnpmInstall)' == '0'" AlwaysCreate="true" />
+    </Target>
 </Project>

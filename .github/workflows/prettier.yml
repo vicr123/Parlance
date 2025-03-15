@@ -10,11 +10,12 @@ jobs:
         uses: actions/checkout@v4
         with:
           submodules: 'recursive'
+      - uses: pnpm/action-setup@v4
       - name: Restore npm dependencies
         working-directory: Parlance.ClientApp
         run: |
-          npm ci
+          pnpm ci
       - name: Lint
         working-directory: Parlance.ClientApp
         run: |
-          npm run lint
+          pnpm run lint

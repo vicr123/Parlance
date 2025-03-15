@@ -1,9 +1,9 @@
-﻿FROM mcr.microsoft.com/dotnet/aspnet:8.0-alpine AS base
+﻿FROM mcr.microsoft.com/dotnet/aspnet:9.0-alpine AS base
 WORKDIR /app
 EXPOSE 80
 EXPOSE 443
 
-FROM mcr.microsoft.com/dotnet/aspnet:8.0-alpine AS native-build
+FROM mcr.microsoft.com/dotnet/aspnet:9.0-alpine AS native-build
 
 RUN apk add git cmake ninja build-base openssl-dev
 WORKDIR /src
@@ -20,10 +20,10 @@ FROM native-build AS native-build-output
 RUN mkdir -p /output
 RUN cp /usr/local/lib/*.so* /output/
 
-FROM mcr.microsoft.com/dotnet/sdk:8.0-alpine AS build
+FROM mcr.microsoft.com/dotnet/sdk:9.0-alpine AS build
 
 # Install Node.js
-RUN apk add nodejs npm
+RUN apk add nodejs pnpm
 
 WORKDIR /src
 COPY . .
