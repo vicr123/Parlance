@@ -7,7 +7,7 @@ public class TranslationSubmitEvent
 {
     public required IParlanceSubprojectLanguage SubprojectLanguage { get; set; }
     public required IParlanceTranslationFileEntry Entry { get; set; }
-    public required User User { get; set; }
+    public required User? User { get; set; }
     
     public required Database.Models.Project Project { get; set; }
 }

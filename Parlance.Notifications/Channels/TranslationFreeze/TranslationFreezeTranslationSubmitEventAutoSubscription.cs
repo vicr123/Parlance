@@ -33,6 +33,11 @@ public class TranslationFreezeTranslationSubmitEventAutoSubscription(
     {
         await using var scope = serviceProvider.CreateAsyncScope();
         var notificationService = scope.ServiceProvider.GetRequiredService<INotificationService>();
+
+        if (message.User is null)
+        {
+            return;
+        }
         
         var subscription = await notificationService.GetAutoSubscriptionPreference<TranslationFreezeTranslationSubmitEventAutoSubscription, TranslationFreezeNotificationChannel>(message.User.Id);
         if (!subscription.IsSubscribed)

@@ -1,6 +1,8 @@
+using MessagePipe;
 using Microsoft.Extensions.Options;
 using Parlance.Database;
 using Parlance.Project;
+using Parlance.Project.Events;
 using Parlance.Project.Index;
 using Parlance.VersionControl.Services;
 using Parlance.VersionControl.Services.VersionControl;
@@ -9,15 +11,13 @@ namespace Parlance.Services.Projects;
 
 public class ProjectService(
     IOptions<ParlanceOptions> parlanceOptions,
-    IRemoteCommunicationService remoteCommunicationService,
     IParlanceIndexingService indexingService,
     ParlanceContext dbContext,
     IVersionControlService versionControlService,
+    IAsyncPublisher<TranslationSubmitEvent> translationSubmitEventPublisher,
     ILogger<ProjectService> logger)
     : IProjectService
 {
-    private readonly IRemoteCommunicationService _remoteCommunicationService = remoteCommunicationService;
-
     public async Task RegisterProject(string cloneUrl, string branch, string name)
     {
         var systemName = name.ToLower().Replace(' ', '-');
@@ -66,6 +66,28 @@ public class ProjectService(
         dbContext.Projects.Add(project);
 
         await dbContext.SaveChangesAsync();
+        
+        // Add existing translations to the database
+        foreach (var subproject in project.GetParlanceProject().Subprojects)
+        {
+            foreach (var language in subproject.AvailableLanguages())
+            {
+                var subprojectLanguage = subproject.Language(language);
+                await using var translationFile = await subprojectLanguage.CreateTranslationFile(indexingService);
+                if (translationFile is null) continue;
+                
+                foreach (var entry in translationFile.Entries)
+                {
+                    await translationSubmitEventPublisher.PublishAsync(new()
+                    {
+                        Project = project,
+                        SubprojectLanguage = subprojectLanguage,
+                        Entry = entry,
+                        User = null,
+                    });
+                }
+            }
+        }
     }
 
     public Task<IEnumerable<Database.Models.Project>> Projects()
