@@ -26,6 +26,12 @@ public class PendingEditsTranslationSubmitEventWatcher(
 
     public async ValueTask HandleAsync(TranslationSubmitEvent message, CancellationToken cancellationToken)
     {
+        // If the user is null, we're handling a translation for the first time so there's nothing to change here
+        if (message.User == null)
+        {
+            return;
+        }
+        
         await using var scope = serviceProvider.CreateAsyncScope();
         var pendingEditsService = scope.ServiceProvider.GetRequiredService<IPendingEditsService>();
         await pendingEditsService.RecordPendingEdit(message.SubprojectLanguage, message.User);
