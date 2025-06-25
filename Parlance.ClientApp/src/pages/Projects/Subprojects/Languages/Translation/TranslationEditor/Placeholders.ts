@@ -84,4 +84,17 @@ export default {
             preview: ({ pluralExample }: PreviewSettings) => pluralExample,
         },
     ],
+    "cntp-rs": [
+        {
+            name: PLACEHOLDER_TRANSLATION_STRING,
+            regex: /\{\{(?!count}})(.+?)}}/g,
+            type: "placeholder",
+        },
+        {
+            name: NUMERIC_PLACEHOLDER_TRANSLATION_STRING,
+            regex: /{{count}}/g,
+            type: "placeholder",
+            preview: ({ pluralExample }: PreviewSettings) => pluralExample,
+        },
+    ],
 } as Record<string, PlaceholderDefinition[]>;
