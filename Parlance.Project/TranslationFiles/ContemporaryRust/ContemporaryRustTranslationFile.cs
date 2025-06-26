@@ -2,6 +2,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Nodes;
+using JetBrains.Annotations;
 using Parlance.CldrData;
 using Parlance.Project.Index;
 
@@ -43,6 +44,21 @@ public class ContemporaryRustTranslationFile(
         var fileContents = await File.ReadAllTextAsync(file);
         await using var baseFileContents = File.OpenRead(baseFile);
         Hash = Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(fileContents)));
+        
+        var meta = new Dictionary<string, MetaItem>();
+        try
+        {
+            var metaFilePath = Path.Combine(Path.GetDirectoryName(file) ?? "", "meta.json");
+            await using var metaFileContents = File.OpenRead(metaFilePath);
+            meta = await JsonSerializer.DeserializeAsync<Dictionary<string, MetaItem>>(metaFileContents, new JsonSerializerOptions
+            {
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+            }) ?? new Dictionary<string, MetaItem>();
+        }
+        catch
+        {
+            // ignored
+        }
 
         var doc = JsonDocument.Parse(fileContents);
         var baseDoc = await JsonDocument.ParseAsync(baseFileContents);
@@ -51,6 +67,7 @@ public class ContemporaryRustTranslationFile(
         Entries = baseDoc.RootElement.EnumerateObject().Select(baseEntry =>
         {
             var item = inputDoc.GetValueOrDefault(baseEntry.Name);
+            var metaItem = meta.GetValueOrDefault(baseEntry.Name);
             return new ContemporaryRustTranslationFileEntry
             {
                 Key = baseEntry.Name,
@@ -60,9 +77,9 @@ public class ContemporaryRustTranslationFile(
                     JsonValueKind.Object => baseEntry.Value.EnumerateObject().Single(x => x.Name == "other").Value.GetString() ?? throw new InvalidDataException("cntp-rs: base JSON not valid"),
                     _ => throw new InvalidDataException("cntp-rs: base JSON not valid"),
                 },
-                Context = "Parlance",
+                Context = metaItem?.Context ?? "Parlance",
                 RequiresPluralisation = baseEntry.Value.ValueKind == JsonValueKind.Object,
-                Comment = null,
+                Comment = metaItem?.Description,
                 Translation = baseEntry.Value.ValueKind == JsonValueKind.Object ? locale.PluralRules().Select(rule =>
                 {
                     string translationContent;
@@ -134,5 +151,13 @@ public class ContemporaryRustTranslationFile(
         }
 
         return Task.CompletedTask;
+    }
+    
+    [UsedImplicitly]
+    private class MetaItem
+    {
+        public string? Context { get; [UsedImplicitly] init; }
+        public required bool Plural { get; [UsedImplicitly] init; }
+        public string? Description { get; [UsedImplicitly] init; }
     }
 }
