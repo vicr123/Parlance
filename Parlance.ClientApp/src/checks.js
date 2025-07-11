@@ -134,6 +134,7 @@ const Checks = {
     "vue-i18n": [checkVueI18nPlaceholders, "common"],
     "minecraft-fabric": [checkJavaPlaceholders, "common"],
     gettext: [checkGettextPlaceholders, "common"],
+    "cntp-rs": [checki18nextPlaceholders, "common"],
 };
 
 function checkTranslation(source, translation, checkSuite) {

@@ -68,7 +68,7 @@ public class ParlanceSubproject(IParlanceProject project, SubprojectDefinition s
         var matcher = new Matcher();
         matcher.AddInclude(wildcard);
         var result = matcher.Execute(new DirectoryInfoWrapper(new DirectoryInfo(Project.VcsDirectory)));
-        return result.Files.Select(file => file.Path[toStart..^toTrim].ToLocale());
+        return result.Files.Select(file => file.Path[toStart..^toTrim]).Where(file => file != "meta").Select(file => file.ToLocale());
     }
 
     public IParlanceSubprojectLanguage Language(Locale language)
