@@ -19,6 +19,11 @@ public class ContemporaryRustTranslationFile(
     private string _file = null!;
     private Locale _locale = null!;
 
+    private static readonly JsonSerializerOptions JsonSerializerOptions = new()
+    {
+        PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+    };
+
     public override string Hash { get; internal set; } = null!;
 
     public override IList<IParlanceTranslationFileEntry> Entries { get; internal set; } = null!;
@@ -50,18 +55,15 @@ public class ContemporaryRustTranslationFile(
         {
             var metaFilePath = Path.Combine(Path.GetDirectoryName(file) ?? "", "meta.json");
             await using var metaFileContents = File.OpenRead(metaFilePath);
-            meta = await JsonSerializer.DeserializeAsync<Dictionary<string, MetaItem>>(metaFileContents, new JsonSerializerOptions
-            {
-                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-            }) ?? new Dictionary<string, MetaItem>();
+            meta = await JsonSerializer.DeserializeAsync<Dictionary<string, MetaItem>>(metaFileContents, JsonSerializerOptions) ?? new();
         }
         catch
         {
             // ignored
         }
 
-        var doc = JsonDocument.Parse(fileContents);
-        var baseDoc = await JsonDocument.ParseAsync(baseFileContents);
+        using var doc = JsonDocument.Parse(fileContents);
+        using var baseDoc = await JsonDocument.ParseAsync(baseFileContents);
 
         var inputDoc = doc.RootElement.EnumerateObject().ToDictionary(x => x.Name, x => x.Value);
         Entries = baseDoc.RootElement.EnumerateObject().Select(baseEntry =>
