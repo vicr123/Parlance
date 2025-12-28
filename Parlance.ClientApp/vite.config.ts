@@ -21,6 +21,10 @@ const certificateName: string = "reactapp1.client";
 const certFilePath: string = path.join(baseFolder, `${certificateName}.pem`);
 const keyFilePath: string = path.join(baseFolder, `${certificateName}.key`);
 
+if (!fs.existsSync(baseFolder)) {
+    fs.mkdirSync(baseFolder, { recursive: true });
+}
+
 if (!fs.existsSync(certFilePath) || !fs.existsSync(keyFilePath)) {
     if (
         0 !==

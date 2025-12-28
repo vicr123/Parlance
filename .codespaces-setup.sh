@@ -21,6 +21,8 @@ su postgres -c "createdb parlancedb"
 psql -c "ALTER USER accountsservice WITH PASSWORD 'secret'"
 psql -c "ALTER USER parlance WITH PASSWORD 'secret'"
 
+npm install -g pnpm
+
 cd ..
 git clone --recursive https://github.com/vicr123/vicr123-accounts
 pushd vicr123-accounts
