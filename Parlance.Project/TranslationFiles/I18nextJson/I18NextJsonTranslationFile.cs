@@ -8,6 +8,7 @@ using Parlance.Project.Index;
 namespace Parlance.Project.TranslationFiles.I18nextJson;
 
 [TranslationFileType("i18next", ExpectedTranslationFileNameFormat.Dashed)]
+[TranslationFileType("cntp-toml", ExpectedTranslationFileNameFormat.Dashed)]
 [TranslationFileType("minecraft-fabric", ExpectedTranslationFileNameFormat.Underscored)]
 public class I18NextJsonTranslationFile : ParlanceTranslationFile, IParlanceMonoTranslationFile
 {
