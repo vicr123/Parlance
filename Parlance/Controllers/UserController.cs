@@ -40,7 +40,7 @@ public class UserController(
             user.Id, user.Username, user.Email, user.EmailVerified,
             Superuser = superuser,
             LanguagePermissions = await permissionsService.UserPermissions(user.Username)
-                .SelectAwait(x => ValueTask.FromResult(x.ToDashed())).ToListAsync()
+                .Select(x => ValueTask.FromResult(x.ToDashed())).ToListAsync()
         });
     }
 
