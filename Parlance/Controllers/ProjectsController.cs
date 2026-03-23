@@ -1,4 +1,7 @@
+using System.Diagnostics;
 using System.Globalization;
+using System.Security.Policy;
+using System.Web;
 using LibGit2Sharp;
 using MessagePipe;
 using Microsoft.AspNetCore.Authorization;
@@ -229,6 +232,108 @@ public class ProjectsController(
                     })),
                     CanManage = await permissionsService.HasManageProjectPermission(username, project)
                 });
+            }
+            catch (ParlanceJsonFileParseException)
+            {
+                return StatusCode(500, new
+                {
+                    Error = "ParlanceJsonFileParseError",
+                    IsProjectManager = await projectMaintainersService.IsProjectMaintainer(username, p),
+                });
+            }
+        }
+        catch (ProjectNotFoundException)
+        {
+            return NotFound();
+        }
+    }
+    
+
+    [HttpGet]
+    [Route("{project}/badge/{type?}")]
+    public async Task<IActionResult> GetProjectBadge(string project, string? type = "completion-percent")
+    {
+        switch (type)
+        {
+            case "completion-percent" or "completion-number" or "errors" or "languages":
+                break;
+            default:
+                return BadRequest();
+        }
+        
+        var username = HttpContext.User.Claims.FirstOrDefault(claim => claim.Type == Claims.Username)?.Value;
+        try
+        {
+            var p = await projectService.ProjectBySystemName(project);
+            try
+            {
+                var proj = p.GetParlanceProject();
+
+                string left;
+                string right;
+                string color;
+                switch (type)
+                {
+                    case "completion-percent":
+                    {
+                        var indexResults = await indexingService.OverallResults(proj);
+                        var completion = (double)indexResults.Complete / indexResults.Count;
+                        left = "translated";
+                        right = $"{completion * 100:0}%";
+                        color = completion switch
+                        {
+                            < 0.3 => "red",
+                            < 0.7 => "yellow",
+                            _ => "brightgreen"
+                        };
+                        break;
+                    }
+                    case "completion-number":
+                    {
+                        var indexResults = await indexingService.OverallResults(proj);
+                        var completion = (double)indexResults.Complete / indexResults.Count;
+                        left = "translated";
+                        right = indexResults.Complete.ToString();
+                        color = completion switch
+                        {
+                            < 0.3 => "red",
+                            < 0.7 => "yellow",
+                            _ => "brightgreen"
+                        };
+                        break;
+                    }
+                    case "errors":
+                    {
+                        var indexResults = await indexingService.OverallResults(proj);
+                        left = "translation errors";
+                        right = indexResults.Errors.ToString();
+                        color = indexResults.Errors switch
+                        {
+                            0 => "brightgreen",
+                            _ => "red"
+                        };
+                        break;
+                    }
+                    case "languages":
+                    {
+                        var languages = proj.Subprojects.SelectMany(subproject => subproject.AvailableLanguages()).Distinct().Count();
+                        left = "languages";
+                        right = languages.ToString();
+                        color = "brightgreen";
+                        break;
+                    }
+                    default:
+                        throw new UnreachableException();
+                }
+
+                var query = Request.Query;
+
+                var shieldUrl = new UriBuilder($"https://img.shields.io/badge/{left}-{right}-{color}")
+                {
+                    Query = query.Count > 0 ? $"?{string.Join('&', query.Select((queryItem, _) => $"{queryItem.Key}={HttpUtility.UrlEncode(queryItem.Value)}"))}" : ""
+                };
+
+                return Redirect(shieldUrl.ToString());
             }
             catch (ParlanceJsonFileParseException)
             {
