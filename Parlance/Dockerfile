@@ -7,7 +7,7 @@ FROM mcr.microsoft.com/dotnet/aspnet:9.0-alpine AS native-build
 
 RUN apk add git cmake ninja build-base openssl-dev
 WORKDIR /src
-RUN git clone --branch libssh2-1.11.0 --depth 1 https://github.com/libssh2/libssh2.git
+RUN git clone --branch libssh2-1.11.1 --depth 1 https://github.com/libssh2/libssh2.git
 RUN git clone --branch v1.8.1 --depth 1 https://github.com/libgit2/libgit2.git
 
 WORKDIR /src/libssh2
