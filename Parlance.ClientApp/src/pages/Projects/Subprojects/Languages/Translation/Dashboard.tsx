@@ -86,7 +86,7 @@ export default function Dashboard() {
                     >
                         {t("TRANSLATE")}
                         <div style={{ flexGrow: 1 }} />
-                        <Icon icon={"go-next"} />
+                        <Icon icon={"go-next"} flip={true} />
                     </SmallButton>
                 }
             />
