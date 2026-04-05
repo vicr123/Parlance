@@ -2,6 +2,7 @@ using System.Collections.Concurrent;
 using System.Globalization;
 using System.Text;
 using System.Text.Json;
+using System.Text.RegularExpressions;
 using System.Xml.XPath;
 using Sepia.Globalization;
 using Sepia.Globalization.Plurals;
@@ -86,12 +87,19 @@ public record Locale
 
         try
         {
-            //HACK: For some reason German doesn't seem to be working correctly so hardcode the English rules
             var locale = Sepia.Globalization.Locale.Create(ToUnderscored());
-            var plural = Plural.Create(locale);
+            var languageCode = locale.Id.Language.ToLowerInvariant();
+            var regex = new Regex($"""[" ]{languageCode}[" ]""");
             var rules = Cldr.Instance.GetDocuments("common/supplemental/plurals.xml")
-                .Elements("supplementalData/plurals[@type='cardinal']/pluralRules[contains(@locales, '" +
-                          locale.Id.Language.ToLowerInvariant() + "')]/pluralRule").Select<XPathNavigator, Rule>(Rule.Parse)
+                .Elements($"supplementalData/plurals[@type='cardinal']/pluralRules[contains(@locales, '{languageCode}')]/pluralRule")
+                .Where(x =>
+                {
+                    var node = x.Select("ancestor::pluralRules");
+                    node.MoveNext();
+                    var locales = node.Current?.GetAttribute("locales", "");
+                    return locales is not null && regex.IsMatch(locales);
+                })
+                .Select<XPathNavigator, Rule>(Rule.Parse)
                 .OrderBy(x => order.IndexOf(x.Category)).ToList();
 
             var result = Enumerable.Range(0, 201).Select(num =>
