@@ -1,4 +1,5 @@
 using LibGit2Sharp;
+using Parlance.Database.Interfaces;
 using Parlance.Project;
 
 namespace Parlance.VersionControl.Services.VersionControl;
@@ -29,12 +30,16 @@ public class VersionControlStatus
 public interface IVersionControlService
 {
     Task DownloadFromSource(string sourceUrl, string directory, string branch);
-    Task UpdateVersionControlMetadata(Database.Models.Project project);
-    Task<VersionControlCommit?> SaveChangesToVersionControl(Database.Models.Project project);
-    Task DeleteUnpublishedChanges(Database.Models.Project project);
-    Task PublishSavedChangesToSource(Database.Models.Project project);
-    Task ReconcileRemoteWithLocal(Database.Models.Project project);
-    VersionControlStatus VersionControlStatus(Database.Models.Project project);
-    string CloneUrl(Database.Models.Project project);
+    Task DownloadFromSourceBare(string sourceUrl, string directory);
+    Task CreateWorktree(IVcsable project, string directory, string branch);
+    Task DeleteWorktree(IVcsable project, string branch);
+    Task UpdateVersionControlMetadata(IVcsable project);
+    Task<VersionControlCommit?> SaveChangesToVersionControl(IVcsable project);
+    Task DeleteUnpublishedChanges(IVcsable project);
+    Task PublishSavedChangesToSource(IVcsable project);
+    Task ReconcileRemoteWithLocal(IVcsable project);
+    VersionControlStatus VersionControlStatus(IVcsable project);
+    string CloneUrl(IVcsable project);
     string CloneUrl(IParlanceProject project);
+    string BranchName(IVcsable project);
 }

@@ -1,6 +1,8 @@
 using MessagePipe;
 using Microsoft.Extensions.Options;
 using Parlance.Database;
+using Parlance.Database.Interfaces;
+using Parlance.Database.Models;
 using Parlance.Project;
 using Parlance.Project.Events;
 using Parlance.Project.Index;
@@ -90,16 +92,144 @@ public class ProjectService(
         }
     }
 
-    public Task<IEnumerable<Database.Models.Project>> Projects()
+    public async Task UpgradeProject(Database.Models.Project project)
     {
-        return Task.FromResult<IEnumerable<Database.Models.Project>>(dbContext.Projects);
+        // Reclone the project
+        var oldVcsDirectory = project.VcsDirectory;
+        var systemName = project.SystemName!;
+        var directory = Path.Combine(parlanceOptions.Value.RepositoryDirectory, "bare", systemName);
+        var cloneUrl = versionControlService.CloneUrl(project);
+        var branch = versionControlService.BranchName(project);
+
+        var branchSystemName = project.SystemName + "-" + branch.ToLower().Replace(' ', '-').Replace('/', '-');
+        var worktreeDirectory = Path.Combine(parlanceOptions.Value.RepositoryDirectory, "branches", systemName, branchSystemName);
+        var projectBranch = new Database.Models.ProjectBranch
+        {
+            SystemName = branchSystemName,
+            BranchName = branch,
+            VcsDirectory = worktreeDirectory,
+            IsDefault = true,
+            Parent = project
+        };
+        void TryDeleteDirectory(Exception ex, string directoryPath)
+        {
+            try
+            {
+                logger.LogError(ex, "Error registering repository. Deleting directory {Directory}", directoryPath);
+                Directory.Delete(directoryPath, true);
+            }
+            catch
+            {
+                // ignored
+            }
+        }
+        
+        try
+        {
+            await versionControlService.DownloadFromSourceBare(cloneUrl, directory);
+            project.VcsDirectory = directory;
+
+            await versionControlService.CreateWorktree(project, worktreeDirectory, branch);
+
+            dbContext.ProjectBranches.Add(projectBranch);
+            dbContext.Projects.Update(project);
+            await dbContext.SaveChangesAsync();
+        }
+        catch (Exception ex)
+        {
+            TryDeleteDirectory(ex, directory);
+            TryDeleteDirectory(ex, worktreeDirectory);
+            throw;
+        }
+        
+        
+        Directory.Delete(oldVcsDirectory!, true);
     }
 
-    public Task<Database.Models.Project> ProjectBySystemName(string systemName)
+    public async Task CloneBranch(Database.Models.Project project, string branch)
+    {
+        var systemName = project.SystemName!;
+
+        var branchSystemName = project.SystemName + "-" + branch.ToLower().Replace(' ', '-').Replace('/', '-');
+        var worktreeDirectory = Path.Combine(parlanceOptions.Value.RepositoryDirectory, "branches", systemName, branchSystemName);
+        if (Directory.Exists(worktreeDirectory))
+        {
+            throw new DuplicateResourceException();
+        }
+        
+        var projectBranch = new Database.Models.ProjectBranch
+        {
+            SystemName = branchSystemName,
+            BranchName = branch,
+            VcsDirectory = worktreeDirectory,
+            IsDefault = false,
+            Parent = project
+        };
+        void TryDeleteDirectory(Exception ex, string directoryPath)
+        {
+            try
+            {
+                logger.LogError(ex, "Error registering repository. Deleting directory {Directory}", directoryPath);
+                Directory.Delete(directoryPath, true);
+            }
+            catch
+            {
+                // ignored
+            }
+        }
+        
+        try
+        {
+            await versionControlService.CreateWorktree(project, worktreeDirectory, branch);
+
+            dbContext.ProjectBranches.Add(projectBranch);
+            await dbContext.SaveChangesAsync();
+        }
+        catch (Exception ex)
+        {
+            TryDeleteDirectory(ex, worktreeDirectory);
+            throw;
+        }
+    }
+
+    public async Task DeleteBranch(ProjectBranch projectBranch)
+    {
+        if (projectBranch.IsDefault)
+        {
+            throw new InvalidOperationException();
+        }
+        
+        dbContext.ProjectBranches.Remove(projectBranch);
+        await versionControlService.DeleteWorktree(projectBranch, projectBranch.BranchName);
+        await dbContext.SaveChangesAsync();
+    }
+
+    public Task<IEnumerable<IVcsable>> Projects()
+    {
+        return Task.FromResult<IEnumerable<IVcsable>>(dbContext.Projects);
+    }
+
+    public async Task<IVcsable> ProjectBySystemName(string systemName)
     {
         try
         {
-            return Task.FromResult(dbContext.Projects.Single(project => project.SystemName == systemName));
+            var projectBranch = await dbContext.ProjectBranches.ToAsyncEnumerable().SingleOrDefaultAsync(x => x.SystemName == systemName);
+            if (projectBranch is not null)
+            {
+                await dbContext.Entry(projectBranch).Reference(b => b.Parent).LoadAsync();
+                return projectBranch;
+            }
+            
+            var projects = await Projects();
+            var project = projects.Single(project => project.SystemName == systemName);
+            var branches = project.Project.Branches;
+            var defaultBranch = branches.FirstOrDefault(branch => branch.IsDefault) ?? branches.FirstOrDefault();
+            if (defaultBranch is null)
+            {
+                return project;
+            }
+            
+            return defaultBranch;
         }
         catch (InvalidOperationException)
         {
@@ -109,6 +239,13 @@ public class ProjectService(
 
     public async Task RemoveProject(Database.Models.Project project)
     {
+        await dbContext.Entry(project).Collection(p => p.Branches).LoadAsync();
+        foreach (var branch in project.Branches)
+        {
+            Directory.Delete(branch.VcsDirectory, true);
+            dbContext.ProjectBranches.Remove(branch);
+        }
+        
         dbContext.Projects.Remove(project);
         await dbContext.SaveChangesAsync();
         

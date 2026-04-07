@@ -83,7 +83,7 @@ public class PermissionsService(
         if (await superuserService.IsSuperuser(user)) return true;
 
         var p = await projectService.ProjectBySystemName(project);
-        if (await projectMaintainersService.IsProjectMaintainer(user, p)) return true;
+        if (await projectMaintainersService.IsProjectMaintainer(user, p.Project)) return true;
         if (await HasLocalePermission(user, locale)) return true;
         return false;
     }

@@ -49,7 +49,7 @@ public class EmailUnsubscribeController(
                     {
                         Type = translationFreezeNotificationChannelSubscription.Channel,
                         translationFreezeNotificationChannelSubscription.Project,
-                        ProjectName = project.Name,
+                        ProjectName = project.Project.Name,
                         AutoSubscription = autoSubscription
                     };
                     break;

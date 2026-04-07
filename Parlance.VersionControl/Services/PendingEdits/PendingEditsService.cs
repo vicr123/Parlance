@@ -1,5 +1,6 @@
 using Parlance.CldrData;
 using Parlance.Database;
+using Parlance.Database.Interfaces;
 using Parlance.Project;
 using Parlance.Vicr123Accounts.Services;
 using Parlance.Vicr123Accounts.Services.AttributionConsent;
@@ -31,9 +32,9 @@ public class PendingEditsService(
         await parlanceContext.SaveChangesAsync();
     }
 
-    public async Task<IEnumerable<Editor>> EditorsPendingEdits(Database.Models.Project project)
+    public async Task<IEnumerable<Editor>> EditorsPendingEdits(IVcsable project)
     {
-        var users = await Task.WhenAll(parlanceContext.EditsPending.Where(x => x.Project == project.Name)
+        var users = await Task.WhenAll(parlanceContext.EditsPending.Where(x => x.Project == project.Project.Name)
             .AsEnumerable()
             .DistinctBy(x => x.UserId).Select(async x =>
             {
@@ -48,16 +49,16 @@ public class PendingEditsService(
         return users.Where(x => x is not null).Cast<Editor>();
     }
 
-    public IEnumerable<Locale> LocalesPendingEdits(Database.Models.Project project)
+    public IEnumerable<Locale> LocalesPendingEdits(IVcsable project)
     {
-        return parlanceContext.EditsPending.Where(x => x.Project == project.Name).AsEnumerable()
+        return parlanceContext.EditsPending.Where(x => x.Project == project.Project.Name).AsEnumerable()
             .DistinctBy(x => x.Language).Select(x => Locale.FromDatabaseRepresentation(x.Language))
             .Where(x => x is not null).Cast<Locale>();
     }
 
-    public async Task ClearPendingEdits(Database.Models.Project project)
+    public async Task ClearPendingEdits(IVcsable project)
     {
-        parlanceContext.EditsPending.RemoveRange(parlanceContext.EditsPending.Where(x => x.Project == project.Name));
+        parlanceContext.EditsPending.RemoveRange(parlanceContext.EditsPending.Where(x => x.Project == project.Project.Name));
         await parlanceContext.SaveChangesAsync();
     }
 }

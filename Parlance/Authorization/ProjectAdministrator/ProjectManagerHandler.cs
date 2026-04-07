@@ -21,6 +21,6 @@ public class ProjectManagerHandler(IProjectMaintainersService projectMaintainers
 
         var p = await projectService.ProjectBySystemName((string)projectName!);
 
-        if (await projectMaintainersService.IsProjectMaintainer(username, p)) context.Succeed(requirement);
+        if (await projectMaintainersService.IsProjectMaintainer(username, p.Project)) context.Succeed(requirement);
     }
 }

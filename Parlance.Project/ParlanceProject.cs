@@ -11,16 +11,32 @@ public class ParlanceProject : IParlanceProject
     {
         PropertyNameCaseInsensitive = true
     };
-
-    private readonly Database.Models.Project _project;
-
-    public ParlanceProject(Database.Models.Project project)
+    
+    public static ParlanceProject CreateParlanceProject(Database.Models.Project project)
     {
-        _project = project;
+        if (project.SystemName is null)
+        {
+            throw new InvalidOperationException("Tried to construct Parlance project without a branch");
+        }
+        
+        var vcsDirectory = project.VcsDirectory!;
+        return new ParlanceProject(project.Name, project.SystemName, vcsDirectory);
+    }
 
+    public static ParlanceProject CreateParlanceProject(Database.Models.ProjectBranch projectBranch)
+    {
+        return new ParlanceProject(projectBranch.Parent.Name, projectBranch.SystemName, projectBranch.VcsDirectory);
+    }
+
+    private ParlanceProject(string projectName, string systemName, string vcsDirectory)
+    {
         try
         {
-            using var file = File.OpenRead(Path.Combine(project.VcsDirectory, ".parlance.json"));
+            Name = projectName;
+            SystemName = systemName;
+            VcsDirectory = vcsDirectory;
+            
+            using var file = File.OpenRead(Path.Combine(vcsDirectory, ".parlance.json"));
             
             var subprojectDefs = JsonSerializer.Deserialize<ParlanceJson>(file, JsonOptions);
 
@@ -51,10 +67,10 @@ public class ParlanceProject : IParlanceProject
 
     public string ReadableName { get; }
 
-    public string SystemName => _project.SystemName;
+    public string SystemName { get; }
 
-    public string Name => _project.Name;
-    public string VcsDirectory => _project.VcsDirectory;
+    public string Name { get; }
+    public string VcsDirectory { get; }
     public DateTime? Deadline { get; }
     public IReadOnlyList<IParlanceSubproject> Subprojects { get; }
 
