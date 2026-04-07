@@ -89,7 +89,7 @@ public record Locale
         {
             var locale = Sepia.Globalization.Locale.Create(ToUnderscored());
             var languageCode = locale.Id.Language.ToLowerInvariant();
-            var regex = new Regex($"""[" ]{languageCode}[" ]""");
+            var regex = new Regex($"(^| ){languageCode}($| )");
             var rules = Cldr.Instance.GetDocuments("common/supplemental/plurals.xml")
                 .Elements($"supplementalData/plurals[@type='cardinal']/pluralRules[contains(@locales, '{languageCode}')]/pluralRule")
                 .Where(x =>
