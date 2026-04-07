@@ -14,6 +14,7 @@ import WallMessage from "../../../components/WallMessage";
 import { calculateDeadline } from "@/helpers/Misc";
 import { useUserUpdateEffect } from "@/helpers/Hooks";
 import { ProjectResponse } from "@/interfaces/projects";
+import {BranchSelector} from "@/pages/Projects/Subprojects/BranchSelector";
 
 export function SubprojectListing() {
     const {project} = useParams();
@@ -61,6 +62,7 @@ export function SubprojectListing() {
                 text={t("BACK_TO_PROJECTS")}
                 onClick={() => navigate("../..")}
             />
+            {(projectData?.branches?.length ?? 0) > 0 && <BranchSelector branches={projectData!.branches!} />}
             <ErrorCover error={error}>
                 <Container>
                     <PageHeading level={3}>

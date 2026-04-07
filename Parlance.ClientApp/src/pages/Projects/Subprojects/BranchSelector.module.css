@@ -1,0 +1,60 @@
+.main {
+    display: flex;
+    justify-content: flex-end;
+    background: none;
+    padding: 0;
+    gap: 4px;
+    align-items: center;
+}
+
+.branchButton {
+    display: flex;
+    align-items: center;
+    background: var(--layer-color);
+    padding: 8px;
+    border-radius: 4px;
+    gap: 4px;
+    cursor: default;
+}
+
+.branchButton:hover {
+    background: var(--hover-color);
+}
+
+.branchButton:active {
+    background: var(--active-color);
+}
+
+.buttonWrapper {
+    position: relative;
+}
+
+.popout {
+    background: var(--background-color);
+    border-radius: 4px;
+    position: absolute;
+    right: 0;
+    margin-top: 8px;
+    border: 1px solid var(--border-color);
+    z-index: 1;
+}
+
+.popoutInner {
+    background: var(--layer-color);
+    border-radius: 4px;
+    padding: 4px;
+}
+
+.scrim {
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+}
+
+.branchListItem {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}

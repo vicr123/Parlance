@@ -78,6 +78,7 @@
   "BACK_TO_PROJECTS": "Back to Projects",
   "BACK_TO_SUBPROJECTS": "Back to Subprojects",
   "BRANCH": "Branch",
+  "BRANCH_SELECTOR_PROMPT": "Branch:",
   "CANCEL": "Cancel",
   "CHANGE_EMAIL_ERROR_1": "Could not set email address",
   "CHANGE_EMAIL_ERROR_2": "Your email address could not be changed.",
