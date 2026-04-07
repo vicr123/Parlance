@@ -15,13 +15,13 @@ import { calculateDeadline } from "@/helpers/Misc";
 import { useUserUpdateEffect } from "@/helpers/Hooks";
 import { ProjectResponse } from "@/interfaces/projects";
 
-export default function SubprojectListing() {
-    const { project } = useParams();
+export function SubprojectListing() {
+    const {project} = useParams();
     const [projectData, setProjectData] = useState<Partial<ProjectResponse>>();
     const [done, setDone] = useState(false);
     const [error, setError] = useState<any>();
     const navigate = useNavigate();
-    const { t } = useTranslation();
+    const {t} = useTranslation();
 
     const updateProjects = async () => {
         try {
@@ -48,7 +48,7 @@ export default function SubprojectListing() {
 
     return (
         <div>
-            <Hero heading={projectData?.name ?? ""} buttons={[]} />
+            <Hero heading={projectData?.name ?? ""} buttons={[]}/>
             {deadlineInfo.valid && (
                 <WallMessage
                     title={t("TRANSLATION_FREEZE")}
@@ -70,16 +70,16 @@ export default function SubprojectListing() {
                         items={
                             done
                                 ? projectData?.subprojects?.map(p => ({
-                                      contents: (
-                                          <TranslationProgressIndicator
-                                              title={i18n.humanReadableLocale(
-                                                  p.name,
-                                              )}
-                                              data={p.completionData}
-                                          />
-                                      ),
-                                      onClick: () => navigate(p.systemName),
-                                  }))
+                                    contents: (
+                                        <TranslationProgressIndicator
+                                            title={i18n.humanReadableLocale(
+                                                p.name,
+                                            )}
+                                            data={p.completionData}
+                                        />
+                                    ),
+                                    onClick: () => navigate(p.systemName),
+                                }))
                                 : TranslationProgressIndicator.PreloadContents()
                         }
                     />
@@ -93,6 +93,10 @@ export default function SubprojectListing() {
                             {
                                 contents: t("MANAGE_VCS_REPOSITORY"),
                                 onClick: () => navigate("vcs"),
+                            },
+                            {
+                                contents: t("MANAGE_BRANCHES"),
+                                onClick: () => navigate("branches"),
                             },
                             {
                                 contents: t("MANAGE_GLOSSARIES"),
