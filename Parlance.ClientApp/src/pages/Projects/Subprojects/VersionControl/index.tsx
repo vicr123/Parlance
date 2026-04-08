@@ -18,6 +18,8 @@ import {
     Commit as CommitType,
     VersionControlState,
 } from "@/interfaces/versionControl";
+import {BranchSelector} from "@/pages/Projects/Subprojects/BranchSelector";
+import {ProjectResponse} from "@/interfaces/projects";
 
 function Commit({ commit }: { commit?: CommitType }) {
     if (!commit) {
@@ -53,6 +55,18 @@ export default function VersionControl() {
     const navigate = useNavigate();
 
     const cloneUrl = `${window.location.protocol}//${window.location.host}/git/${project}/`;
+
+    const [projectData, setProjectData] = useState<Partial<ProjectResponse>>();
+
+    const updateProjects = async () => {
+        setProjectData(
+            await Fetch.get<ProjectResponse>(`/api/projects/${project}`),
+        );
+    };
+
+    useEffect(() => {
+        updateProjects();
+    }, [project]);
 
     const updateVcs = async () => {
         try {
@@ -310,6 +324,11 @@ export default function VersionControl() {
                 text={t("BACK_TO_SUBPROJECTS")}
                 onClick={() => navigate("..")}
             />
+            {(projectData?.branches?.length ?? 0) > 0 &&
+                <BranchSelector branches={projectData!.branches!} changeBranch={(systemName) =>
+                    navigate(`../../${systemName}/vcs`, {
+                        relative: "path"
+                    })}/>}
             <ErrorCover error={error}>
                 <Container>
                     <PageHeading level={3}>{t("VCS_GIT")}</PageHeading>

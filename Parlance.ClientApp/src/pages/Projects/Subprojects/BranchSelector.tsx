@@ -4,15 +4,14 @@ import Container from "@/components/Container";
 import Icon from "@/components/Icon";
 import SelectableList from "@/components/SelectableList";
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 
-export function BranchSelector({branches}: {
-    branches: ProjectResponse["branches"]
+export function BranchSelector({branches, changeBranch}: {
+    branches: ProjectResponse["branches"],
+    changeBranch: (systemName: string) => void,
 }) {
     const [menuOpen, setMenuOpen] = useState(false);
     const {t} = useTranslation();
-    const navigate = useNavigate();
     
     const currentBranch = branches.find(branch => branch.currentBranch)!;
     
@@ -35,9 +34,7 @@ export function BranchSelector({branches}: {
                             </div>,
                             onClick: () => {
                                 setMenuOpen(false);
-                                return navigate(`../${branch.systemName}`, {
-                                    relative: "path"
-                                });
+                                changeBranch(branch.systemName);
                             }
                         }))} />
                     </div>
