@@ -69,6 +69,9 @@ export default function ErrorModal({
                     case "BadTokenRequestType":
                         setMessage(t("ERROR_BAD_TOKEN_REQUEST_TYPE"));
                         return;
+                    case "NoUpstreamError":
+                        setMessage(t("ERROR_NO_UPSTREAM"));
+                        return;
                 }
             } catch {}
         })();

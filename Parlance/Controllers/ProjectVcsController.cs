@@ -91,6 +91,10 @@ public class ProjectVcsController(
         {
             return this.ClientError(ParlanceClientError.DirtyWorkingTree);
         }
+        catch (NoUpstreamException)
+        {
+            return this.ClientError(ParlanceClientError.NoUpstreamError);
+        }
         catch (LibGit2SharpException ex)
         {
             return this.ClientError(ParlanceClientError.GitError, ex.Message);
@@ -116,6 +120,10 @@ public class ProjectVcsController(
         catch (NonFastForwardException)
         {
             return this.ClientError(ParlanceClientError.NonFastForwardableError);
+        }
+        catch (NoUpstreamException)
+        {
+            return this.ClientError(ParlanceClientError.NoUpstreamError);
         }
         catch (LibGit2SharpException ex)
         {

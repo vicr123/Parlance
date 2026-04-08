@@ -184,6 +184,11 @@ public class GitVersionControlService(
     {
         AbortPendingOperations(repo);
 
+        if (repo.Head.TrackedBranch is null)
+        {
+            throw new NoUpstreamException();
+        }
+        
         var rebaseResult = repo.Rebase.Start(repo.Head, repo.Head.TrackedBranch, null, _identity, new RebaseOptions());
         if (rebaseResult.Status is RebaseStatus.Conflicts or RebaseStatus.Stop)
         {
@@ -400,13 +405,25 @@ public class GitVersionControlService(
 
     private void PublishSavedChangesToSourceCore(IVcsable project)
     {
-        var repo = new Repository(project.VcsDirectory);
-        var branch = repo.Head;
-        repo.Network.Push(branch, new PushOptions
+        try
         {
-            CredentialsProvider = remoteCommunicationService.CredentialsHandler,
-            CertificateCheck = remoteCommunicationService.CertificateCheckHandler
-        });
+            var repo = new Repository(project.VcsDirectory);
+            var branch = repo.Head;
+            repo.Network.Push(branch, new PushOptions
+            {
+                CredentialsProvider = remoteCommunicationService.CredentialsHandler,
+                CertificateCheck = remoteCommunicationService.CertificateCheckHandler
+            });
+        }
+        catch (LibGit2SharpException e)
+        {
+            if (e.Message.Contains("does not track an upstream branch"))
+            {
+                // The branch is gone
+                throw new NoUpstreamException();
+            }
+            throw;
+        }
     }
 
     public Task DeleteUnpublishedChanges(IVcsable project)

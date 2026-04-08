@@ -4,13 +4,11 @@ using Parlance.Project;
 
 namespace Parlance.VersionControl.Services.VersionControl;
 
-public class MergeConflictException : Exception
-{
-}
+public class MergeConflictException : Exception;
 
-public class DirtyWorkingTreeException : Exception
-{
-}
+public class DirtyWorkingTreeException : Exception;
+
+public class NoUpstreamException : Exception;
 
 public class VersionControlCommit(Commit commit)
 {

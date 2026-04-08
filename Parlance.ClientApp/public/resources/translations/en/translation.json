@@ -146,6 +146,7 @@
   "ERROR_INVALID_BASE_FILE_TEXT": "The specified base file in the .parlance.json file is invalid",
   "ERROR_INVALID_BASE_FILE_TITLE": "Invalid Base File",
   "ERROR_MERGE_CONFLICT": "Unable to reconcile the Parlance repository with the remote as merge conflicts resulted from the merge operation.",
+  "ERROR_NO_UPSTREAM": "The upstream branch no longer exists.",
   "ERROR_NON_FAST_FORWARDABLE": "The repository is out of date and needs to be updated by pulling.",
   "ERROR_PARLANCE_JSON_FILE_PARSE_TEXT": "The .parlance.json file is invalid.",
   "ERROR_PARLANCE_JSON_FILE_PARSE_TITLE": "Invalid Parlance JSON File",
