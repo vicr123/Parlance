@@ -54,9 +54,10 @@ export default function VersionControl() {
     const { t } = useTranslation();
     const navigate = useNavigate();
 
-    const cloneUrl = `${window.location.protocol}//${window.location.host}/git/${project}/`;
-
     const [projectData, setProjectData] = useState<Partial<ProjectResponse>>();
+
+    const defaultBranch = projectData?.branches?.find(branch => branch.defaultBranch); 
+    const cloneUrl = `${window.location.protocol}//${window.location.host}/git/${defaultBranch?.systemName ?? project}/`;
 
     const updateProjects = async () => {
         setProjectData(
@@ -78,7 +79,7 @@ export default function VersionControl() {
 
     useEffect(() => {
         updateVcs();
-    }, []);
+    }, [project]);
 
     const fetch = async () => {
         Modal.mount(<LoadingModal />);
