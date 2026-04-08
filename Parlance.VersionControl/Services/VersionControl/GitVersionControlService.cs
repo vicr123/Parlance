@@ -351,6 +351,7 @@ public class GitVersionControlService(
             // Ignore
         }
         
+        Directory.CreateDirectory(Directory.GetParent(directory)!.FullName);
         repo.Worktrees.Add(branch, $"parlance-worktree-{branch}", directory, false);
         repo.Branches.Remove($"parlance-worktree-{branch}");
     }
