@@ -63,10 +63,10 @@ public class GitVersionControlService(
         {
             // ignore
         }
-        
+
         var projectMetaChanged = false;
         await Task.Run(() => ReconcileRemoteWithLocalCore(project, out projectMetaChanged));
-        
+
         if (projectMetaChanged)
         {
             IParlanceProject? newProject = null;
@@ -172,7 +172,7 @@ public class GitVersionControlService(
         {
             ReconcileRemoteWithLocalCoreMerge(repo);
         }
-        
+
         var projectMetaRevision = repo.Commits.QueryBy(".parlance.json", new CommitFilter
         {
             SortBy = CommitSortStrategies.Time | CommitSortStrategies.Topological
@@ -188,7 +188,7 @@ public class GitVersionControlService(
         {
             throw new NoUpstreamException();
         }
-        
+
         var rebaseResult = repo.Rebase.Start(repo.Head, repo.Head.TrackedBranch, null, _identity, new RebaseOptions());
         if (rebaseResult.Status is RebaseStatus.Conflicts or RebaseStatus.Stop)
         {
@@ -285,8 +285,8 @@ public class GitVersionControlService(
             throw;
         }
     }
-    
-    
+
+
     private void DownloadFromSourceBareCore(string cloneUrl, string directory)
     {
         try
@@ -321,7 +321,7 @@ public class GitVersionControlService(
     private void CreateWorktreeCore(IVcsable project, string directory, string branch)
     {
         using var repo = new Repository(project.VcsDirectory);
-        
+
         Branch remoteBranch;
         try
         {
@@ -355,10 +355,11 @@ public class GitVersionControlService(
         {
             // Ignore
         }
-        
+
         Directory.CreateDirectory(Directory.GetParent(directory)!.FullName);
         repo.Worktrees.Add(branch, $"parlance-worktree-{branch}", directory, false);
         repo.Branches.Remove($"parlance-worktree-{branch}");
+        repo.Branches.Update(localBranch, u => u.Remote = "origin", u => u.UpstreamBranch = $"refs/heads/{branch}");
     }
 
     private void DeleteWorktreeCore(IVcsable project, string branch)
@@ -422,6 +423,7 @@ public class GitVersionControlService(
                 // The branch is gone
                 throw new NoUpstreamException();
             }
+
             throw;
         }
     }

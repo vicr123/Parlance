@@ -127,10 +127,53 @@ export function Branches() {
                 <PageHeading level={3}>{t("MANAGE_BRANCHES")}</PageHeading>
                 <span>{t("MANAGE_BRANCHES_PROMPT")}</span>
                 <SelectableList
-                    items={branchState?.branches.map(branch => ({
-                        contents: branch.name,
-                        onClick: () => {}
-                    })) ?? SelectableList.PreloadingText()}
+                    items={branchState?.branches.map(branch => {
+                        const performDelete = async () => {
+                            Modal.mount(<LoadingModal />);
+
+                            try {
+                                await Fetch.delete(
+                                    `/api/projects/${branch.systemName}/branch`,
+                                );
+                                if (project == branch.systemName) {
+                                    const defaultBranch = branchState.branches.find(branch => branch.defaultBranch);
+                                    navigate(`/projects/${defaultBranch!.systemName}/branches`)
+                                } else {
+                                    await updateProjects();
+                                }
+                                Modal.unmount();
+                            } catch (err) {
+                                Modal.mount(<ErrorModal error={err} />);
+                            }
+                        }
+                        
+                        const deleteBranch = () => {
+                            if (branch.defaultBranch) {
+                                Modal.mount(<Modal
+                                    buttons={[Modal.OkButton]}>
+                                    {t("BRANCH_DELETE_DEFAULT_PROMPT")}
+                                </Modal>)
+                                return;
+                            }
+                            Modal.mount(<Modal
+                                    heading={t("BRANCH_DELETE")}
+                                    buttons={[Modal.CancelButton, {
+                                        text: t("BRANCH_DELETE"),
+                                        onClick: performDelete,
+                                        destructive: true
+                                    }]}
+                                >
+                                {t("BRANCH_DELETE_PROMPT", {
+                                    branch: branch.name
+                                })}
+                            </Modal>)
+                        }
+                        
+                        return ({
+                            contents: branch.name,
+                            onClick: deleteBranch
+                        });
+                    }) ?? SelectableList.PreloadingText()}
                 />
             </Container>
         </ErrorCover>
