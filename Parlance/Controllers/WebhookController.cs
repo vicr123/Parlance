@@ -29,7 +29,19 @@ public class WebhookController(
                 StringComparison.InvariantCultureIgnoreCase));
 
         foreach (var project in hitProjects)
-            await updateQueue.Queue(project);
+        {
+            if (project.Branches.Count == 0)
+            {
+                await updateQueue.Queue(project);
+            }
+            else
+            {
+                foreach (var branch in project.Branches)
+                {
+                    await updateQueue.Queue(branch);
+                }
+            }
+        }
 
         return NoContent();
     }
