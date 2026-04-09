@@ -36,7 +36,8 @@ public class WebhookController(
             }
             else
             {
-                foreach (var branch in project.Branches)
+                foreach (var branch in
+                         project.Branches.Where(branch => data.Repository.Ref.Contains(branch.BranchName)))
                 {
                     await updateQueue.Queue(branch);
                 }
@@ -54,6 +55,7 @@ public class WebhookController(
         {
             public string Ssh_Url { get; set; } = null!;
             public string Clone_Url { get; set; } = null!;
+            public string Ref { get; set; } = null!;
         }
     }
 }
