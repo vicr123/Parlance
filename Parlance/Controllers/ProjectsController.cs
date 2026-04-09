@@ -56,11 +56,12 @@ public class ProjectsController(
     public async Task<IActionResult> GetProjects()
     {
         var projects = (await projectService.Projects()).ToList();
-        return Json(await Task.WhenAll(projects.Select<IVcsable, Task<object>>(async project =>
+        return Json(await Task.WhenAll(projects.Select<Database.Models.Project, Task<object>>(async project =>
         {
             try
             {
-                var parlanceProject = project.GetParlanceProject();
+                var mainProject = (IVcsable?) project.Branches.SingleOrDefault(x => x.IsDefault) ?? project;
+                var parlanceProject = mainProject.GetParlanceProject();
                 var indexResults = await indexingService.OverallResults(parlanceProject);
                 return new
                 {
@@ -72,7 +73,7 @@ public class ProjectsController(
             {
                 return new
                 {
-                    project.Project.Name, project.SystemName, Error = true
+                    project.Name, project.SystemName, Error = true
                 };
             }
         })));

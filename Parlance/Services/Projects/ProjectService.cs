@@ -1,4 +1,5 @@
 using MessagePipe;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Parlance.Database;
 using Parlance.Database.Interfaces;
@@ -204,9 +205,14 @@ public class ProjectService(
         await dbContext.SaveChangesAsync();
     }
 
-    public Task<IEnumerable<IVcsable>> Projects()
+    public async Task<IEnumerable<Database.Models.Project>> Projects()
     {
-        return Task.FromResult<IEnumerable<IVcsable>>(dbContext.Projects);
+        var projects = await dbContext.Projects.ToListAsync();
+        foreach (var project in projects)
+        {
+            await dbContext.Entry(project).Collection(p => p.Branches).LoadAsync();
+        }
+        return projects;
     }
 
     public async Task<IVcsable> ProjectBySystemName(string systemName)
@@ -222,7 +228,7 @@ public class ProjectService(
             
             var projects = await Projects();
             var project = projects.Single(project => project.SystemName == systemName);
-            var branches = project.Project.Branches;
+            var branches = project.Branches;
             var defaultBranch = branches.FirstOrDefault(branch => branch.IsDefault) ?? branches.FirstOrDefault();
             if (defaultBranch is null)
             {
