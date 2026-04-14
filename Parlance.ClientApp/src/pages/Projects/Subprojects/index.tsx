@@ -1,9 +1,9 @@
 import { Route, Routes } from "react-router-dom";
-import {SubprojectListing} from "./SubprojectListing";
+import { SubprojectListing } from "./SubprojectListing";
 import Languages from "./Languages/index";
 import VersionControl from "./VersionControl/index";
 import Glossaries from "./Glossaries";
-import {Branches} from "./Branches"
+import { Branches } from "./Branches";
 
 export default function () {
     return (
