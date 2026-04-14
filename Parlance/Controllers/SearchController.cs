@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
+using Parlance.Database.Interfaces;
 using Parlance.Project;
 using Parlance.Services.Projects;
 
@@ -19,7 +20,11 @@ public class SearchController(IProjectService projectService) : Controller
         }
         
         var projects = (await projectService.Projects()).ToList();
-        var subprojects = projects.SelectMany(project => project.GetParlanceProject().Subprojects);
+        var subprojects = projects.SelectMany(project =>
+        {
+            var mainProject = (IVcsable?) project.Branches.SingleOrDefault(x => x.IsDefault) ?? project;
+            return mainProject.GetParlanceProject().Subprojects;
+        });
         return Json(projects.Where(project => project.Name.IndexOf(data.Query, StringComparison.InvariantCultureIgnoreCase) != -1).Select(project => new
         {
             Name = project.Name,

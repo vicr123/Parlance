@@ -106,6 +106,12 @@ export interface ProjectResponse {
         systemName: string;
         name: string;
     }[];
+    branches: {
+        name: string;
+        systemName: string;
+        currentBranch: boolean;
+        defaultBranch: boolean;
+    }[];
 }
 
 export interface SubprojectResponse {

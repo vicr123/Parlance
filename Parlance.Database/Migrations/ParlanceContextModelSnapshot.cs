@@ -17,7 +17,7 @@ namespace Parlance.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.0")
+                .HasAnnotation("ProductVersion", "10.0.0")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -384,6 +384,36 @@ namespace Parlance.Migrations
                         .HasColumnType("text");
 
                     b.Property<string>("SystemName")
+                        .HasColumnType("text");
+
+                    b.Property<string>("VcsDirectory")
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Name")
+                        .IsUnique();
+
+                    b.ToTable("Projects", (string)null);
+                });
+
+            modelBuilder.Entity("Parlance.Database.Models.ProjectBranch", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("BranchName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<bool>("IsDefault")
+                        .HasColumnType("boolean");
+
+                    b.Property<Guid>("ParentId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("SystemName")
                         .IsRequired()
                         .HasColumnType("text");
 
@@ -393,10 +423,9 @@ namespace Parlance.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("Name")
-                        .IsUnique();
+                    b.HasIndex("ParentId");
 
-                    b.ToTable("Projects", (string)null);
+                    b.ToTable("ProjectBranches", (string)null);
                 });
 
             modelBuilder.Entity("Parlance.Database.Models.ProjectMaintainer", b =>
@@ -547,6 +576,17 @@ namespace Parlance.Migrations
                     b.Navigation("AutoSubscriptionSource");
                 });
 
+            modelBuilder.Entity("Parlance.Database.Models.ProjectBranch", b =>
+                {
+                    b.HasOne("Parlance.Database.Models.Project", "Parent")
+                        .WithMany("Branches")
+                        .HasForeignKey("ParentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Parent");
+                });
+
             modelBuilder.Entity("Parlance.Database.Models.ProjectMaintainer", b =>
                 {
                     b.HasOne("Parlance.Database.Models.Project", "Project")
@@ -570,6 +610,8 @@ namespace Parlance.Migrations
 
             modelBuilder.Entity("Parlance.Database.Models.Project", b =>
                 {
+                    b.Navigation("Branches");
+
                     b.Navigation("Maintainers");
                 });
 #pragma warning restore 612, 618

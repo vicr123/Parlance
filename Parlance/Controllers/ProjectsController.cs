@@ -12,6 +12,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Primitives;
 using Npgsql;
 using Parlance.CldrData;
+using Parlance.Database.Interfaces;
+using Parlance.Database.Models;
 using Parlance.Glossary.Services;
 using Parlance.Helpers;
 using Parlance.Hubs;
@@ -58,7 +60,8 @@ public class ProjectsController(
         {
             try
             {
-                var parlanceProject = project.GetParlanceProject();
+                var mainProject = (IVcsable?) project.Branches.SingleOrDefault(x => x.IsDefault) ?? project;
+                var parlanceProject = mainProject.GetParlanceProject();
                 var indexResults = await indexingService.OverallResults(parlanceProject);
                 return new
                 {
@@ -113,7 +116,7 @@ public class ProjectsController(
         var locale = language.ToLocale();
         var projects = await projectService.Projects();
 
-        return Json(await Task.WhenAll(projects.Select<Database.Models.Project, Task<object>>(async project =>
+        return Json(await Task.WhenAll(projects.Select<IVcsable, Task<object>>(async project =>
         {
             try
             {
@@ -152,7 +155,7 @@ public class ProjectsController(
             {
                 return new
                 {
-                    project.Name,
+                    project.Project.Name,
                     project.SystemName,
                     Error = true,
                     Subprojects = Enumerable.Empty<object>()
@@ -191,7 +194,7 @@ public class ProjectsController(
         try
         {
             var p = await projectService.ProjectBySystemName(project);
-            await projectService.RemoveProject(p);
+            await projectService.RemoveProject(p.Project);
             return NoContent();
         }
         catch (ProjectNotFoundException)
@@ -218,8 +221,15 @@ public class ProjectsController(
                 return Json(new
                 {
                     CompletionData = indexResults,
-                    p.Name, proj.Deadline,
-                    IsProjectManager = await projectMaintainersService.IsProjectMaintainer(username, p),
+                    p.Project.Name, proj.Deadline,
+                    IsProjectManager = await projectMaintainersService.IsProjectMaintainer(username, p.Project),
+                    Branches = p.Project.Branches.Select(branch => new
+                    {
+                        Name = branch.BranchName,
+                        SystemName = branch.IsDefault ? branch.Parent.SystemName : branch.SystemName,
+                        CurrentBranch = branch == p,
+                        DefaultBranch = branch.IsDefault
+                    }),
                     Subprojects = await Task.WhenAll(proj.Subprojects.Select(async subproject =>
                     {
                         var subprojectIndexResults = await indexingService.OverallResults(subproject);
@@ -238,7 +248,7 @@ public class ProjectsController(
                 return StatusCode(500, new
                 {
                     Error = "ParlanceJsonFileParseError",
-                    IsProjectManager = await projectMaintainersService.IsProjectMaintainer(username, p),
+                    IsProjectManager = await projectMaintainersService.IsProjectMaintainer(username, p.Project),
                 });
             }
         }
@@ -247,7 +257,75 @@ public class ProjectsController(
             return NotFound();
         }
     }
-    
+
+    [HttpPost]
+    [Authorize(Policy = "ProjectManager")]
+    [Route("{project}/upgrade")]
+    public async Task<IActionResult> UpgradeProject(string project)
+    {
+        try
+        {
+            var p = await projectService.ProjectBySystemName(project);
+            if (p is not Database.Models.Project dbProject)
+            {
+                return BadRequest();
+            }
+
+            await projectService.UpgradeProject(dbProject);
+            return NoContent();
+        }
+        catch (ProjectNotFoundException)
+        {
+            return NotFound();
+        }
+    }
+
+    [HttpPost]
+    [Authorize(Policy = "ProjectManager")]
+    [Route("{project}/branch")]
+    public async Task<IActionResult> CloneBranch(string project, [FromBody] BranchRequestData data)
+    {
+        try
+        {
+            var p = await projectService.ProjectBySystemName(project);
+            await projectService.CloneBranch(p.Project, data.Branch);
+            return NoContent();
+        }
+        catch (DuplicateResourceException)
+        {
+            return Conflict();
+        }
+        catch (ProjectNotFoundException)
+        {
+            return NotFound();
+        }
+    }
+
+    [HttpDelete]
+    [Authorize(Policy = "ProjectManager")]
+    [Route("{project}/branch")]
+    public async Task<IActionResult> RemoveBranch(string project)
+    {
+        try
+        {
+            var p = await projectService.ProjectBySystemName(project);
+            if (p is not ProjectBranch branch)
+            {
+                return NotFound();
+            }
+
+            await projectService.DeleteBranch(branch);
+            return NoContent();
+        }
+        catch (ProjectNotFoundException)
+        {
+            return NotFound();
+        }
+        catch (InvalidOperationException)
+        {
+            return BadRequest();
+        }
+    }
 
     [HttpGet]
     [Route("{project}/badge/{type?}")]
@@ -340,7 +418,7 @@ public class ProjectsController(
                 return StatusCode(500, new
                 {
                     Error = "ParlanceJsonFileParseError",
-                    IsProjectManager = await projectMaintainersService.IsProjectMaintainer(username, p),
+                    IsProjectManager = await projectMaintainersService.IsProjectMaintainer(username, p.Project),
                 });
             }
         }
@@ -377,7 +455,7 @@ public class ProjectsController(
     {
         var p = await projectService.ProjectBySystemName(project);
 
-        return Json(await projectMaintainersService.ProjectMaintainers(p).ToListAsync());
+        return Json(await projectMaintainersService.ProjectMaintainers(p.Project).ToListAsync());
     }
 
     [Authorize(Policy = "Superuser")]
@@ -388,7 +466,7 @@ public class ProjectsController(
         try
         {
             var p = await projectService.ProjectBySystemName(project);
-            await projectMaintainersService.AddProjectMaintainer(data.Name, p);
+            await projectMaintainersService.AddProjectMaintainer(data.Name, p.Project);
 
             return NoContent();
         }
@@ -410,7 +488,7 @@ public class ProjectsController(
         try
         {
             var p = await projectService.ProjectBySystemName(project);
-            await projectMaintainersService.RemoveProjectMaintainer(username, p);
+            await projectMaintainersService.RemoveProjectMaintainer(username, p.Project);
             return NoContent();
         }
         catch (DBusException ex) when (ex.ErrorName == "com.vicr123.accounts.Error.NoAccount")
@@ -431,7 +509,7 @@ public class ProjectsController(
         try
         {
             var p = await projectService.ProjectBySystemName(project);
-            return Json(glossaryService.ConnectedGlossaries(p).Select(x => new
+            return Json(glossaryService.ConnectedGlossaries(p.Project).Select(x => new
             {
                 x.Id, x.Name
             }));
@@ -458,7 +536,7 @@ public class ProjectsController(
         {
             var p = await projectService.ProjectBySystemName(project);
             var glossary = glossaryService.GlossaryById(data.GlossaryId);
-            await glossaryService.ConnectGlossary(glossary, p);
+            await glossaryService.ConnectGlossary(glossary, p.Project);
             return NoContent();
         }
         catch (ProjectNotFoundException)
@@ -483,7 +561,7 @@ public class ProjectsController(
         {
             var p = await projectService.ProjectBySystemName(project);
             var g = glossaryService.GlossaryById(glossary);
-            await glossaryService.DisconnectGlossary(g, p);
+            await glossaryService.DisconnectGlossary(g, p.Project);
             return NoContent();
         }
         catch (ProjectNotFoundException)
@@ -585,7 +663,7 @@ public class ProjectsController(
             return Json(new
             {
                 CompletionData = indexResults,
-                ProjectName = p.Name,
+                ProjectName = p.Project.Name,
                 SubprojectName = subp.Name,
                 Language = subprojectLanguage.Locale.ToDashed(),
                 CanEdit = await permissionsService.CanEditProjectLocale(username, project, language.ToLocale()),
@@ -785,7 +863,7 @@ public class ProjectsController(
         {
             var p = await projectService.ProjectBySystemName(project);
             var locale = language.ToLocale();
-            return Json(glossaryService.SearchGlossaryByProject(p, locale, null).Select(x => new
+            return Json(glossaryService.SearchGlossaryByProject(p.Project, locale, null).Select(x => new
             {
                 x.Id, x.Term, x.Translation, x.PartOfSpeech
             }));
@@ -805,7 +883,7 @@ public class ProjectsController(
         {
             var p = await projectService.ProjectBySystemName(project);
             var locale = language.ToLocale();
-            return Json(glossaryService.SearchGlossaryByProject(p, locale, data.SearchTerm).Select(x => new
+            return Json(glossaryService.SearchGlossaryByProject(p.Project, locale, data.SearchTerm).Select(x => new
             {
                 x.Id, x.Term, x.Translation, x.PartOfSpeech
             }));
@@ -842,5 +920,10 @@ public class ProjectsController(
     public class SearchGlossaryRequestData
     {
         public required string? SearchTerm { get; set; }
+    }
+
+    public class BranchRequestData
+    {
+        public required string Branch { get; set; }
     }
 }

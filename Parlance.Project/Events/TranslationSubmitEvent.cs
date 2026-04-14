@@ -1,3 +1,4 @@
+using Parlance.Database.Interfaces;
 using Parlance.Project.TranslationFiles;
 using Parlance.Vicr123Accounts.Services;
 
@@ -9,5 +10,5 @@ public class TranslationSubmitEvent
     public required IParlanceTranslationFileEntry Entry { get; set; }
     public required User? User { get; set; }
     
-    public required Database.Models.Project Project { get; set; }
+    public required IVcsable Project { get; set; }
 }

@@ -29,7 +29,20 @@ public class WebhookController(
                 StringComparison.InvariantCultureIgnoreCase));
 
         foreach (var project in hitProjects)
-            await updateQueue.Queue(project);
+        {
+            if (project.Branches.Count == 0)
+            {
+                await updateQueue.Queue(project);
+            }
+            else
+            {
+                foreach (var branch in
+                         project.Branches.Where(branch => data.Repository.Ref.Contains(branch.BranchName)))
+                {
+                    await updateQueue.Queue(branch);
+                }
+            }
+        }
 
         return NoContent();
     }
@@ -42,6 +55,7 @@ public class WebhookController(
         {
             public string Ssh_Url { get; set; } = null!;
             public string Clone_Url { get; set; } = null!;
+            public string Ref { get; set; } = null!;
         }
     }
 }

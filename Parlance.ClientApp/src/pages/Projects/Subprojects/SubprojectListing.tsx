@@ -14,8 +14,9 @@ import WallMessage from "../../../components/WallMessage";
 import { calculateDeadline } from "@/helpers/Misc";
 import { useUserUpdateEffect } from "@/helpers/Hooks";
 import { ProjectResponse } from "@/interfaces/projects";
+import { BranchSelector } from "@/pages/Projects/Subprojects/BranchSelector";
 
-export default function SubprojectListing() {
+export function SubprojectListing() {
     const { project } = useParams();
     const [projectData, setProjectData] = useState<Partial<ProjectResponse>>();
     const [done, setDone] = useState(false);
@@ -61,6 +62,16 @@ export default function SubprojectListing() {
                 text={t("BACK_TO_PROJECTS")}
                 onClick={() => navigate("../..")}
             />
+            {(projectData?.branches?.length ?? 0) > 0 && (
+                <BranchSelector
+                    branches={projectData!.branches!}
+                    changeBranch={systemName =>
+                        navigate(`../${systemName}`, {
+                            relative: "path",
+                        })
+                    }
+                />
+            )}
             <ErrorCover error={error}>
                 <Container>
                     <PageHeading level={3}>
@@ -93,6 +104,10 @@ export default function SubprojectListing() {
                             {
                                 contents: t("MANAGE_VCS_REPOSITORY"),
                                 onClick: () => navigate("vcs"),
+                            },
+                            {
+                                contents: t("MANAGE_BRANCHES"),
+                                onClick: () => navigate("branches"),
                             },
                             {
                                 contents: t("MANAGE_GLOSSARIES"),

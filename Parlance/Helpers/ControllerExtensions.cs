@@ -17,7 +17,8 @@ public enum ParlanceClientError
     DirtyWorkingTree,
     BadTokenRequestType,
     IncorrectParameters,
-    InvalidRef
+    InvalidRef,
+    NoUpstreamError
 }
 
 public static class ControllerExtensions

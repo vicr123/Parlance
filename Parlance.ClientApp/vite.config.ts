@@ -69,6 +69,11 @@ export default defineConfig({
                 secure: false,
                 ws: true,
             },
+            "^/git": {
+                target,
+                secure: false,
+                ws: true,
+            },
         },
         port: 5173,
         https: {

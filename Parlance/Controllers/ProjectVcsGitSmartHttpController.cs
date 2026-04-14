@@ -1,9 +1,11 @@
+using System.Diagnostics;
 using System.Globalization;
 using System.IO.Compression;
 using System.Text;
 using LibGit2Sharp;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
+using Parlance.Database.Interfaces;
 using Parlance.Helpers;
 using Parlance.Project;
 using Parlance.Services.Projects;
@@ -19,6 +21,16 @@ public class ProjectVcsGitSmartHttpController(
     IVersionControlService versionControlService)
     : Controller
 {
+    private const string Banner = """
+    
+        _____ _    ___________________________________
+        |     \ /   |  _ \   _ __| |    _ __ ___|  __|
+        | ____//    |  __/-'| '__| /--'| '_ / __|  __|
+        | |\  /     | || [] | [  || [] | | [ [__| [__
+        |_| \/(_)  _|_| \___|_|__|_\___|_| |\___|____|_
+        
+    """;
+    
     private static async Task WritePktFlush(Stream stream)
     {
         await stream.WriteAsync(Encoding.UTF8.GetBytes("0000"));
@@ -129,6 +141,10 @@ public class ProjectVcsGitSmartHttpController(
         try
         {
             var p = await projectService.ProjectBySystemName(project);
+            if (p.Project.SystemName != project)
+            {
+                return NotFound();
+            }
             var proj = p.GetParlanceProject();
 
             var stream = new MemoryStream();
@@ -169,6 +185,10 @@ public class ProjectVcsGitSmartHttpController(
         try
         {
             var p = await projectService.ProjectBySystemName(project);
+            if (p.Project.SystemName != project)
+            {
+                return NotFound();
+            }
             var proj = p.GetParlanceProject();
 
             using var repo = gitService.ProjectRepository(proj);
@@ -197,7 +217,7 @@ public class ProjectVcsGitSmartHttpController(
             return commandLine[8..] switch
             {
                 "ls-refs" => await GitUploadPackLsRefs(capabilities, args, repo),
-                "fetch" => await GitUploadPackFetch(capabilities, args, repo),
+                "fetch" => await GitUploadPackFetch(capabilities, args, repo, p),
                 _ => BadRequest()
             };
         }
@@ -231,7 +251,8 @@ public class ProjectVcsGitSmartHttpController(
 
     private async Task<IActionResult> GitUploadPackFetch(IDictionary<string, string> capabilities,
         IEnumerable<byte[]> args,
-        IRepository repo)
+        IRepository repo,
+        IVcsable project)
     {
 #pragma warning disable CS0219
         var thinPack = false;
@@ -266,14 +287,25 @@ public class ProjectVcsGitSmartHttpController(
         }
 
         await WritePktLine(Response.Body, "packfile\n");
-        await WriteSideband(Response.Body, 2, "Parlance");
+        foreach (var line in Banner.Split("\n"))
+        {
+            await WriteSideband(Response.Body, 2, line);
+        }
+        await WriteSideband(Response.Body, 2, $"This repository is for the Parlance project {project.Project.Name}.");
+        await WriteSideband(Response.Body, 2, $"{(HttpContext.Request.IsHttps ? "https://" : "http://")}{HttpContext.Request.Host}/projects/{project.Project.SystemName}");
+        await WriteSideband(Response.Body, 2, "");
 
+        var stopwatch = new Stopwatch();
+        stopwatch.Start();
+        
+        var enumeration = 0;
         var objects = new List<string>();
         while (want.Count != 0)
         {
             var wantedObject = want.Dequeue();
             if (have.Contains(wantedObject)) continue; //Client already has this object so don't add it to the packfile
-
+            if (objects.Contains(wantedObject)) continue; //We're already sending this object so don't bother processing it
+            
             objects.Add(wantedObject);
             var obj = repo.Lookup(wantedObject);
             if (obj is null)
@@ -287,23 +319,36 @@ public class ProjectVcsGitSmartHttpController(
 
             foreach (var parent in commit.Parents)
                 want.Enqueue(parent.Id.Sha);
+            enumeration++;
+
+            if (stopwatch.ElapsedMilliseconds > 1000)
+            {
+                // Give a progress update
+                await WriteSideband(Response.Body, 2, $"Enumerating objects: {enumeration}");
+                stopwatch.Restart();
+            }
         }
+        await WriteSideband(Response.Body, 2, $"Enumerating objects: {enumeration}, done.");
 
         var tempPath = Path.GetRandomFileName();
         Directory.CreateDirectory(tempPath);
 
         try
         {
+            stopwatch.Restart();
+            
+            await WriteSideband(Response.Body, 2, "Packing objects");
             var packBuilderResults = repo.ObjectDatabase.Pack(new PackBuilderOptions(tempPath), packBuilder =>
             {
-                foreach (var obj in objects.Distinct()) packBuilder.AddRecursively(new ObjectId(obj));
+                foreach (var obj in objects.Distinct())
+                {
+                    packBuilder.AddRecursively(new ObjectId(obj));
+                }
             });
+            await WriteSideband(Response.Body, 2, $"Packing objects, done.");
 
-            await WriteSideband(Response.Body, 2, $"{packBuilderResults.WrittenObjectsCount} objects...");
-
-            var indexFile = Directory.EnumerateFiles(tempPath, "*.idx").Single();
-            var indexFileContents = await System.IO.File.ReadAllBytesAsync(indexFile);
-
+            await WriteSideband(Response.Body, 2, $"Sending {packBuilderResults.WrittenObjectsCount} objects...");
+            
             var file = Directory.EnumerateFiles(tempPath, "*.pack").Single();
             var packfile = await System.IO.File.ReadAllBytesAsync(file);
 

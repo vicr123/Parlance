@@ -1,6 +1,7 @@
 using LibGit2Sharp;
 using MessagePipe;
 using Parlance.Database;
+using Parlance.Database.Interfaces;
 using Parlance.Project;
 using Parlance.Project.Exceptions;
 using Parlance.VersionControl.Events;
@@ -21,22 +22,37 @@ public class GitVersionControlService(
         return Task.Run(() => DownloadFromSourceCore(cloneUrl, directory, branch));
     }
 
-    public Task UpdateVersionControlMetadata(Database.Models.Project project)
+    public Task DownloadFromSourceBare(string sourceUrl, string directory)
+    {
+        return Task.Run(() => DownloadFromSourceBareCore(sourceUrl, directory));
+    }
+
+    public Task CreateWorktree(IVcsable project, string directory, string branch)
+    {
+        return Task.Run(() => CreateWorktreeCore(project, directory, branch));
+    }
+
+    public Task DeleteWorktree(IVcsable project, string branch)
+    {
+        return Task.Run(() => DeleteWorktreeCore(project, branch));
+    }
+
+    public Task UpdateVersionControlMetadata(IVcsable project)
     {
         return Task.Run(() => UpdateVersionControlMetadataCore(project));
     }
 
-    public Task<VersionControlCommit?> SaveChangesToVersionControl(Database.Models.Project project)
+    public Task<VersionControlCommit?> SaveChangesToVersionControl(IVcsable project)
     {
         return Task.Run(async () => await SaveChangesToVersionControlCore(project));
     }
 
-    public Task PublishSavedChangesToSource(Database.Models.Project project)
+    public Task PublishSavedChangesToSource(IVcsable project)
     {
         return Task.Run(() => PublishSavedChangesToSourceCore(project));
     }
 
-    public async Task ReconcileRemoteWithLocal(Database.Models.Project project)
+    public async Task ReconcileRemoteWithLocal(IVcsable project)
     {
         IParlanceProject? oldProject = null;
         try
@@ -47,10 +63,10 @@ public class GitVersionControlService(
         {
             // ignore
         }
-        
+
         var projectMetaChanged = false;
         await Task.Run(() => ReconcileRemoteWithLocalCore(project, out projectMetaChanged));
-        
+
         if (projectMetaChanged)
         {
             IParlanceProject? newProject = null;
@@ -72,7 +88,7 @@ public class GitVersionControlService(
         }
     }
 
-    public VersionControlStatus VersionControlStatus(Database.Models.Project project)
+    public VersionControlStatus VersionControlStatus(IVcsable project)
     {
         using var repo = new Repository(project.VcsDirectory);
 
@@ -86,7 +102,7 @@ public class GitVersionControlService(
         };
     }
 
-    public string CloneUrl(Database.Models.Project project)
+    public string CloneUrl(IVcsable project)
     {
         using var repo = new Repository(project.VcsDirectory);
         return repo.Network.Remotes["origin"].Url;
@@ -96,6 +112,12 @@ public class GitVersionControlService(
     {
         using var repo = new Repository(project.VcsDirectory);
         return repo.Network.Remotes["origin"].Url;
+    }
+
+    public string BranchName(IVcsable project)
+    {
+        using var repo = new Repository(project.VcsDirectory);
+        return repo.Head.FriendlyName;
     }
 
     public Repository ProjectRepository(IParlanceProject project)
@@ -129,7 +151,7 @@ public class GitVersionControlService(
         }
     }
 
-    private void ReconcileRemoteWithLocalCore(Database.Models.Project project, out bool projectMetaChanged)
+    private void ReconcileRemoteWithLocalCore(IVcsable project, out bool projectMetaChanged)
     {
         using var repo = new Repository(project.VcsDirectory);
         var oldProjectMetaRevision = repo.Commits.QueryBy(".parlance.json", new CommitFilter
@@ -150,7 +172,7 @@ public class GitVersionControlService(
         {
             ReconcileRemoteWithLocalCoreMerge(repo);
         }
-        
+
         var projectMetaRevision = repo.Commits.QueryBy(".parlance.json", new CommitFilter
         {
             SortBy = CommitSortStrategies.Time | CommitSortStrategies.Topological
@@ -161,6 +183,11 @@ public class GitVersionControlService(
     private void ReconcileRemoteWithLocalCoreRebase(IRepository repo)
     {
         AbortPendingOperations(repo);
+
+        if (repo.Head.TrackedBranch is null)
+        {
+            throw new NoUpstreamException();
+        }
 
         var rebaseResult = repo.Rebase.Start(repo.Head, repo.Head.TrackedBranch, null, _identity, new RebaseOptions());
         if (rebaseResult.Status is RebaseStatus.Conflicts or RebaseStatus.Stop)
@@ -183,7 +210,7 @@ public class GitVersionControlService(
         }
     }
 
-    private void UpdateVersionControlMetadataCore(Database.Models.Project project)
+    private void UpdateVersionControlMetadataCore(IVcsable project)
     {
         using var repo = new Repository(project.VcsDirectory);
         repo.Network.Fetch("origin",
@@ -259,7 +286,92 @@ public class GitVersionControlService(
         }
     }
 
-    private async Task<VersionControlCommit?> SaveChangesToVersionControlCore(Database.Models.Project project)
+
+    private void DownloadFromSourceBareCore(string cloneUrl, string directory)
+    {
+        try
+        {
+            Repository.Clone(cloneUrl, directory,
+                new CloneOptions
+                {
+                    FetchOptions =
+                    {
+                        CredentialsProvider = remoteCommunicationService.CredentialsHandler,
+                        CertificateCheck = remoteCommunicationService.CertificateCheckHandler,
+                        OnTransferProgress = _ => true
+                    },
+                    IsBare = true,
+                });
+        }
+        catch (Exception)
+        {
+            try
+            {
+                Directory.Delete(directory, true);
+            }
+            catch
+            {
+                // ignored
+            }
+
+            throw;
+        }
+    }
+
+    private void CreateWorktreeCore(IVcsable project, string directory, string branch)
+    {
+        using var repo = new Repository(project.VcsDirectory);
+
+        Branch remoteBranch;
+        try
+        {
+            remoteBranch = repo.Branches.Where(b => b.IsRemote)
+                .Single(b => b.CanonicalName == $"refs/remotes/origin/{branch}");
+        }
+        catch (InvalidOperationException)
+        {
+            throw new InvalidRefException($"Ref refs/remotes/origin/{branch} not found")
+            {
+                Ref = $"refs/remotes/origin/{branch}"
+            };
+        }
+
+        Branch localBranch;
+        try
+        {
+            localBranch = repo.Branches.Add(branch, remoteBranch.Tip);
+        }
+        catch (LibGit2SharpException)
+        {
+            localBranch = repo.Branches.Where(b => b.IsRemote == false)
+                .Single(b => b.CanonicalName == $"refs/heads/{branch}");
+        }
+
+        try
+        {
+            Directory.Delete(directory, true);
+        }
+        catch (DirectoryNotFoundException)
+        {
+            // Ignore
+        }
+
+        Directory.CreateDirectory(Directory.GetParent(directory)!.FullName);
+        repo.Worktrees.Add(branch, $"parlance-worktree-{branch}", directory, false);
+        repo.Branches.Remove($"parlance-worktree-{branch}");
+        repo.Branches.Update(localBranch, u => u.Remote = "origin", u => u.UpstreamBranch = $"refs/heads/{branch}");
+    }
+
+    private void DeleteWorktreeCore(IVcsable project, string branch)
+    {
+        using var repo = new Repository(project.Project.VcsDirectory);
+        var worktree = repo.Worktrees[$"parlance-worktree-{branch}"];
+        var worktreePath = worktree.WorktreeRepository.Info.WorkingDirectory;
+        Directory.Delete(worktreePath, true);
+        repo.Worktrees.Prune(worktree);
+    }
+
+    private async Task<VersionControlCommit?> SaveChangesToVersionControlCore(IVcsable project)
     {
         using var repo = new Repository(project.VcsDirectory);
         var status = repo.RetrieveStatus();
@@ -292,18 +404,31 @@ public class GitVersionControlService(
         return new VersionControlCommit(commit);
     }
 
-    private void PublishSavedChangesToSourceCore(Database.Models.Project project)
+    private void PublishSavedChangesToSourceCore(IVcsable project)
     {
-        var repo = new Repository(project.VcsDirectory);
-        var branch = repo.Head;
-        repo.Network.Push(branch, new PushOptions
+        try
         {
-            CredentialsProvider = remoteCommunicationService.CredentialsHandler,
-            CertificateCheck = remoteCommunicationService.CertificateCheckHandler
-        });
+            var repo = new Repository(project.VcsDirectory);
+            var branch = repo.Head;
+            repo.Network.Push(branch, new PushOptions
+            {
+                CredentialsProvider = remoteCommunicationService.CredentialsHandler,
+                CertificateCheck = remoteCommunicationService.CertificateCheckHandler
+            });
+        }
+        catch (LibGit2SharpException e)
+        {
+            if (e.Message.Contains("does not track an upstream branch"))
+            {
+                // The branch is gone
+                throw new NoUpstreamException();
+            }
+
+            throw;
+        }
     }
 
-    public Task DeleteUnpublishedChanges(Database.Models.Project project)
+    public Task DeleteUnpublishedChanges(IVcsable project)
     {
         using var repo = new Repository(project.VcsDirectory);
         repo.Reset(ResetMode.Hard, repo.Head.Tip);

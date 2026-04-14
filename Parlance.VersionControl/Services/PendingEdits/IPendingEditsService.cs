@@ -1,4 +1,5 @@
 using Parlance.CldrData;
+using Parlance.Database.Interfaces;
 using Parlance.Project;
 using Parlance.Vicr123Accounts.Services;
 
@@ -13,7 +14,7 @@ public class Editor
 public interface IPendingEditsService
 {
     public Task RecordPendingEdit(IParlanceSubprojectLanguage parlanceSubprojectLanguage, User user);
-    public Task<IEnumerable<Editor>> EditorsPendingEdits(Database.Models.Project project);
-    public IEnumerable<Locale> LocalesPendingEdits(Database.Models.Project project);
-    public Task ClearPendingEdits(Database.Models.Project project);
+    public Task<IEnumerable<Editor>> EditorsPendingEdits(IVcsable project);
+    public IEnumerable<Locale> LocalesPendingEdits(IVcsable project);
+    public Task ClearPendingEdits(IVcsable project);
 }
