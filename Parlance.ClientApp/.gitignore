@@ -22,3 +22,5 @@ yarn-error.log*
 
 public/resources/translations/index.json
 dist
+
+.install-check
