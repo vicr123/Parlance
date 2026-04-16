@@ -17,45 +17,26 @@ import Hero from "../../../../components/Hero";
 import {
     CompletionData,
     LanguageMeta,
+    PartialProjectResponse,
     SubprojectResponse,
 } from "@/interfaces/projects";
+import { useNetworkGet } from "@/network/useNetworkGet";
 
 export default function LanguageListing() {
     const [ignored, forceUpdate] = useReducer(x => x + 1, 0);
     const { project, subproject } = useParams();
-    const [subprojectData, setSubprojectData] = useState<SubprojectResponse>(
-        // @ts-expect-error
-        {},
-    );
-    const [languages, setLanguages] = useState<LanguageMeta[]>([]);
-    const [done, setDone] = useState(false);
-    const [error, setError] = useState<any>();
+    const [subprojectData, loading, refetch, error] =
+        useNetworkGet<SubprojectResponse>(
+            `/api/projects/${project}/${subproject}`,
+        );
     const navigate = useNavigate();
     const { t } = useTranslation();
 
     UserManager.on("currentUserChanged", forceUpdate);
 
-    const updateProjects = async () => {
-        try {
-            setDone(false);
-            let subprojectData = await Fetch.get<SubprojectResponse>(
-                `/api/projects/${project}/${subproject}`,
-            );
-            setSubprojectData(subprojectData);
-            setLanguages(subprojectData.availableLanguages);
-            setDone(true);
-        } catch (err) {
-            setError(err);
-        }
-    };
-
-    useEffect(() => {
-        updateProjects();
-    }, [project, subproject]);
-
     const seenLanguages: string[] = [];
     const showLanguages = [
-        ...languages,
+        ...(subprojectData?.availableLanguages ?? []),
         ...(UserManager.currentUser?.languagePermissions?.map(language => ({
             language,
             completionData: {} as CompletionData,
@@ -73,7 +54,11 @@ export default function LanguageListing() {
         );
 
     const translationClicked = (language: string) => {
-        if (languages.some(l => l.language === language)) {
+        if (
+            subprojectData?.availableLanguages?.some(
+                l => l.language === language,
+            )
+        ) {
             navigate(language);
         } else {
             Modal.mount(
@@ -129,7 +114,7 @@ export default function LanguageListing() {
     return (
         <div>
             <Hero
-                heading={subprojectData?.projectName}
+                heading={subprojectData?.projectName ?? ""}
                 subheading={subprojectData?.name}
                 buttons={[]}
             />
@@ -146,7 +131,7 @@ export default function LanguageListing() {
                             </PageHeading>
                             <SelectableList
                                 items={
-                                    done
+                                    !loading
                                         ? myLanguages.map(p => ({
                                               contents: (
                                                   <TranslationProgressIndicator
@@ -154,7 +139,7 @@ export default function LanguageListing() {
                                                           p.language,
                                                       )}
                                                       badges={
-                                                          subprojectData.preferRegionAgnosticLanguage &&
+                                                          subprojectData?.preferRegionAgnosticLanguage &&
                                                           i18n.isRegionAgnostic(
                                                               p.language,
                                                           )
@@ -183,7 +168,7 @@ export default function LanguageListing() {
                     </PageHeading>
                     <SelectableList
                         items={
-                            done
+                            !loading
                                 ? otherLanguages.map(p => ({
                                       contents: (
                                           <TranslationProgressIndicator
@@ -191,7 +176,7 @@ export default function LanguageListing() {
                                                   p.language,
                                               )}
                                               badges={
-                                                  subprojectData.preferRegionAgnosticLanguage &&
+                                                  subprojectData?.preferRegionAgnosticLanguage &&
                                                   i18n.isRegionAgnostic(
                                                       p.language,
                                                   )

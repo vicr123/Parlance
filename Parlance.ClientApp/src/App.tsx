@@ -8,6 +8,7 @@ import { useTranslation } from "react-i18next";
 import i18n from "./helpers/i18n";
 import { ServerInformationProvider } from "./context/ServerInformationContext";
 import { TextDirection } from "@/interfaces/misc";
+import { NetworkContext } from "@/network/NetworkContext";
 
 function ErrorIndicator({ error }: { error: any }) {
     const { t } = useTranslation();
@@ -52,20 +53,22 @@ export default class App extends Component<AppProps, AppState> {
         return (
             <ServerInformationProvider>
                 <React.Suspense fallback={<div></div>}>
-                    <Layout dir={this.state.dir}>
-                        <Routes>
-                            {AppRoutes.map((route, index) => {
-                                const { element, ...rest } = route;
-                                return (
-                                    <Route
-                                        key={index}
-                                        {...rest}
-                                        element={element}
-                                    />
-                                );
-                            })}
-                        </Routes>
-                    </Layout>
+                    <NetworkContext>
+                        <Layout dir={this.state.dir}>
+                            <Routes>
+                                {AppRoutes.map((route, index) => {
+                                    const { element, ...rest } = route;
+                                    return (
+                                        <Route
+                                            key={index}
+                                            {...rest}
+                                            element={element}
+                                        />
+                                    );
+                                })}
+                            </Routes>
+                        </Layout>
+                    </NetworkContext>
                 </React.Suspense>
             </ServerInformationProvider>
         );

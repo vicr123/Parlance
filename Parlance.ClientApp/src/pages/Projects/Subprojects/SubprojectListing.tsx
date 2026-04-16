@@ -13,37 +13,18 @@ import Hero from "../../../components/Hero";
 import WallMessage from "../../../components/WallMessage";
 import { calculateDeadline } from "@/helpers/Misc";
 import { useUserUpdateEffect } from "@/helpers/Hooks";
-import { ProjectResponse } from "@/interfaces/projects";
+import { PartialProjectResponse, ProjectResponse } from "@/interfaces/projects";
 import { BranchSelector } from "@/pages/Projects/Subprojects/BranchSelector";
+import { useNetworkGet } from "@/network/useNetworkGet";
 
 export function SubprojectListing() {
     const { project } = useParams();
-    const [projectData, setProjectData] = useState<Partial<ProjectResponse>>();
-    const [done, setDone] = useState(false);
-    const [error, setError] = useState<any>();
+    const [projectData, loading, refetch, error] =
+        useNetworkGet<ProjectResponse>(`/api/projects/${project}`);
     const navigate = useNavigate();
     const { t } = useTranslation();
 
-    const updateProjects = async () => {
-        try {
-            setDone(false);
-            setProjectData(
-                await Fetch.get<ProjectResponse>(`/api/projects/${project}`),
-            );
-            setDone(true);
-        } catch (err: any) {
-            setProjectData({
-                isProjectManager: err.jsonBody.isProjectManager,
-            });
-            setError(err);
-        }
-    };
-
-    useEffect(() => {
-        updateProjects();
-    }, [project]);
-
-    useUserUpdateEffect(updateProjects, []);
+    useUserUpdateEffect(() => void refetch(), []);
 
     const deadlineInfo = calculateDeadline(projectData?.deadline ?? undefined);
 
@@ -79,7 +60,7 @@ export function SubprojectListing() {
                     </PageHeading>
                     <SelectableList
                         items={
-                            done
+                            !loading
                                 ? projectData?.subprojects?.map(p => ({
                                       contents: (
                                           <TranslationProgressIndicator

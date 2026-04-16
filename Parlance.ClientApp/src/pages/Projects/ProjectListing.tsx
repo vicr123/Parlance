@@ -9,27 +9,13 @@ import { useTranslation } from "react-i18next";
 import ErrorCover from "../../components/ErrorCover";
 import { calculateDeadline } from "../../helpers/Misc";
 import { PartialProjectResponse } from "../../interfaces/projects";
+import { useNetworkGet } from "@/network/useNetworkGet";
 
 export default function ProjectListing() {
-    const [projects, setProjects] = useState<PartialProjectResponse[]>([]);
-    const [done, setDone] = useState(false);
-    const [error, setError] = useState<any>(false);
+    const [projects, loading, _, error] =
+        useNetworkGet<PartialProjectResponse[]>("/api/projects");
     const navigate = useNavigate();
     const { t } = useTranslation();
-
-    const updateProjects = async () => {
-        try {
-            setProjects(await Fetch.get("/api/projects"));
-            setDone(true);
-        } catch (err) {
-            console.log(err);
-            setError(err);
-        }
-    };
-
-    useEffect(() => {
-        updateProjects();
-    }, []);
 
     return (
         <div>
@@ -40,9 +26,9 @@ export default function ProjectListing() {
                     </PageHeading>
                     <SelectableList
                         items={
-                            done
+                            !loading
                                 ? projects
-                                      .sort((a, b) =>
+                                      ?.sort((a, b) =>
                                           calculateDeadline(
                                               a.deadline ?? undefined,
                                           )
