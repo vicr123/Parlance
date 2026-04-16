@@ -408,8 +408,10 @@ public class GitVersionControlService(
     {
         try
         {
-            var repo = new Repository(project.VcsDirectory);
-            var branch = repo.Head;
+            var worktreeRepo = new Repository(project.VcsDirectory);
+            var branch = worktreeRepo.Head;
+            
+            var repo = new Repository(project.Project.VcsDirectory);
             repo.Network.Push(branch, new PushOptions
             {
                 CredentialsProvider = remoteCommunicationService.CredentialsHandler,
