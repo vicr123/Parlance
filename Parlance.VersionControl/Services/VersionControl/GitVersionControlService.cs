@@ -2,6 +2,7 @@ using LibGit2Sharp;
 using MessagePipe;
 using Parlance.Database;
 using Parlance.Database.Interfaces;
+using Parlance.Database.Models;
 using Parlance.Project;
 using Parlance.Project.Exceptions;
 using Parlance.VersionControl.Events;
@@ -408,10 +409,13 @@ public class GitVersionControlService(
     {
         try
         {
-            var worktreeRepo = new Repository(project.VcsDirectory);
-            var branch = worktreeRepo.Head;
-            
             var repo = new Repository(project.Project.VcsDirectory);
+            var branch = repo.Head;
+            if (project is ProjectBranch projectBranch)
+            {
+                branch = repo.Branches[projectBranch.BranchName];
+            }
+            
             repo.Network.Push(branch, new PushOptions
             {
                 CredentialsProvider = remoteCommunicationService.CredentialsHandler,
