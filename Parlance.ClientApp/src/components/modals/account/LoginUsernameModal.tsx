@@ -9,6 +9,7 @@ import LoadingModal from "../LoadingModal";
 import Styles from "./LoginUsernameModal.module.css";
 import { ServerInformationContext } from "@/context/ServerInformationContext";
 import { VerticalSpacer } from "@/components/Layouts";
+import { LoginErrorArea } from "./LoginErrorArea";
 
 export default function LoginUsernameModal() {
     const [username, setUsername] = useState("");
@@ -42,7 +43,9 @@ export default function LoginUsernameModal() {
                 },
             ]}
         >
-            <div style={{ display: "flex", flexDirection: "column" }}>
+            <div
+                style={{ display: "flex", flexDirection: "column", gap: "4px" }}
+            >
                 {t("LOG_IN_PROMPT", { account: serverInformation.accountName })}
                 <VerticalSpacer height={3} />
                 <LineEdit
@@ -63,6 +66,7 @@ export default function LoginUsernameModal() {
                         }
                     />
                 </div>
+                <LoginErrorArea />
             </div>
         </Modal>
     );

@@ -20,6 +20,7 @@ import { LoginPasswordModal } from "@/components/modals/account/LoginPasswordMod
 import { LoginSecurityKeyModal } from "@/components/modals/account/LoginSecurityKeyModal";
 import { decode, encode } from "@/helpers/Base64";
 import { PasswordResetModal } from "@/components/modals/account/resets/PasswordResetModal";
+import userManager from "@/helpers/UserManager";
 
 export class TokenAcquisitionSession {
     private readonly _purpose: TokenPurpose;
@@ -156,6 +157,7 @@ export class TokenAcquisitionSession {
                     );
                     return;
                 default:
+                    await userManager.setLastError(json.status);
                     Modal.mount(
                         <LoginPasswordModal acquisitionSession={this} />,
                     );

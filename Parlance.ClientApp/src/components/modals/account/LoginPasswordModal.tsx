@@ -7,6 +7,7 @@ import LineEdit from "../../LineEdit";
 import ModalList from "../../ModalList";
 import { VerticalSpacer } from "@/components/Layouts";
 import { TokenAcquisitionSession } from "@/helpers/TokenAcquisitionSession";
+import { LoginErrorArea } from "@/components/modals/account/LoginErrorArea";
 
 export function LoginPasswordModal({
     acquisitionSession,
@@ -22,7 +23,11 @@ export function LoginPasswordModal({
                 return (
                     <div
                         key={"password"}
-                        style={{ display: "flex", flexDirection: "column" }}
+                        style={{
+                            display: "flex",
+                            flexDirection: "column",
+                            gap: "4px",
+                        }}
                     >
                         {acquisitionSession.purpose == "login"
                             ? t("LOG_IN_PASSWORD_PROMPT")
@@ -99,6 +104,7 @@ export function LoginPasswordModal({
             ]}
         >
             {loginTypes}
+            <LoginErrorArea />
         </Modal>
     );
 }
