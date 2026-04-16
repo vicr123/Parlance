@@ -1,4 +1,5 @@
 using JetBrains.Annotations;
+using Parlance.Database.Interfaces;
 using Parlance.Project.Exceptions;
 using Parlance.Services.Projects;
 using Parlance.Services.ProjectUpdater;
@@ -19,14 +20,27 @@ public class ProjectCommitJob(
     {
         try
         {
+            List<IVcsable> vcsables = [];
             foreach (var project in await projectService.Projects())
+            {
+                if (project.Branches.Count == 0)
+                {
+                    vcsables.Add(project);
+                }
+                else
+                {
+                    vcsables.AddRange(project.Branches);
+                }
+            }
+
+            foreach (var vcsable in vcsables)
             {
                 try
                 {
-                    if (versionControlService.VersionControlStatus(project).ChangedFiles.Any())
-                        await versionControlService.SaveChangesToVersionControl(project);
+                    if (versionControlService.VersionControlStatus(vcsable).ChangedFiles.Any())
+                        await versionControlService.SaveChangesToVersionControl(vcsable);
 
-                    await projectUpdateQueue.Queue(project);
+                    await projectUpdateQueue.Queue(vcsable);
                 }
                 catch (ParlanceJsonFileParseException)
                 {
