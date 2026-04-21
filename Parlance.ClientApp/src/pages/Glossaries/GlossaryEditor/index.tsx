@@ -1,4 +1,3 @@
-import BackButton from "components/BackButton";
 import { useNavigate, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 
@@ -6,7 +5,7 @@ import Styles from "./index.module.css";
 import GlossaryLanguageSelector from "./GlossaryLanguageSelector";
 import GlossaryTable from "./GlossaryTable";
 import { useEffect, useMemo, useState } from "react";
-import { Glossary, GlossaryItem } from "../../../interfaces/glossary";
+import { Glossary, GlossaryItem } from "@/interfaces/glossary";
 import Spinner from "../../../components/Spinner";
 import Fetch from "../../../helpers/Fetch";
 import UserManager from "../../../helpers/UserManager";
