@@ -203,6 +203,7 @@
   "LOGIN_ERROR_FAILED": "Unable to log you in with those credentials. Please try again, or select a recovery method.",
   "LOGIN_ERROR_GENERIC": "Unable to complete login",
   "LOGIN_ERROR_NO_ACCOUNT": "That username wasn't found",
+  "LOGIN_ERROR_RATE_LIMITED": "You are being rate limited. Please try again later.",
   "LOG_OUT": "Log Out",
   "MANAGE_BRANCHES": "Manage Branches",
   "MANAGE_BRANCHES_ADD_BRANCH": "Add Branch",

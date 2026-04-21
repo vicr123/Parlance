@@ -98,6 +98,11 @@ export class TokenAcquisitionSession {
                 return;
             }
         } catch (e: FetchResponse<any>) {
+            if (e.status === 429) {
+                await userManager.setLastError("RateLimited");
+                Modal.mount(<LoginPasswordModal acquisitionSession={this} />);
+            }
+
             let json = await e.json();
 
             if (this.loginSessionDetails.newPassword) {

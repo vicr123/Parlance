@@ -32,6 +32,9 @@ export function LoginErrorArea() {
         case "Failed":
             errorMessage = t("LOGIN_ERROR_FAILED");
             break;
+        case "RateLimited":
+            errorMessage = t("LOGIN_ERROR_RATE_LIMITED");
+            break;
     }
 
     return <span className={Styles.error}>{errorMessage}</span>;

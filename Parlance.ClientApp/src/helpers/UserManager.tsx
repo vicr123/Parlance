@@ -27,7 +27,7 @@ import {
 } from "@/interfaces/users";
 import { TokenAcquisitionSession } from "@/helpers/TokenAcquisitionSession";
 
-export type LoginError = "NoAccount" | "Failed";
+export type LoginError = "NoAccount" | "Failed" | "RateLimited";
 
 class UserManager extends EventEmitter {
     #currentUser: User | null;
