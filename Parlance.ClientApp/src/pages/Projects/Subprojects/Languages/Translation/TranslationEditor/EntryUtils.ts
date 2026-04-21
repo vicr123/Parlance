@@ -55,9 +55,16 @@ export default function useTranslationEntries(
                 })
                 .filter(entry => {
                     if (!searchParams.query) return true;
-                    return entry.source
-                        .toLowerCase()
-                        .includes(searchParams.query.toLowerCase());
+                    return (
+                        entry.source
+                            .toLowerCase()
+                            .includes(searchParams.query.toLowerCase()) ||
+                        entry.translation.some(x =>
+                            x.translationContent
+                                .toLowerCase()
+                                .includes(searchParams.query!.toLowerCase()),
+                        )
+                    );
                 }),
         [entries, searchParams],
     );

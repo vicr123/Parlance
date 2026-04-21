@@ -20,10 +20,7 @@ import {
     SubprojectResponse,
     TranslationEntry,
 } from "@/interfaces/projects";
-import {
-    ConnectedGlossary,
-    GlossaryItem,
-} from "../../../../../../interfaces/glossary";
+import { ConnectedGlossary, GlossaryItem } from "@/interfaces/glossary";
 import useTranslatorSignalRConnection from "./TranslatorSignalRConnection";
 
 const EntryList = lazy(() => import("./EntryList"));

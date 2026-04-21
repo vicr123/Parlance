@@ -16,7 +16,7 @@
     "lib": ["ES2023", "dom"],
     "types": ["vite/client"],
     "paths": {
-      "@/*": ["./*"]
+      "@/*": ["./src/*"]
     },
     "skipLibCheck": true
     //    "noImplicitAny": false
