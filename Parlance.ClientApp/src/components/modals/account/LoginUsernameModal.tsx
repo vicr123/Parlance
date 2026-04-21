@@ -9,12 +9,26 @@ import LoadingModal from "../LoadingModal";
 import Styles from "./LoginUsernameModal.module.css";
 import { ServerInformationContext } from "@/context/ServerInformationContext";
 import { VerticalSpacer } from "@/components/Layouts";
+import { LoginErrorArea } from "./LoginErrorArea";
 
 export default function LoginUsernameModal() {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const { t } = useTranslation();
     const serverInformation = useContext(ServerInformationContext);
+
+    const goNext = async () => {
+        try {
+            const token = await UserManager.obtainToken(
+                username,
+                "login",
+                password ?? "",
+            );
+            await UserManager.setToken(token);
+        } catch {
+            Modal.mount(<LoginUsernameModal />);
+        }
+    };
 
     return (
         <Modal
@@ -27,22 +41,13 @@ export default function LoginUsernameModal() {
                 },
                 {
                     text: t("NEXT"),
-                    onClick: async () => {
-                        try {
-                            const token = await UserManager.obtainToken(
-                                username,
-                                "login",
-                                password ?? "",
-                            );
-                            await UserManager.setToken(token);
-                        } catch {
-                            Modal.mount(<LoginUsernameModal />);
-                        }
-                    },
+                    onClick: goNext,
                 },
             ]}
         >
-            <div style={{ display: "flex", flexDirection: "column" }}>
+            <div
+                style={{ display: "flex", flexDirection: "column", gap: "4px" }}
+            >
                 {t("LOG_IN_PROMPT", { account: serverInformation.accountName })}
                 <VerticalSpacer height={3} />
                 <LineEdit
@@ -52,6 +57,11 @@ export default function LoginUsernameModal() {
                         setUsername((e.target as HTMLInputElement).value)
                     }
                     autoComplete={"off"}
+                    onKeyDown={e => {
+                        if (e.key == "Enter") {
+                            void goNext();
+                        }
+                    }}
                 />
                 <div className={Styles.password}>
                     <LineEdit
@@ -63,6 +73,7 @@ export default function LoginUsernameModal() {
                         }
                     />
                 </div>
+                <LoginErrorArea />
             </div>
         </Modal>
     );

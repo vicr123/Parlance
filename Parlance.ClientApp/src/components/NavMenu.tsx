@@ -12,6 +12,7 @@ import Icon from "@/components/Icon";
 import { GlobalSearch } from "@/components/search/GlobalSearch";
 import useHotkeys from "@reecelucas/react-use-hotkeys";
 import { useMediaQuery } from "@/helpers/Hooks";
+import userManager from "../helpers/UserManager";
 
 export default function NavMenu() {
     const [currentUser, setCurrentUser] = useState<string>();
@@ -48,6 +49,7 @@ export default function NavMenu() {
         if (UserManager.isLoggedIn) {
             Modal.mount(<UserModal navigate={navigate} />);
         } else {
+            userManager.clearLastError();
             Modal.mount(<LoginUsernameModal />);
         }
     };

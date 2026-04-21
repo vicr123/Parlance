@@ -7,6 +7,7 @@ import LineEdit from "../../LineEdit";
 import ModalList from "../../ModalList";
 import { VerticalSpacer } from "@/components/Layouts";
 import { TokenAcquisitionSession } from "@/helpers/TokenAcquisitionSession";
+import { LoginErrorArea } from "@/components/modals/account/LoginErrorArea";
 
 export function LoginPasswordModal({
     acquisitionSession,
@@ -16,13 +17,23 @@ export function LoginPasswordModal({
     const [password, setPassword] = useState(acquisitionSession.prePassword);
     const { t } = useTranslation();
 
+    const proceedWithPassword = () => {
+        acquisitionSession.setLoginDetail("password", password);
+        acquisitionSession.setLoginDetail("type", "password");
+        acquisitionSession.attemptLogin();
+    };
+
     const loginTypes = acquisitionSession.loginTypes.map(type => {
         switch (type) {
             case "password":
                 return (
                     <div
                         key={"password"}
-                        style={{ display: "flex", flexDirection: "column" }}
+                        style={{
+                            display: "flex",
+                            flexDirection: "column",
+                            gap: "4px",
+                        }}
                     >
                         {acquisitionSession.purpose == "login"
                             ? t("LOG_IN_PASSWORD_PROMPT")
@@ -37,6 +48,11 @@ export function LoginPasswordModal({
                                     (e.target as HTMLInputElement).value,
                                 )
                             }
+                            onKeyDown={e => {
+                                if (e.key === "Enter") {
+                                    proceedWithPassword();
+                                }
+                            }}
                         />
                     </div>
                 );
@@ -90,15 +106,12 @@ export function LoginPasswordModal({
                     : []),
                 {
                     text: t("NEXT"),
-                    onClick: () => {
-                        acquisitionSession.setLoginDetail("password", password);
-                        acquisitionSession.setLoginDetail("type", "password");
-                        acquisitionSession.attemptLogin();
-                    },
+                    onClick: proceedWithPassword,
                 },
             ]}
         >
             {loginTypes}
+            <LoginErrorArea />
         </Modal>
     );
 }

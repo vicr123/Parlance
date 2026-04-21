@@ -101,7 +101,7 @@ importers:
         version: 0.83.2(react-dom@19.2.5(react@19.2.5))(react@19.2.5)(slate@0.82.1)
       typescript-plugin-css-modules:
         specifier: ^5.2.0
-        version: 5.2.0(typescript@5.9.3)
+        version: 5.2.0(typescript@6.0.3)
       web-vitals:
         specifier: ^2.1.4
         version: 2.1.4
@@ -176,8 +176,8 @@ importers:
         specifier: 3.3.2
         version: 3.3.2
       typescript:
-        specifier: ^5.9.3
-        version: 5.9.3
+        specifier: ^6.0.3
+        version: 6.0.3
       vite:
         specifier: ^6.4.2
         version: 6.4.2(@types/node@20.19.39)(less@4.6.4)(sass@1.99.0)(stylus@0.62.0)
@@ -2182,8 +2182,8 @@ packages:
     peerDependencies:
       typescript: '>=4.0.0'
 
-  typescript@5.9.3:
-    resolution: {integrity: sha512-jl1vZzPDinLr9eUt3J/t7V6FgNEw9QjvBPdysz9KfQDD41fQrC2Y4vKQdiaUpFT4bXlb1RHhLpp8wtm6M5TgSw==}
+  typescript@6.0.3:
+    resolution: {integrity: sha512-y2TvuxSZPDyQakkFRPZHKFm+KKVqIisdg9/CZwm9ftvKXLP8NRWj38/ODjNbr43SsoXqNuAisEf1GdCxqWcdBw==}
     engines: {node: '>=14.17'}
     hasBin: true
 
@@ -4435,7 +4435,7 @@ snapshots:
       possible-typed-array-names: 1.1.0
       reflect.getprototypeof: 1.0.10
 
-  typescript-plugin-css-modules@5.2.0(typescript@5.9.3):
+  typescript-plugin-css-modules@5.2.0(typescript@6.0.3):
     dependencies:
       '@types/postcss-modules-local-by-default': 4.0.2
       '@types/postcss-modules-scope': 3.0.4
@@ -4452,14 +4452,14 @@ snapshots:
       sass: 1.99.0
       source-map-js: 1.2.1
       tsconfig-paths: 4.2.0
-      typescript: 5.9.3
+      typescript: 6.0.3
     optionalDependencies:
       stylus: 0.62.0
     transitivePeerDependencies:
       - supports-color
       - ts-node
 
-  typescript@5.9.3: {}
+  typescript@6.0.3: {}
 
   unbox-primitive@1.1.0:
     dependencies:

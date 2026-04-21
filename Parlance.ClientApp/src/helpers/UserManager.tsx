@@ -27,8 +27,11 @@ import {
 } from "@/interfaces/users";
 import { TokenAcquisitionSession } from "@/helpers/TokenAcquisitionSession";
 
+export type LoginError = "NoAccount" | "Failed" | "RateLimited";
+
 class UserManager extends EventEmitter {
     #currentUser: User | null;
+    #lastLoginError: LoginError | undefined;
 
     constructor() {
         super();
@@ -65,6 +68,7 @@ class UserManager extends EventEmitter {
         prePassword: string = "",
     ) {
         return new Promise<string>(async (res, rej) => {
+            this.clearLastError();
             const acquisitionSession = new TokenAcquisitionSession(
                 username,
                 purpose,
@@ -76,7 +80,13 @@ class UserManager extends EventEmitter {
                 },
             );
             Modal.mount(<LoadingModal />);
-            await acquisitionSession.loadLoginTypes();
+            try {
+                await acquisitionSession.loadLoginTypes();
+            } catch (e) {
+                await this.setLastError(e);
+                rej(e);
+                return;
+            }
             Modal.mount(
                 <LoginPasswordModal acquisitionSession={acquisitionSession} />,
             );
@@ -108,6 +118,28 @@ class UserManager extends EventEmitter {
     async logout() {
         localStorage.removeItem("token");
         await this.updateDetails();
+    }
+
+    async setLastError(e: any) {
+        try {
+            if (typeof e === "string") {
+                this.#lastLoginError = e as LoginError;
+                this.emit("loginErrorChanged", this.#lastLoginError);
+            } else if ("json" in e) {
+                const json = await e.json();
+                this.#lastLoginError = json.status;
+                this.emit("loginErrorChanged", this.#lastLoginError);
+            }
+        } catch {}
+    }
+
+    clearLastError() {
+        this.#lastLoginError = undefined;
+        this.emit("loginErrorChanged", this.#lastLoginError);
+    }
+
+    lastLoginError() {
+        return this.#lastLoginError;
     }
 }
 
