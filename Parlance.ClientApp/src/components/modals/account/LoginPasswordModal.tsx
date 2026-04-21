@@ -17,6 +17,12 @@ export function LoginPasswordModal({
     const [password, setPassword] = useState(acquisitionSession.prePassword);
     const { t } = useTranslation();
 
+    const proceedWithPassword = () => {
+        acquisitionSession.setLoginDetail("password", password);
+        acquisitionSession.setLoginDetail("type", "password");
+        acquisitionSession.attemptLogin();
+    };
+
     const loginTypes = acquisitionSession.loginTypes.map(type => {
         switch (type) {
             case "password":
@@ -42,6 +48,11 @@ export function LoginPasswordModal({
                                     (e.target as HTMLInputElement).value,
                                 )
                             }
+                            onKeyDown={e => {
+                                if (e.key === "Enter") {
+                                    proceedWithPassword();
+                                }
+                            }}
                         />
                     </div>
                 );
@@ -95,11 +106,7 @@ export function LoginPasswordModal({
                     : []),
                 {
                     text: t("NEXT"),
-                    onClick: () => {
-                        acquisitionSession.setLoginDetail("password", password);
-                        acquisitionSession.setLoginDetail("type", "password");
-                        acquisitionSession.attemptLogin();
-                    },
+                    onClick: proceedWithPassword,
                 },
             ]}
         >

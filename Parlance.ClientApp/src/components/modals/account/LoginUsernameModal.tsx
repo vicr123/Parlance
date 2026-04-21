@@ -17,6 +17,19 @@ export default function LoginUsernameModal() {
     const { t } = useTranslation();
     const serverInformation = useContext(ServerInformationContext);
 
+    const goNext = async () => {
+        try {
+            const token = await UserManager.obtainToken(
+                username,
+                "login",
+                password ?? "",
+            );
+            await UserManager.setToken(token);
+        } catch {
+            Modal.mount(<LoginUsernameModal />);
+        }
+    };
+
     return (
         <Modal
             heading={t("LOG_IN")}
@@ -28,18 +41,7 @@ export default function LoginUsernameModal() {
                 },
                 {
                     text: t("NEXT"),
-                    onClick: async () => {
-                        try {
-                            const token = await UserManager.obtainToken(
-                                username,
-                                "login",
-                                password ?? "",
-                            );
-                            await UserManager.setToken(token);
-                        } catch {
-                            Modal.mount(<LoginUsernameModal />);
-                        }
-                    },
+                    onClick: goNext,
                 },
             ]}
         >
@@ -55,6 +57,11 @@ export default function LoginUsernameModal() {
                         setUsername((e.target as HTMLInputElement).value)
                     }
                     autoComplete={"off"}
+                    onKeyDown={e => {
+                        if (e.key == "Enter") {
+                            void goNext();
+                        }
+                    }}
                 />
                 <div className={Styles.password}>
                     <LineEdit
