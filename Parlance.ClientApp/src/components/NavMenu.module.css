@@ -1,36 +1,31 @@
 ﻿.navbarHeader {
     grid-area: header;
     background-color: var(--layer-color);
+    overflow: hidden;
+    margin-right: 4px;
 }
 
 .navbarWrapper {
     display: flex;
     flex-direction: column;
-    align-items: center;
+    align-items: stretch;
 }
 
 .navbarInner {
-    width: 100vw;
-    max-width: var(--content-width);
+    /*width: 100vw;*/
+    /*max-width: var(--content-width);*/
     box-sizing: border-box;
 
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
     align-items: stretch;
     justify-content: space-between;
-}
-
-:global(.ltr) .navbarInner {
-    padding-left: 9px;
-}
-
-:global(.rtl) .navbarInner {
-    padding-right: 9px;
 }
 
 .navbarButtonContainer {
     display: flex;
     align-items: stretch;
+    justify-content: stretch;
 }
 
 .overlayMenu {
@@ -54,6 +49,29 @@
 @media (max-width: 1024px) {
     .navbarInner {
         padding-left: 9px;
+        padding-right: 9px;
+    }
+}
+
+.navbarButton.navbarButton {
+    flex-grow: 1;
+    justify-content: flex-start;
+}
+
+@media (max-width: 1210px) {
+    .navbarHeader {
+        margin-right: 0;
+    }
+    
+    .navbarInner {
+        flex-direction: row;
+    }
+
+    :global(.ltr) .navbarInner {
+        padding-left: 9px;
+    }
+
+    :global(.rtl) .navbarInner {
         padding-right: 9px;
     }
 }

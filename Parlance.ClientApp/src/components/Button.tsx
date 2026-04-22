@@ -9,11 +9,12 @@ interface ButtonProps extends HTMLAttributes<HTMLDivElement> {
 export default function (props: ButtonProps) {
     return (
         <div
+            {...props}
             className={[
                 Styles.button,
                 props.disabled ? Styles.disabled : null,
+                props.className,
             ].join(" ")}
-            {...props}
         >
             {props.children}
         </div>

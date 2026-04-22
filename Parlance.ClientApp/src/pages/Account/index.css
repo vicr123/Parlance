@@ -9,7 +9,7 @@
 
 .account-settings-lift-enter {
     position: absolute;
-    width: 100vw;
+    width: calc(100vw - 300px);
     min-height: 700px;
     background-color: var(--background-color);
     z-index: 10;
@@ -23,4 +23,10 @@
 .account-settings-lift-enter-active {
     opacity: 1;
     transform: translateY(0%);
+}
+
+@media (max-width: 1210px) {
+    .account-settings-lift-enter {
+        width: 100vw;
+    }
 }

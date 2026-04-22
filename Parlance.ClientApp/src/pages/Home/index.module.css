@@ -14,7 +14,7 @@
 
 .promo {
     min-width: 800px;
-    max-width: calc(100vw - 200px);
+    max-width: calc(100vw - 200px - 300px);
 
     display: flex;
     flex-direction: column;
@@ -32,6 +32,12 @@
 
 .promoSub {
     font-size: 30pt;
+}
+
+@media (max-width: 1210px) {
+    .promo {
+        max-width: calc(100vw - 200px);
+    }
 }
 
 @media (max-width: 800px) {

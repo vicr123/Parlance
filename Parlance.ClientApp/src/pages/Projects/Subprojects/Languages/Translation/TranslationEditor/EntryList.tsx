@@ -5,7 +5,7 @@ import { checkTranslation, mostSevereType } from "@/checks";
 import BackButton from "../../../../../../components/BackButton";
 import { useTranslation } from "react-i18next";
 import useTranslationEntries from "./EntryUtils";
-import { Fragment, useEffect, useRef } from "react";
+import { Fragment, useEffect, useRef, useState } from "react";
 import { isEmptyTranslation } from "./EntryHelper";
 import { Box } from "./Box";
 import { Entry } from "@/interfaces/projects";
@@ -13,6 +13,10 @@ import { TextDirection } from "@/interfaces/misc";
 import { SearchParams } from "@/pages/Projects/Subprojects/Languages/Translation/TranslationEditor/EditorInterfaces";
 import { UpdateManager } from "./UpdateManager";
 import { TranslatorSignalR } from "./TranslatorSignalRConnection";
+import Button from "@/components/Button";
+import ParlanceLogo from "@/images/parlance.svg";
+import Icon from "@/components/Icon";
+import UserManager, { OpenManageAccountDialog } from "@/helpers/UserManager";
 
 function EntryListItem({
     entries,
@@ -164,6 +168,20 @@ export default function EntryList({
         translationFileType,
     );
 
+    const [currentUser, setCurrentUser] = useState<string>(
+        UserManager.currentUser?.username || t("LOG_IN"),
+    );
+
+    useEffect(() => {
+        const updateUser = () => {
+            setCurrentUser(UserManager.currentUser?.username || t("LOG_IN"));
+        };
+        UserManager.on("currentUserChanged", updateUser);
+        return () => {
+            UserManager.off("currentUserChanged", updateUser);
+        };
+    }, []);
+
     updateManager.on("keyStateChanged", forceUpdate);
 
     const contexts = filteredEntries.reduce<Record<string, Entry[]>>(
@@ -178,6 +196,20 @@ export default function EntryList({
     return (
         <div className={Styles.rootList}>
             <div className={`${Styles.scrim} ${key && Styles.haveKey}`} />
+
+            <div className={Styles.header}>
+                <Button
+                    onClick={() => navigate("/")}
+                    style={{
+                        paddingTop: 0,
+                        paddingBottom: 0,
+                    }}
+                >
+                    <img src={ParlanceLogo} alt={"Parlance"} />
+                </Button>
+                <div style={{ flexGrow: 1 }} />
+                <Button onClick={OpenManageAccountDialog}>{currentUser}</Button>
+            </div>
             <Box>
                 <BackButton
                     text={t("QUIT")}

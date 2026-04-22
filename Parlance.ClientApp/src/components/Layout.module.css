@@ -3,13 +3,25 @@
     max-height: 100dvh;
 
     display: grid;
-    grid-template-columns: 1fr;
-    grid-template-rows: max-content 1fr max-content;
+    grid-template-columns: 300px 1fr;
+    grid-template-rows: 1fr max-content;
     gap: 0 0;
     grid-template-areas:
-        "header"
-        "content"
-        "footer";
+        "header content"
+        "header footer";
 
     overflow: auto;
+    transition: 0.25s ease-in-out grid-template-columns;
+}
+
+@media (max-width: 1210px) {
+    .rootLayout {
+        grid-template-areas: "header" "content" "footer";
+        grid-template-columns: 1fr;
+        grid-template-rows: max-content 1fr max-content;
+    }
+}
+
+.translate {
+    grid-template-columns: 0 1fr;
 }

@@ -3,7 +3,7 @@ import Styles from "./NavMenu.module.css";
 import Button from "./Button";
 import Modal from "./Modal";
 import LoginUsernameModal from "./modals/account/LoginUsernameModal";
-import UserManager from "../helpers/UserManager";
+import UserManager, { OpenManageAccountDialog } from "../helpers/UserManager";
 import UserModal from "./modals/account/UserModal";
 import { useTranslation } from "react-i18next";
 import { useMatch, useNavigate } from "react-router-dom";
@@ -15,12 +15,15 @@ import { useMediaQuery } from "@/helpers/Hooks";
 import userManager from "../helpers/UserManager";
 
 export default function NavMenu() {
-    const [currentUser, setCurrentUser] = useState<string>();
     const { t } = useTranslation();
+    const [currentUser, setCurrentUser] = useState<string>(
+        UserManager.currentUser?.username || t("LOG_IN"),
+    );
     const navigate = useNavigate();
     const [globalSearchOpen, setGlobalSearchOpen] = useState(false);
     const [overlayMenuOpen, setOverlayMenuOpen] = useState(false);
     const isMobile = useMediaQuery("(max-width: 600px)");
+    const isNarrow = useMediaQuery("(max-width: 1210px)");
     const isInTranslation = useMatch(
         "/projects/:project/:subproject/:language/translate/*",
     );
@@ -38,21 +41,15 @@ export default function NavMenu() {
         },
     );
 
-    UserManager.on("currentUserChanged", () => {
-        setCurrentUser(UserManager.currentUser?.username || t("LOG_IN"));
-    });
     useEffect(() => {
-        setCurrentUser(UserManager.currentUser?.username || t("LOG_IN"));
+        const updateUser = () => {
+            setCurrentUser(UserManager.currentUser?.username || t("LOG_IN"));
+        };
+        UserManager.on("currentUserChanged", updateUser);
+        return () => {
+            UserManager.off("currentUserChanged", updateUser);
+        };
     }, []);
-
-    const manageAccount = () => {
-        if (UserManager.isLoggedIn) {
-            Modal.mount(<UserModal navigate={navigate} />);
-        } else {
-            userManager.clearLastError();
-            Modal.mount(<LoginUsernameModal />);
-        }
-    };
     const goHome = () => {
         navigate("/");
     };
@@ -93,11 +90,13 @@ export default function NavMenu() {
                             <div className={Styles.navbarButtonContainer}>
                                 <Button
                                     onClick={() => setOverlayMenuOpen(true)}
+                                    className={Styles.navbarButton}
                                 >
                                     <Icon icon={"application-menu"} />
                                 </Button>
                                 <Button
                                     onClick={goHome}
+                                    className={Styles.navbarButton}
                                     style={{
                                         paddingTop: 0,
                                         paddingBottom: 0,
@@ -109,13 +108,59 @@ export default function NavMenu() {
                             <div className={Styles.navbarButtonContainer}>
                                 <Button
                                     onClick={() => setGlobalSearchOpen(true)}
+                                    className={Styles.navbarButton}
                                 >
                                     <Icon icon={"edit-find"} />
                                 </Button>
-                                <Button onClick={manageAccount}>
+                                <Button onClick={OpenManageAccountDialog}>
                                     {currentUser}
                                 </Button>
                             </div>
+                        </>
+                    ) : isNarrow ? (
+                        <>
+                            <>
+                                <div className={Styles.navbarButtonContainer}>
+                                    <Button
+                                        onClick={goHome}
+                                        className={Styles.navbarButton}
+                                        style={{
+                                            paddingTop: 0,
+                                            paddingBottom: 0,
+                                        }}
+                                    >
+                                        <img
+                                            src={ParlanceLogo}
+                                            alt={"Parlance"}
+                                        />
+                                    </Button>
+                                    {menuItems.map(item => (
+                                        <Button
+                                            key={item.href}
+                                            onClick={() => navigate(item.href)}
+                                            className={Styles.navbarButton}
+                                        >
+                                            {item.name}
+                                        </Button>
+                                    ))}
+                                </div>
+                                <div className={Styles.navbarButtonContainer}>
+                                    <Button
+                                        onClick={() =>
+                                            setGlobalSearchOpen(true)
+                                        }
+                                        className={Styles.navbarButton}
+                                    >
+                                        <Icon icon={"edit-find"} />
+                                    </Button>
+                                    <Button
+                                        onClick={OpenManageAccountDialog}
+                                        className={Styles.navbarButton}
+                                    >
+                                        {currentUser}
+                                    </Button>
+                                </div>
+                            </>
                         </>
                     ) : (
                         <>
@@ -129,25 +174,29 @@ export default function NavMenu() {
                                 >
                                     <img src={ParlanceLogo} alt={"Parlance"} />
                                 </Button>
-                                {menuItems.map(item => (
-                                    <Button
-                                        key={item.href}
-                                        onClick={() => navigate(item.href)}
-                                    >
-                                        {item.name}
-                                    </Button>
-                                ))}
-                            </div>
-                            <div className={Styles.navbarButtonContainer}>
+                                <div style={{ flexGrow: 1 }} />
                                 <Button
                                     onClick={() => setGlobalSearchOpen(true)}
                                 >
                                     <Icon icon={"edit-find"} />
                                 </Button>
-                                <Button onClick={manageAccount}>
+                                <Button onClick={OpenManageAccountDialog}>
                                     {currentUser}
                                 </Button>
                             </div>
+                            {menuItems.map(item => (
+                                <div
+                                    className={Styles.navbarButtonContainer}
+                                    key={item.href}
+                                >
+                                    <Button
+                                        onClick={() => navigate(item.href)}
+                                        className={Styles.navbarButton}
+                                    >
+                                        {item.name}
+                                    </Button>
+                                </div>
+                            ))}
                         </>
                     )}
                 </div>

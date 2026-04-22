@@ -145,3 +145,12 @@ class UserManager extends EventEmitter {
 
 let mgr = new UserManager();
 export default mgr;
+
+export const OpenManageAccountDialog = () => {
+    if (UserManager.isLoggedIn) {
+        Modal.mount(<UserModal navigate={navigate} />);
+    } else {
+        userManager.clearLastError();
+        Modal.mount(<LoginUsernameModal />);
+    }
+};
