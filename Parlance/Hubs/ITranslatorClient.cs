@@ -4,5 +4,5 @@ namespace Parlance.Hubs;
 
 public interface ITranslatorClient
 {
-    Task TranslationUpdated(string newHash, Dictionary<string, IList<TranslationWithPluralType>> strings);
+    Task TranslationUpdated(string project, string subproject, string language, string newHash, Dictionary<string, IList<TranslationWithPluralType>> strings);
 }

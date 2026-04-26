@@ -45,9 +45,12 @@ export default function useTranslatorSignalRConnection(
                 setConnected(ConnectionState.Disconnected);
             });
 
-            connection.on("TranslationUpdated", (hash, data) => {
-                onTranslationUpdated(hash, data);
-            });
+            connection.on(
+                "TranslationUpdated",
+                (project, subproject, language, hash, data) => {
+                    onTranslationUpdated(hash, data);
+                },
+            );
 
             setSignalRConnection(connection);
 

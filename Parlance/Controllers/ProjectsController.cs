@@ -778,7 +778,7 @@ public class ProjectsController(
             
             // Tell SignalR
             await translatorHubContext.Clients.Group(TranslatorHub.GetGroup(project, subproject, language.ToLocale()))
-                .TranslationUpdated(translationFile.Hash, new Dictionary<string, IList<TranslationWithPluralType>>()
+                .TranslationUpdated(project, subproject, language, translationFile.Hash, new Dictionary<string, IList<TranslationWithPluralType>>()
                 {
                     {key, data.TranslationStrings}
                 });
@@ -840,7 +840,7 @@ public class ProjectsController(
             
             // Tell SignalR
             await translatorHubContext.Clients.Group(TranslatorHub.GetGroup(project, subproject, language.ToLocale()))
-                .TranslationUpdated(translationFile.Hash, updatedData);
+                .TranslationUpdated(project, subproject, language, translationFile.Hash, updatedData);
 
             Response.Headers["X-Parlance-Hash"] = new StringValues(translationFile.Hash);
             return NoContent();
