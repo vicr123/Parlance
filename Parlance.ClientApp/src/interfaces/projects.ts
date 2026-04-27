@@ -121,6 +121,7 @@ export interface SubprojectResponse {
     preferRegionAgnosticLanguage: boolean;
     projectName: string;
     availableLanguages: LanguageMeta[];
+    liveUpdateSupportInformation?: string;
 }
 
 export interface SubprojectLanguageResponse {

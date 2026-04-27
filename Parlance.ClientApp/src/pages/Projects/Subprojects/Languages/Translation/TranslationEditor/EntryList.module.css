@@ -198,6 +198,29 @@ input.searchBox {
     background: #00a000;
 }
 
+.liveTranslationBox.liveTranslationBox {
+    background: var(--positive-color);
+    border: 1px solid var(--border-color);
+    padding: 4px;
+
+    display: flex;
+    flex-direction: row;
+    gap: 4px;
+    cursor: default;
+}
+
+.liveTranslationBox:hover {
+    background: var(--positive-hover-color);
+}
+
+.liveTranslationBox:active {
+    background: var(--positive-active-color);
+}
+
+.markdown a {
+    color: var(--link-color);
+}
+
 @media (max-width: 1024px) {
     .rootList {
         border-right: none;

@@ -187,6 +187,8 @@
   "LANGUAGE_PERMISSIONS_ADD_NEW_PROMPT": "To allow a user to edit {{lang}}, enter their username.",
   "LANGUAGE_PERMISSIONS_PROMPT": "These users have permissions to edit {{lang}} translation files.",
   "LANGUAGE_PERMISSION_REVOKE_BUTTON": "Revoke edit permissions for {{lang}}",
+  "LIVE_UPDATE_NOTIFICATION": "Live updates are available for this project",
+  "LIVE_UPDATE_ENABLE_TITLE": "Enabling live updates for this project",
   "LOCALES": "Locales",
   "LOCALES_PROMPT": "Grant permissions to make changes to locales.",
   "LOGIN_ERROR_PROMPT": "Sorry, we had to log you out.",

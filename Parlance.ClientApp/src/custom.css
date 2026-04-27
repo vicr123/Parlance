@@ -26,6 +26,7 @@ body {
     --border-color: #505050;
     --footer-color: rgba(0, 100, 200, 0.3);
     --hover-color: #144678;
+    --link-color: rgba(0, 150, 255);
 
     --destructive-color: rgba(255, 0, 0, 0.3);
     --destructive-hover-color: rgba(255, 0, 0, 0.5);

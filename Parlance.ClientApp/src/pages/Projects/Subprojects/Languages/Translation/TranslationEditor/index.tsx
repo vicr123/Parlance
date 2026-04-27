@@ -272,6 +272,7 @@ export default function TranslationEditor() {
                         updateManager={updateManager}
                         translationFileType={subprojectData.translationFileType}
                         signalRConnection={signalRConnection}
+                        subprojectData={subprojectData}
                     />
                     <TranslationArea
                         tabIndex={tabIndex}

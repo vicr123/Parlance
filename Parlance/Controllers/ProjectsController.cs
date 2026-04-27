@@ -134,6 +134,7 @@ public class ProjectsController(
                             {
                                 subproject.SystemName, subproject.Name,
                                 subproject.PreferRegionAgnosticLanguage,
+                                subproject.LiveUpdateSupportInformation,
                                 RealLocale = preferredLocale.ToDashed()
                             };
                         }
@@ -146,6 +147,7 @@ public class ProjectsController(
                             CompletionData = subprojectIndexResults,
                             subproject.SystemName, subproject.Name,
                             subproject.PreferRegionAgnosticLanguage,
+                            subproject.LiveUpdateSupportInformation,
                             RealLocale = preferredLocale.ToDashed()
                         };
                     }))
@@ -599,6 +601,7 @@ public class ProjectsController(
                 subproj.TranslationFileType,
                 subproj.Name,
                 subproj.PreferRegionAgnosticLanguage,
+                subproj.LiveUpdateSupportInformation,
                 ProjectName = subproj.Project.Name,
                 AvailableLanguages = await Task.WhenAll(subproj.AvailableLanguages().Select(async lang =>
                 {
@@ -778,7 +781,7 @@ public class ProjectsController(
             
             // Tell SignalR
             await translatorHubContext.Clients.Group(TranslatorHub.GetGroup(project, subproject, language.ToLocale()))
-                .TranslationUpdated(translationFile.Hash, new Dictionary<string, IList<TranslationWithPluralType>>()
+                .TranslationUpdated(project, subproject, language, translationFile.Hash, new Dictionary<string, IList<TranslationWithPluralType>>()
                 {
                     {key, data.TranslationStrings}
                 });
@@ -840,7 +843,7 @@ public class ProjectsController(
             
             // Tell SignalR
             await translatorHubContext.Clients.Group(TranslatorHub.GetGroup(project, subproject, language.ToLocale()))
-                .TranslationUpdated(translationFile.Hash, updatedData);
+                .TranslationUpdated(project, subproject, language, translationFile.Hash, updatedData);
 
             Response.Headers["X-Parlance-Hash"] = new StringValues(translationFile.Hash);
             return NoContent();
