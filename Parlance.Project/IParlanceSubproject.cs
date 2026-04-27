@@ -17,6 +17,7 @@ public interface IParlanceSubproject
     public string BasePath { get; }
     public IDictionary<string, object> Options { get; }
     bool PreferRegionAgnosticLanguage { get; }
+    string? LiveUpdateSupportInformation { get; }
 
     public IEnumerable<Locale> AvailableLanguages();
     public IParlanceSubprojectLanguage Language(Locale language);

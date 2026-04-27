@@ -8,11 +8,15 @@ import useTranslationEntries from "./EntryUtils";
 import { Fragment, useEffect, useRef } from "react";
 import { isEmptyTranslation } from "./EntryHelper";
 import { Box } from "./Box";
-import { Entry } from "@/interfaces/projects";
+import { Entry, SubprojectResponse } from "@/interfaces/projects";
 import { TextDirection } from "@/interfaces/misc";
 import { SearchParams } from "@/pages/Projects/Subprojects/Languages/Translation/TranslationEditor/EditorInterfaces";
 import { UpdateManager } from "./UpdateManager";
 import { TranslatorSignalR } from "./TranslatorSignalRConnection";
+import Modal from "@/components/Modal";
+import Markdown from "react-markdown";
+import remarkGfm from "remark-gfm";
+import Icon from "@/components/Icon";
 
 function EntryListItem({
     entries,
@@ -145,6 +149,7 @@ export default function EntryList({
     searchParams,
     setSearchParam,
     signalRConnection,
+    subprojectData,
 }: {
     entries: Entry[];
     translationDirection: TextDirection;
@@ -153,6 +158,7 @@ export default function EntryList({
     searchParams: SearchParams;
     setSearchParam: (param: keyof SearchParams, value: string) => void;
     signalRConnection: TranslatorSignalR;
+    subprojectData: SubprojectResponse | undefined;
 }) {
     const { key } = useParams();
     const { t } = useTranslation();
@@ -188,6 +194,46 @@ export default function EntryList({
             <Box>
                 <ConnectionBox signalRConnection={signalRConnection} />
             </Box>
+            {subprojectData?.liveUpdateSupportInformation && (
+                <Box
+                    className={Styles.liveTranslationBox}
+                    onClick={() =>
+                        Modal.mount(
+                            <Modal
+                                heading={t("LIVE_UPDATE_ENABLE_TITLE")}
+                                buttons={[Modal.OkButton]}
+                            >
+                                <div className={Styles.markdown}>
+                                    <Markdown
+                                        remarkPlugins={[remarkGfm]}
+                                        components={{
+                                            a: ({
+                                                children,
+                                                node,
+                                                ...props
+                                            }) => (
+                                                <a {...props} target={"_blank"}>
+                                                    {children}
+                                                </a>
+                                            ),
+                                        }}
+                                    >
+                                        {
+                                            subprojectData.liveUpdateSupportInformation
+                                        }
+                                    </Markdown>
+                                </div>
+                            </Modal>,
+                        )
+                    }
+                >
+                    <Icon icon={"flag"} />
+                    <div style={{ flexGrow: 1 }}>
+                        {t("LIVE_UPDATE_NOTIFICATION")}
+                    </div>
+                    <Icon icon={"go-next"} />
+                </Box>
+            )}
             <Box>
                 <input
                     type={"text"}

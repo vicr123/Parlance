@@ -7,7 +7,7 @@ using Parlance.Project.TranslationFiles;
 namespace Parlance.Project;
 
 public record SubprojectDefinition(string Name, string Type, string Path, string BaseLang, string? BasePath,
-    IDictionary<string, object> Options, bool? PreferRegionAgnosticLanguage);
+    IDictionary<string, object> Options, bool? PreferRegionAgnosticLanguage, string? LiveUpdateSupportInformation);
 
 public class ParlanceSubproject(IParlanceProject project, SubprojectDefinition subproject) : IParlanceSubproject
 {
@@ -17,6 +17,7 @@ public class ParlanceSubproject(IParlanceProject project, SubprojectDefinition s
     public string Path => subproject.Path;
     public string TranslationFileType => subproject.Type;
     public Locale BaseLang => subproject.BaseLang.ToLocale();
+    public string? LiveUpdateSupportInformation => subproject.LiveUpdateSupportInformation;
 
     public bool PreferRegionAgnosticLanguage =>
         subproject.PreferRegionAgnosticLanguage ?? string.IsNullOrEmpty(BaseLang.CountryCode);

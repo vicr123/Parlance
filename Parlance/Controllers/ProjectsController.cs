@@ -134,6 +134,7 @@ public class ProjectsController(
                             {
                                 subproject.SystemName, subproject.Name,
                                 subproject.PreferRegionAgnosticLanguage,
+                                subproject.LiveUpdateSupportInformation,
                                 RealLocale = preferredLocale.ToDashed()
                             };
                         }
@@ -146,6 +147,7 @@ public class ProjectsController(
                             CompletionData = subprojectIndexResults,
                             subproject.SystemName, subproject.Name,
                             subproject.PreferRegionAgnosticLanguage,
+                            subproject.LiveUpdateSupportInformation,
                             RealLocale = preferredLocale.ToDashed()
                         };
                     }))
@@ -599,6 +601,7 @@ public class ProjectsController(
                 subproj.TranslationFileType,
                 subproj.Name,
                 subproj.PreferRegionAgnosticLanguage,
+                subproj.LiveUpdateSupportInformation,
                 ProjectName = subproj.Project.Name,
                 AvailableLanguages = await Task.WhenAll(subproj.AvailableLanguages().Select(async lang =>
                 {
