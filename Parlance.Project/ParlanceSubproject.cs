@@ -6,8 +6,20 @@ using Parlance.Project.TranslationFiles;
 
 namespace Parlance.Project;
 
-public record SubprojectDefinition(string Name, string Type, string Path, string BaseLang, string? BasePath,
-    IDictionary<string, object> Options, bool? PreferRegionAgnosticLanguage, string? LiveUpdateSupportInformation);
+public record SubprojectDefinition(
+    string Name,
+    string Type,
+    string Path,
+    string BaseLang,
+    string? BasePath,
+    IDictionary<string, object> Options,
+    bool? PreferRegionAgnosticLanguage,
+    string? LiveUpdateSupportInformation)
+{
+    public SubprojectDefinition() : this(null!, null!, null!, null!, null, null!, null, null)
+    {
+    }
+}
 
 public class ParlanceSubproject(IParlanceProject project, SubprojectDefinition subproject) : IParlanceSubproject
 {
@@ -32,11 +44,11 @@ public class ParlanceSubproject(IParlanceProject project, SubprojectDefinition s
                     .SelectMany(type => type.GetCustomAttributes<TranslationFileTypeAttribute>())
                     .Single(attr => attr.HandlerFor == TranslationFileType)
                     .FileNameFormat switch
-                    {
-                        ExpectedTranslationFileNameFormat.Dashed => BaseLang.ToDashed(),
-                        ExpectedTranslationFileNameFormat.Underscored => BaseLang.ToUnderscored(),
-                        _ => throw new ArgumentOutOfRangeException("Invalid value for FileNameFormat.")
-                    };
+                {
+                    ExpectedTranslationFileNameFormat.Dashed => BaseLang.ToDashed(),
+                    ExpectedTranslationFileNameFormat.Underscored => BaseLang.ToUnderscored(),
+                    _ => throw new ArgumentOutOfRangeException("Invalid value for FileNameFormat.")
+                };
 
             var standardCased = System.IO.Path.Join(Project.VcsDirectory,
                 subproject.BasePath ?? Path.Replace("{lang}", language));
@@ -69,7 +81,8 @@ public class ParlanceSubproject(IParlanceProject project, SubprojectDefinition s
         var matcher = new Matcher();
         matcher.AddInclude(wildcard);
         var result = matcher.Execute(new DirectoryInfoWrapper(new DirectoryInfo(Project.VcsDirectory)));
-        return result.Files.Select(file => file.Path[toStart..^toTrim]).Where(file => file != "meta").Select(file => file.ToLocale());
+        return result.Files.Select(file => file.Path[toStart..^toTrim]).Where(file => file != "meta")
+            .Select(file => file.ToLocale());
     }
 
     public IParlanceSubprojectLanguage Language(Locale language)

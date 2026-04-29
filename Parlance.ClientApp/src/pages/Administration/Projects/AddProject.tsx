@@ -83,6 +83,7 @@ export default function () {
                     <span>
                         <Trans i18nKey={"ADD_PROJECT_PROMPT_2"} t={t}>
                             Ensure that the project contains a{" "}
+                            <code>.parlance.yaml</code> or{" "}
                             <code>.parlance.json</code> file in the root.
                         </Trans>
                     </span>
