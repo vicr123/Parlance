@@ -19,11 +19,15 @@ export interface ParlanceJson {
     subprojects: ParlaceJsonSubproject[];
 
     /**
-     * The deadline for collecting translations, in UNIX seconds. When present
-     * and in the future, Parlance will raise this project in priority and
-     * start displaying the deadline.
+     * The deadline for collecting translations, in UNIX milliseconds. When
+     * present and in the future, Parlance will raise this project in
+     * priority and start displaying the deadline.
      *
      * This date may also be called a string freeze.
+     *
+     * When Parlance detects a change in this property, an email notification
+     * will be sent out to all subscribed translators to notify them of the
+     * new deadline.
      */
     deadline?: number;
 }
