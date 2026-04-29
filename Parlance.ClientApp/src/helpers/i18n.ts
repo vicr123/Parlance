@@ -41,6 +41,7 @@ if (import.meta.env.VITE_USE_PSEUDOTRANSLATION) {
     instance.use(
         new Pseudo({
             enabled: true,
+            wrapped: true,
         }),
     );
 } else {
