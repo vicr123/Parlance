@@ -7,6 +7,11 @@
  */
 export interface ParlanceJson {
     /**
+     * A link to the JSON schema used for this file.
+     */
+    $schema?: string;
+
+    /**
      * The name for this project. For example, "Parlance"
      */
     name: string;
