@@ -5,6 +5,8 @@ import * as fs from "fs";
 import * as path from "path";
 import * as child_process from "child_process";
 import PolyfillGroupByPlugin from "./vite/groupby-polyfill/vite-plugin-polyfill-groupby";
+import generateFile from "vite-plugin-generate-file";
+import { createGenerator } from "ts-json-schema-generator";
 
 interface ProcessEnv {
     [key: string]: string | undefined;
@@ -52,10 +54,25 @@ const target: string = env.ASPNETCORE_HTTPS_PORT
       ? env.ASPNETCORE_URLS.split(";")[0]
       : "https://localhost:7238";
 
+const schema = createGenerator({
+    path: "vite/parlance-json.ts",
+    type: "ParlanceJson",
+}).createSchema();
+
 // https://vitejs.dev/config/
 // noinspection JSUnusedGlobalSymbols
 export default defineConfig({
-    plugins: [plugin(), PolyfillGroupByPlugin()],
+    plugins: [
+        plugin(),
+        PolyfillGroupByPlugin(),
+        generateFile([
+            {
+                type: "json",
+                output: "./schemas/parlance-json.json",
+                data: schema as object,
+            },
+        ]),
+    ],
     resolve: {
         alias: {
             // @ts-ignore
