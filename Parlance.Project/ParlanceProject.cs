@@ -1,9 +1,17 @@
 using System.Text.Json;
 using Parlance.Project.Exceptions;
+using YamlDotNet.Serialization;
+using YamlDotNet.Serialization.NamingConventions;
 
 namespace Parlance.Project;
 
-internal record ParlanceJson(string Name, IEnumerable<SubprojectDefinition> Subprojects, ulong? Deadline);
+internal record ParlanceJson(string Name, IEnumerable<SubprojectDefinition> Subprojects, ulong? Deadline)
+{
+    // HACK: YamlDotNet only works with objects with a default constructor
+    public ParlanceJson() : this(null!, null!, null!)
+    {
+    }
+}
 
 public class ParlanceProject : IParlanceProject
 {
@@ -11,6 +19,8 @@ public class ParlanceProject : IParlanceProject
     {
         PropertyNameCaseInsensitive = true
     };
+
+    private static readonly IDeserializer YamlDeserializer = new DeserializerBuilder().WithNamingConvention(CamelCaseNamingConvention.Instance).Build();
     
     public static ParlanceProject CreateParlanceProject(Database.Models.Project project)
     {
@@ -35,10 +45,26 @@ public class ParlanceProject : IParlanceProject
             Name = projectName;
             SystemName = systemName;
             VcsDirectory = vcsDirectory;
-            
-            using var file = File.OpenRead(Path.Combine(vcsDirectory, ".parlance.json"));
-            
-            var subprojectDefs = JsonSerializer.Deserialize<ParlanceJson>(file, JsonOptions);
+
+            ParlanceJson? subprojectDefs;
+            try
+            {
+                using var file = File.OpenText(Path.Combine(vcsDirectory, ".parlance.yaml"));
+                subprojectDefs = YamlDeserializer.Deserialize<ParlanceJson>(file);
+            }
+            catch (FileNotFoundException)
+            {
+                try
+                {
+                    using var file = File.OpenText(Path.Combine(vcsDirectory, ".parlance.yml"));
+                    subprojectDefs = YamlDeserializer.Deserialize<ParlanceJson>(file);
+                }
+                catch (FileNotFoundException)
+                {
+                    using var file = File.OpenRead(Path.Combine(vcsDirectory, ".parlance.json"));
+                    subprojectDefs = JsonSerializer.Deserialize<ParlanceJson>(file, JsonOptions);
+                }
+            }
 
             if (subprojectDefs is null)
                 throw new ParlanceJsonFileParseException("The Parlance project definition is invalid.");
