@@ -31,7 +31,7 @@ public record Locale
         var parts = new List<string> { LanguageCode.ToLower() };
         if (Script is not null)
         {
-            parts.Add(Script.ToLower());
+            parts.Add($"{char.ToUpper(Script[0])}{Script[1..].ToLower()}");
         }
 
         if (CountryCode is not null)

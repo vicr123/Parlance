@@ -53,7 +53,7 @@ public static class CldrExtensions
 
         if (parts.Count > 0)
         {
-            if (Scripts.Contains(parts.Peek())) script = parts.Dequeue();
+            if (Scripts.Contains(parts.Peek(), StringComparer.OrdinalIgnoreCase)) script = parts.Dequeue();
         }
 
         if (parts.Count > 0)
