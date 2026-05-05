@@ -1,5 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
+using Parlance.Database;
+using Parlance.Database.Models;
 using Parlance.Services.Projects;
 using Parlance.Services.ProjectUpdater;
 using Parlance.VersionControl.Services.VersionControl;
@@ -12,7 +14,8 @@ namespace Parlance.Controllers;
 public class WebhookController(
     IProjectService projectService,
     IVersionControlService versionControlService,
-    IProjectUpdateQueue updateQueue)
+    IProjectUpdateQueue updateQueue,
+    ParlanceContext dbContext)
     : Controller
 {
     [HttpPost]
@@ -20,6 +23,8 @@ public class WebhookController(
     public async Task<IActionResult> ExecuteGitHubWebhook([FromBody] ExecuteGitHubWebhookRequestData data)
     {
         if (!Request.Headers["X-GitHub-Event"].Contains("push")) return NoContent();
+
+        var deliveryId = Request.Headers["X-GitHub-Delivery"].FirstOrDefault() ?? "GitHub";
 
         var projects = await projectService.Projects();
         var hitProjects = projects.Where(x =>
@@ -36,6 +41,17 @@ public class WebhookController(
             {
                 await updateQueue.Queue(project);
                 updatedProjects.Add(project);
+                
+                dbContext.RemoveRange(
+                    dbContext.WebhookExecutions.Where(e => e.Parent.Id == project.Id)
+                );
+                await dbContext.WebhookExecutions.AddAsync(new WebhookExecution
+                {
+                    Parent = project,
+                    Payload = deliveryId,
+                    ReceivedAt = DateTimeOffset.Now,
+                    Source = "github"
+                });
             }
             else
             {
@@ -43,9 +59,22 @@ public class WebhookController(
                 {
                     await updateQueue.Queue(branch);
                     updatedProjects.Add(project);
+                    
+                    dbContext.RemoveRange(
+                        dbContext.WebhookExecutions.Where(e => e.Parent.Id == project.Id)
+                    );
+                    await dbContext.WebhookExecutions.AddAsync(new WebhookExecution
+                    {
+                        Parent = project,
+                        Payload = deliveryId,
+                        ReceivedAt = DateTimeOffset.Now,
+                        Source = "github"
+                    });
                 }
             }
         }
+
+        await dbContext.SaveChangesAsync();
 
         return Json(new
         {
