@@ -24,6 +24,12 @@ import { Signal } from "@/components/Signal";
 import { WebhookSetupModal } from "@/pages/Projects/Subprojects/VersionControl/WebhookSetupModal";
 import moment from "moment";
 
+const WEBHOOK_SOURCES = {
+    github: "GitHub",
+    forgejo: "Forgejo",
+    codeberg: "Codeberg",
+};
+
 function Commit({ commit }: { commit?: CommitType }) {
     if (!commit) {
         return (
@@ -405,8 +411,9 @@ export default function VersionControl() {
                                     signal={"green"}
                                     text={t("WEBHOOKS_OK", {
                                         source:
-                                            { github: "GitHub" }[
-                                                vcsState.lastWebhook.source
+                                            WEBHOOK_SOURCES[
+                                                vcsState.lastWebhook
+                                                    .source as keyof typeof WEBHOOK_SOURCES
                                             ] ?? "???",
                                         receivedAt: moment(
                                             vcsState.lastWebhook.receivedAt,
