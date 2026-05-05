@@ -1,0 +1,9 @@
+.shortcutGrid {
+    display: grid;
+    grid-template-columns: max-content 1fr;
+    gap: 9px;
+}
+
+.shortcutGridTitle {
+    grid-column: 1 / span 2;
+}
