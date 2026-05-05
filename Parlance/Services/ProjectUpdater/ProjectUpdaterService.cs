@@ -29,7 +29,8 @@ public class ProjectUpdaterService(IProjectUpdateQueue queue, IServiceScopeFacto
             {
                 await versionControlService.UpdateVersionControlMetadata(project);
 
-                if (!versionControlService.VersionControlStatus(project).ChangedFiles.Any())
+                var versionControlStatus =  await versionControlService.VersionControlStatus(project);
+                if (!versionControlStatus.ChangedFiles.Any())
                 {
                     await versionControlService.ReconcileRemoteWithLocal(project);
 
@@ -43,7 +44,9 @@ public class ProjectUpdaterService(IProjectUpdateQueue queue, IServiceScopeFacto
                         // ignored
                     }
 
-                    if (versionControlService.VersionControlStatus(project).Ahead > 0)
+                    // Fetch the status of version control again
+                    versionControlStatus = await versionControlService.VersionControlStatus(project);
+                    if (versionControlStatus.Ahead > 0)
                         await versionControlService.PublishSavedChangesToSource(project);
                 }
             }

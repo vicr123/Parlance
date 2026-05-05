@@ -10,6 +10,13 @@ public class DirtyWorkingTreeException : Exception;
 
 public class NoUpstreamException : Exception;
 
+public class WebhookStatus
+{
+    public DateTimeOffset ReceivedAt { get; init; }
+    public string Source { get; init; }
+    public string Payload { get; init; }
+}
+
 public class VersionControlCommit(Commit commit)
 {
     public string CommitIdentifier { get; } = commit.Sha;
@@ -23,6 +30,7 @@ public class VersionControlStatus
     public int Ahead { get; init; }
     public int Behind { get; init; }
     public IEnumerable<string> ChangedFiles { get; init; }
+    public WebhookStatus? LastWebhook { get; init; }
 }
 
 public interface IVersionControlService
@@ -36,7 +44,7 @@ public interface IVersionControlService
     Task DeleteUnpublishedChanges(IVcsable project);
     Task PublishSavedChangesToSource(IVcsable project);
     Task ReconcileRemoteWithLocal(IVcsable project);
-    VersionControlStatus VersionControlStatus(IVcsable project);
+    Task<VersionControlStatus> VersionControlStatus(IVcsable project);
     string CloneUrl(IVcsable project);
     string CloneUrl(IParlanceProject project);
     string BranchName(IVcsable project);

@@ -17,6 +17,7 @@ import Modal from "@/components/Modal";
 import Markdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import Icon from "@/components/Icon";
+import { Signal } from "@/components/Signal";
 
 function EntryListItem({
     entries,
@@ -116,27 +117,26 @@ function ConnectionBox({
 }) {
     const { t } = useTranslation();
 
-    let circleClass = "";
+    let circleClass: "red" | "green" | "yellow" = "red";
     let text = "";
     switch (signalRConnection.connected) {
         case 0:
-            circleClass = Styles.disconnected;
+            circleClass = "red";
             text = "SIGNALR_DISCONNECTED";
             break;
         case 1:
-            circleClass = Styles.connecting;
+            circleClass = "yellow";
             text = "SIGNALR_CONNECTING";
             break;
         case 2:
-            circleClass = Styles.connected;
+            circleClass = "green";
             text = "SIGNALR_CONNECTED";
             break;
     }
 
     return (
         <div className={Styles.connectionBox}>
-            <div className={`${Styles.connectionBoxSignal} ${circleClass}`} />
-            <span>{t(text)}</span>
+            <Signal signal={circleClass} text={t(text)} />
         </div>
     );
 }
