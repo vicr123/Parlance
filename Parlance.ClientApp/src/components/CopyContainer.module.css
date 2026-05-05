@@ -1,6 +1,7 @@
 .container {
     display: flex;
     align-items: center;
+    gap: 4px;
     background: var(--layer-color);
     border-radius: var(--border-radius);
     padding: 4px;
@@ -15,7 +16,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    
+
     padding: 8px;
     border-radius: var(--border-radius);
 }
