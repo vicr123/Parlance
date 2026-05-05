@@ -1,5 +1,6 @@
 using LibGit2Sharp;
 using MessagePipe;
+using Microsoft.EntityFrameworkCore;
 using Parlance.Database;
 using Parlance.Database.Interfaces;
 using Parlance.Database.Models;
@@ -13,7 +14,8 @@ namespace Parlance.VersionControl.Services.VersionControl;
 public class GitVersionControlService(
     IRemoteCommunicationService remoteCommunicationService,
     IPendingEditsService pendingEditsService,
-    IAsyncPublisher<ProjectMetadataFileChangedEvent> projectMetadataFileChangedEventPublisher)
+    IAsyncPublisher<ProjectMetadataFileChangedEvent> projectMetadataFileChangedEventPublisher,
+    ParlanceContext dbContext)
     : IVersionControlService
 {
     private readonly Identity _identity = new("Parlance", "parlance@vicr123.com");
@@ -89,9 +91,11 @@ public class GitVersionControlService(
         }
     }
 
-    public VersionControlStatus VersionControlStatus(IVcsable project)
+    public async Task<VersionControlStatus> VersionControlStatus(IVcsable project)
     {
         using var repo = new Repository(project.VcsDirectory);
+
+        var lastWebhookExecution = await dbContext.WebhookExecutions.SingleOrDefaultAsync(x => x.Parent.Id == project.Project.Id);
 
         return new VersionControlStatus
         {
@@ -99,7 +103,13 @@ public class GitVersionControlService(
             LatestRemoteCommit = new VersionControlCommit(repo.Head.TrackedBranch.Tip),
             Ahead = repo.Head.TrackingDetails.AheadBy.GetValueOrDefault(),
             Behind = repo.Head.TrackingDetails.BehindBy.GetValueOrDefault(),
-            ChangedFiles = repo.RetrieveStatus().Select(x => x.FilePath)
+            ChangedFiles = repo.RetrieveStatus().Select(x => x.FilePath),
+            LastWebhook = lastWebhookExecution is null ? null : new WebhookStatus
+            {
+                Payload = lastWebhookExecution.Payload,
+                ReceivedAt = lastWebhookExecution.ReceivedAt,
+                Source = lastWebhookExecution.Source
+            }
         };
     }
 

@@ -38,3 +38,9 @@
     color: var(--foreground-disabled-color);
     font-family: var(--fixed-font);
 }
+
+.webhookInformation {
+    background: var(--layer-color);
+    padding: 4px;
+    border-radius: var(--border-radius);
+}

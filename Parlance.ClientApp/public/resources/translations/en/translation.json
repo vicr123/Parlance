@@ -445,5 +445,10 @@
   "VERIFY_EMAIL_SUCCESS": "Email Verified",
   "VERIFY_EMAIL_SUCCESS_PROMPT": "Your email has been verified. Thank you!",
   "VERIFY_EMAIL_VERIFICATION_CODE": "Verification Code",
+  "WEBHOOKS": "Webhooks",
+  "WEBHOOKS_INFORMATION": "You can set up a webhook from your Git provider to trigger Parlance to automatically pull from the remote when new commits are pushed.",
+  "WEBHOOKS_NO_WEBHOOK": "No webhook has been triggered for this repository yet",
+  "WEBHOOKS_OK": "Last webhook triggered at {{receivedAt}} from {{source}}",
+  "WEBHOOKS_SET_UP": "Webhook Setup Instructions",
   "WRITE_COMMENT_PLACEHOLDER": "Write a comment..."
 }

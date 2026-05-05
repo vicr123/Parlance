@@ -1,0 +1,23 @@
+.signalContainer {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.signal {
+    aspect-ratio: 1 / 1;
+    height: 16px;
+    border-radius: 50%;
+}
+
+.disconnected {
+    background: #c80000;
+}
+
+.connecting {
+    background: #ffa000;
+}
+
+.connected {
+    background: #00a000;
+}

@@ -28,7 +28,7 @@ public class ProjectVcsController(
         try
         {
             var p = await projectService.ProjectBySystemName(project);
-            return Json(versionControlService.VersionControlStatus(p));
+            return Json(await versionControlService.VersionControlStatus(p));
         }
         catch (ProjectNotFoundException)
         {

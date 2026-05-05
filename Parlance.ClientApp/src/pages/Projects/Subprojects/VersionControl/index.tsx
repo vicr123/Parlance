@@ -20,6 +20,9 @@ import {
 } from "@/interfaces/versionControl";
 import { BranchSelector } from "@/pages/Projects/Subprojects/BranchSelector";
 import { ProjectResponse } from "@/interfaces/projects";
+import { Signal } from "@/components/Signal";
+import { WebhookSetupModal } from "@/pages/Projects/Subprojects/VersionControl/WebhookSetupModal";
+import moment from "moment";
 
 function Commit({ commit }: { commit?: CommitType }) {
     if (!commit) {
@@ -391,6 +394,47 @@ export default function VersionControl() {
                     </div>
                 </Container>
             </ErrorCover>
+            <Container>
+                <VerticalLayout>
+                    <PageHeading level={3}>{t("WEBHOOKS")}</PageHeading>
+                    <span>{t("WEBHOOKS_INFORMATION")}</span>
+                    <div className={Styles.webhookInformation}>
+                        {vcsState?.lastWebhook ? (
+                            <>
+                                <Signal
+                                    signal={"green"}
+                                    text={t("WEBHOOKS_OK", {
+                                        source:
+                                            { github: "GitHub" }[
+                                                vcsState.lastWebhook.source
+                                            ] ?? "???",
+                                        receivedAt: moment(
+                                            vcsState.lastWebhook.receivedAt,
+                                        ).format("LL LTS"),
+                                    })}
+                                />
+                            </>
+                        ) : (
+                            <>
+                                <Signal
+                                    signal={"red"}
+                                    text={t("WEBHOOKS_NO_WEBHOOK")}
+                                />
+                            </>
+                        )}
+                    </div>
+                    <SelectableList
+                        items={[
+                            {
+                                contents: t("WEBHOOKS_SET_UP"),
+                                onClick: () => {
+                                    Modal.mount(<WebhookSetupModal />);
+                                },
+                            },
+                        ]}
+                    />
+                </VerticalLayout>
+            </Container>
             <Container>
                 <PageHeading level={3}>{t("ACTIONS")}</PageHeading>
                 <SelectableList

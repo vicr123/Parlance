@@ -37,7 +37,8 @@ public class ProjectCommitJob(
             {
                 try
                 {
-                    if (versionControlService.VersionControlStatus(vcsable).ChangedFiles.Any())
+                    var versionControlStatus = await versionControlService.VersionControlStatus(vcsable);
+                    if (versionControlStatus.ChangedFiles.Any())
                         await versionControlService.SaveChangesToVersionControl(vcsable);
 
                     await projectUpdateQueue.Queue(vcsable);

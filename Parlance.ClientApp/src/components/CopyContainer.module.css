@@ -1,0 +1,29 @@
+.container {
+    display: flex;
+    align-items: center;
+    background: var(--layer-color);
+    border-radius: var(--border-radius);
+    padding: 4px;
+}
+
+.container pre {
+    margin: 0;
+    flex-grow: 1;
+}
+
+.copyButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    
+    padding: 8px;
+    border-radius: var(--border-radius);
+}
+
+.copyButton:hover {
+    background: var(--layer-color);
+}
+
+.copyButton:active {
+    background: var(--background-color);
+}
