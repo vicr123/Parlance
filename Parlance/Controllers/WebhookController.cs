@@ -28,34 +28,40 @@ public class WebhookController(
             string.Equals(versionControlService.CloneUrl(x), data.Repository.Ssh_Url,
                 StringComparison.InvariantCultureIgnoreCase));
 
+        var updatedProjects = new List<Database.Models.Project>();
+        
         foreach (var project in hitProjects)
         {
             if (project.Branches.Count == 0)
             {
                 await updateQueue.Queue(project);
+                updatedProjects.Add(project);
             }
             else
             {
-                foreach (var branch in
-                         project.Branches.Where(branch => data.Repository.Ref.Contains(branch.BranchName)))
+                foreach (var branch in project.Branches.Where(branch => data.Ref.Contains(branch.BranchName)))
                 {
                     await updateQueue.Queue(branch);
+                    updatedProjects.Add(project);
                 }
             }
         }
 
-        return NoContent();
+        return Json(new
+        {
+            UpdatedProjects = updatedProjects.Select(project => project.Name)
+        });
     }
 
     public class ExecuteGitHubWebhookRequestData
     {
+        public string Ref { get; set; } = null!;
         public GitHubWebHookRepository Repository { get; set; } = null!;
 
         public class GitHubWebHookRepository
         {
             public string Ssh_Url { get; set; } = null!;
             public string Clone_Url { get; set; } = null!;
-            public string Ref { get; set; } = null!;
         }
     }
 }
