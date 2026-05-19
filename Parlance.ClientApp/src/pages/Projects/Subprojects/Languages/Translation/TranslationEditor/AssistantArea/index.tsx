@@ -11,6 +11,10 @@ import { Box } from "../Box";
 import { AssistantSuggestion, Entry } from "@/interfaces/projects";
 import { SearchParams } from "@/pages/Projects/Subprojects/Languages/Translation/TranslationEditor/EditorInterfaces";
 import { TextDirection } from "@/interfaces/misc";
+import { KeyboardShortcutsModal } from "@/pages/Projects/Subprojects/Languages/Translation/TranslationEditor/Modals/KeyboardShortcutsModal";
+import Modal from "@/components/Modal";
+import KeyboardShortcut from "@/components/KeyboardShortcut";
+import { KeyboardShortcuts } from "@/pages/Projects/Subprojects/Languages/Translation/TranslationEditor/KeyboardShortcuts";
 
 function SuggestedTranslation({
     suggestion,
@@ -139,6 +143,26 @@ export default function AssistantArea({
                 {/*<VerticalLayout className={`${Styles.pane} ${Styles.heading}`}>*/}
                 {/*    <PageHeading level={3}>{t("ASSISTANT_RESOURCES")}</PageHeading>*/}
                 {/*</VerticalLayout>*/}
+                <div style={{ flexGrow: 1 }} />
+                <Box>
+                    <VerticalLayout
+                        className={`${Styles.pane} ${Styles.heading}`}
+                    >
+                        <PageHeading level={3}>{t("HELP")}</PageHeading>
+                        <SmallButton
+                            onClick={() =>
+                                Modal.mount(<KeyboardShortcutsModal />)
+                            }
+                        >
+                            {t("KEYBOARD_SHORTCUTS_HEADING")}
+                            <KeyboardShortcut
+                                shortcut={
+                                    KeyboardShortcuts.ShowKeyboardShortcuts
+                                }
+                            />
+                        </SmallButton>
+                    </VerticalLayout>
+                </Box>
             </div>
         </div>
     );

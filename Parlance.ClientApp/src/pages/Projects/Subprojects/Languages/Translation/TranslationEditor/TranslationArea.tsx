@@ -583,11 +583,6 @@ export default function TranslationArea({
                                 <span className={Styles.navButtonSource}>
                                     {prevUnfinished?.source}
                                 </span>
-                                <KeyboardShortcut
-                                    shortcut={
-                                        KeyboardShortcuts.PreviousUnfinished
-                                    }
-                                />
                             </div>
                         </Button>
                     </div>
@@ -612,9 +607,6 @@ export default function TranslationArea({
                                     {nextUnfinished?.source}
                                 </span>
                                 <VerticalSpacer height={2} />
-                                <KeyboardShortcut
-                                    shortcut={KeyboardShortcuts.NextUnfinished}
-                                />
                             </div>
                         </Button>
                     </div>
@@ -627,9 +619,6 @@ export default function TranslationArea({
                                 <span className={Styles.navButtonSource}>
                                     {prev?.source}
                                 </span>
-                                <KeyboardShortcut
-                                    shortcut={KeyboardShortcuts.Previous}
-                                />
                             </div>
                         </Button>
                     </div>
@@ -640,9 +629,6 @@ export default function TranslationArea({
                                 <span className={Styles.navButtonSource}>
                                     {next?.source}
                                 </span>
-                                <KeyboardShortcut
-                                    shortcut={KeyboardShortcuts.Next}
-                                />
                             </div>
                         </Button>
                     </div>
