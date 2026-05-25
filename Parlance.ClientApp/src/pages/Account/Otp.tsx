@@ -28,6 +28,7 @@ import {
 } from "@/interfaces/users";
 import { ServerInformationContext } from "@/context/ServerInformationContext";
 import UserManager from "@/helpers/UserManager";
+import { CopyContainer } from "@/components/CopyContainer";
 
 function OtpBlock({ otpState }: { otpState: OtpStateEnabled }) {
     return (
@@ -152,9 +153,9 @@ function OtpDisabledContent({
                             <span>
                                 {t("ACCOUNT_SETTINGS_TWO_FACTOR_STEP_TWO_2")}
                             </span>
-                            <span className={Styles.manualSetupKey}>
-                                {otpState.key.match(/.{1,4}/g)!.join(" ")}
-                            </span>
+                            <CopyContainer
+                                text={otpState.key.match(/.{1,4}/g)!.join(" ")}
+                            />
                         </VerticalLayout>
                     </div>
                 </div>
